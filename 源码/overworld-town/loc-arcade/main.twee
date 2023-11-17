@@ -1,0 +1,1807 @@
+:: Arcade Lock
+<<set $outside to 0>><<set $location to "arcade">><<effects>><<set $lock to 300>>
+The arcade is closed. A glowing sign beside the door reads "Opens: <span class="gold"><<ampm 9 00>></span>"
+<br><br>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>><<link [[Pick it (0:10)|Arcade]]>><<pass 10>><<crimeUp 20 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Arcade]]>><<pass 1>><<set $ghostIn to true>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Starfish Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Arcade
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+<<set $kylar.play to 0>>
+You are in the amusement arcade on Starfish Street.
+
+<<if Time.dayState is "day" or Time.dayState is "dusk">>
+The games and gambling machines beep and whirr.
+<<else>>
+The games and gambling machines lie silent.
+<</if>>
+<br><br>
+<<if $stress gte $stressmax>>
+<<passoutarcade>>
+<<else>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "arcade">>
+	<</if>>
+	<<if Time.hour is 21>>
+	It's closing time. Security is herding everyone outside. <<if $exposed gte 1>>Panic swells within you as you realise how exposed you'll be should security find you in this state of dress.<</if>>
+	<br><br>
+
+		<<if $exposed lte 0>>
+			<<starfishicon>><<link [[Go outside|Starfish Street]]>><</link>>
+			<br>
+		<<else>>
+			<<link [[Hide until it's over (1:00)|Arcade]]>><<pass 1 hour>><</link>>
+		<</if>>
+	<<else>>
+
+		<<if Time.dayState is "night" or Time.dayState is "dawn">>
+		You are alone in the darkness.
+		<br><br>
+		<<elseif $exposed gte 1>>
+		You hide beneath a pinball machine to protect your dignity.
+		<br><br>
+		<</if>>
+		<<if $arousal gte $arousalmax>>
+			<<orgasmLocation "arcade">>
+		<</if>>
+		<<if $money gte 500 and (Time.dayState is "day" or Time.dayState is "dusk") and $exposed lte 0>>
+			<<link [[Play (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+			<br>
+		<</if>>
+		<<if $exposed lte 0 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and ($weather is "rain" or $weather is "snow") and Time.dayState is "day" and $kylarwatched isnot 1>>
+			<<if !Time.schoolTime and (Time.dayState is "day" or Time.dayState is "night")>>
+				<br>
+				You see Kylar playing on one of the cabinets.
+				<br>
+				<<link [[Approach|Kylar Arcade]]>><<set $kylar_text_trigger to true>><</link>>
+				<br>
+			<</if>>
+		<</if>>
+		<<if ($tenyclusPlayCount is undefined or $tenyclusPlayCount is 0) and $hallucinations gte 1 and !$daily.tenyclusPlayed and $money gte 500 and (Time.dayState is "day" or Time.dayState is "dusk") and $exposed lte 0>>
+			<<set $tenyclusPlayCount to 0>><<set $daily.tenyclusPlayed to 0>>
+			<br>
+			You spot a lone cabinet tucked away in the corner. Oddly enough, no one else seems to notice it.
+			<br>
+			<<link [[Examine the lone cabinet|Arcade Tenyclus Intro]]>><</link>>
+			<br>
+		<</if>>
+		<<if $tenyclusPlayCount gte 1 and $tenyclusPlayCount lt 7 and $hallucinations gte 1 and !$daily.tenyclusPlayed and (Time.dayState is "day" or Time.dayState is "dusk") and $exposed lte 0>>
+			<br>
+			You spot the "Tenyclus" cabinet tucked away in the corner. No one else seems to notice it.
+			<br>
+			<<link [[Play Tenyclus|Arcade Tenyclus Play]]>><</link>>
+			<br>
+		<</if>>
+		<<link [[Leave|Starfish Street]]>><</link>>
+		<br><br>
+	<</if>>
+<</if>>
+
+:: Arcade Play
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	Playing arcade games with both hands tied behind your back turns out to be <<print either("tricky.","exactly as hard as you'd imagine.","hard. Unsurprisingly.")>>
+	<<print either("You lose almost instantly.","In just seconds, your grizzled survivor is zombie food.","In just seconds, your brave soldier is alien food.","In barely a minute, your brave crew are shark meat.")>>
+	<<if $rng lte 34>><<generatey1>><<person1>>A few students nearby witness your crushing defeat. One starts to mimic you, <<print either("gurning","pulling a stupid-face","gazing stupidly")>> over <<his>> shoulder at the screen
+		while <<print either("trying to reach","flapping at","slapping at")>> the controllers with <<his>> hands behind <<his>> back.
+		<br>
+		<<His>> cronies find this hilarious.
+		<br>
+		In fairness, it is possible you look <<print either("kind of dumb","pretty damn stupid","a bit 'special'","pretty fucking mental")>> right now.
+		<<lcool>><<status -5>>
+		<<endevent>>
+	<</if>>
+	<br><br>
+	<<if $money gte 500 and Time.dayState isnot "night">>
+		<<link [[Persist (£5 0:03)|Arcade Play]]>><<set $money -= 500>><<pass 3>><<stress 2>><</link>><<gstress>>
+		<br>
+	<</if>>
+	<<link [[Stop|Arcade]]>><</link>>
+	<br>
+<<else>>
+	<<rng 13>>
+	<<switch $rng>>
+		<<case 1 2>>
+			You play a shooter, and kill lots of <<print either("zombies", "pirates", "aliens", "soldiers", "criminals", "mutants")>>.
+			<br><br>
+			<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+			<<if $danger gte (9900 - $allure) and $eventskip is 0>>
+				<<generatey1>><<person1>>
+				A <<person>> walks beside you. <<He>> enables the second player, and starts shooting. <<He>> doesn't say anything.
+				<br><br>
+
+				<<link [[Keep playing|Arcade Keep Playing]]>><</link>>
+				<br>
+				<<link [[Shove and dual wield|Arcade Shove]]>><<def 1>><<trauma -2>><</link>><<ltrauma>>
+				<br>
+				<<set $skulduggerydifficulty to 400>>
+				/* 北极星模组 */
+				<<link [[偷钱|Arcade Steal]]>><<crimeUp 30 "petty">><<set $skulduggeryhands to 1>><</link>><<skulduggerydifficulty>><<gcrime "petty">>
+				/* 北极星 */
+				<br>
+				<<link [[Stop|Arcade]]>><<endevent>><</link>>
+				<br>
+			<<else>>
+				<<rng>>
+				<<if $rng gte 71>>
+					You blow the final boss' head off with a satisfying squelch.
+					<<ltrauma>><<trauma -2>>
+				<<elseif $rng gte 31>>
+					You manage to get to that one part of the game everyone complains about. You're reminded why.
+				<<else>>
+					You swear the gun isn't working properly. You try to shoot an enemy attack out of the air, but instead take it to the face.
+				<</if>>
+				<br><br>
+				<<arcadeEndLink>>
+			<</if>>
+		<<case 3 4>>
+			You play a fast-paced shmup.
+			<br><br>
+			<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+			<<if $danger gte (9900 - $allure) and $eventskip is 0>>
+				<<generate1>><<person1>>A <<person>> stands beside you, and watches. <<He>> offers tips of dubious wisdom.
+				<br><br>
+				<<Hes>> standing very close.
+				<br><br>
+				<<link [[Stop|Arcade Watched Stop]]>><<stress 6>><</link>><<gstress>>
+				<br>
+				<<link [[Keep playing|Arcade Watched Play]]>><</link>>
+				<br>
+			<<else>>
+				<<rng>>
+				<<if $rng gte 71>>
+					Luck is on your side. The right powerup drops at the right moment, and you blaze through to victory.
+					<<ltrauma>><<trauma -2>>
+				<<elseif $rng gte 31>>
+					It's a little too fast for you, and you're shot down halfway through the game.
+				<<else>>
+					You almost make it, but the final boss proves too tough.
+				<</if>>
+				<br><br>
+				<<arcadeEndLink>>
+			<</if>>
+		<<case 5 6>>
+			You step up to a fighting game cabinet, and before long you are greeted with the character selection screen. There are four characters you can choose from. Who do you pick?
+			<br><br>
+			<<link [[Pick the villainous-looking one|Arcade fighting cabinet]]>><<set $arcadeCharacter to "villainous">><</link>>
+			<br>
+			<<link [[Pick the one with the spiky hair|Arcade fighting cabinet]]>><<set $arcadeCharacter to "spiky hair">><</link>>
+			<br>
+			<<link [[Pick the scantily-clad dressed one|Arcade fighting cabinet]]>><<set $arcadeCharacter to "scantily-clad">><</link>>
+			<br>
+			<<link [[Pick the very muscular one|Arcade fighting cabinet]]>><<set $arcadeCharacter to "muscular">><</link>>
+			<br>
+		<<case 7>>
+			<<generate1>><<person1>>
+			You are playing a platformer. You successfully leap over an enemy and grab the power up. A <<person>> speaks up, causing you to turn around.
+			<br><br>
+			"You're so bad at this game! Just get out of the way and let me play."
+			<br><br>
+			<<if $speech_attitude is "bratty">>
+				<<link [[Call them out|Arcade Classmate Braggart]]>><<set $phase to 1>><</link>>
+				<br>
+			<</if>>
+			<<link [[Stand down|Arcade Classmate Braggart]]>><<set $phase to 2>><</link>>
+			<br>
+			<<link [[Ignore|Arcade Classmate Braggart]]>><<set $phase to 3>><</link>>
+		<<case 8 9>>
+			<<generate1>><<person1>>
+			You step up to a space themed shooter, taking the "Player 1" slot. Before you can start, a <<person>> walks up to you. A small crowd is gathered behind <<him>>. It seems this player is popular.
+			<br><br>
+			<<switch random(1,2)>>
+				<<case 1>>"You look like chump change. How about we go head to head and see who is better?" the <<person>> sneers.
+				<<case 2>>"I'm pretty good at this game. You wanna have a little competition?" <<he>> asks, placing a token on the cabinet.
+			<</switch>>
+			<br><br>
+			<<link [[Accept the match|Arcade Popular Gamer]]>><<set $phase to 1>><</link>>
+			<br>
+			<<link [[Deny|Arcade Popular Gamer]]>><<set $phase to 2>><</link>>
+		<<case 10>>
+			<<generate1>><<person1>>
+			You look for an open cabinet, spotting one near the corner of the room. You insert a token and begin to play, blasting away at the bad guys. <<stress -5>><<lstress>>
+			<br><br>
+			You're just about to use your bazooka when the screen goes dark. Stepping behind the cabinet, you notice the plug has been pulled out.
+			<br><br>
+			<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+			<<if $danger gte (9900 - $allure) and $eventskip is 0>>
+				You plug the console back in. Maybe somebody tripped over it. You turn around to continue your game but find a <<person>> blocking your way. Before you can say anything, <<he>> grabs you.
+				<br><br>
+				<<link [[Next|Arcade Watched Rape]]>><<set $molestationstart to 1>><</link>>
+			<<else>>
+				You plug the console back in. Maybe somebody tripped over it. You go to finish your session, but find the game has reset. Not wanting to repeat your progress, you leave.
+				<br><br>
+				<<arcadeEndLink>>
+			<</if>>
+		<<case 11>>
+			<<generate1>><<person1>>
+			You choose a beat-em-up, whacking enemies away as they approach you. As you play, you hear a small crowd form behind you. They fixate on a <<person>> playing a classic game.
+			<br><br>
+			"Wow! <<Hes>> going to beat the high score at this rate!" One of the onlookers shout, "Everyone come look!"
+			<br><br>
+			<<link [[Go watch|Arcade Watch High Score]]>><<set $phase to 1>><</link>>
+			<br>
+			<<link [[Finish your own game|Arcade Watch High Score]]>><<endevent>><<set $phase to 2>><</link>>
+		<<case 12>>
+			<<generatey1>><<person1>>
+			You walk through the arcade, trying to find a new game to play. You hear a cheer nearby and see a small crowd of people in front of a competitive fighting game. You walk closer.
+			<br><br>
+
+			On one side is a <<person>>, looking confident and triumphant. Another gamer, looking defeated, walks away from the controls.
+			<br><br>
+
+			"That's twelve in a row!" the <<person>> shouts to the crowd. "Who wants to make it thirteen!"
+			<br><br>
+
+			<<link [[Accept their challenge (0:10)|Arcade Exposure Accept]]>><</link>>
+			<br>
+			<<link [[Ignore|Arcade Exposure Ignore]]>><</link>>
+
+		<<case 13>>
+			<<generatey1>><<person1>>
+
+			You walk by the air hockey tables. There is a <<person>> about your age leaning on one of them. <<He>> speaks up when you walk by. "Wanna play a few games?" <<he>> says.
+			<br><br>
+
+			<<link [[Agree|Arcade Hockey Agree]]>><</link>>
+			<br>
+			<<link [[Decline|Arcade Hockey Decline]]>><<set $phase to 1>><</link>>
+	<</switch>>
+<</if>>
+
+:: Arcade Watched Stop
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+
+You move away from the <<person>>. Better safe than sorry.
+<br><br>
+<<endevent>>
+	<<if $money gte 500 and Time.dayState isnot "night">>
+		<<link [[Keep playing (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+		<br>
+	<</if>>
+		<<link [[Stop|Arcade]]>><</link>>
+		<br>
+
+:: Arcade Watched Play
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+
+<<if $rng gte 81>>
+You keep playing. The <<person>> creeps closer, until <<he>> presses against your back. <<His>> hands reach out.
+<br><br>
+<<link [[Next|Arcade Watched Rape]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+<<else>>
+You decide you're being paranoid, and keep playing. The <<person>> soon wanders away to offer advice to someone else.
+<br><br>
+<<endevent>>
+	<<if $money gte 500 and Time.dayState isnot "night">>
+		<<link [[Keep playing (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+		<br>
+	<</if>>
+		<<link [[Stop|Arcade]]>><</link>>
+		<br>
+<</if>>
+
+:: Arcade Watched Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<enable_rescue>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Arcade Watched Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Arcade Watched Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Arcade Watched Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+<<ejaculation>>
+
+The <<person1>><<person>> shoves you against the cabinet, before wandering off.
+<br><br>
+
+<<tearful>> you gather yourself.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Arcade]]>><</link>>
+
+<<elseif $enemyhealth lte 0>>
+
+You shove the <<person>> to the ground.
+<br><br>
+
+<<tearful>> you take cover beneath a pinball machine.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Arcade]]>><</link>>
+
+<<else>>
+<<set $rescued += 1>>
+
+Your cry attracts attention. People look over, including a member of staff. The <<person1>><<person>> steps away from you, claiming that <<he>> wasn't doing anything. <<He>> doesn't try anything else.
+<br><br>
+
+<<tearful>> you gather yourself.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Arcade]]>><</link>>
+
+<</if>>
+
+:: Arcade Keep Playing
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+
+Having a second player does help, and you make it to the end of the game. <<He>> leaves without a word.
+<br><br>
+<<endevent>>
+<<if $money gte 500 and Time.dayState isnot "night">>
+	<<link [[Keep playing (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+	<br>
+<</if>>
+	<<link [[Stop|Arcade]]>><</link>>
+	<br>
+
+:: Arcade Shove
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+
+You shoulder barge <<him>> aside and grab <<his>> gun. <<He>> takes the hint.
+<br><br>
+The rest of the game is easier with the extra weapon, but you do need to manage your lives more carefully.
+<br><br>
+
+<<endevent>>
+<<if $money gte 500 and Time.dayState isnot "night">>
+	<<link [[Keep playing (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+	<br>
+<</if>>
+	<<link [[Stop|Arcade]]>><</link>>
+	<br>
+
+:: Arcade Steal
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+
+You drop your gun and walk away. The <<person>> picks it up. <<Hes>> distracted managing both, so you reach for the money sticking out of <<his>> pocket.
+<br><br>
+
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
+
+<span class="green"><<He>> doesn't notice.</span> You've gained <<moneyGain 30 true true>>.
+<br><br>
+
+<<skulduggeryuse>>
+<<endevent>>
+<<link [[Next|Arcade]]>><</link>>
+<br>
+
+<<else>>
+
+<span class="red"><<He>> turns and spots you.</span> "Oi," <<he>> says. "Keep your mitts to yourself." <<He>> tucks the money further into <<his>> pocket, well beyond easy reach.
+<br><br>
+
+<<skulduggeryuse>>
+<<endevent>>
+<<link [[Next|Arcade]]>><</link>>
+<br>
+
+<</if>>
+
+:: Passout Arcade
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+
+You've pushed yourself too much.
+<br><br>
+<<passout>>
+<<set $danger to random(1, 10000)>>
+<<if $danger gte (9900 - $allure)>>
+	<<if $exposed gte 1 or Time.dayState is "night" or Time.dayState is "dawn">>
+	<<link [[Wake up|Arcade Trash]]>><</link>>
+	<<else>>
+	<<link [[Wake up|Arcade Crane]]>><</link>>
+	<</if>>
+<<else>>
+	<<ambulance>>
+<</if>>
+
+<<pass 1 hour>>
+
+<<trauma 6>><<set $stress -= 2000>>
+
+:: Arcade Crane
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+<<generatey1>><<generatey2>><<generatey3>><<generatey4>><<generatey5>><<generatey6>><<person1>>
+You awaken on something soft yet bumpy. It's a bed of plush toys. Your wrists and ankles are tied down. A metal claw hovers above you.
+<br><br>
+Your eyes adjust to the light, and you see a <<person>> behind a pane of glass, watching you. <<He>> has friends with <<him>>.
+<br><br>
+"I got it this time," <<he>> says, looking determined. <<He>> pushes a coin into the machine, and pushes a lever. The claw moves above you.
+<br><br>
+
+<<link [[Next|Arcade Crane 2]]>><<set $phase to 0>><</link>>
+<br>
+
+:: Arcade Crane 2
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+
+<<if !$worn.upper.type.includes("naked")>>
+
+The claw rests above your chest, then plunges down toward your $worn.upper.name. It hooks the fabric, and begins to rise. The <<person>> and <<his>> friends watch intently.
+
+<br><br>
+	<<if $rng gte 51>>
+		The claw loosens its grip, dropping your $worn.upper.name back against your body. The crowd sigh in frustration.
+		<br><br>
+
+		<<if $phase is 0>>
+			"Idiot," a <<person2>><<person>> says, shoving <<his>> friend aside. "I'll show you how it's done."
+			<br><br>
+
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+
+		<<elseif $phase is 1>>
+			"My turn," a <<person3>><<person>> says, taking over the lever. "This can't be hard."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<elseif $phase is 2>>
+			"You guys must be new to this," a <<person4>><<person>> says. "Watch."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<elseif $phase is 3>>
+			"This is taking too long," a <<person5>><<person>> says. "Someone will catch us soon. Give me a go."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<else>>
+			<<endevent>><<generate1>><<person1>>
+			"What you up to over there?" a <<person>> shouts from somewhere out of view. The crowd turn and flee.
+			<br><br>
+			The <<person>> walks into view. <<He>> gapes at the sight of you. Snapping to attention, <<he>> crouches beside the machine. A hatch opens after a few moments of <<his>> fiddling. <<He>> reaches in, and unties the cables that bind you.
+			<br><br>
+			You crawl through the hole, escaping into the arcade proper.
+				<<if $exposed gte 1>>
+				Blushing, <<he>> wraps some towels around you. "Not much, but better than nothing aye?"
+				<<towelup>>
+				<</if>>
+			<br><br>
+			"I can't believe how cruel some people can be," <<he>> says, shaking <<his>> head. "You go careful now."
+			<br><br>
+
+			<<endevent>>
+			<<link [[Next|Arcade]]>><</link>>
+			<br>
+
+		<</if>>
+	<<else>>
+		<<if $worn.upper.set is $worn.lower.set>>
+		<<set $worn.upper.integrity to 0>><<set $worn.lower.integrity to 0>>
+		The claw tugs at your fabric, pulling it off your body. With a tear, your $worn.upper.name is torn from you.<<integritycheck>><<exposure>>
+		<br>
+
+		The <<person>> and <<his>> friends gape in awe and excitement, leering at your <<lewdness>>.
+		<br><br>
+
+		<<link [[Next|Arcade Crane 2]]>><</link>>
+		<<else>>
+		<<set $worn.upper.integrity to 0>>
+		The claw tugs at your fabric, pulling it off your body. With a tear, your $worn.upper.name is torn from you.<<integritycheck>><<exposure>>
+		<br>
+
+		The <<person>> and <<his>> friends gape in awe and excitement, leering at your <<lewdness>>.
+		<br><br>
+
+		<<link [[Next|Arcade Crane 2]]>><</link>>
+		<</if>>
+	<</if>>
+
+<<elseif !$worn.lower.type.includes("naked")>>
+The claw rests above your thighs, then plunges down toward your $worn.lower.name. It hooks the fabric, and begins to rise. The <<person>> and <<his>> friends watch intently.
+
+<br><br>
+
+	<<if $rng gte 51>>
+		The claw loosens its grip, dropping your $worn.lower.name back against your body. The crowd sigh in frustration.
+		<br><br>
+
+		<<if $phase is 0>>
+			"Idiot," a <<person2>><<person>> says, shoving <<his>> friend aside. "I'll show you how it's done."
+			<br><br>
+
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+
+		<<elseif $phase is 1>>
+			"My turn," a <<person3>><<person>> says, taking over the lever. "This can't be hard."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<elseif $phase is 2>>
+			"You guys must be new to this," a <<person4>><<person>> says. "Watch."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<elseif $phase is 3>>
+			"This is taking too long," a <<person5>><<person>> says. "Someone will catch us soon. Give me a go."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<else>>
+			<<endevent>><<generate1>><<person1>>
+			"What you up to over there?" a <<person>> shouts from somewhere out of view. The crowd turn and flee.
+			<br><br>
+			The <<person>> walks into view. <<He>> gapes at the sight of you. Snapping to attention, <<he>> crouches beside the machine. A hatch opens after a few moments of <<his>> fiddling. <<He>> reaches in, and unties the cables that bind you.
+			<br><br>
+			You crawl through the hole, escaping into the arcade proper.
+				<<if $exposed gte 1>>
+				Blushing, <<he>> wraps some towels around you. "Not much, but better than nothing aye?"
+				<<towelup>>
+				<</if>>
+			<br><br>
+			"I can't believe how cruel some people can be," <<he>> says, shaking <<his>> head. "You go careful now."
+			<br><br>
+
+			<<endevent>>
+			<<link [[Next|Arcade]]>><</link>>
+			<br>
+
+		<</if>>
+	<<else>>
+		<<set $worn.upper.integrity to 0>><<set $worn.lower.integrity to 0>>
+		The claw tugs at your fabric, pulling it off your body. With a tear, your $worn.upper.name is torn from you.
+		<<integritycheck>><<exposure>>
+		<br>
+
+		The <<person>> and <<his>> friends gape in awe and excitement, leering at your <<lewdness>>.
+
+		<<link [[Next|Arcade Crane 2]]>><</link>>
+
+	<</if>>
+
+<<elseif !$worn.under_upper.type.includes("naked")>>
+The claw rests above your thighs, then plunges down toward your $worn.under_upper.name. It hooks the fabric, and begins to rise. The <<person>> and <<his>> friends watch intently.
+	<br><br>
+
+	<<if $rng gte 51>>
+		The claw loosens its grip, dropping your $worn.under_lower.name back against your body. The crowd sigh in frustration.
+		<br><br>
+
+		<<if $phase is 0>>
+			"Idiot," a <<person2>><<person>> says, shoving <<his>> friend aside. "I'll show you how it's done."
+			<br><br>
+
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+
+		<<elseif $phase is 1>>
+			"My turn," a <<person3>><<person>> says, taking over the lever. "This can't be hard."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<elseif $phase is 2>>
+			"You guys must be new to this," a <<person4>><<person>> says. "Watch."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<elseif $phase is 3>>
+			"This is taking too long," a <<person5>><<person>> says. "Someone will catch us soon. Give me a go."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<else>>
+			<<endevent>><<generate1>><<person1>>
+			"What you up to over there?" a <<person>> shouts from somewhere out of view. The crowd turn and flee.
+			<br><br>
+			The <<person>> walks into view. <<He>> gapes at the sight of you. Snapping to attention, <<he>> crouches beside the machine. A hatch opens after a few moments of <<his>> fiddling. <<He>> reaches in, and unties the cables that bind you.
+			<br><br>
+			You crawl through the hole, escaping into the arcade proper.
+				<<if $exposed gte 1>>
+				Blushing, <<he>> wraps some towels around you. "Not much, but better than nothing aye?"
+				<<towelup>>
+				<</if>>
+			<br><br>
+			"I can't believe how cruel some people can be," <<he>> says, shaking <<his>> head. "You go careful now."
+			<br><br>
+
+			<<endevent>>
+			<<link [[Next|Arcade]]>><</link>>
+			<br>
+
+		<</if>>
+	<<else>>
+		<<if $worn.under_upper.set is $worn.under_lower.set>>
+		<<set $worn.under_upper.integrity to 0>><<set $worn.under_lower.integrity to 0>>
+		The claw tugs at your fabric, pulling it off your body. With a tear, your $worn.upper.name is torn from you.<<integritycheck>><<exposure>>
+		<br>
+
+		The <<person>> and <<his>> friends gape in awe and excitement, leering at your <<lewdness>>.
+		<br><br>
+
+		<<link [[Next|Arcade Crane 2]]>><</link>>
+		<<else>>
+		<<set $worn.under_upper.integrity to 0>>
+		The claw tugs at your fabric, pulling it off your body. With a tear, your $worn.under_upper.name is torn from you.<<integritycheck>><<exposure>>
+		<br>
+
+		The <<person>> and <<his>> friends gape in awe and excitement, leering at your <<lewdness>>.
+		<br><br>
+
+		<<link [[Next|Arcade Crane 2]]>><</link>>
+		<</if>>
+	<</if>>
+
+<<elseif !$worn.under_lower.type.includes("naked")>>
+The claw rests above your thighs, then plunges down toward your $worn.under_lower.name. It hooks the fabric, and begins to rise. The <<person>> and <<his>> friends watch intently.
+
+	<br><br>
+
+	<<if $rng gte 51>>
+		The claw loosens its grip, dropping your $worn.lower.name back against your body. The crowd sigh in frustration.
+		<br><br>
+
+		<<if $phase is 0>>
+			"Idiot," a <<person2>><<person>> says, shoving <<his>> friend aside. "I'll show you how it's done."
+			<br><br>
+
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+
+		<<elseif $phase is 1>>
+			"My turn," a <<person3>><<person>> says, taking over the lever. "This can't be hard."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<elseif $phase is 2>>
+			"You guys must be new to this," a <<person4>><<person>> says. "Watch."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<elseif $phase is 3>>
+			"This is taking too long," a <<person5>><<person>> says. "Someone will catch us soon. Give me a go."
+			<br><br>
+			<<link [[Next|Arcade Crane 2]]>><<set $phase += 1>><</link>>
+		<<else>>
+			<<endevent>><<generate1>><<person1>>
+			"What you up to over there?" a <<person>> shouts from somewhere out of view. The crowd turn and flee.
+			<br><br>
+			The <<person>> walks into view. <<He>> gapes at the sight of you. Snapping to attention, <<he>> crouches beside the machine. A hatch opens after a few moments of <<his>> fiddling. <<He>> reaches in, and unties the cables that bind you.
+			<br><br>
+			You crawl through the hole, escaping into the arcade proper.
+				<<if $exposed gte 1>>
+				Blushing, <<he>> wraps some towels around you. "Not much, but better than nothing aye?"
+				<<towelup>>
+				<</if>>
+			<br><br>
+			"I can't believe how cruel some people can be," <<he>> says, shaking <<his>> head. "You go careful now."
+			<br><br>
+
+			<<endevent>>
+			<<link [[Next|Arcade]]>><</link>>
+			<br>
+
+		<</if>>
+	<<else>>
+		<<set $worn.under_lower.integrity to 0>>
+		The claw tugs at your fabric, pulling it off your body. With a tear, your $worn.under_lower.name is torn from you.<<integritycheck>><<exposure>>
+		<br>
+
+		The <<person>> and <<his>> friends gape in awe and excitement, leering at your <<lewdness>>.
+		<br><br>
+		<<link [[Next|Arcade Crane 2]]>><</link>>
+
+	<</if>>
+
+<<else>>
+	You lie helpless as the <<person>> and <<his>> friends pull phones from pockets and take pictures. You continue to test your bindings, but it's no use.
+	<<fameexhibitionism 20 "pic">>
+	<br><br>
+	<<endevent>><<generate1>><<person1>>
+	"What you up to over there?" a <<person>> shouts from somewhere out of view. The crowd turn and flee.
+	<br><br>
+	The <<person>> walks into view. <<He>> gapes at the sight of you. Snapping to attention, <<he>> crouches beside the machine. A hatch opens after a few moments of <<his>> fiddling. <<He>> reaches in, and unties the cables that bind you.
+	<br><br>
+	You crawl through the hole, escaping into the arcade proper. Blushing, <<he>> wraps some towels around you. "Not much, but better than nothing aye?"
+	<<towelup>>
+	<br><br>
+
+	"I can't believe how cruel some people can be," <<he>> says, shaking <<his>> head. "You go careful now."
+	<br><br>
+
+	<<endevent>>
+	<<link [[Next|Arcade]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Arcade Trash
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+
+You awaken on something hard and bumpy. Just in time to see a door slam shut above you, plunging you into darkness. You drift back into unconsciousness.
+<br><br>
+
+<<link [[Next|Trash Intro]]>><</link>>
+<br>
+
+:: Arcade Tenyclus Intro
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+You didn't even know this cabinet existed. It doesn't particularly stand out from the rest of the cabinets in the arcade. Someone else wouldn't have given this a second glance.
+<br><br>
+
+A jet-black tint covers the cabinet. You can tell the cabinet isn't new, but it seems oddly pristine as well. Almost as if it was just put into place a week ago. Now that it's piqued your interest, you can't help but feel drawn to it.
+<br><br>
+
+<<link [[Play?|Arcade Tenyclus Play]]>><</link>>
+<br>
+<<link [[Leave|Arcade Tenyclus Leave]]>><</link>>
+<br><br>
+
+:: Arcade Tenyclus Leave
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+<<if $tenyclusPlayCount is 0>>
+	You get an odd feeling about the machine that you can't quite describe, so you decide to leave it alone and look for something else to play. It remains sat in the corner, untouched by anyone else.
+	<br><br>
+	<<link [[Next|Arcade]]>><<set $eventskip to 1>><</link>>
+<<else>>
+	<<if $willpowerSuccess>>
+		<span class = "green">You manage to pull yourself away from the strange cabinet.</span> Upon looking back, the machine remains still. It's as lifeless as when you found it.
+		<br><br>
+
+		<<link [[Next|Arcade]]>><<endevent>><<set $daily.tenyclusPlayed to 1>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		<span class = "red">You can't pull yourself away from the machine. You're having too much fun!</span>
+		<br><br>
+
+		<<link [[Keep playing|Arcade Tenyclus]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Arcade Tenyclus Play
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+<<if $tenyclusPlayCount is 0>>
+	With a coin in your hand, you look for a slot, but you can't seem to find one.
+	<br><br>
+
+	The screen suddenly flashes to life, almost blinding you with its incandescent glow. In the centre of the screen, you see the word <span class = "purple">"Tenyclus"</span> bolded with a unique font. A copyright in smaller text is seen below.
+	<br><br>
+
+	<span class = "purple">"1982, Lüsterngrad"</span>
+	<br><br>
+
+	Three words light up shortly after. <i>"Press to Start"</i>
+	<br><br>
+
+	You start to play the game. It's pretty fun for the most part, if not a bit basic. You wonder why you haven't seen anyone else play on this cabinet.
+	<br><br>
+
+	The graphics are so primitive, you're not really sure who or what you're playing as. All you can make out is that it looks like you're fighting off something. Your best guess is aliens, but it could really be anything.
+	<br><br>
+
+	<<link [[Next|Arcade Tenyclus]]>><</link>>
+<<else>>
+	You spot the strange cabinet. It's hidden away in the corner, just like last time. As you move closer the screen flashes on, illuminating you in its almost blinding glow once more.
+	<br><br>
+
+	You see the familiar bolded title along with three words listed below:
+	<br><br>
+
+	<i>"Press to Start"</i>
+	<br><br>
+	<<link [[Play?|Arcade Tenyclus]]>><</link>>
+	<br>
+	<<link [[Leave|Arcade]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br><br>
+<</if>>
+
+:: Arcade Tenyclus
+<<set $outside to 0>><<set $location to "arcade">><<effects>>
+You are playing Tenyclus. You find your emotions and responses much more intense than normal.
+<br><br>
+
+<<tenyclusPlay>>
+<<if $tenyclusRounds gt 0 and $tenyclusLives gt 0>>
+	<<link [[Next|Arcade Tenyclus]]>><</link>>
+	<br>
+	<<link [[Stop playing|Arcade Tenyclus Leave]]>><<willpowerdifficulty 1 $willpowermax>><</link>>
+<<else>>
+	<<if $tenyclusLives lte 0>>
+		You've run out of lives. Game over. <<control -25>><<lcontrol>>
+	<<elseif $tenyclusRounds lte 0>>
+		You wipe out the last alien on screen. You've won! <<control 25>><<gcontrol>>
+	<</if>>
+	<br><br>
+	<<unset $tenyclusRounds>><<unset $tenyclusLives>><<set $daily.tenyclusPlayed to 1>>
+	<<set $tenyclusPlayCount += 1>>
+	<<if $tenyclusPlayCount is 6 and $tentacledisable isnot "f">>
+		<<set $tenyclusPlayCount += 1>>
+	<</if>>
+	<<switch $tenyclusPlayCount>>
+		<<case 1>>
+			You swear you can hear voices creeping into your mind. It's oddly soothing, telling you all sorts of things that seem pleasing to you.
+			You look around for the source of the voice, but the moment you look away, the cabinet shuts off without warning.
+			Strangely enough, there seems to have been no power cut. Others in the arcade play happily on their own cabinets.
+			<br><br>
+
+			<span class = "red">You feel the urge to play again tomorrow.</span>
+			<br><br>
+
+			<<link [[Next|Arcade]]>><<endevent>><<set $eventskip to 1>><</link>>
+			<br>
+		<<case 2>>
+			That was fun! You managed to score pretty high, leaving you with a sense of accomplishment. <<trauma -6>><<ltrauma>>
+			<br><br>
+
+			You're about to return to the arcade with a smile on your face, but you notice the screen shuts off immediately just like before. You wonder if something is wrong with the machine.
+			<br><br>
+
+			<span class = "red">You feel the urge to play again tomorrow.</span>
+			<br><br>
+
+			<<link [[Next|Arcade]]>><<endevent>><<set $eventskip to 1>><</link>>
+			<br>
+		<<case 3>>
+			You feel more confident. Voices inspire you, motivating you to reach higher and higher scores. <<stress -6>><<control 10>><<lstress>><<gcontrol>>
+			<br><br>
+
+			Your new high score shows up in the leaderboards, at the very top. You feel proud of your achievement. As you take a step back to admire your work, the screen turns black without any prior warning. You return to the arcade feeling satisfied.
+			<br><br>
+
+			<span class = "red">You feel the urge to play again tomorrow.</span>
+			<br><br>
+
+			<<link [[Next|Arcade]]>><<endevent>><<set $eventskip to 1>><</link>>
+			<br>
+		<<case 4>>
+			Voices encourage you to keep going. You begin to lose track of time, and before you know it, the screen turns black and you're plunged into darkness.
+			<br><br>
+
+			Your eyes take a minute to adjust, but you notice
+			<<if Time.hour gte 21>>
+				you seem to be alone in the arcade. You wonder how security didn't notice you.
+			<<elseif Time.hour gte 17>>
+				that it's much darker than when you started.
+			<<else>>
+				that some time has clearly passed.
+			<</if>>
+			Just how long were you playing?
+			<br><br>
+
+			<span class = "red">You feel the urge to play again tomorrow.</span>
+			<br><br>
+
+			<<link [[Next|Arcade]]>><<endevent>><<set $eventskip to 1>><</link>>
+			<br>
+		<<case 5>>
+			You smell something strange, but you choose to ignore it and continue playing. You feel as if the game is sucking you in, and just before you're about to reach a new high score, <span class = "red">a splash of water hits you in the face.</span>
+			<br><br>
+
+			You look around for the culprit, but notice you're standing in neck deep water on the beach. Your head feels fuzzy. <<hallucinogen 20>><<drugs 20>>
+			<br><br>
+			<<water>><<effects>>
+
+			<<link [[Next|Sea Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
+			<br>
+		<<case 6>>
+			A strange smell covers the air, just like last time. You look down and a swerve of sweet pink mist emerges from the machine. <<hallucinogen 180>><<drugs 180>><<garousal>><<arousal 200>>
+			<br><br>
+
+			It creeps up to your face, and you feel yourself heating up with arousal. While you're distracted, a mass of writhing tentacles reach out from the screen. They coil around your arms, trapping them.
+			<br><br>
+
+			<<link [[Next|Arcade Tentacle Rape]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<<case 7>>
+			You demolish the high score. The numbers keep rising until they no longer look like numbers.
+			<br><br>
+
+			You find that you can't move your body, and the edges of your vision grow dim. You hear a pair of footsteps behind you, followed by an unfamiliar sound, and everything fades to black.
+			<br><br>
+
+			<<link [[Next|Arcade Tenyclus Kidnapped]]>><<endevent>><</link>>
+		<<default>>
+			You managed to play the game without really playing it. This is a bug, please inform Vrelnir. <<control -100>><<lllcontrol>>
+			<br><br>
+
+			<span class = "red">You feel the urge to play again tomorrow.</span>
+			<br><br>
+
+			<<link [[Next|Arcade]]>><<endevent>><<set $eventskip to 1>><</link>>
+			<br>
+	<</switch>>
+
+<</if>>
+
+:: Arcade Tentacle Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<set $combat to 1>>
+	<<set $enemytype to "tentacles">>
+	<<controlloss>>
+	<<molested>>
+	<<tentaclestart 8 15>>
+	<<leftarmtentacledisable>><<set $tentacles[0].shaft to "leftarm">><<set $leftarm to "tentgrappled">><<set $leftarmstate to 0>><<set $lefttarget to "tentacles">>
+	<<rightarmtentacledisable>><<set $tentacles[1].shaft to "rightarm">><<set $rightarm to "tentgrappled">><<set $rightarmstate to 0>><<set $righttarget to "tentacles">>
+<</if>>
+<<effects>>
+<<effectstentacles>>
+<<tentacles>>
+<<statetentacles>>
+<<actionstentacles>>
+
+<<if $tentacles.active lte ($tentacles.max / 2)>>
+	<span id="next"><<link [[Next|Arcade Tentacle Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Arcade Tentacle Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Arcade Tentacle Rape Finish
+<<effects>>
+You emerge victorious. The tentacles recoil back into the screen. A new high score appears just before the screen turns off, leaving you alone and wary. <<tearful>> you see the rest of the arcade slowly come back into focus. No one gives you a second glance.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Arcade]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Arcade Tenyclus Kidnapped
+<<effects>><<set $outside to 0>><<set $location to "compound">>
+<<generate1>><<generate2>>
+You wake up to the sound of a running car engine. You're in what looks to be the back of a van. You see the Tenyclus cabinet on its side against the wall.
+<br><br>
+
+Your arms and legs are bound. Before you're able to do anything, the van backdoors open. A <<fullGroup>> enter the back of the van, dressed all in black.
+They begin to remove your clothes, before grabbing you by the shoulder and pulling you closer.
+<br><br>
+
+<<link [[Next|Arcade Tenyclus Kidnapped Rape]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Arcade Tenyclus Kidnapped Rape
+<<bind>><<legbind>>
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Arcade Tenyclus Kidnapped Rape Finish]]>><</link>></span>
+<<else>>
+	<span id="next"><<link [[Next|Arcade Tenyclus Kidnapped Rape]]>><</link>></span>
+<</if>>
+
+:: Arcade Tenyclus Kidnapped Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	They fix their clothes, before holding a damp cloth up to your face.
+	<br><br>
+	<<tearful>> your consciousness slips again.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyhealth lte 0>>
+	The <<person1>><<person>> is thrust back, tripping over the laid out arcade cabinet. You think you see the screen flash to life. You think they see it too.
+	The <<person2>><<person>> manages to cover <<his>> eyes. Everything turns pink.
+	<br><br>
+	<<tearful>> your consciousness slips again.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+<br><br>
+<<link [[Next|Arcade Tenyclus Final]]>><<unbind>><</link>>
+
+:: Arcade Tenyclus Final
+<<effects>><<set $outside to 0>><<set $location to "home">><<pass 4 hours>>
+When you open your eyes, you're back in your room at the orphanage. Your head is still spinning. How did you get here?
+<br><br>
+
+You vaguely remember a large building that resembles a factory, and the colour pink. So much pink. Your thoughts begin to drift, and soon enough, the memory is gone. Something else is gone, too. <<awareness -200>><<lllawareness>>
+<br><br>
+
+<<link [[Next|Bedroom]]>><<endevent>><<set $eventskip to 1>><</link>>
+
+:: Arcade Exposure Accept
+<<effects>><<generatey2>>
+
+"I'll play with you!" you shout above the crowd. The <<person1>><<person>> looks at you with a smug look on <<his>> face.
+<br><br>
+
+"Ready to humiliate yourself in front of all these people?" <<he>> asks. A <<person2>><<person>> walks up besides <<him>>.
+<br>
+
+"Yeah, you don't know what you're getting into, amateur," <<he>> says, sneering.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"Let's just try to have a good game," you say.
+<<elseif $speech_attitude is "bratty">>
+	"It's not hard to figure out I'm playing a wanker who can't tell the difference between a jump and a dodge."
+	<br><br>
+
+	They both stare daggers at you.
+<<else>>
+	"I guess I'll find out," you say with a shrug.
+<</if>>
+<br><br>
+
+You step in front of the controls. You select your player and begin the match. It's a three-round match, so whoever wins twice first wins the match. The game begins.
+<br><br>
+
+<<link [[Next|Arcade Exposure Play]]>><</link>>
+
+:: Arcade Exposure Play
+<<effects>><<person1>><<set $arcadeExposure to {}>>
+<<set $arcadeExposure.lower to $worn.lower.name>>
+<<set $arcadeExposure.underlower to $worn.under_lower.name>>
+
+The first match goes poorly, but you don't embarrass yourself. You notice a trick <<he>> likes to pull, but it's too late to take advantage of it. Your health bar reaches zero.
+<br><br>
+
+"I'd understand if you just gave up now," <<he>> taunts. You ignore <<him>> and ready yourself for the second round.<<gstress>><<stress 6>>
+<br><br>
+
+<<link [[Next|Arcade Exposure Play 2]]>><</link>>
+
+:: Arcade Exposure Play 2
+<<effects>>
+
+The second match begins, and you're prepared this time. When <<he>> attempts to use the trick from before, you counter and wipe the floor with <<him>>. <<He>> never recovers, and you drop <<his>> health to zero twenty seconds later.
+<br><br>
+
+The crowd cheers. The gamer and <<his>> friend look furious. "I'd understand if you just gave up now," you taunt.
+<br><br>
+
+<<He>> scowls and turns back to the screen.
+<br><br>
+
+<<link [[Next|Arcade Exposure Play 3]]>><</link>>
+
+:: Arcade Exposure Play 3
+<<effects>>
+
+The third match begins, and this time, you're both evenly matched. The fight goes back and forth until both your health bars are halfway depleted. You can sense the frustration from your opponent now. Clearly <<hes>> used to easy wins.
+<br><br>
+
+<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+	Suddenly you feel a tug on the hem of your skirt. The <<person2>><<person>> has snuck up behind you and is about to pull your skirt up. You could stop <<him>>, but you'd have to take your hands off the controls, and you'd be defeated for sure.
+
+<<else>>
+	Suddenly you feel hands on the back of your <<bottoms>>. The <<person2>><<person>> has snuck up behind you and is starting to pull them down. You could stop <<him>>, but you'd have to take your hands off the controls, and you'd be defeated for sure.
+
+<</if>>
+<<gstress>><<stress 6>>
+<br><br>
+
+<<link [[Stop them|Arcade Exposure Stop]]>><</link>>
+<br>
+<<link [[Keep playing|Arcade Exposure Keep]]>><<trauma 1>><</link>><<gtrauma>>
+
+:: Arcade Exposure Keep
+<<effects>><<fameexhibitionism 2>>
+
+You keep playing, refusing to be distracted.
+<br><br>
+
+<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+	Your skirt is rolled all the way up and fixed in place.
+	<br><br>
+
+	<<if $worn.under_lower.type.includes("strap-on")>>
+		Suddenly the entire arcade can see your <<print $worn.under_lower.name>>. The crowd gasps, followed by muttering and nervous laughter.
+		<br><br>
+
+		"What kind of a freak are you?" your opponent's friend shouts. You ignore <<him>> and keep playing.
+		<br><br>
+	<<elseif $worn.genitals.name isnot "naked">>
+		<<if $arcadeExposure.underlower isnot "naked">>
+			He then grabs your $arcadeExposure.underlower and pulls them down too.
+		<</if>>
+		Suddenly the entire arcade can see your <<print $worn.genitals.name>>. The crowd gasps, followed by muttering and nervous laughter.
+		<br><br>
+
+		"What kind of a freak are you?" your opponent's friend shouts. You ignore <<him>> and keep playing.
+		<br><br>
+	<<elseif $arcadeExposure.underlower isnot "naked">>
+		He then grabs your $arcadeExposure.underlower and pulls them down too.
+		<br><br>
+	<</if>>
+
+<<else>>
+	With one big tug, your pants are pulled down to your ankles.
+	<br><br>
+
+	<<if $worn.under_lower.type.includes("strap-on")>>
+		Suddenly the entire arcade can see your <<print $worn.under_lower.name>>. The crowd gasps, followed by muttering and nervous laughter.
+		<br><br>
+
+		"What kind of a freak are you?" your opponent's friend shouts. You ignore <<him>> and keep playing.
+		<br><br>
+	<<elseif $worn.genitals.name isnot "naked">>
+		<<if $arcadeExposure.underlower isnot "naked">>
+			He then grabs your $arcadeExposure.underlower and pulls them down too.
+		<</if>>
+		Suddenly the entire arcade can see your <<print $worn.genitals.name>>. The crowd gasps, followed by muttering and nervous laughter.
+		<br><br>
+
+		"What kind of a freak are you?" your opponent's friend shouts. You ignore <<him>> and keep playing.
+		<br><br>
+	<<elseif $arcadeExposure.underlower isnot "naked">>
+		What's worse, your $arcadeExposure.underlower comes down too.
+		<br><br>
+	<</if>>
+<</if>>
+
+<<link [[Next|Arcade Exposure Keep 2]]>><</link>>
+
+:: Arcade Exposure Keep 2
+<<effects>><<lowerstrip>><<underlowerstrip>>
+
+In a few seconds your <<bottom>> is exposed to the whole arcade.<<gstress>><<stress 6>>
+<br><br>
+
+The crowd gasps before breaking into cheers and laughter. The roar of the crowd drowns out the sounds of the game before you. You are stuck playing naked below the waist, with your bare ass pointed at everyone watching.
+<br><br>
+
+The battle goes on. You stand there exposed, but you don't let it affect your focus.
+<br><br>
+
+The fight goes back and forth, and finally both your health bars are under ten percent. The audience is breathless with anticipation. You wonder if they're looking at the screens or your butt more.
+<br><br>
+
+<<link [[Next|Arcade Exposure Keep 3]]>><</link>>
+
+:: Arcade Exposure Keep 3
+<<effects>>
+
+<<if currentSkillValue("handskill") gte 400>>
+
+	It's so close: one more hit from either one of you, and the battle is over.
+	<br><br>
+
+	Finally, you dodge an uppercut and attack with a brilliant combo. <span class="green"><<His>> health goes to zero,</span> and the battle is won.
+	<br><br>
+
+	The crowd roars. You've come in and beaten this seasoned gamer in the closest game possible. You see your opponent storm off in a rage.
+
+	<<if $worn.under_lower.type.includes("chastity")>>
+		You're so elated, you don't care that everyone can see your belt.
+	<<else>>
+		You're so elated that for a few seconds, you forget that your $arcadeExposure.lower is exposed to the arcade.
+	<</if>>
+	<br><br>
+
+	<<if $exhibitionism gte 75>>
+		<<link [[Flaunt|Arcade Exposure Flaunt]]>><</link>>
+		<br>
+	<</if>>
+
+	<<link [[Fix your clothing|Arcade Exposure Fix]]>><<clotheson>><</link>>
+
+<<else>>
+
+	You're about to KO <<him>>, but <<he>> executes a perfect uppercut that you're unable to block. <span class="red">Your health bar goes to zero and your character dies in a bloody mess.</span>
+	<br><br>
+
+	The crowd cheers as your opponent gets <<his>> thirteenth win. You watch as <<he>> raises <<his>> fists in victory before turning to you.
+	<br><br>
+
+	<<if $worn.under_lower.type.includes("chastity")>>
+		"So you're both a perverted freak and a bad gamer," <<he>> sneers.
+	<<else>>
+		"Nice ass, you're better at showing it off than playing games."
+		<br><br>
+
+		You realize that your ass is still exposed to the whole arcade. The crowd has their phones out and pointed right at you.
+	<</if>>
+	<br>
+
+	You fix your clothing, feeling shame from more than just the exposure.<<gstress>><<stress 6>>
+	<br><br>
+
+	<<link [[Next|Arcade]]>><<endevent>><<pass 10>><<clotheson>><<unset $arcadeExposure>><</link>>
+
+<</if>>
+
+:: Arcade Exposure Flaunt
+<<effects>><<fameexhibitionism 2>>
+
+You turn around and raise your fists in triumph, exposing everything to the crowd in front of you.<<garousal>><<arousal 600>>
+<br><br>
+
+The crowd goes wild. Almost everyone has their phones out, taking in your shameless display. You turn around again and stick your bum out. "Take a good look!" you shout. "This is the butt of a champion!" You give your ass a smack for emphasis.
+<br><br>
+
+It's a short while of cheering and showing off before you finally fix your clothing, and the arcade returns to normal.
+<br><br>
+
+<<link [[Next|Arcade]]>><<endevent>><<pass 10>><<clotheson>><<unset $arcadeExposure>><</link>>
+
+:: Arcade Exposure Fix
+<<effects>>
+
+You quickly fix your clothing, finally covering your <<if $worn.under_lower.type.includes("chastity")>>belt<<else>>butt<</if>>. The crowd continues to cheer and applaud you. You soak it in for a few minutes, but you still feel embarrassed about being exposed before. You walk off, red-faced.
+<br><br>
+
+<<link [[Next|Arcade]]>><<endevent>><<pass 10>><<clotheson>><<unset $arcadeExposure>><</link>>
+
+:: Arcade Exposure Stop
+<<effects>>
+
+You take your hands off the controls, grab your $arcadeExposure.lower and slap <<his>> hands away. It only takes a split second, but by the time you return to the screen, <span class="red">your health bar is nearly gone.</span> You barely have time to fight back before you're defeated for the second time.
+<br><br>
+
+"Ha!" the <<person1>><<person>> shouts. "Should've stayed in the kiddie pools where you belong!"
+<br><br>
+
+The crowd cheers again, but it's more muted than before. They all saw the trickery that happened. Frustrated, you walk off.<<gstress>><<stress 6>>
+<br><br>
+
+<<link [[Next|Arcade]]>><<endevent>><<pass 10>><<unset $arcadeExposure>><</link>>
+
+:: Arcade Exposure Ignore
+<<effects>>
+
+You decide to ignore the <<person1>><<person>> and walk off into the arcade.
+<br><br>
+
+<<link [[Next|Arcade]]>><<endevent>><</link>>
+
+:: Arcade Hockey Widgets [widget]
+
+<<widget "arcade_npc_bet">>
+
+	<<if $arcadeHockey.npc_clothes.upper.name isnot "naked">>
+		"If you win this one I'll take off my <<npcClothesText $NPCList[0] "upper">>," <<he>> says.
+
+	<<elseif $arcadeHockey.npc_clothes.lower.name isnot "naked">>
+		<<if $arcadeHockey.player_count_win is 0>>
+			"If you win this one I'll take off my <<npcClothesText $NPCList[0] "lower">>," <<he>> says.
+		<<else>>
+			"My <<npcClothesText $NPCList[0] "lower">> next," <<he>> says. "I'll drop it if you win this one."
+		<</if>>
+
+	<<elseif !$arcadeHockey.npc_braless and $NPCList[0].pronoun is "f">>
+		"The bra's next," <<he>> says. "If you win this one I'll get my tits out for everyone to see." <<He>> doesn't seem to dislike that notion at all.
+		<<if $NPCList[0].breastsize gte 4>>In fact, <<he>> even tugs <<his>> bra strap a few times, giving <<his>> <<npcChest>> a bounce.<</if>>
+
+	<<else>>
+		<<He>> reaches down and tugs on the waistband of <<his>> underwear. "These are all I've got left," <<he>> says.
+		<<if $NPCList[0].penis isnot "none">>
+			You can see the outline of <<his>> <<npcPenis>> bob with <<his>> movements.
+		<<else>>
+			You can see the shape of <<his>> <<npcVagina>> as <<he>> pulls it tight against <<himself>>.
+		<</if>>
+		<br><br>
+
+		"If you win this one they'll be gone too."
+	<</if>>
+
+<</widget>>
+
+<<widget "arcade_player_bet">>
+	<<if !$worn.upper.type.includes("naked")>>
+		<<set $arcadeHockey.player_bet to "upper">>
+		<<set $arcadeHockey.exhibitionismNeeded to 0>><<set $arcadeHockey.exhibitionismNeededLvl to 0>>
+
+	<<elseif $player.breastsize gte 3 and !$worn.under_upper.type.includes("naked")>>
+		<<set $arcadeHockey.player_bet to "under_upper">>
+		<<set $arcadeHockey.exhibitionismNeeded to 35>><<set $arcadeHockey.exhibitionismNeededLvl to 3>>
+
+	<<elseif !$worn.lower.type.includes("naked")>>
+		<<set $arcadeHockey.player_bet to "lower">>
+		<<set $arcadeHockey.exhibitionismNeeded to 15>><<set $arcadeHockey.exhibitionismNeededLvl to 2>>
+
+	<<elseif !$worn.under_lower.type.includes("naked")>>
+		<<set $arcadeHockey.player_bet to "under_lower">>
+		<<set $arcadeHockey.exhibitionismNeeded to 55>><<set $arcadeHockey.exhibitionismNeededLvl to 4>>
+	<</if>>
+
+	<span class="blue">"If you lose, you're taking off your <<print $worn[$arcadeHockey.player_bet].name>>."</span>
+	<br>
+	<<if $arcadeHockey.player_bet is "upper" and $player.breastsize gte 3 and $worn.under_upper.type.includes("naked")>>
+		<i><span class="red">Without a bra, you risk fully exposing your breasts to the crowd if you lose.</span></i>
+		<<set $arcadeHockey.exhibitionismNeeded to 35>><<set $arcadeHockey.exhibitionismNeededLvl to 3>>
+
+	<<elseif $arcadeHockey.player_bet is "lower" and $worn.under_lower.type.includes("naked")>>
+		<i><span class="red">Without any underwear, you risk fully exposing your <<genitals>> to the crowd if you lose.</span></i>
+		<<set $arcadeHockey.exhibitionismNeeded to 55>><<set $arcadeHockey.exhibitionismNeededLvl to 4>>
+	<</if>>
+
+<</widget>>
+
+<<widget "arcade_player_win">>
+
+	<<if $arcadeHockey.npc_clothes.upper.name isnot "naked">>
+		"Well, a deal's a deal." <<He>> <<npcUndressText $NPCList[0] "upper" "self">>, <<if $NPCList[0].pronoun is "f">>revealing <<his>> bra<<else>><<npcRevealText $NPCList[0] "upper">><</if>>.
+		<<garousal>><<arousal 600>>
+		<<set $arcadeHockey.npc_clothes.upper.name to "naked">>
+
+	<<elseif $arcadeHockey.npc_clothes.lower.name isnot "naked">>
+		"Well, here we go!" Without hesitation or embarrassment, <<he>> <<npcUndressText $NPCList[0] "lower" "self">> and stands confidently in <<his>> underwear.
+		<<ggarousal>><<arousal 800>>
+		<<set $arcadeHockey.npc_clothes.lower.name to "naked">>
+
+	<<elseif !$arcadeHockey.npc_braless>>
+		With no fuss <<he>> reaches <<his>> hands behind <<his>> back and unhooks <<his>> bra. <<He>> drops <<his>> arms and lets the bra fall to the floor, exposing <<his>> <<npcChest>>. <<He>> doesn't cover <<himself>> as the crowd gives <<his>> breasts their full attention.
+		<<ggarousal>><<arousal 800>>
+		<<set $arcadeHockey.npc_braless to true>>
+	<<else>>
+		The crowd cheers, knowing what's coming next. Your opponent shrugs.
+		<br><br>
+
+		"Well, a bet's a bet."
+		<br><br>
+
+		Without hesitation <<he>> grabs <<his>> underwear and pulls them down. With a flourish <<he>> kicks them off and presents <<himself>> to the audience from various angles. Even though <<hes>> lost they're cheering for <<him>> as <<he>> performs for them.
+		<<ggarousal>><<arousal 800>>
+		<<set $arcadeHockey.npc_underwearless to true>>
+	<</if>>
+	<br><br>
+
+<</widget>>
+
+<<widget "arcade_player_lost">>
+	<<switch $arcadeHockey.player_bet>>
+		<<case "upper">>
+			<<if $player.breastsize lte 2 or !$worn.under_upper.type.includes("naked")>>
+				You pull up your <<top>>, <<upperstrip>> revealing your <<exposedupper>>. You can feel the flowing air from the table on your bare skin.
+
+			<<elseif $player.breastsize gte 3 and $worn.under_upper.type.includes("naked")>>
+			<<upperstrip>>
+				You're not wearing a bra underneath your top. Blushing, you pull off your top, revealing your <<breasts>>.
+				<br><br>
+
+				There's a gasp from everyone as they see your breasts exposed earlier than they expected. The air from the hockey table flows over your chest, giving you goosebumps and making your nipples hard.
+			<</if>>
+
+		<<case "under_upper">>
+			The crowd watches in anticipation as you take you <<undertop>> off, exposing your naked chest.
+
+			<<if $player.breastsize gte 3>>
+				<br><br>
+
+				You get goosebumps in the chilled air, and your nipples harden. All eyes and several cameras are on your <<breasts>>. You cover them with one arm and grab the paddle with the other.
+			<</if>>
+			<<underupperstrip>>
+
+		<<case "lower">>
+			<<if $worn.under_lower.type.includes("naked")>>
+				You hesitate, before slowly pulling your <<bottoms>> down. The crowd reacts favorably to seeing your lack of underwear.
+			<<else>>
+				You pull down your <<bottoms>>, exposing your <<underbottoms>>. You step out of them, leaving only your <<underbottoms>> protecting any modesty.
+			<</if>>
+			<<lowerstrip>>
+		<<case "under_lower">>
+			The crowd cheers in anticipation. You brace yourself and slip your fingers into the waistband of your <<underbottoms>>. You quickly pull them down and step out of them.
+			<<underlowerstrip>>
+	<</switch>>
+	<<exposure>>
+	<br><br>
+
+<</widget>>
+
+:: Arcade Hockey Agree
+<<effects>>
+
+You nod and grab a table. You spend the next few minutes playing air hockey with <<him>>. You win a few and <<he>> wins a few.
+<<if $awareness gte 200>>
+	You notice <<his>> eyes lingering on your body more than once.
+<</if>>
+After you've been going like this for fifteen minutes <<he>> speaks up.
+<br><br>
+
+"Let's make this a little more interesting," <<he>> says. "You lose a round, you lose a piece of clothing. Whoever's naked first loses everything." <<He>> looks at you with barely concealed lust.
+<br><br>
+
+<<if $exhibitionism gte 15>>
+	<<link [[Agree|Arcade Hockey Agree 2]]>><<exhibitionism2>><</link>><<exhibitionist2>>
+	<br>
+<<else>>
+	<span class="purple">You aren't lewd enough to willingly risk exposing yourself in a public place.</span>
+	<br><br>
+<</if>>
+
+<<link [[Decline|Arcade Hockey Decline]]>><<set $phase to 2>><</link>>
+<br>
+
+:: Arcade Hockey Agree 2
+<<effects>>
+
+You agree, and the <<person1>><<person>> grins. "All right, let's go. First to five points wins."
+<br><br>
+
+The two of you have already attracted a small audience. They murmur excitedly as you agree to the strip game. Quickly more people are drawn to witness the game.
+<br><br>
+
+<<set $arcadeHockey to {}>><<set $arcadeHockey.player_count_win to 0>><<set $arcadeHockey.player_count_lost to 0>>
+<<set $arcadeHockey.npc_clothes to clone($NPCList[0].clothes)>>
+<<set $arcadeHockey.npc_braless to ($NPCList[0].pronoun is "m")>>
+
+<<arcade_npc_bet>>
+<br><br>
+
+<<arcade_player_bet>>
+<br><br>
+
+<<link [[Next|Arcade Hockey Play]]>><</link>>
+<br>
+
+:: Arcade Hockey Play
+<<effects>>
+<<set $difficulty to random(-450,1100)>><<set $arcadeHockey.player_lost to false>>
+
+You agree to bet your <<print $worn[$arcadeHockey.player_bet].name>>.
+<br><br>
+<<if ($difficulty - currentSkillValue("handskill")) gte 800>>
+	<<set $arcadeHockey.player_count_lost += 1>><<set $arcadeHockey.player_lost to true>>
+
+	<span class="red">The game is over almost before it starts.</span> You are slow and clumsy on the table, failing to score a single point before <<he>> slides the puck one last time into the slot.<<gstress>><<stress 6>>
+	<br><br>
+
+	<<if $arcadeHockey.player_count_win + $arcadeHockey.player_count_lost is 1>>
+		"I think I'm going to have a good time," <<he>> says with a grin.
+	<<else>>
+		"Too easy. You wanted to lose, didn't you?" <<he>> asks with a grin. "I don't mind, you know."
+	<</if>>
+<<elseif ($difficulty - currentSkillValue("handskill")) gte 400>>
+	<<set $arcadeHockey.player_count_lost += 1>><<set $arcadeHockey.player_lost to true>>
+
+	It's quickly clear that you're not gonna make it. You're working hard while <<hes>> taking it easy. You're able to score two points, <span class="red">but <<he>> beats you without a problem.</span><<gstress>><<stress 6>>
+	<br><br>
+
+	"You're gonna need some more practice before you can beat me," <<he>> says.
+
+<<elseif ($difficulty - currentSkillValue("handskill")) gte 100>>
+	<<set $arcadeHockey.player_count_lost += 1>><<set $arcadeHockey.player_lost to true>>
+
+	You're evenly matched. The game goes back and forth for a while. Neither of you are saying a word, both keeping focus entirely on the game. You score a point, <<he>> scores a point, back and forth.
+	<br><br>
+
+	<span class="red">Finally you miss one that bounces off the side and into your slot,</span> winning your opponent the game.
+	<br><br>
+
+	"Good game," <<he>> says, "But there could only be one winner."
+
+<<elseif ($difficulty - currentSkillValue("handskill")) gte -100>>
+	<<set $arcadeHockey.player_count_win += 1>>
+
+	It's neck and neck. Both of you hit the puck back and forth across the table at breakneck speed. The game goes on and on without either of you getting a vast lead. When you score one <<he>> scores the next one.
+	<br><br>
+
+	Finally it's four-to-four and you're both sweating. <span class="green">At last you see an opening and slam the puck hard into the slot on the other side of the table.</span> You've gotten a hard-won victory.
+	<br><br>
+
+	"Shit!" <<he>> exclaims. "I almost had that!"
+
+<<elseif ($difficulty - currentSkillValue("handskill")) gte -400>>
+	<<set $arcadeHockey.player_count_win += 1>>
+
+	You don't have to put in much effort to win. You keep a level head and stay calm while <<hes>> clearly struggling to keep up. <<He>> manages to score two points, <span class="green">but you sink the fifth point without a care.</span><<lstress>><<stress -6>>
+	<br><br>
+
+	"Damn," <<he>> says, "I guess I'm a little rusty."
+
+<<else>>
+	<<set $arcadeHockey.player_count_win += 1>>
+
+	You move across the table like you're dancing. Your opponent is struggling to even hold onto <<his>> paddle. <span class="green">Before you can even blink you've scored your fifth point and it's over.</span><<lstress>><<stress -6>>
+	<br><br>
+
+	<<if $arcadeHockey.player_count_win + $arcadeHockey.player_count_lost is 1>>
+		<<He>> sighs in frustration. "I guess you don't have anything to worry about."
+	<<elseif ($difficulty - currentSkillValue("handskill")) lte -800 or random(0,1)>> <!-- NPC won't act like they threw the round if you beat them THAT badly -->
+		<<He>> groans. "Damn! I never had a shot!"
+	<<else>>
+		<<He>> smiles unexpectedly. "Whoops, I guess I lost!"
+		<br><br>
+
+		It almost seems like <<he>> wanted to lose.
+	<</if>>
+<</if>>
+<br><br>
+
+<<link [[Next|Arcade Hockey Rematch]]>><</link>>
+<br>
+
+
+:: Arcade Hockey Rematch
+<<effects>>
+
+<<if $arcadeHockey.player_lost>>
+	<<arcade_player_lost>>
+	<<fameexhibitionism 1>>
+<<else>>
+	<<arcade_player_win>>
+<</if>>
+
+<<if $arcadeHockey.npc_underwearless>>
+
+	<<He>> stands without embarrassment in front of the crowd.
+	<br><br>
+
+	"Good game, I have no one to blame for this but myself. You could leave me like this, but maybe you could give me my clothes back if I go down on you?"
+	<br><br>
+
+	<<if $exhibitionism gte 75>>
+		<<link [[Accept|Arcade Hockey Accept]]>><<arousal 600>><<exhibitionism5>><</link>><<garousal>><<exhibitionist5>>
+		<br>
+	<<else>>
+		<span class="purple">You aren't lewd enough to willingly have sex with someone in public.</span>
+		<br><br>
+	<</if>>
+
+	<<link [[Let them go naked|Arcade Hockey Let]]>><<set $phase to 1>><</link>>
+	<br>
+
+<<elseif $exposed gte 2>>
+	<<fameexhibitionism 4>>
+
+	You're completely naked and surrounded in the arcade. The crowd is taking as many videos and images as they can. You shiver the chilled air. You're so embarrassed.
+	<br><br>
+
+	"Looks like you're in a bad way," your opponent says. "We could let you go like you are, completely naked, into that big bad world, or I could give you your clothes back. After I bend you over this table?"
+	<br><br>
+
+	<<if $exhibitionism gte 75>>
+		<<link [[Agree|Arcade Hockey Sex]]>><<set $sexstart to 1>><<fameexhibitionism 2>><<exhibitionism5>><</link>><<exhibitionist5>>
+		<br>
+	<<else>>
+		<span class="purple">You aren't lewd enough to willingly have sex with someone in public.</span>
+		<br><br>
+
+	<</if>>
+	<<link [[Decline|Arcade Hockey Let]]>><<set $phase to 0>><</link>>
+	<br>
+
+<<else>>
+
+	"Care to keep going?" <<he>> asks.
+	<br><br>
+
+	<<arcade_npc_bet>>
+	<br><br>
+
+	<<arcade_player_bet>>
+	<br><br>
+
+	<<if $exhibitionism gte $arcadeHockey.exhibitionismNeeded>>
+		<<set _lvl to $arcadeHockey.exhibitionismNeededLvl>> <!-- declaring this variable just to keep the following line readable -->
+		<<if $arcadeHockey.exhibitionismNeeded is 0>>
+			<<link [[Agree|Arcade Hockey Play]]>><<set $phase to 1>><</link>>
+		<<else>>
+			<<link [[Agree|Arcade Hockey Play]]>><<set $phase to 1>><<exhibitionismN _lvl>><</link>><<exhibitionist _lvl>>
+		<</if>>
+		<<skill_difficulty `currentSkillValue("handskill")` "Hand Skill" -450 1100>>
+		<br>
+
+		<<link [[Decline|Arcade Hockey Decline 2]]>><<set $phase to 0>><</link>>
+		<br>
+	<<else>>
+		<span class="purple">You aren't lewd enough to willingly risk exposing that part of yourself in a public place.</span>
+		<br><br>
+
+		<<link [[Decline|Arcade Hockey Decline 2]]>><<set $phase to 1>><</link>>
+		<br>
+	<</if>>
+
+<</if>>
+
+:: Arcade Hockey Accept
+<<effects>>
+
+You walk out from the table. <<He>> approaches you and kneels down in front of you.
+<br><br>
+
+<<He>> gets to work on your <<genitals>> like <<hes>> done it a million times before. It's not long before you're sweating and moaning. The whole crowd has their phones out, capturing everything.
+<br><br>
+
+You feel a heat rising as <<he>> works and you know you're about to explode soon.<<set $penisuse to "othermouth">><<orgasm>>
+
+You shudder as <<he>> finishes you off. "Thanks for a fun time," <<he>> says. "I hope we can play again sometime. You watch as <<he>> grabs <<his>> clothes and dresses <<himself>>. <<He>> walks off casually.
+<br><br>
+
+<<link [[Next|Arcade]]>><<unset $arcadeHockey>><<clotheson>><<endevent>><</link>>
+<br>
+
+
+:: Arcade Hockey Let
+<<effects>>
+
+<<if $phase is 1>>
+	You shake your head. "You're gonna have to go without," you say.
+	<br><br>
+
+	You pick up <<his>> clothes and start tossing them to the audience. They grab and catch them like trophies. <<He>> watches them with a bemused smile on <<his>> face.
+	<br><br>
+
+	"Fair enough," <<he>> says. "I live close-by, I can handle a revealing walk home."
+	<br><br>
+
+	<<He>> turns on <<his>> heels and walks towards the entrance. The crowd watches and records <<him>>, but <<he>> makes no effort to cover <<himself>>. You watch <<him>> casually walk out the front door into public.
+<<else>>
+	"No, I'm not going to do that," you say.
+	<br><br>
+
+	"Suit yourself," <<he>> says. Without another word <<he>> grabs your clothes and tosses them, one by one, into the crowd. You watch in horror as the audience grabs them and keeps them like trophies.
+	<br><br>
+
+	"You're welcome to stick around," <<he>> says. "But you're making a nice spectacle of yourself."
+	<br><br>
+
+	You're standing naked in the middle of the arcade. The whole crowd is staring at you, their phones pointed at you.
+	<br><br>
+
+	You run off into the arcade, everyone watching your rear as you leave. You take cover behind a game machine in a corner of the arcade.
+	<<lowerruined>><<upperruined>><<underlowerruined>><<underupperruined>><<clothesruinstat>>
+<</if>>
+<br><br>
+
+<<link [[Next|Arcade]]>><<unset $arcadeHockey>><<endevent>><</link>>
+<br>
+
+:: Arcade Hockey Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 20>><<promiscuity2>>
+	<<set $noFinish to 1>>
+	<<set $position to "doggy">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Arcade Hockey Sex End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Arcade Hockey Sex]]>><</link>></span><<nexttext>>
+<</if>>
+<br>
+
+:: Arcade Hockey Sex End
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax and $consensual is 1>>
+	<<ejaculation>>
+	<<He>> pants as <<he>> finishes. The crowd cheers. They've captured the whole thing on their phones.
+	<br><br>
+
+	"Great job," <<he>> says. "I hope we can play again someday." <<He>> fixes <<his>> clothes then hands you your own. You dress yourself and walk off, defeated and humiliated.
+
+<<elseif $enemyarousal gte $enemyarousalmax and $consensual is 0>>
+	<<ejaculation>>
+	You shudder in pain as <<he>> finishes. You face is pressed into the hockey table, tears pooling on the plastic.
+	<br><br>
+
+	"You agreed to this," <<he>> says. "A bet's a bet, you can't back out halfway through."
+	<br><br>
+
+	The crowd seems to be disappointed, like their show was ruined. People start to filter off into the arcade. <<He>> fixes <<his>> clothing and throws yours on top of you.
+	<br><br>
+
+	"Thanks for ruining a good time," <<he>> says, before walking off. You dress yourself and move on, bruised and embarrassed.
+
+<<elseif $enemyhealth lte 0>>
+	<<He>> falls back, shuddering in pain.
+	<br><br>
+
+	"What the fuck?" <<he>> shouts, "We were having fun! You made a bet!"
+	<br><br>
+
+	The crowd is looking upset and angry. You quickly grab your clothes and run off into the arcade. You find a quiet corner before dressing yourself.
+
+<<else>>
+	<!-- Note: We need an outcome to handle outliers here -->
+<</if>>
+<br><br>
+
+<<endcombat>>
+<<clotheson>>
+
+<<link [[Next|Arcade]]>><<unset $arcadeHockey>><<endevent>><</link>>
+<br>
+
+
+:: Arcade Hockey Decline
+<<effects>>
+
+<<if $phase is 1>>
+	"No thanks," you say, and walk away.
+<<elseif $phase is 2>>
+	<<if $speech_attitude is "meek">>
+		"I... I don't think I should... Sorry," you say, and walk away.
+	<<elseif $speech_attitude is "bratty">>
+		"Nah. I think that's enough for me," you say, and walk away.
+	<<else>>
+		"I'm not going to get naked in the arcade," you say, and walk away.
+	<</if>>
+<</if>>
+The <<person>> is clearly disappointed.
+<br><br>
+
+<<link [[Next|Arcade]]>><<unset $arcadeHockey>><<endevent>><</link>>
+<br>
+
+:: Arcade Hockey Decline 2
+<<effects>>
+
+<<if $phase is 1>>
+	<<if $speech_attitude is "meek">>
+		"I... I don't think I should. I'm sorry," you say.
+	<<elseif $speech_attitude is "bratty">>
+		"Nah, can't. I'm actually really busy today," you say, not wanting to admit to losing your nerve.
+	<<else>>
+		"I'd rather not, sorry," you say.
+	<</if>>
+<<else>>
+	<<if $speech_attitude is "meek">>
+		"I think I'll stop for now. Um, maybe next time, though," you say.
+	<<elseif $speech_attitude is "bratty">>
+		"Nah, I'm good, I got somewhere to be," you say.
+	<<else>>
+		"I think I'm done," you say.
+	<</if>>
+<</if>>
+<br><br>
+
+<<if $arcadeHockey.player_count_lost gte 1>>
+	<<silently>><<clotheson>><</silently>>
+	You gather your clothes and redress yourself.
+<</if>>
+Your opponent and the crowd both look disappointed as you walk off into the arcade.
+<br><br>
+
+<<link [[Next|Arcade]]>><<unset $arcadeHockey>><<endevent>><</link>>
+<br>

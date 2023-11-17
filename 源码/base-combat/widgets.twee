@@ -1,0 +1,660 @@
+:: Widgets Combat [widget]
+
+<<widget "takeVirginity">>
+	<<if _args[1]>>
+		<<if _args[1] is "penile" and playerHasStrapon()>>
+			<!-- Do nothing -->
+		<<else>>
+			<<if $player.virginity[_args[1]] is true>>
+				<<if $activeNightmare or ($wraith.mimic is _args[0])>>
+					<<switch _args[0]>>
+						<<case "Robin">><<displayFeatFake "Robin the Lover">>
+						<<case "Kylar">><<displayFeatFake "Kylar the Obsessed">>
+						<<case "Eden">><<displayFeatFake "Eden the Lonely">>
+						<<case "Whitney">><<displayFeatFake "Whitney the Tsundere">>
+						<<case "Avery">><<displayFeatFake "Avery the Moneybags">>
+						<<case "Leighton">><<displayFeatFake "Leighton the Shady">>
+						<<case "Alex">><<displayFeatFake "Alex the Robust">>
+						<<case "Great Hawk">><<displayFeatFake "Great Hawk the Terror">>
+						<<case "Wren">><<displayFeatFake "Wren the Sly">>
+						<<case "Black Wolf">><<displayFeatFake "Great Wolf the Alpha">>
+						<<case "Harper">><<displayFeatFake "Harper the Hypnotist">>
+						<<case "Morgan">><<displayFeatFake "Morgan the Lost">>
+					<</switch>>
+					<<if !$activeNightmare>>
+						<<set _args[0] to "Ivory Wraith">>
+					<</if>>
+				<<elseif _args[1] is "vaginal" or _args[1] is "penile">>
+					<<switch _args[0]>>
+						<<case "Robin">><<earnFeat "Robin the Lover">>
+						<<case "Kylar">><<earnFeat "Kylar the Obsessed">>
+						<<case "Eden">><<earnFeat "Eden the Lonely">>
+						<<case "Whitney">><<earnFeat "Whitney the Tsundere">>
+						<<case "Avery">><<earnFeat "Avery the Moneybags">>
+						<<case "Leighton">><<earnFeat "Leighton the Shady">>
+						<<case "Alex">><<earnFeat "Alex the Robust">>
+						<<case "Great Hawk">><<earnFeat "Great Hawk the Terror">>
+						<<case "Wren">><<earnFeat "Wren the Sly">>
+						<<case "Black Wolf">><<earnFeat "Great Wolf the Alpha">>
+						<<case "Harper">><<earnFeat "Harper the Hypnotist">>
+						<<case "Morgan">><<earnFeat "Morgan the Lost">>
+					<</switch>>
+				<</if>>
+				<<if _args[0] isnot undefined and _args[0] isnot 0>>
+					<<set $player.virginity[_args[1]] to _args[0]>>
+					<<if $ironmanmode is true and $passage != "Loveth">>
+						<<run ironmanAutoSave()>>
+					<</if>>
+				<<else>>
+					<<set $player.virginity[_args[1]] to false>>
+				<</if>>
+				<!-- virgin purity loss -->
+				<<switch _args[1]>>
+					<<case "vaginal" "penile">>
+						<<if $templePromised isnot _args[0]>>
+							<<purity -50>>
+						<</if>>
+					<<case "anal">><<purity -25>>
+					<<case "oral">><<purity -25>>
+					<<case "handholding">><<purity -10>>
+					<<case "kiss">><<purity -10>>
+				<</switch>>
+			<</if>>
+
+			<<if $player.virginity.temple is true and (_args[1] is "vaginal" or _args[1] is "penile") and $templePromised isnot _args[0]>>
+				<<set $virginityProtected to false>>
+				<<set $player.virginity.temple to _args[0]>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "takeTempleVirginity">>
+	<<if _args[1]>>
+		<<if _args[1] is "penile" and playerHasStrapon()>>
+			<!-- Do nothing -->
+		<<else>>
+			<<if $player.virginity.temple is true and (_args[1] is "vaginal" or _args[1] is "penile") and $templePromised isnot _args[0]>>
+				<<set $virginityProtected to false>>
+				<<set $player.virginity.temple to _args[0]>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "takeHandholdingVirginity">>
+	<<if typeof _args[0] === 'string' or _args[0] instanceof String>>
+		<<set $_fullDescription to _args[0]>>
+		<<if C.npc[_args[0]]>>
+			<<set $_type to C.npc[_args[0]].type>>
+		<<else>>
+			<<set $_type to _args[2]>>
+		<</if>>
+	<<else>>
+		<<set $_fullDescription to _args[0].fullDescription>>
+		<<set $_type to _args[0].type>>
+	<</if>>
+	<<takeNPCVirginity $_fullDescription "handholding">>
+	<<if $player.virginity.handholding is true>>
+		<<switch _args[1]>>
+			<<case "romantic">>
+				<span class="lewd">You aren't used to this kind of romantic handholding.</span><<arousal 2000>><<ggarousal>>
+			<<case "rape">>
+				<span class="red">You feel horrible, being forced to hold hands like this.</span><<stress 40>><<ggstress>>
+			<<case "consensual">>
+				<span class="green">Having your hand held feels nice.</span><<lltrauma>><<trauma -18>>
+			<<case "tentacle">>
+				<<set $_handTentacle to _args[2] or "tentacle">>
+				<span class="lewd">You wonder what others would say about a $_handTentacle holding your hand, if they would even believe you.</span><<arousal 1000>>
+			<<default>>
+				<span class="blue">You feel nervous holding the hands of someone you're not close to.</span><<stress 20>><<gstress>>
+		<</switch>>
+		<<takeVirginity $_fullDescription "handholding">>
+	<</if>>
+	<<recordSperm `{target: "pc", spermOwner: _args[0], spermType: $_type, genital: "hand"}`>>
+	<<recordSperm `{target: _args[0], spermOwner: "pc", spermType: "human", genital: "hand"}`>>
+	<<if !$combat>><<fetishPregnancyImg>><</if>>
+<</widget>>
+
+<<widget "takeKissVirginity">>
+	<<if typeof _args[0] === 'string' or _args[0] instanceof String>>
+		<<set $_fullDescription to _args[0]>>
+		<<if C.npc[_args[0]]>>
+			<<set $_type to C.npc[_args[0]].type>>
+		<<else>>
+			<<set $_type to _args[2]>>
+		<</if>>
+	<<else>>
+		<<set $_fullDescription to _args[0].fullDescription>>
+		<<set $_type to _args[0].type>>
+	<</if>>
+	<<takeNPCVirginity $_fullDescription "kiss">>
+	<<if $player.virginity.kiss is true>>
+		<<if _args[0].type is "plant" and $backgroundTraits.includes("plantlover") and $nectar_timer lte 14>>
+			<<set $_kissType to "addiction">>
+		<<else>>
+			<<set $_kissType to _args[1]>>
+		<</if>>
+		<<switch $_kissType>>
+			<<case "loveInterest">>
+				<span class="lewd">You're happy your first kiss went to a love interest.</span><<arousal 3000>><<stress -12>><<trauma -12>><<ggarousal>><<llstress>>
+				<<if ($wraith.mimic isnot $_fullDescription)>><<earnFeat "First Kiss">><</if>>
+			<<case "romantic">>
+				<span class="lewd">You're happy your first kiss was taken in such a romantic way.</span><<arousal 1500>><<stress -6>><<trauma -6>><<garousal>><<lstress>>
+			<<case "rape">>
+				<span class="red">They stole your first kiss. You feel horrible.</span><<stress 40>><<gggstress>>
+			<<case "loveRape">>
+				<span class="red">You didn't want your first kiss with <<nnpc_him $_fullDescription>> to be like this.</span><<stress 40>><<gggstress>>
+			<<case "tentacle">>
+				<span class="lewd">You wonder what others would say about giving a tentacle your first kiss, if they would even believe you.</span><<arousal 3000>>
+			<<case "addiction">>
+				<span class="lewd">You're so relieved, the thought of giving away your first kiss like this hardly registers to you.</span><<arousal 1000>>
+			<<default>>
+				<span class="blue">You feel conflicted about giving them your first kiss.</span><<stress 20>><<ggstress>>
+		<</switch>>
+		<<takeVirginity $_fullDescription "kiss">>
+	<</if>>
+	<<recordSperm `{target: "pc", spermOwner: _args[0], spermType: $_type, genital: "kiss"}`>>
+	<<recordSperm `{target: _args[0], spermOwner: "pc", spermType: "human", genital: "kiss"}`>>
+	<<if !$combat>><<fetishPregnancyImg>><</if>>
+<</widget>>
+
+<<widget "takeKissVirginityNamed">>
+	<<switch _args[0]>>
+		<<case "Robin">>      <<set $_isLoveInterest to ($robinromance is 1)>>
+		<<case "Whitney">>    <<set $_isLoveInterest to ($whitneyromance is 1)>>
+		<<case "Kylar">>      <<set $_isLoveInterest to ($kylarenglish gte 1)>>
+		<<case "Sydney">>     <<set $_isLoveInterest to ($sydneyromance is 1)>>
+		<<case "Eden">>       <<set $_isLoveInterest to ($syndromeeden is 1)>>
+		<<case "Avery">>      <<set $_isLoveInterest to ($dateCount.Avery gte 3)>>
+		<<case "Black Wolf">> <<set $_isLoveInterest to ($syndromewolves is 1 and $deviancy gte 35)>>
+		<<case "Great Hawk">> <<set $_isLoveInterest to ($syndromebird is 1)>>
+		<<case "Alex">>       <<set $_isLoveInterest to ($farm_stage gte 7 and $alex_countdown is undefined)>>
+		<<default>>           <<run $NPCNameList.includes(_args[0]) ? $_isLoveInterest = false : Errors.report("wrong argument passed to takeKissVirginityNamed: ", _args)>>
+	<</switch>>
+
+	<<set $_isConsensual to _args[1] or ($consensual is 1)>>
+
+	<<if $_isLoveInterest>>
+		<<set $_kissType to ($_isConsensual ? "loveInterest" : "loveRape")>>
+	<<else>>
+		<<set $_kissType to ($_isConsensual ? "consensual" : "rape")>>
+	<</if>>
+	<<takeKissVirginity _args[0] $_kissType>>
+<</widget>>
+
+/* Argument 0 is the npc, argument 1 is their virginity. */
+<<widget "takeNPCVirginity">>
+	<<set $_npcId to _args[0]>>
+	<<set $_vType to _args[1]>>
+	<!-- if the first argument is a name, find which npc has that name, else assume it is an index. -->
+	<<if typeof $_npcId is "string">>
+		<<set $_npcId to $NPCList.findIndex(npc => npc.fullDescription === $_npcId)>>
+	<</if>>
+	<<if $_npcId isnot undefined and $_npcId gte 0>>
+		<<set $_npc to $NPCList[$_npcId]>>
+		<<set $_straponvirginityIgnore to ($_vType is "penile" and npcHasStrapon($_npcId))>>
+	<</if>>
+
+	<<if $_npc and $_vType and $_npc.virginity and $_npc.virginity[$_vType] and ($wraith.mimic isnot $_npc.fullDescription) and !$_straponvirginityIgnore>>
+		<<if ($_vType is "vaginal" or $_vType is "penile") and $_npc.virginity.temple is true and $templePromised isnot $_npc.fullDescription>>
+			<<set $_npc.virginity.temple to false>>
+		<</if>>
+
+		/* note: virginity must be exactly equal to true; only true means that they still have their virginity. */
+		<<if $_npc.virginity[$_vType] is true>>
+			<<personselect $_npcId>>
+			<<set $_npc.virginity[$_vType] to "player">>
+			<<switch $_vType>>
+				<<case "vaginal">>
+					<<set $speechNPCVaginaVirgin to 1>>
+					<span class="pink">You feel <<his>> hymen tear, forever robbing <<him>> of <<his>> purity.</span>
+					<<if $demon gte 6>>
+						<span class="lewd">You feel a surge of pleasure unlike any other as you defile <<him>> and spread your impurity.</span>
+						<<stress -50>><<trauma -50>><<lllstress>><<llltrauma>>
+					<</if>>
+					<<arousal 2000>><<ggarousal>>
+					<br>
+				<<case "penile">>
+					<<set $speechNPCPenisVirgin to 1>>
+					<span class="pink">You feel <<his>> foreskin separate from <<his>> glans, forever robbing <<him>> of <<his>> purity.</span>
+					<<if $demon gte 6>>
+						<span class="lewd">You feel a surge of pleasure unlike any other as you defile <<him>> and spread your impurity.</span>
+						<<stress -50>><<trauma -50>><<lllstress>><<llltrauma>>
+					<</if>>
+					<<arousal 2000>><<ggarousal>>
+					<br>
+				<<case "anal">>
+					<<set $speechNPCAnusVirgin to 1>>
+					<span class="pink">It's a tight fit. This is probably <<his>> first time doing this.</span>
+					<<arousal 2000>><<ggarousal>>
+					<br>
+				<<case "oral">>
+					<<set $speechNPCOralVirgin to 1>>
+					<span class="pink"><<He>> looks surprised, as if <<he>> wasn't expecting the taste. This is probably <<his>> first time.</span>
+					<<arousal 1500>><<ggarousal>>
+					<br>
+				<<case "kiss">>
+					<<set $speechNPCKissVirgin to 1>>
+					<<set _npcKissVirginTemp to 1>>
+				<<case "handholding">>
+					<<set $speechNPCHandholdingVirgin to 1>>
+					<span class="green"><<His>> hand clenches, and <<he>> looks slightly nervous.</span>
+				<<default>>
+			<</switch>>
+
+			<<if $activeNightmare>>
+				<<if $_npc.fullDescription is "Sydney" and ($_vType is "vaginal" or $_vType is "penile")>>
+					<<displayFeatFake "Sydney the Pure Hearted">>
+				<</if>>
+			<<else>>
+				<<run $virginTaken[$_vType].pushUnique($_npc.fullDescription)>>
+				<<set $_i to $NPCNameList.indexOf($_npc.fullDescription)>>
+				<<if $_i isnot -1>>
+					<<if $_npc.fullDescription is "Sydney" and ($_vType is "vaginal" or $_vType is "penile")>>
+						<<earnFeat "Sydney the Pure Hearted">>
+					<</if>>
+					<<set $NPCName[$_i].virginity to $_npc.virginity>>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "NPCVirginityTakenByOther">>
+	<!-- Argument 0 is the npc, argument1 is the virginity, argument 2 is the thing taking the virginity -->
+	<!-- example usage: <<NPCVirginityTakenByOther "Robin" "vaginal" $NPCList[0].fullDescription>> -->
+	<!-- example usage: <<NPCVirginityTakenByOther 0 "anal" $tentacles[$tentacleindex].fullDesc>> -->
+	<<set $_npcId to _args[0]>>
+	<<set $_vType to _args[1]>>
+	<<set $_takerDesc to _args[2]>>
+	<<set _npcVirgin to {}>>
+	<!-- if the first argument is a name, find which npc has that name, else assume it is an index. -->
+	<<if typeof $_npcId is "string">>
+		<<set $_npc to $NPCList.find(npc => npc.fullDescription === $_npcId)>>
+		<<if $_npc is undefined>>
+			<<set $_npc to $NPCName.find(npc => npc.description === $_npcId)>>
+			<<set $_isNamedOnly to ($_npc isnot undefined)>>
+		<</if>>
+	<<elseif $_npcId isnot undefined>>
+		<<set $_npc to $NPCList[$_npcId]>>
+	<</if>>
+
+	<<if $_npc and $_npc.penisdesc && $_npc.penisdesc.includes("strap-on")>>
+		<<set $_straponvirginityIgnore to ($_vType is "penile")>>
+	<</if>>
+
+	<<if $_npc and $_vType and $_npc.virginity and $_npc.virginity[$_vType] is true>>
+		<!-- note: virginity must be exactly equal to true; only true means that they still have their virginity. -->
+		<!-- note: NTR is never going to be a thing, but we record this bc it might be useful to remember HOW an npc's virginity was lost, and to what. beast/tentacle/etc -->
+		<<set $_npc.virginity[$_vType] to $_takerDesc>>
+
+		<!-- if the npc is named, this will find and update their entry in $NPCName -->
+		<<if !$_isNamedOnly>>
+			<<set $_i to $NPCNameList.indexOf($_npc.fullDescription)>>
+			<<if $_i isnot -1>>
+				<<set $NPCName[$_i].virginity to $_npc.virginity>>
+			<</if>>
+		<</if>>
+
+		<!-- temporary variables to use for scenes. -->
+		<<set _npcVirgin[$_vType] to true>>
+	<</if>>
+<</widget>>
+
+
+<<widget "setupMidOrgasm">>
+    /* 北极星模组 */
+    <<if $demonhunterhypnosis is 1 and $enemyarousal gte $enemyarousalmax>>
+        <<set $enemyoverarousal += $enemyarousal - $enemyarousalmax + 1>>
+        <<set $enemyarousal to $enemyarousalmax - 1>>
+	<</if>>
+    <<if !$againfail and ($options.bjx_divine and $demon gte 6 or $options.bjx_animal and $dragon gte 6) and $enemyarousal gte $enemyarousalmax>>
+        <<set $enemyarousal = $enemyarousalmax - 1>>
+        <<set $againfail to true>>
+	<</if>>
+    /* 北极星 */
+	<<if $setupMidOrgasm isnot undefined and $enemyarousal gte $enemyarousalmax>>
+		<<set _midOrgasm to false>>
+		<<for _n to 0; _n lt $NPCList.length;_n++>>
+			<<if $NPCList[_n].maxOrgasms gt 1>>
+				<<set $NPCList[_n].orgasms++>>
+			<</if>>
+			<<if $NPCList[_n].orgasms lt $NPCList[_n].maxOrgasms>>
+				<<set _midOrgasm to true>>
+			<</if>>
+		<</for>>
+		<<if _midOrgasm is true>>
+			<<set $enemyarousal to $enemyarousalmax / 2>>
+			<<set $finish to 0>>
+			<<set $ejaculatingMid to true>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "combatTrainAdvance">>/*For use after a beast/monster in a train is finished with their turn. Loads next in line into $NPCList[0]. Loads them all back into $NPCList if at the end of the train.*/
+	<<clearnpc>>
+	<<if $combatTrain.length gt 0>>
+		<<set $combatTrain.length-->>
+		<<set $combatTrain.active += 1>>
+		<<loadNPC 0 `"beast_" + $combatTrain.active`>>
+		<<if $NPCList[0].monster is "monster">>
+			<<set $monster to 1>>
+		<<else>>
+			<<set $monster to 0>>
+		<</if>>
+	<<else>>
+		<<for _e_n to 0; _e_n lt $combatTrain.total_length + 1; _e_n++>>
+			<<loadNPC _e_n `"beast_" + _e_n`>>
+			<<clearNPC `"beast_" + _e_n`>>
+		<</for>>
+	<</if>>
+	<<set $active_enemy to 0>>
+	<<unset $hypnosis_deviancy_check>>
+	<<unset $otherFilled>>
+	<<unset $leglocktarget>>
+<</widget>>
+
+<<widget "beastTrainGenerate">>/*Saves all beasts/monsters in $NPCList, then loads the first into slot 0.*/
+	<<set _enemyno to $enemyno - 1>>
+	<<set $combatTrain to {
+		length: _enemyno,
+		total_length: _enemyno,
+		active: 0,
+		pronouns: [],
+		monsters: [],
+		beastTypes: []
+	}>>
+	<<for _e_n to 0; _e_n lt $enemyno; _e_n++>>
+		<<saveNPC _e_n `"beast_" + _e_n`>>
+		<<set $combatTrain.beastTypes.push($NPCList[_e_n].type)>>
+		<<set $combatTrain.pronouns.push($NPCList[_e_n].pronoun)>>
+		<<set $combatTrain.monsters.push($NPCList[_e_n].monster)>>
+	<</for>>
+	<<clearnpc>>
+	<<loadNPC 0 beast_0>>
+<</widget>>
+
+
+
+<<widget "leg_position">>
+	<<set $_parts to [$anususe, $vaginause, $chestuse, $mouthuse]>>
+	<<if $machine and $machine.tattoo and ["left_thigh", "right_thigh"].includes($machine.tattoo.use)>>
+		<<set _leg_position to "up">>
+	<<elseif $_parts.includes("penis") or $_parts.includes(1)>>
+		<<set _leg_position to "up">>
+	<<else>>
+		<<set _leg_position to "down">>
+	<</if>>
+<</widget>>
+
+/* Should ideally only be used if you're sure one npc is in this position */
+/* Selects the NPC that has the given body part (chest, mouth, vagina) set to the given value */
+/* Useful when you know one of them is in a given position by looking at the PC, but aren't sure which */
+<<widget "selectNpcWithPartInPosition">>
+	<<if _args[0] and _args[1]>>
+		<<set $_part to _args[0]>>
+		<<set $_position to _args[1]>>
+		<<unset _npc>>
+		<<for _j = 0; _j lt $enemynomax; _j++>>
+			<<if $_part is "hand" and ($NPCList[_j]["lefthand"] is $_position or $NPCList[_j]["righthand"] is $_position)>>
+				<<personselect _j>>
+				<<set _npc to $NPCList[_j]>>
+				<<break>>
+			<<elseif $NPCList[_j][$_part] is $_position>>
+				<<personselect _j>>
+				<<set _npc to $NPCList[_j]>>
+				<<break>>
+			<</if>>
+		<</for>>
+		<<if _index isnot undefined>>
+			<<personselect _j>>
+		<<else>>
+			<!-- Should we throw an error? If we suspect an NPC part is in this position and don't find one, is that a bug? -->
+		<</if>>
+	<<else>>
+		<<run throw new Error("selectNpcWithPartInPosition used with incorrect number of variables (or one is undefined)")>>
+	<</if>>
+<</widget>>
+
+<<widget "selectNpcWithPartInPositionAnus">>
+	<<if _args[0]>>
+		<<unset _npc>>
+		<<for _j = 0; _j lt $enemynomax; _j++>>
+			<<if $NPCList[_j].penis is _args[0] or $NPCList[_j].vagina is _args[0]>>
+				<<personselect _j>>
+				<<set _npc to $NPCList[_j]>>
+				<<break>>
+			<</if>>
+		<</for>>
+	<</if>>
+<</widget>>
+
+<<widget "cover_end">>
+	<<if $leftarm is "vagina" or $rightarm is "vagina">>
+		<<set $vaginause to 0>>
+	<<elseif $leftarm is "coverpenis" or $rightarm is "coverpenis">>
+		<<set $penisuse to 0>>
+	<<elseif $leftarm is "anus" or $rightarm is "anus">>
+		<<set $anususe to 0>>
+	<<elseif $leftarm is "face" or $rightarm is "face">>
+		<<set $face to 0>>
+	<</if>>
+<</widget>>
+
+/* args[0] - 0-5 for npc, or "player", args[1] fo article (the, it, etc)*/
+<<widget "condomDesc">><<silently>>
+	<<if _args[1] is "it">>
+		<<set _text_output to "it">>
+	<<elseif _args[0] isnot "player" and !between(_args[0], 0, 5)>>
+		<<run Errors.report("Bad arguments for <<condomDesc>> ", "args: " + JSON.stringify(_args) + "; stack: " + Utils.GetStack())>>
+		<span class="error"><<print "Bad arguments for condomDesc. args: " + JSON.stringify(_args) + "; stack: " + Utils.GetStack()>></span>
+	<<else>>
+		<<set $_condomArticle to (_args[1] ? _args[1] : "a")>>
+		<<set $_condom to (_args[0] ? _args[0] : 0)>>
+		<<set _text_output to $_condomArticle>>
+		<<if $_condom is "player" and $player.condom>>
+			<<set $_condomDesc to clone($player.condom)>>
+		<<elseif $NPCList[$_condom].condom>>
+			<<set $_condomDesc to clone($NPCList[$_condom].condom)>>
+		<<else>>
+			<<set _text_output to "ERROR: Condom $_condom invalid">>
+		<</if>>
+		<<if $_condomDesc.colour is "lblue">>
+			<<set $_colourName to "light blue">>
+		<<else>>
+			<<set $_colourName to $_condomDesc.colour>>
+		<</if>>
+		<<if $_condomArticle is "a">>
+			<<set _text_output += (["a","e","i","o","u","A","E","I","O","U"].some(letter => $_colourName.startsWith(letter)) ? "n " + $_colourName + " " : " " + $_colourName + " ")>>
+		<<elseif $_condomArticle is "the">>
+			<<set _text_output += " ">>
+		<<else>>
+			<<set _text_output += " " + $_colourName + " ">>
+		<</if>>
+		<<if $_condomDesc.type isnot "plain">>
+			<<set _text_output += $_condomDesc.type + " ">>
+		<</if>>
+		<<set _text_output += "condom">>
+	<</if>>
+<</silently>><<print _text_output>><</widget>>
+
+/* args[0] - 0-5 for npc, args[1] "player" if the npc is equipping it on the player */
+<<widget "equipNPCCondom">>
+	<<set $_condomnpc to (_args[0] ? _args[0] : 0)>>
+	<<if $NPCList[$_condomnpc].condom>>
+		<<if _args[1] is "player">>
+			<<set $player.condom to clone($NPCList[$_condomnpc].condom)>>
+			<<set $player.condom.worn to true>>
+			<<run delete $player.condom.willUse>>
+			<<set $NPCList[$_condomnpc].condom to false>>
+		<<else>>
+			<<set $NPCList[$_condomnpc].condom.worn to true>>
+		<</if>>
+		<<set $NPCList[$_condomnpc].condomAsk to true>>
+	<<else>>
+		<span class="red">ERROR: NPC condom $_condomnpc not defined.</span>
+	<</if>>
+<</widget>>
+
+/* args[0] - 0-5 for npc, args[1] "player" if the npc is removing it from the player */
+<<widget "removeNPCCondom">>
+	<<set $_condomnpc to (_args[0] ? _args[0] : 0)>>
+	<<if _args[1] is "player">>
+		<<set $player.condom to false>>
+	<<else>>
+		<<set $NPCList[$_condomnpc].condom to false>>
+	<</if>>
+<</widget>>
+
+/* For the player equipping their own condom on themselves */
+<<widget "equipPlayerCondom">>
+	<<set $player.condom to {
+		state: (random(0,100) gt 98 ? "defective" : "normal"),
+		type: "plain",
+		colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].csstext,
+		worn: true
+	}>>
+	<<set $condoms -= 1>>
+<</widget>>
+
+/* For the player removing any condom from themselves */
+<<widget "removePlayerCondom">>
+	<<set $player.condom to false>>
+<</widget>>
+
+<<widget "giveNPCCondom">>
+	<<set $_condomnpc to (_args[0] ? _args[0] : 0)>>
+	<<if $NPCList[$_condomnpc].condom>>
+		<span class="red">ERROR: NPC condom $_condomnpc overlapped with existing condom.</span>
+	<<else>>
+		<<set $NPCList[$_condomnpc].condom to {
+			willUse: true,
+			state: (random(0,100) gt 98 ? "defective" : "normal"),
+			type: "plain",
+			colour: setup.colours.condom[random(0, (setup.colours.condom.length -1))].csstext,
+			worn: false
+		}>>
+		<<set $condoms -= 1>>
+		<<set $NPCList[$_condomnpc].condomCanGive to false>>
+		<<npcCondomEquipImmediate $_condomnpc "it">>
+	<</if>>
+<</widget>>
+
+<<widget "npcCondomEquipImmediate">>
+	<<set $_condomnpc to (_args[0] ? _args[0] : 0)>>
+	<<set $_condomArticle to (_args[1] ? _args[1] : 0)>>
+	<<if $NPCList[$_condomnpc].condom and $NPCList[$_condomnpc].condom.willUse>>
+		/*Your penis*/
+		<<if $penisstate is "entrance" or $penisstate is "imminent" or $penisstate is "otheranusentrance" or $penisstate is "otheranusimminent">>
+			<<if ($NPCList[$_condomnpc].vagina.toString().includes("penis") or $NPCList[$_condomnpc].penis.toString().includes("otheranus")) and !$player.condom and $parasite.penis.name is undefined>>
+				<<personselect $_condomnpc>>
+				<<if playerChastity("penis")>>
+					<<He>> tries to put a condom on your penis, but can't seem to get it over your $worn.genitals.name. <span class="red"><<He>> quickly gives up.</span>
+					<<set $NPCList[$_condomnpc].condom.willUse to false>>
+				<<else>>
+					<span class="green"><<He_Short>> slips <<condomDesc $_condomnpc $_condomArticle>> onto your penis.</span>
+					<<equipNPCCondom $_condomnpc "player">>
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if $penisstate is "penetrated">>
+			<<if $NPCList[$_condomnpc].vagina is "penis" and !$player.condom and $parasite.penis.name is undefined>>
+				<<personselect $_condomnpc>>
+				<span class="green"><<He_Short>> briefly frees your penis from <<his>> vagina, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>
+				<<equipNPCCondom $_condomnpc "player">>
+			<</if>>
+		<</if>>
+		<<if $penisstate is "otheranus">>
+			<<if $NPCList[$_condomnpc].penis is "otheranus" and !$player.condom and $parasite.penis.name is undefined>>
+				<<personselect $_condomnpc>>
+				<span class="green"><<He_Short>> briefly frees your penis from <<his>> ass, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>
+				<<equipNPCCondom $_condomnpc "player">>
+			<</if>>
+		<</if>>
+		/*Their penis*/
+		<<if $vaginastate is "entrance" or $vaginastate is "imminent">>
+			<<if ($NPCList[$_condomnpc].penis is "vaginaentrance" or $NPCList[$_condomnpc].penis is "vaginaimminent") and $NPCList[$_condomnpc].condom.worn is false and !$NPCList[$_condomnpc].penisdesc.includes("strap-on")>>
+				<<personselect $_condomnpc>>
+				<<if $NPCList[$_condomnpc].chastity.penis.includes("chastity")>>
+					<<He>> tries to put a condom on, but can't seem to get it over <<his>> $NPCList[$_condomnpc].chastity.penis. <span class="red"><<He>> quickly gives up.</span>
+					<<set $NPCList[$_condomnpc].condom.willUse to false>>
+				<<else>>
+					<span class="green"><<He_Short>> slips <<condomDesc $_condomnpc $_condomArticle>> onto <<his>> penis.</span>
+					<<equipNPCCondom $_condomnpc>>
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if $vaginastate is "penetrated">>
+			<<if $NPCList[$_condomnpc].penis is "vagina" and $NPCList[$_condomnpc].condom.worn is false and !$NPCList[$_condomnpc].penisdesc.includes("strap-on")>>
+				<<personselect $_condomnpc>>
+				<span class="green">The <<person>> briefly withdraws <<his>> penis from your vagina, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>
+				<<equipNPCCondom $_condomnpc>>
+			<</if>>
+		<</if>>
+		<<if $anusstate is "entrance" or $anusstate is "imminent">>
+			<<if ($NPCList[$_condomnpc].penis is "anusentrance" or $NPCList[$_condomnpc].penis is "anusimminent") and $NPCList[$_condomnpc].condom.worn is false and !$NPCList[$_condomnpc].penisdesc.includes("strap-on")>>
+				<<personselect $_condomnpc>>
+				<span class="green">The <<person>> slips <<condomDesc $_condomnpc $_condomArticle>> onto <<his>> penis.</span>
+				<<equipNPCCondom $_condomnpc>>
+			<</if>>
+		<</if>>
+		<<if $anusstate is "penetrated">>
+			<<if $NPCList[$_condomnpc].penis is "anus" and $NPCList[$_condomnpc].condom.worn is false and !$NPCList[$_condomnpc].penisdesc.includes("strap-on")>>
+				<<personselect $_condomnpc>>
+				<span class="green">The <<person>> briefly withdraws <<his>> penis from your ass, slips <<condomDesc $_condomnpc $_condomArticle>> on, and slides it back in.</span>
+				<<equipNPCCondom $_condomnpc>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "pickupSexToy">>
+	<<if $consensual is 1 and $promiscuity gt 34 and $enemytype is "man">>
+		<<set $_hand to _args[0]>>
+		<<set $_items to window.listUniqueCarriedSextoys()>>
+
+		<<if $_hand is "left" and ($lefttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
+			<<if $_items.length gt 0>>
+				<<set _itemsLeft to {}>>
+
+				<<run $_items.forEach(item => {
+					if (($currentSexToyRight is undefined or item.name isnot $currentSexToyRight.name) and item.type.includesAny("dildo","stroker") and !item.worn){
+						_itemsLeft[item.namecap] = item;
+					}
+				})>>
+				<<if Object.keys(_itemsLeft).length gte 1>>
+					<<set _leftaction["Pick up item:"] to "pickupSexToy">>
+				<</if>>
+			<</if>>
+		<</if>>
+
+		<<if $_hand is "right" and ($righttarget is "self" or $options.targetYourself is false or _targetnumber is 1)>>
+			<<if $_items>>
+				<<set _itemsRight to {}>>
+
+				<<run $_items.forEach(item => {
+					if (($currentSexToyLeft is undefined or item.name isnot $currentSexToyLeft.name) and item.type.includesAny("dildo","stroker") and !item.worn){
+						_itemsRight[item.namecap] = item;
+					}
+				})>>
+				<<if Object.keys(_itemsRight).length gte 1>>
+					<<set _rightaction["Pick up item:"] to "pickupSexToy">>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "andButtPlug">><<silently>>
+	<<set _text_output to (playerHasButtPlug() ? " and $worn.butt_plug.name" : "")>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "alongsideButtPlug">><<silently>>
+	<<set $_alongside to either("alongside","heedless of","pushing aside")>>
+	<<set _text_output to (playerHasButtPlug() ? ", "+$_alongside+" your "+$worn.butt_plug.name : "")>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "commaButtPlug">><<silently>>
+	<<set _text_output to (playerHasButtPlug() ? ", your $worn.butt_plug.name, " : "")>>
+<</silently>><<print _text_output>><</widget>>

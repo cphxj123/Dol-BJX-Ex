@@ -1,0 +1,2150 @@
+:: Docks
+
+<<set $outside to 1>><<set $location to "docks">><<dockeffects>><<effects>>
+<<skul_dock_init>>
+You are on the docks.
+<<if Time.dayState is "dawn">>
+	They're already busy with activity as vehicles arrive to transfer cargo and shipments.
+<<elseif Time.dayState is "day">>
+	They're busy with activity as dockers work the moored ships.
+<<elseif Time.dayState is "night">>
+	They're closed off at night. The lights of patrolling security light up the stacked cargo containers.
+<<elseif Time.dayState is "dusk">>
+	The last ships are leaving, while others remain moored for the night.
+<</if>>
+<br>
+
+<<if $dockwork gte 1 and Time.schoolDay and $idDocksReveal isnot 2 and Time.hour is 7>>
+	<br>
+
+	You approach the other workers, but a manager stops you. "Sorry, no can do, <<girl>>. You know the rules: no students on weekdays."
+
+	<<if $id is 1>>
+		<<set $idDocksReveal to 1>>
+		<br>
+		<span class="blue">Maybe they'd let you work today if you showed them the ID you purchased from Briar?</span>
+		<br>
+	
+	<</if>>
+<</if>>
+
+<<if $arousal gte $arousalmax>>
+	<<orgasmLocation "docks">>
+	<br>
+<</if>>
+<br>
+<<if $dockwork is 2 and Time.hour is 7 and Time.schoolDay and $idDocksReveal isnot 1>>
+	Dockers arrive for work. They won't let you join them on a school day.
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<if $money gte 100000 and $history gte 700 and $exposed lte 0>>
+	<<link [[找船去四季岛 (0:20)|Docks Ride]]>><<pass 20>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<if $robindebtevent gte 1 and $docksrobinintro isnot 1>>
+	<<investigateicon>><<link [[Look for Robin (0:20)|Docks_Robin]]>><<pass 20>><</link>>
+	<br>
+<</if>>
+<<if $id is 1 and $dockwork gte 1 and Time.hour is 7 and $idDocksReveal is 1>>
+	<<ind>><<link [[Use fake ID (0:02)|Docks Fake ID]]>><</link>>
+	<br>
+<</if>>
+<<if $dockwork is 1 and Time.dayState isnot "night" and $exposed lte 0>>
+	<<docksicon>><<link [[Take job (0:30)|Docks Take Job]]>><<pass 30>><<set $dockwork to 2>><</link>>
+	<br>
+<<elseif $dockwork is 2 and Time.hour is 7 and $exposed lte 0 and (!Time.schoolDay or $idDocksReveal is 2)>>
+	<<docksicon>><<link [[Work as a docker (12:00)|Docks Start]]>><</link>><<gtiredness>>
+	<br>
+<<elseif $dockwork is undefined and Time.dayState isnot "night" and $exposed lte 0>>
+	<<askicon>><<link [[Ask for work (0:05)|Docks Ask]]>><<pass 5>><<set $dockwork to 1>><</link>>
+	<br>
+<</if>>
+<<if $exposed lte 0 and Time.dayState isnot "night" and $dockstatus gte 80 and $dockwage lt 2000>>
+	<<askicon>><<link [[Ask for raise (0:05)|Docks Raise]]>><<pass 5>><<set $dockwage += 100>><<dockstatus -20>><</link>><<llcool>>
+	<br>
+<</if>>
+<<if Time.dayState is "night">>
+	<<sneakicon>><<link [[Sneak inside (0:05)|Docks Sneak Start]]>><<set $bus to "S">><</link>>
+	<br>
+<</if>>
+<<storeon "docks" "check">>
+<<if _store_check is 1>>
+	<<dressasyouwereicon>><<link [[Get dressed|Docks]]>><<storeon "docks">><</link>>
+	<br>
+<</if>>
+
+<br>
+<<mericon>><<link [[Leave|Mer Street]]>><</link>>
+<br>
+
+<<if $debug is 1>>
+	<<link [[Max dock status|Docks]]>><<set $dockstatus to 100>><</link>>
+	<br>
+	<<link [[Min dock status|Docks]]>><<set $dockstatus to 0>><</link>>
+	<br>
+<</if>>
+
+
+:: Docks Raise
+
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+<<generate1>><<person1>>
+
+You ask a manager for a raise. "Well," <<he>> adjust <<his>> glasses and taps something into <<his>> computer. "You have been pulling your weight around here. Fine. You're on <span class="gold">£<<print (($dockwage * 12) / 100)>></span> a shift now."
+<<trauma -18>><<stress -18>><<lltrauma>><<llstress>>
+<br><br>
+
+<<if $dockwage gte 2000>>
+	"That's more than any other worker," <<he>> adds.
+	<br><br>
+<</if>>
+
+The other dockers overheard, and grumble as you leave. They're just jealous.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Docks]]>><</link>>
+<br>
+
+:: Docks Ask
+
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+You approach a <<generate1>><<person1>><<person>> standing on a raised platform. <<He>> jots something on <<his>> clipboard while observing the workers.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"Excuse me," you say. "S-sorry to bother you. Are you hiring?"
+<<elseif $speech_attitude is "bratty">>
+	"Hey," you say. "I'm looking for work. Who do I talk to?"
+<<else>>
+	"Hello," you say. "Are you hiring?"
+<</if>>
+<br><br>
+
+<<He>> doesn't look up from <<his>> clipboard, but points <<his>> pen in the direction of a small building a little closer to the water.
+<br><br>
+
+The door is open. A <<generate2>><<person2>><<person>> looks up from <<his>> desk as you enter. "Ah," <<he>> says, pushing <<his>> glasses up <<his>> nose. "Looking for work?" You nod. <<He>> stands and squeezes between <<his>> desk and the wall until <<he>> stands in front of you. <<He>> holds out <<his>> hand.
+<br><br>
+
+<<link [[Next|Docks Ask 2]]>><</link>>
+<br>
+
+:: Docks Ask 2
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+"We're looking for more hands," the <<person>> says. "So many ships come and go nowadays. You'll want details." <<He>> sits back behind <<his>> desk. "<span class="gold">£10</span> an hour is the starting wage. Perform well and you might get a raise. Work begins at <span class="gold"><<ampm 7 00>></span>"
+<br><br>
+
+"Oh, and don't be late," <<he>> adds. "We can't just have workers show up throughout the day. Security reasons. You need to be here between seven and eight or we can't sign you in. No work for you on school days either, or I'll get in trouble. Work day is twelve hours, and you need to stay the whole shift if you want to get paid."
+<br><br>
+
+<<if $id is 1>>
+	<<set $idDocksReveal to 2>>
+	You show <<him>> the fake ID you purchased from Briar. "<<if $speech_attitude is "meek">>I'm not a student...<<else>>I'm not a student<</if>>."
+	<br><br>
+
+	<<He>> glances at it, then hands it back. "Can't be too careful. Everything else still applies, then, except for the 'no working on school days' part."
+	<br><br>
+
+<</if>>
+
+<<He>> runs <<his>> eyes up and down your body.
+
+<<if currentSkillValue('physique') gte 15000>>
+	"You're a strapping <<lass>>, aren't you. It's a physical job, but you won't have any problems."
+<<elseif currentSkillValue('physique') gte 10000>>
+	"You look good and fit. It's a physical job, but you should be fine."
+<<elseif currentSkillValue('physique') gte 5000>>
+	"This is a physically demanding job. You look like you can handle yourself, but go careful."
+<<else>>
+	<<He>> sighs. "This is a physically demanding job, and, well." <<He>> pauses. "You're not the strongest <<girl>> I've seen, let me put it that way. I won't stop you, but you might be in for a rough time."
+<</if>>
+<br><br>
+"I think that's everything. I can give you a rundown of the more technical aspects, the rest you can learn on the job. So, interested?"
+<br><br>
+
+<<link [[Yes (0:30)|Docks Take Job]]>><<pass 30>><<set $dockwork to 2>><<endevent>><</link>>
+<br>
+<<link [[No|Docks Refuse Job]]>><</link>>
+<br>
+
+:: Docks Refuse Job
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+"That's a shame," the <<person>> sighs. "Come back if you change your mind."
+<br><br>
+
+<<endevent>>
+<<link [[Next|Docks]]>><</link>>
+<br>
+
+:: Docks Take Job
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+<<set $dockwage to 1000>><<set $dockstatus to 10>><<set $dockhours to 0>>
+"Remember," the manager says. "Work starts at <span class="gold"><<ampm 7 00>></span>, and you can't work on school days. Welcome to the team."
+<br><br>
+
+<<link [[Next|Docks]]>><</link>>
+<br>
+
+:: Docks Start
+
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+You pass security and report to a manager for work. <<dockstatustext>>
+<br><br>
+<<dockoptions>>
+<<if $exhibitionism gte 75>>
+	<<link [[Strip and work (1:00)|Docks Work]]>><<undressclothes "docks">><<set $phase to 2>><<pass 60>><<dockstatus 1>><</link>><<if $daily.dockExhibitionism isnot 1>><<exhibitionist5>><</if>><<gcool>>
+	<br>
+<</if>>
+
+:: Docks Work
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<if $arousal gte $arousalmax>>
+	<<orgasmLocation "docks">>
+<</if>>
+<<if $phase is 0>>
+
+	You work hard. It's tiring.
+	<<physique 6>>
+	<br><br>
+
+	<<if $upperwetstage gte 3 or $lowerwetstage gte 3>>
+		You feel the other dockers ogling your body through your wet clothing.
+		<<gstress>><<garousal>><<stress 6>><<arousal 600>>
+		<br><br>
+	<</if>>
+
+<<elseif $phase is 1>>
+
+	You do as little work as you can get away with. Your colleagues grumble about you.
+	<br><br>
+
+	<<if $upperwetstage gte 3 or $lowerwetstage gte 3>>
+		You feel the other dockers ogling your body through your wet clothing.
+		<<gstress>><<garousal>><<stress 6>><<arousal 600>>
+		<br><br>
+		<</if>>
+
+<<elseif $phase is 2>>
+
+	You strip naked behind some cargo containers. <<flaunting>> you take a deep breath and step out onto the dock.
+	<<if $daily.dockExhibitionism isnot 1>>
+		<<set $daily.dockExhibitionism to 1>><<exhibitionism5>>
+	<<else>>
+		<br><br>
+	<</if>>
+
+	<<covered>> Few notice at first, until someone whistles at you and attracts attention. More and more dockers stop what they're doing to cheer and whistle at you. Each new onlooker renews your thrill.
+	<br><br>
+
+	A supervisor tells everyone to get back to work. They do so, though reluctant to take their eyes off you. <<generate1>><<person1>>The supervisor doesn't tell you to get dressed. The longing look <<he>> gives your body suggests why.<<endevent>>
+	<br><br>
+
+<</if>>
+
+<<dockwork>>
+
+:: Docks Rape Capsize
+
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+The <<person1>><<person>> gets closer. You press one leg into the side of the boat, making the vessel rock. They stumble forwards. "Don't you da-" <<he>> manages before you give the boat another shove, this time turning it over and sending all three of you overboard.
+<br><br>
+
+You swim back to shore. "<<pShe>> capsized it on purpose!" the <<person>> says to the amused dockers who help you from the water. Most think it was an accident, but some believe the pair.
+<br><br>
+<<set $upperwet to 200>><<set $lowerwet to 200>><<set $underlowerwet to 200>><<set $underupperwet to 200>>
+<<endevent>>
+<<dockoptions>>
+
+:: Docks Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<set $leftarm to "bound">><<set $rightarm to "bound">>
+	They push you onto the deck, flip you over, and bind your arms with tight knots.
+	<br><br>
+	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>><<set $phase to 1>><</if>>
+<<elseif $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 100>>
+	<<if $worn.upper.type.includes("naked") and $worn.lower.type.includes("naked")>><<set $phase to 1>><</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Docks Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Docks Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Docks Rape Finish
+
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"That weren't so bad, were it?" the <<person>> laughs. <<He>> turns on the engine and continues the task.
+	<br><br>
+	<<unbind>>
+	<<tearful>> you climb aboard the larger vessel. You help the crew manage the spring lines and swing the vessel around to a successful landing.
+	<br><br>
+
+	<<if $pain gte 40>>
+		One of the sailors notices your tears and asks what's wrong, but you assure them you're fine.
+		<br><br>
+	<</if>>
+
+	<<if $phase is 1>><<clothesontowel>><<else>><<clotheson>><</if>>
+	<<endcombat>>
+
+	<<dockoptions>>
+
+<<else>>
+
+	You shove them off the boat, turn on the engine, and leave them to flounder. You'll finish the task yourself.
+	<br><br>
+
+	<<if $phase is 1>><<clothesontowel>><<else>><<clotheson>><</if>>
+	<<endcombat>>
+
+	<<tearful>> you climb aboard the larger vessel. Feeling energised by your victory, you guide both the captain and crew to a successful landing.
+	<br><br>
+
+	<<generate1>><<person1>>A <<person>> asks where the other two are. You tell them they fell off the boat. Your colleagues are still laughing when the pair make it back to the docks, soaked and shivering.
+	<br><br>
+	<<endevent>>
+	<<dockoptions>>
+
+<</if>>
+
+:: Docks Binding
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<unbind>>
+You turn your back to the <<person>>. <<He>> fiddles with the knots, and sets you free. "There you go <<lass>>. Be more careful in the future."
+<br><br>
+
+<<endevent>>
+<<dockoptions>>
+
+:: Docks Binding Refuse
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<He>> shrugs. "Suit yourself."
+<br><br>
+
+<<endevent>>
+<<dockoptions>>
+
+:: Docks Tourist Return
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<generate2>><<person2>>You return to the dock. Your manager greets you. "Don't worry," <<he>> sighs. "Those types never listen to us."
+<br><br>
+
+<<dockoptions>>
+
+:: Docks Tourist Seduce
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<set $seductiondifficulty to 6000>>
+<<seductioncheck>>
+<br><br>
+<<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><</if>><<seductionskilluse>>
+<br><br>
+
+You slip beneath the table. "What are you-" <<he>> cuts off when you unzip <<his>> trousers.
+<<promiscuity4>>
+
+<<if $seductionrating gte $seductionrequired>>
+
+	<<He>> glances around. "Maybe there has been an error," <<he>> says. "Safety is of paramount importance."
+	<br><br>
+
+	<<link [[Next|Docks Tourist Sex]]>><<set $sexstart to 1>><</link>>
+	<br>
+
+<<else>>
+
+	<<He>> pulls away from you, then laughs and <<if $pronoun is "m">>strokes<<else>>twirls<</if>> <<his>> hair. "I have a ship full of hotties, all wanting to bed the captain. Take your charms to the docks where they might be worth a few scraps."
+	<br><br>
+
+	<<generate2>><<person2>>You return to the dock. Your manager greets you. "Don't worry," <<he>> sighs. "Those types never listen to us."
+	<br><br>
+
+	<<dockoptions>>
+
+<</if>>
+
+:: Docks Tourist Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 100>>
+	You reward <<him>> with a playful lick.
+	<br><br>
+	<<npcoral>>
+<</if>>
+
+The surrounding passengers socialise, unaware of what you're up to beneath the table.
+<br><br>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Docks Tourist Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Docks Tourist Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Docks Tourist Sex Finish
+<<set $outside to 0>><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	<<He>> moans. The passengers give <<him>> odd looks, and <<he>> blushes. "I-I'll turn the ship," <<he>> whispers.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you descend to your boat. You steer away.
+	<br><br>
+
+	Soon after, the larger vessel starts to turn.
+	<br><br>
+
+	You arrive back at the docks. A manager greets you. <<generate2>><<person2>>"You did it," <<he>> says. "Didn't expect that. Those types are so full of themselves. Good job."
+	<<ggcool>><<dockstatus 3>>
+	<br><br>
+
+	<<dockoptions>>
+
+<<elseif $enemyhealth lte 0>>
+
+	You shove the <<person>> away from you, which attracts attention from the passengers. "J-just stretching," <<he>> says, covering <<his>> groin.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> <<generate2>><<person2>>you return to the dock. Your manager greets you. "Don't worry," <<he>> sighs. "Those types never listen to us."
+	<br><br>
+
+	<<dockoptions>>
+
+<<else>>
+
+	The <<person>> steps away from you and fixes <<his>> fly.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> <<generate2>><<person2>>you return to the dock. Your manager greets you. "Don't worry," <<he>> sighs. "Those types never listen to us."
+	<br><br>
+
+	<<dockoptions>>
+
+<</if>>
+
+:: Docks Tourist Intimidate
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+"Attention everybody," you shout. The passengers fall silent. "This ship is on a collision course with another. You need to steer away from the docks. Or prepare to swim ashore." You turn and walk away. The crowd erupts into anxious babbling the moment you disappear from view. You descend to your ship and steer away.
+<br><br>
+
+Soon after, the larger vessel starts to turn.
+<br><br>
+
+You arrive back at the docks. A manager greets you. <<generate2>><<person2>>"You did it," <<he>> says. "Didn't expect that. Good job."
+<br><br>
+
+<<dockoptions>>
+
+:: Docks Examine
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<if $phase is 0>>
+You compare the numbers,
+	<<if currentSkillValue('maths') gte random(1, 1000)>>
+		<span class="green">and find that some valuable cargo disappeared at some point between arrival and departure.</span> What's more, someone tried to cover it up. You inform a manager, who seems impressed at your deduction.
+		<<dockstatus 1>><<gcool>>
+		<br><br>
+
+	<<else>>
+		<span class="red">but find nothing wrong.</span> You finish recording the information.
+		<br><br>
+
+	<</if>>
+<<else>>
+	You're sure it's fine. You finish recording the information.
+	<br><br>
+<</if>>
+
+<<dockoptions>>
+
+:: Docks Examine Valuables
+<<effects>>
+
+<<skul_dock_init>>
+
+You keep an eye out for anything valuable. There's a lot, but you need something small enough to carry.
+<br><br>
+
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
+
+
+	<br><br>
+
+	<<skul_dock_contents gold>>
+	<<if !_dock_location and $catsuit_found isnot true>>
+		<<skul_dock_contents equipment>>
+	<</if>>
+	<<if !_dock_location>>
+		<<skul_dock_contents aphrodisiacs>>
+	<</if>>
+	<<if !_dock_location>>
+		<<skul_dock_contents electronics>>
+	<</if>>
+	<<if !_dock_location and currentSkillValue('tending') gte 400>>
+		<<skul_dock_contents fertiliser>>
+	<</if>>
+
+	<<if _dock_contents is "gold">>
+		There's a bar of gold in a container at the <<skul_dock_location _dock_location>>. <span class="green">It would sell on the black market.</span> You make a mental note of its location.
+	<<elseif _dock_contents is "aphrodisiacs">>
+		A local company is moving something special through. It's being kept near the <<skul_dock_location _dock_location>>. <span class="teal">It would sell on the black market.</span> You make a mental note of its location.
+	<<elseif _dock_contents is "electronics">>
+		There's a container full of goods, including valuable electronics, near the <<skul_dock_location _dock_location>>. <span class="lblue">They would sell on the black market.</span> You make a mental note of its location.
+	<<elseif _dock_contents is "fertiliser">>
+		There's a container full of what looks like fertiliser near the <<skul_dock_location _dock_location>>. <span class="lblue">They might be useful to you.</span> You make a mental note of its location.
+	<<elseif _dock_contents is "equipment">>
+		There's a container full of specialist equipment near the <<skul_dock_location _dock_location>>. <span class="teal">It might be useful to you.</span> You make a mental note of its location.
+	<<elseif !_dock_contents>>
+		You don't find anything suitable. Useful to know.
+		<<set _skul_dock_keys to Object.keys($skul_dock)>>
+		<<for _i to 0; _i lt _skul_dock_keys.length; _i++>>
+			<<set $skul_dock[_skul_dock_keys[_i]].state to "known">>
+		<</for>>
+	<</if>>
+	<br><br>
+
+	<<skulduggeryuse>>
+
+<<else>>
+
+	Your supervisor slaps your back. There was no sign you were doing anything illicit, but you almost jump from your seat all the same. You'll be teased for that later.<<lcool>><<dockstatus -1>>
+	<br><br>
+
+	<<skulduggeryuse>>
+
+<</if>>
+
+<<dockoptions>>
+
+
+:: Docks Compound
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<skul_dock_init>>
+
+You sneak under a parked vehicle and peek out from beneath.
+<br><br>
+
+One of the workers places a crate in front of you, blocking your view. There's a crack in the bottom. A sweet, heady smell leaks out. It relaxes and heats you.
+<br><br>
+
+It's the last crate they load into the cargo container. The <<person1>><<person>> locks it, and they climb into the vehicle before driving away.
+<br><br>
+
+<<skul_dock_contents aphrodisiacs>>
+
+<<if _dock_location is "SW">>
+	The container looks like it's going to remain in the unloading area overnight.
+	<<if currentSkillValue('skulduggery') gte 400>>
+		<span class="teal">The contents must be valuable.</span> You make a mental note of its location.
+	<</if>>
+	<br><br>
+<<elseif _dock_location>>
+	A crane lifts the container, and carries it towards the <<skul_dock_location _dock_location>>. It will remain there overnight.
+	<<if currentSkillValue('skulduggery') gte 400>>
+		<span class="teal">The contents must be valuable.</span> You make a mental note of its location.
+	<</if>>
+	<br><br>
+<</if>>
+
+<<dockoptions>>
+
+:: Docks Compound Ignore
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+You ignore the strange vehicle and continue working.
+<br><br>
+
+<<dockoptions>>
+
+:: Docks History
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<if $phase is 0>>
+You look more closely,
+	<<if currentSkillValue('history') gte random(1, 1000)>>
+		<span class="green">and recognise the shape.</span> You <<generate1>><<person1>>inform a manager, who calls the captain in time. The ship steers around it.
+		<br><br>
+
+		"Damned reef," the manager says. "I swear it just pops up where it pleases. Good job."
+		<<dockstatus 1>><<gcool>>
+		<br><br>
+
+	<<else>>
+		<span class="red">but the shape vanishes.</span>
+		<br><br>
+
+		With a groan, the ship collides with something beneath the surface. Dockers rush to the moorings to assess the damage.
+		<br><br>
+
+	<</if>>
+<<else>>
+	You're sure it's fine. You finish cleaning.
+	<br><br>
+
+	A metallic tearing sound shudders the pier. Something tears a giant gash down the side of the approaching ship, though it still makes it to the dock.
+	<br><br>
+
+<</if>>
+<<dockoptions>>
+
+:: Docks Angry
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<if $speech_attitude is "meek">>
+	"I'm just trying to work," you say. "Please let me."
+<<elseif $speech_attitude is "bratty">>
+	"Fuck you," you say. "You're supposed to be working."
+<<else>>
+	"This is cruel," you say. "I'll report you."
+<</if>>
+<br><br>
+
+"We're just having fun," the <<person>> says. "Your kind rarely sticks with it anyway." The other dockers nod.
+<br><br>
+
+<<dockoptions>>
+
+:: Docks Walk
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+You walk away from the crowd. You try to ignore the jeers.
+<br><br>
+
+<<dockoptions>>
+
+:: Docks Steal
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+It's a watch. It should be worth something. You mark it down as missing.
+<br><br>
+
+<<dockoptions>>
+
+:: Docks Don't Steal
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+You mark down that a package is damaged, and continue working.
+<br><br>
+
+<<dockoptions>>
+<br>
+
+:: Docks Slave Ignore
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<if $lock lt 400>>
+	There's nothing you can do. You move on to the next container. The <<person>> seems relieved.
+	<br><br>
+<<else>>
+	You ignore the voice, and move on to the next container. The <<person>> seems relieved.
+	<br><br>
+<</if>>
+
+<<endevent>>
+
+<<dockoptions>>
+
+:: Docks Slave Open
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+You successfully pick the lock and open the container. The <<person>> glances around. "I didn't see anything," <<he>> says. "I need this job." <<He>> walks away.
+<br><br>
+
+<<if $skulduggery lt 500>>
+	<<skulduggeryskilluse>>
+<<else>>
+	<span class="blue">There's nothing more you can learn from locks this simple.</span>
+<</if>>
+<br><br>
+
+<<person1>>There are sacks full of potatoes inside. You hear the voice again, from the back. One of the sacks moves. You find a <<person>> beneath, gagged and bound. Bruising surrounds <<his>> right eye. <<He>> starts crying.
+<<gstress>><<stress 6>>
+<br><br>
+
+<<link [[Get help|Docks Slave Help]]>><</link>>
+<br>
+<<link [[Comfort and untie|Docks Slave Untie]]>><</link>>
+<br>
+
+:: Docks Slave Help
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+You rush from the container, and find the <<person1>><<person>> who saw you open it.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"There's someone who needs help," you say. "They're tied up and hurt."
+<<elseif $speech_attitude is "bratty">>
+	"What's going on," you say. "There's a bound person in there."
+<<else>>
+	"I found a person inside," you say. "They're bound and hurt."
+<</if>>
+<br><br>
+
+<<He>> looks around before leaning in close. "Shut it <<girl>>," <<he>> says. "I didn't see anything. Remember? Shut your gob before you get us both in trouble."
+<br><br>
+
+You return to the container, and find the <<person1>><<person>> lying where you left <<him>>.
+<br><br>
+
+<<link [[Next|Docks Slave Untie]]>><</link>>
+<br>
+
+:: Docks Slave Untie
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+You untie the bindings and remove the gag.
+
+<<if $speech_attitude is "meek">>
+	"Please don't cry," you say. "I'll look after you. What's your name?"
+<<elseif $speech_attitude is "bratty">>
+	"Don't cry," you say. "Someone nasty might hear. What's your name?"
+<<else>>
+	"It's okay," you say. "You're safe now. What's your name?"
+<</if>>
+<br><br>
+
+<<His>> sobs recede a little, but <<he>> doesn't respond. You feel <<his>> arm through <<his>> worn school uniform as you help <<him>> to <<his>> feet. <<Hes>> very thin.
+<br><br>
+
+<<He>> stares at you, cheeks still wet. You take <<his>> hand and lead <<him>> toward the road. <<dockclotheson>> Security watch as you pass, but don't stop you.
+<br><br>
+
+<<link [[Take to train station (1:00)|Docks Slave Station]]>><<pass 60>><</link>>
+<br>
+<<link [[Get food first (£20)|Docks Slave Cafe]]>><<pass 60>><<famegood 1>><<set $money -= 2000>><</link>>
+<br>
+
+:: Docks Slave Cafe
+<<set $outside to 0>><<set $location to "cafe">><<dockeffects>><<effects>>
+
+You take <<him>> to a nearby cafe and sit at a table away from the window. <<His>> eyes light up when <<he>> sees the menu. <<He>> points at the picture of a burger, so you order one for <<him>> and one for yourself. <<He>> devours <<his>> meal, pausing only to drink the accompanying pop.
+<br><br>
+
+You ask <<him>> <<his>> name and where <<hes>> from as <<he>> eats. <<He>> doesn't respond. You're not sure if <<he>> speaks English.
+<br><br>
+
+<<He>> licks the plate once finished, and stares at your food with longing. You push your plate over to <<him>>. <<He>> eats it just as fast.
+<br><br>
+
+You leave the cafe together. <<He>> looks much happier.
+<br><br>
+
+<<link [[Next|Docks Slave Station]]>><<pass 60>><</link>>
+<br>
+
+:: Docks Slave Station
+<<set $outside to 0>><<set $location to "town">><<dockeffects>><<effects>>
+
+You take the <<person>> to the train station on Harvest Street. <<He>> walks close, and keeps bumping into you. The station itself is busy. There's a map of the country on the wall, detailing the train network.
+<br><br>
+
+<<He>> points at one town in particular and smiles. You look more closely. It matches the name beneath <<his>> uniform's logo. "Is this your home?" you ask. <<He>> just smiles.
+<br><br>
+
+You buy a ticket and walk onto the platform as the train arrives.
+<<set $money -= 10000>>
+The <<person>> seems anxious.
+<br><br>
+
+
+<<if $money gte 10000>>
+	<<link [[Give nothing|Docks Slave Station 2]]>><<famegood 5>><<set $phase to 0>><</link>>
+	<br>
+	<<link [[Give £100|Docks Slave Station 2]]>><<set $dockslavemoney to 100>><<set $money -= 10000>><<famegood 10>><<set $phase to 1>><</link>>
+	<br>
+<<else>>
+	<<link [[Wave goodbye|Docks Slave Station 2]]>><<famegood 5>><<set $phase to 0>><</link>>
+	<br>
+<</if>>
+<<if $money gte 30000>>
+	<<link [[Give £300|Docks Slave Station 2]]>><<set $dockslavemoney to 300>><<set $money -= 30000>><<famegood 30>><<set $phase to 2>><</link>>
+	<br>
+<</if>>
+<<if $money gte 100000>>
+	<<link [[Give £1000|Docks Slave Station 2]]>><<set $dockslavemoney to 1000>><<set $money -= 100000>><<famegood 50>><<set $phase to 3>><</link>>
+	<br>
+<</if>>
+
+:: Docks Slave Station 2
+<<set $outside to 0>><<set $location to "town">><<dockeffects>><<effects>>
+
+<<if $phase gte 1>>
+	You hand the <<person>> the ticket and £<<print $dockslavemoney>>.
+<<else>>
+	You hand the <<person>> the ticket.
+<</if>>
+
+<<if $speech_attitude is "meek">>
+	"It was nice to meet you," you say. "I hope you have a nice journey."
+<<elseif $speech_attitude is "bratty">>
+	"You should be okay from here," you say.
+<<else>>
+	"This train will take you home," you say.
+<</if>>
+
+<<He>> seems reluctant to leave you, but <<he>> understands and walks alone toward the waiting train. Before reaching it however, <<he>> turns and runs back. <<He>> almost knocks you over with a hug.
+<br><br>
+
+<<He>> waves from the window as the train departs.
+<br><br>
+
+<<endevent>>
+<<link [[Next|Harvest Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Passout Docks
+<<set $outside to 0>><<set $location to "town">><<dockeffects>><<effects>>
+
+<<upperruined>><<lowerruined>><<underruined>>
+<<set $leftarm to "bound">><<set $rightarm to "bound">>
+You awaken naked on a chair. Lengths of rope criss-cross your body and tie you down. A round board sits on your knees and leans against your chest, giving you some cover from prying eyes. You can't move an inch. Walls of corrugated metal suggest you're inside a cargo container. You're not alone.
+<br><br>
+
+<<generate1>><<generate2>><<generate3>><<person2>>"It's not fair," a <<person>> says. <<He>> sits opposite you with <<his>> arms folded. "You set it up wrong."
+<br><br>
+
+A dart thuds into the board. The <<person1>><<person>> who threw it laughs. "Yeah yeah," <<he>> says. "We're all using the same board, if you haven't noticed." <<He>> throws another dart. "I win." <<He>> turns to a <<person3>><<person>>. "Unless you score perfect."
+<br><br>
+
+The <<person>> stands and takes <<his>> position in front of the board as the <<person1>><<person>> approaches to retrieve <<his>> darts. "Hey," <<he>> says. "<<pShes>> awake."
+<br><br>
+
+<<link [[Insult|Passout Docks 2]]>><<set $phase to 0>><<def 1>><<trauma -6>><</link>><<ltrauma>>
+<br>
+<<link [[Plead|Passout Docks 2]]>><<set $phase to 1>><<sub 1>><<stress -6>><</link>><<lstress>>
+<br>
+<<link [[Remain silent|Passout Docks 2]]>><<set $phase to 2>><</link>>
+<br>
+
+:: Passout Docks 2
+<<set $outside to 0>><<set $location to "docks">><<dockeffects>><<effects>>
+
+<<if $phase is 0>>
+	<<if $speech_attitude is "meek">>
+		"L-let me go," you say. "You're being mean."
+	<<elseif $speech_attitude is "bratty">>
+		"Untie me at once," you say. "Or I'll throw you into the sea with the other scum."
+	<<else>>
+		"You scum," you say. "Let me go."
+	<</if>>
+	<br><br>
+	The <<person1>><<person>> laughs. "Let you go? Sure. After I've had my fun."
+<<elseif $phase is 1>>
+	<<if $speech_attitude is "meek">>
+		"Please don't hurt me," you say. "I promise I won't tell anyone."
+	<<elseif $speech_attitude is "bratty">>
+		"This is childish," you say. "Let me go now and I won't tell anyone."
+	<<else>>
+		"Please let me go," you say. "I won't tell anyone."
+	<</if>>
+	<br><br>
+	The <<person1>><<person>> laughs. "Sure. After I've had my fun."
+<<else>>
+<</if>>
+
+<<He>> returns to <<his>> seat as the <<person3>><<person>> prepares to throw.
+<br><br>
+
+The dart flies over your shoulder. "Fuck," the <<person>> says as <<he>> sits in defeat. The <<person1>><<person>> raises <<his>> fists. "I win! Now clear off you two. I want privacy."
+<br><br>
+
+The <<person2>><<person>> shakes <<his>> head. "That wasn't agreed." <<He>> opens a beer. "We're watching. I wanna see what you do to this <<girl>>."
+<br><br>
+
+The <<person1>><<person>> sighs, but doesn't protest. <<He>> pulls the board away from you. Their eyes feast on your <<lewdness>>.
+<br><br>
+
+<<link [[Next|Passout Docks Rape]]>><<set $enemyno to 1>><<set $enemynomax to 1>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Passout Docks Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+
+The pair cheer their colleague on.
+<br><br>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Passout Docks Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Passout Docks Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Passout Docks Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	The pair applaud. "I think I've learned something intimate about you," the <<person2>><<person>> says.
+	<br><br>
+
+	"Sh-shut it," the <<person1>><<person>> responds. <<He>> unties you from the chair, but leaves the rope around you. "You keep it shut too. Not that anyone will care." <<He>> opens the container and kicks you out.
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Docks]]>><</link>>
+
+<<else>>
+
+	You kick the <<person>> against the metal wall. <<He>> cries out in pain and clutches <<his>> back.
+	<br><br>
+
+	"<<pShes>> tied up mate!" the <<person2>><<person>> says as the <<person3>><<person>> keels over with laughter.
+	<br><br>
+
+	<<tearful>> you kick open the door and leave the container. The pair don't stop you, but continue to mock their colleague.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Docks]]>><</link>>
+
+<</if>>
+
+<<set $stress -= 2000>>
+
+:: Docks Pub Crawl
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+<<set $dockpubcount += 1>>
+<<if Time.hour gte 3 and Time.hour lte 18>>
+
+	Your colleagues pat your back, congratulating your endurance. They separate and stagger home.
+	<<gcool>><<dockstatus 5>>
+	<br><br>
+
+	<<destinationeventend>>
+
+<<elseif $rng gte 81>>
+	<<generateSailor 1>><<generateSailor 2>><<generateSailor 3>><<generateSailor 4>><<generateSailor 5>><<generateSailor 6>><<person1>>
+	Accompanying your colleagues, you <<if $drunk gte 360>>stagger<<else>>walk<</if>> into a pub on Mer Street. It's busy. Sailors from the moored ships are unwinding here.
+	<br><br>
+
+	"Pub quiz in ten minutes," the jovial owner shouts. "Winning team gets a round on the house." Your colleagues sign up at once. The sailors scoff. "You got no chance," one of them, a <<person>>, says. Your colleagues throw colourful insults in response.
+	<br><br>
+
+	"You lot talk big," the <<person>> says after much back and forth. <<He>> pulls £60 from <<his>> pocket. <<His>> fellow sailors do likewise. "That's £360 says we win the quiz." Despite their previous bluster, the dockers seem unsure.
+	<br><br>
+
+	<<if $promiscuity gte 35>>
+		<<link [[Bet your body|Docks Pub Crawl Body]]>><<dockstatus 1>><</link>><<promiscuous3>><<gcool>>
+		<br>
+	<</if>>
+	<<if $money gte 6000>>
+		<<link [[Match their bet (£60)|Docks Pub Crawl Bet]]>><<set $money -= 6000>><</link>>
+		<br>
+		<</if>>
+	<<link [[Don't bet anything|Docks Pub Crawl Quiz Refuse]]>><<set $phase to 0>><</link>>
+	<br>
+	<<link [[Don't take part|Docks Pub Crawl Quiz Refuse]]>><<set $phase to 1>><</link>>
+	<br>
+
+<<elseif $rng gte 61>>
+
+	Accompanying your colleagues, you <<if $drunk gte 360>>stagger<<else>>walk<</if>> into a pub on Harvest Street. Some rough looking patrons eye you up as you enter.
+	<br><br>
+
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (9900 - $allure)>>
+		<<generate1>><<person1>>A <<person>> sits beside you and places <<his>> hand on your thigh. "Fancy disappearing together for a few minutes?" <<he>> says.
+		<br><br>
+
+		<<link [[Accept|Docks Pub Crawl Sex]]>><<set $sexstart to 1>><</link>><<promiscuous1>>
+		<br>
+		<<link [[Refuse|Docks Pub Crawl Sex Refuse]]>><</link>>
+		<br>
+	<<else>>
+		You drink a couple of rounds together, ignoring evil looks from the regular patrons. You leave with the other dockers.
+		<br><br>
+
+		<<dockpuboptions>>
+	<</if>>
+
+<<elseif $rng gte 41>>
+
+	Accompanying your colleagues, you <<if $drunk gte 360>>stagger<<else>>walk<</if>> into a pub on Barb Street.
+	<br><br>
+
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (9900 - $allure)>>
+		You overhear one of the other dockers talking about you. <<generate1>><<person1>>"You sure the <<girl>> can handle it," <<he>> says. "The drinking, I mean. I don't want to get in trouble with <<pher>> parents or nothing."
+		<br><br>
+
+		<<link [[Challenge to drinking contest|Docks Pub Crawl Contest]]>><<dockstatus 1>><<set $phase to 0>><</link>><<gcool>>
+		<br>
+		<<link [[Remain silent|Docks Pub Crawl Silent]]>><<dockstatus -1>><</link>><<lcool>>
+		<br>
+
+	<<else>>
+		People pay you and the other dockers no mind. You drink a few rounds and leave together.
+		<br><br>
+
+		<<dockpuboptions>>
+	<</if>>
+
+<<elseif $rng gte 21>>
+
+	Accompanying your colleagues, you <<if $drunk gte 360>>stagger<<else>>walk<</if>> into a pub on Connudatus Street.
+	<br><br>
+
+	<<generate1>><<generatep2>><<person2>>You notice a docker eyeing up a <<person>> on the other side of the room.
+	<br><br>
+
+	<<link [[Encourage|Docks Pub Crawl Eyeing Encourage]]>><</link>>
+	<br>
+	<<link [[Ignore|Docks Pub Crawl Eyeing Ignore]]>><</link>>
+	<br>
+
+<<else>>
+
+	Accompanying your colleagues, you <<if $drunk gte 360>>stagger<<else>>walk<</if>> into a pub on the High Street.
+	<br><br>
+
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (9900 - $allure)>>
+		You attract attention. Other patrons keep trying to flirt with you.
+		<br><br>
+
+		<<link [[Flirt|Docks Pub Crawl Flirt]]>><</link>><<promiscuous1>>
+		<br>
+			<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+			<<link [[Tease|Docks Pub Crawl Tease]]>><</link>><<exhibitionist1>>
+			<br>
+			<</if>>
+		<<link [[Ignore|Docks Pub Crawl Flirt Ignore]]>><</link>>
+		<br>
+
+	<<else>>
+
+		No one pays you or the other dockers much mind. You drink a few rounds and leave together.
+		<br><br>
+
+		<<dockpuboptions>>
+
+	<</if>>
+
+<</if>>
+
+:: Docks Pub Crawl Eyeing Encourage
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $speech_attitude is "meek">>
+	"You should talk to <<him>>," you say. "Just be yourself."
+<<elseif $speech_attitude is "bratty">>
+	"Talk to <<him>>," you say. "<<He>> will appreciate the assertiveness."
+<<else>>
+	"You should talk to <<him>>," you say. "You'll regret it if you don't."
+<</if>>
+<br><br>
+The docker finishes their drink, takes a deep breath and marches over. The <<person>> looks up. You can't hear them over the din of the pub, but <<he>> seems to respond well.
+
+<<if $rng gte 51>>
+
+	<<He>> takes the docker's hand and together they walk outside. The docker gives you a grateful smile before disappearing.
+	<<gcool>><<dockstatus 1>>
+	<br><br>
+
+<<else>>
+
+	Until <<he>> sneers and throws <<his>> drink in the docker's face.
+	<br><br>
+
+	The docker returns, eyes downcast and hair dripping.
+	<br><br>
+
+<</if>>
+
+You finish your drink and leave with your colleagues.
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Eyeing Ignore
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+You decide to keep to yourself. You finish your drink and leave with your colleagues.
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Flirt
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+You flirt back, revelling in the attention. You manage to convince someone to pay for drinks for you and your colleagues.
+<<dockstatus 1>><<gcool>>
+
+<<promiscuity1>><<set $money += 500>>
+
+You and the dockers finish your drinks and leave together.
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Tease
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+You hike your skirt up, giving them a tantalising glimpse of your upper thighs just short of your <<undies>>. One of your colleagues, a <<generate1>><<person1>><<person>>, spoils the fun and pulls your $worn.lower.name over your thighs proper. "Sorry," <<he>> says. "But you're working them up a bit too well. I don't want to lose teeth protecting you."
+
+<<exhibitionism1>>
+
+You and the dockers finish your drinks and leave together.
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Flirt Ignore
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+You ignore the flirters, finish your drink and leave with your colleagues.
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Contest
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $phase is 0>><<set $phase += 1>>
+	<<if $speech_attitude is "meek">>
+		"You're wrong," you say. Everyone turns to you. "I bet I can drink even more than you."
+	<<elseif $speech_attitude is "bratty">>
+		You laugh. Everyone turns to you. "It's you I'm worried about," you say to the <<person>>. "You'll be out cold within an hour."
+	<<else>>
+		"I can handle myself," you say. Everyone turns to you. "In fact, I can handle drink better than you."
+	<</if>>
+	<br><br>
+
+	The <<generate2>><<person2>><<person>> jabs the <<person1>><<person>> with <<his>> elbow. "That's a challenge," <<person2>><<he>> says. The <<person1>><<person>> sighs and takes the seat in front of you as the other dockers rearrange themselves to watch. They're so enthused they offer to pay for the drinks.
+	<br><br>
+
+	<<link [[Next|Docks Pub Crawl Contest]]>><</link>>
+	<br>
+
+<<elseif $phase is 1>><<set $phase += 1>>
+
+	<<generate3>><<person3>>The bartender arrives with two glasses. "Scotch," <<he>> says. "Let's start you off easy."
+	<br><br>
+
+	<<if $dockpubcount gte 4>>
+		<<person1>>"I don't think this'll take long," the <<person>> says. "We've had more than a few already."
+		<br><br>
+	<</if>>
+
+	<<link [[Drink|Docks Pub Crawl Contest]]>><<alcohol 180>><</link>>
+	<br>
+	<<link [[Stop|Docks Pub Crawl Contest Stop]]>><<dockstatus -1>><</link>><<lcool>>
+	<br>
+
+<<elseif $phase is 2>><<set $phase += 1>>
+
+	You drink the scotch as the audience cheers. It burns your throat.
+	<br><br>
+
+	The <<person1>><<person>> coughs. "No shame in quitting," <<he>> says. "I'm a seasoned drinker, and I don't want to carry you home after."
+	<br><br>
+
+	The <<person3>>bartender returns, holding two more glasses. "Vodka," <<he>> says. "But stronger than you're used to, I reckon."
+	<br><br>
+
+	<<link [[Drink|Docks Pub Crawl Contest]]>><<alcohol 180>><</link>>
+	<br>
+	<<link [[Stop|Docks Pub Crawl Contest Stop]]>><<dockstatus -1>><</link>><<lcool>>
+	<br>
+
+<<elseif $phase is 3>><<set $phase += 1>>
+
+	You drink the vodka as the audience cheers once more. You feel a bit nauseous.
+	<br><br>
+
+	"That tasted foul," the <<person1>><<person>> says. "I must be pretty pissed already if I'm doing this."
+	<br><br>
+
+	The <<person3>>bartender returns, holding two more glasses. "Absinthe," <<he>> says. "Made locally. This was illegal not long ago."
+	<br><br>
+
+	The <<person1>><<person>> sways slightly as <<he>> takes the drink.
+	<br><br>
+
+	<<link [[Drink|Docks Pub Crawl Contest]]>><<alcohol 120>><<hallucinogen 120>><</link>>
+	<br>
+	<<link [[Stop|Docks Pub Crawl Contest Stop]]>><<dockstatus -1>><</link>><<lcool>>
+	<br>
+
+<<elseif $phase is 4>><<set $phase += 1>>
+
+	You drink the absinthe. You almost gag. The <<person1>><<person>> does, but <<he>> manages to keep it down. <<He>> doesn't say anything.
+	<br><br>
+
+	The bartender returns with another two glasses. The liquid is bright and colourful. "Local special," <<he>> smiles. "Not on the menu."
+	<br><br>
+
+	<<link [[Drink|Docks Pub Crawl Contest]]>><<alcohol 120>><<drugs 120>><<arousal 1800>><</link>><<ggarousal>>
+	<br>
+	<<link [[Stop|Docks Pub Crawl Contest Stop]]>><<dockstatus -1>><</link>><<lcool>>
+	<br>
+
+<<else>>
+
+	You drink the colourful liquid. It's sweet, and makes you feel warm.
+	<br><br>
+
+	The <<person1>><<person>> lifts <<his>> drink. "I prom-" <<he>> hiccups. "I promised myself. Never again." <<He>> places the glass on the table. "You win." The audience cheers with more vigour than before. Someone raises your arm and several others pat your back. "Now," the <<person>> continues. "I need a piss."
+	<<gcool>><<dockstatus 1>>
+	<br><br>
+	<<earnFeat "Under the Table">>
+	<<if $arousal gte $arousalmax>>
+
+		The warmth in you continues to build, and build, until your whole body shakes. You pass the point of no return.
+		<br><br>
+
+		<<orgasm>>
+		<br><br>
+
+		You fall to the ground, writhing and moaning in front of your astonished colleagues. The <<person>> returns as you regain control. <<He>> shakes <<his>> head.
+		<br><br>
+
+		You leave the pub with the other dockers, feeling spent and flushed. They don't mention what happened, but something has them smiling.
+		<br><br>
+
+		<<dockpuboptions>>
+
+	<<else>>
+
+		Your colleagues finish their drinks, the <<person>> returns, and you leave the pub together.
+		<br><br>
+
+		<<dockpuboptions>>
+
+	<</if>>
+
+<</if>>
+
+:: Docks Pub Crawl Contest Stop
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $phase is 4>>
+
+	You shake your head and push the glass away from you. All eyes turn to the <<person>>, who lifts <<his>> and smells it. <<He>> places it back on the table. "I prom-" <<he>> hiccups. "I promised myself. Never again." It's a draw. The dockers are disappointed.
+	<<lcool>><<dockstatus 1>>
+	<br><br>
+
+	Your colleagues finish their drinks and you leave the pub together.
+	<br><br>
+
+	<<dockpuboptions>>
+
+<<else>>
+
+	You shake your head and push the glass away from you. All eyes turn to the <<person>>, who lifts <<his>> and smells it. <<He>> downs it in one motion, and the dockers cheer. One raises <<his>> arm and several others pat <<his>> back.
+	<<lcool>><<dockstatus 1>>
+	<br><br>
+
+	Your colleagues finish their drinks and you leave the pub together.
+	<br><br>
+
+	<<dockpuboptions>>
+
+<</if>>
+
+:: Docks Pub Crawl Silent
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+You don't interject.
+<br><br>
+
+You finish drinking and leave the pub with your colleagues.
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 20>>
+	<<He>> takes your hand and leads you to the <<if $pronoun is "m">>men's<<else>>women's<</if>> toilets. <<He>> pushes you against the sinks and grasps at your clothing.
+	<<promiscuity1>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Docks Pub Crawl Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Docks Pub Crawl Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Docks Pub Crawl Sex Finish
+<<set $outside to 0>><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"You dockers aren't usually so cute," <<he>> says as <<he>> adjusts <<his>> clothes.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you return to the pub to find your colleagues finishing their drinks. You leave together.
+	<br><br>
+
+	<<dockpuboptions>>
+
+<<elseif $enemyhealth lte 0>>
+
+	You shove the <<person>> into a cubicle and escape the toilets.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you return to the pub to find your colleagues finishing their drinks. You leave together.
+	<br><br>
+
+	<<dockpuboptions>>
+
+<<else>>
+
+	"Fine," <<he>> says. "You're lucky I don't just take you anyway."
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you return to the pub to find your colleagues finishing their drinks. You leave together.
+	<br><br>
+
+	<<dockpuboptions>>
+
+<</if>>
+
+:: Docks Pub Crawl Sex Refuse
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+The <<person>> grasps your neck and leans in. "I tried asking nicely," <<he>> whispers. "Now how abouts you come with me, and I won't need to hurt you."
+<<gtrauma>><<gstress>><<trauma 1>><<stress 1>>
+<br><br>
+
+<<if $submissive lte 500>>
+
+	"You're gonna regret touching me," you say. You smash your glass over the <<persons>> head. <<He>> tries to dodge the blow, but loses balance and falls off <<his>> chair. Your colleagues cheer.
+	<br><br>
+
+	"Unprovoked!" the <<person>> says as <<he>> nurses <<his>> scalp.
+	<br><br>
+
+	The pub owner rushes over. <<generate2>><<person2>> "Last thing I need is a brawl," <<he>> says. "You dockers always bring trouble. Get out."
+	<br><br>
+
+	"That was self defence," you argue, but <<he>> won't hear it. Your colleagues down the last of their drink and together you leave the pub. They don't seem to mind.
+	<<gcool>><<dockstatus 1>>
+	<br><br>
+
+<<else>>
+
+	One of your colleagues notices, and smashes a glass over the <<persons>> head. <<He>> tries to dodge the blow, but loses balance and falls off <<his>> chair.
+	<br><br>
+
+	"Unprovoked!" the <<person>> says as <<he>> nurses <<his>> scalp.
+	<br><br>
+
+	The pub owner rushes over. <<generate2>><<person2>> "Last thing I need is a brawl," <<he>> says. "You dockers always bring trouble. Get out."
+	<br><br>
+
+	Your colleagues argue that it was justified, but <<he>> won't hear it. They down the last of their drink and together you leave the pub.
+	<br><br>
+
+<</if>>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Body
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<set $seductiondifficulty to 4000>>
+<<seductioncheck>>
+<br><br>
+<<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><</if>><<seductionskilluse>>
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"I-I hope it's worth this much," you say. "I bet my body."
+<<elseif $speech_attitude is "bratty">>
+	It's your turn to scoff. "That all?" you say. "Fine. I bet my body. If you win, you can do whatever you want to me."
+<<else>>
+	"Instead of money," you say. "If you win, you can have me."
+<</if>>
+<<promiscuity3>>
+
+<<if $seductionrating gte $seductionrequired>>
+
+	The sailors look at each other, excited. "Free drinks," the <<person>> says. "And a free <<girl>>. It's our lucky night."
+	<br><br>
+
+	"Dream on," one of your colleagues says, though they seem happy that they don't stand to lose anything.
+	<br><br>
+
+	The pub owner steps up to a microphone in the corner of the room, preparing to read the first question.
+	<br><br>
+	<<set $dockquiz to "body">>
+	<<link [[Next|Docks Pub Crawl Quiz]]>><<set $phase to 0>><<set $dockquizhome to 0>><<set $dockquizaway to 0>><</link>>
+	<br>
+
+<<else>>
+
+	"Nope," the <<person>> says. "We could get a whore cheaper than that." <<person2>>The <<person>> sat beside <<him>> looks crestfallen, and eyes you up<<person1>>.
+	<br><br>
+
+	<<if $money gte 6000>>
+		<<link [[Match their bet (£60)|Docks Pub Crawl Bet]]>><<set $money -= 6000>><</link>>
+		<br>
+	<</if>>
+	<<link [[Don't bet anything|Docks Pub Crawl Quiz Refuse]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Docks Pub Crawl Bet
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+You put £60 on the table. Your colleagues follow suit, though some with a grumble. "Thanks for your contribution," the <<person>> says. "That's our night paid for."
+<br><br>
+
+The pub owner steps up to a microphone in the corner of the room, preparing to read the first question.
+<br><br>
+<<set $dockquiz to "money">>
+<<link [[Next|Docks Pub Crawl Quiz]]>><<set $phase to 0>><<set $dockquizhome to 0>><<set $dockquizaway to 0>><</link>>
+<br>
+
+:: Docks Pub Crawl Quiz Refuse
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $phase is 0>>
+
+	You do nothing, and nor do any of your colleagues. "Thought so," the <<person>> says as the other sailors laugh. "You lot are all talk."
+	<br><br>
+
+	The pub owner steps up to a microphone in the corner of the room, preparing to read the first question.
+	<br><br>
+	<<set $dockquiz to "none">>
+	<<link [[Next|Docks Pub Crawl Quiz]]>><<set $phase to 0>><<set $dockquizhome to 0>><<set $dockquizaway to 0>><</link>>
+	<br>
+
+<<else>>
+
+	You do nothing, and nor do any of your colleagues. "Thought so," the <<person>> says as the other sailors laugh. "You lot are all talk."
+	<br><br>
+
+	You don't pay attention to the quiz, and your colleagues lose to the sailors. You leave together in a sour mood.
+	<br><br>
+
+	<<dockpuboptions>>
+
+<</if>>
+
+:: Docks Pub Crawl Quiz
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $phase is 0>><<set $phase += 1>>
+	The first category <<dockpubquiz>>
+<<elseif $phase is 1>><<set $phase += 1>>
+	The second category <<dockpubquiz>>
+<<elseif $phase is 2>><<set $phase += 1>>
+	The third category <<dockpubquiz>>
+<<elseif $phase is 3>><<set $phase += 1>>
+	The fourth category <<dockpubquiz>>
+<<elseif $phase is 4>><<set $phase += 1>>
+	The fifth category <<dockpubquiz>>
+<<else>>
+
+	<<if $dockquizhome gt $dockquizaway>>
+
+		"And the winners are," the owner announces. "The dockers!" You cheer and drum the table with your colleagues, until the owner convinces you to settle down.
+		<br><br>
+		<<earnFeat "Pub Crawl Victors">>
+		<<if $dockquiz is "money">>
+			The sailors aren't impressed. "Rigged," the <<person>> says, but they hand over the cash. You've gained <<moneyGain 60>>.
+			<<set $money += 6000>>
+			<br><br>
+
+			You and your colleagues enjoy your free drinks and leave in an elevated mood.
+			<<lstress>><<stress -6>>
+			<br><br>
+
+			<<dockpuboptions>>
+		<<elseif $dockquiz is "body">>
+			The sailors aren't impressed. "Rigged," the <<person>> says, but they hand over the cash.
+			<br><br>
+
+			<<link [[Take the money for yourself|Docks Pub Crawl Take]]>><<dockstatus -1>><</link>><<lcool>>
+			<br>
+			<<link [[Share the money with your colleagues|Docks Pub Crawl Share]]>><<dockstatus 1>><</link>><<gcool>>
+			<br>
+		<<else>>
+
+			The sailors aren't impressed. "Rigged," the <<person>> says.
+			<br><br>
+
+			You and your colleagues enjoy your free drinks and leave in an elevated mood.
+			<<lstress>><<stress -6>>
+			<br><br>
+
+			<<dockpuboptions>>
+
+		<</if>>
+
+	<<elseif $dockquizhome is $dockquizaway>>
+		"And the winners are," the owner announces. "No one! It's a draw." The dockers and sailors seem equally upset.
+		<br><br>
+		You and your colleagues leave soon after.
+		<<if $dockquiz is "money">><<set $money += 6000>><</if>>
+		<br><br>
+		<<dockpuboptions>>
+	<<else>>
+		"And the winners are," the owner announces. "The sailors!" They cheer and laugh until the owner convinces them to settle down.
+		<br><br>
+		<<if $dockquiz is "money">>
+			They take their money. "Sorry guys," the <<person>> says. "Shoulda known better than to challenge us."
+			<<lcool>><<dockstatus -1>>
+			<br><br>
+			You and your colleagues leave in a sour mood.
+			<<lstress>><<stress -6>>
+			<br><br>
+			<<dockpuboptions>>
+		<<elseif $dockquiz is "body">>
+			The <<person>> looks at you and makes a come-hither motion. <<His>> fellow sailors stare at you with ravenous eyes. "Time to pay up," <<he>> says. "Get that bum over here."
+			<br><br>
+			<<link [[Walk over|Docks Pub Crawl Gangbang]]>><<set $sexstart to 1>><</link>>
+			<br>
+			<<if $rng gte 81>>
+				<<link [[Refuse|Docks Pub Crawl Fight]]>><<dockstatus -1>><</link>><<lcool>>
+				<br>
+			<<else>>
+				<<link [[Refuse|Docks Pub Crawl Gangbang Refuse]]>><<dockstatus -1>><</link>><<lcool>>
+				<br>
+			<</if>>
+		<<else>>
+			You and your colleagues leave in a sour mood.
+			<<lstress>><<stress -6>>
+			<br><br>
+			<<dockpuboptions>>
+		<</if>>
+	<</if>>
+<</if>>
+
+:: Docks Pub Crawl Gangbang Refuse
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $speech_attitude is "meek">>
+	"S-sorry," you say. "But I don't want to."
+<<elseif $speech_attitude is "bratty">>
+	"Fuck off," you say. "You didn't think I'd really bet myself for so little, right?"
+<<else>>
+	"No," you shake your head. "I'm not doing that over a pub quiz."
+<</if>>
+<br><br>
+
+"Figures," the <<person>> says. <<He>> walks closer, but your colleagues form a protective barrier and <<he>> relents. "You're probably worn out after fucking half the docks."
+<br><br>
+
+You leave the pub with your colleagues.
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Fight
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $speech_attitude is "meek">>
+	"S-sorry," you say. "But I don't want to."
+<<elseif $speech_attitude is "bratty">>
+	"Fuck off," you say. "You didn't think I'd really bet myself for so little, right?"
+<<else>>
+	"No," you shake your head. "I'm not doing that over a pub quiz."
+<</if>>
+<br><br>
+
+"Figures," the <<person>> says. <<He>> walks closer, but your colleagues form a protective barrier. <<He>> smacks one of them across the face, who then slaps <<him>> back. The other sailors rush to <<his>> defence as a brawl breaks out.
+<br><br>
+
+<<link [[Join in|Docks Pub Crawl Join]]>><<def 1>><<stress -6>><<pain 5>><<crimeUp 50 "assault">><<dockstatus 1>><</link>><<gcool>><<crime "assault">><<gpain>><<lstress>>
+<br>
+<<link [[Calm everyone down|Docks Pub Crawl Calm]]>><<dockstatus -1>><</link>><<lcool>>
+<br>
+
+:: Docks Pub Crawl Join
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+You pick up a bystander's drink and drench the <<persons>> hair. <<He>> sneers and lunges, clutching your throat and dragging you to the ground. One swift kick to the <<if $NPCList[0].penis isnot "none">>cock<<else>>pussy<</if>> and <<he>> releases you, and clutches <<his>> groin in agony.
+<br><br>
+
+You stand up as security separate your colleagues from the sailors. "Out!" the pub owner shouts, gesturing at you and the other dockers. "You lot first. Out!"
+<br><br>
+
+The owner glares at you as you leave with your laughing colleagues.
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Calm
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if currentSkillValue('physique') gte 12000>>
+	You stand in the middle of one of the fights and manage to hold a sailor and docker away from each other. A couple of the more level heads on both sides watch you and, inspired by your act, intervene themselves. They manage to calm things enough that security can form a line between the dockers and sailors.
+<<else>>
+	You try separate one of the fights, but just get knocked aside. A couple of the more level heads on both sides watch you and, inspired by your act, intervene themselves. They manage to calm things enough that security can form a line between the dockers and sailors.
+<</if>>
+
+"Out!" the pub owner shouts, gesturing at you and the other dockers. "You lot first. Out!"
+<br><br>
+
+You leave with your laughing colleagues.
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Gangbang
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	You walk over to the sailor's table. They grasp your arms and pull you onto it. "Not in here!" the pub owner shouts, but they pay no heed.
+	<br><br>
+
+	You feel your colleagues watching, along with the rest of the pub.
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Docks Pub Crawl Gangbang Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Docks Pub Crawl Gangbang]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Docks Pub Crawl Gangbang Finish
+
+<<set $outside to 0>><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>><<fameprostitution 30>>
+	Applause fills the pub. The sailors clink and swig their free drinks. "This is the life," the <<person>> sighs.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	<<tearful>> you climb down from the table. Your colleagues pat your back. "Thanks for taking one for the team," a <<generate1>><<person1>><<person>> says.
+	<br><br>
+	"One?" a <<generate2>><<person2>><<person>> interjects. "You mean six." The <<person1>><<person>> glares at <<person2>><<him>>.
+	<br><br>
+	You leave the pub with your colleagues.
+	<br><br>
+	<<dockpuboptions>>
+<<elseif $enemyhealth lte 0>>
+	You shove the <<person>> away from you. <<He>> stumbles into another patron, who punches <<him>> in the jaw. Someone throws a glass. Then, someone throws a table. The pub breaks into a brawl.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	Someone grasps your shoulders and hauls you to your feet. It's one of your colleagues. <<generate1>><<person1>><<He>> looks amused. <<tearful>> you keep low and escape the chaos with your fellow dockers.
+	<br><br>
+	<<dockpuboptions>>
+<<else>>
+	The sailors seem reluctant to stop, but your colleagues arrive at your side and help you to your feet.
+	<<lcool>><<dockstatus -1>>
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	<<tearful>> you leave the pub with the other dockers. The sailors heckle you.
+	<br><br>
+	<<dockpuboptions>>
+<</if>>
+
+:: Docks Pub Crawl Take
+
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+Your colleagues reach for the money, but you snatch it away from them. You remind them whose butt was on the line. They grumble, but agree. You've gained <<moneyGain 360>>.
+<br><br>
+
+You and your colleagues enjoy your free drinks and leave in an elevated mood.
+<<alcohol 60>><<lstress>><<stress -6>>
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Share
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+You let your colleagues have their share. You've gained <<moneyGain 60>>.
+<br><br>
+
+You and your colleagues enjoy your free drinks and leave in an elevated mood.
+<<alcohol 60>><<lstress>><<stress -6>>
+<br><br>
+
+<<dockpuboptions>>
+
+:: Docks Pub Crawl Science
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $phase2 is 0>>
+
+	<<if random(1, 2) is 2>>
+		<<set $dockquizhome += 1>>
+
+		You let your colleagues answer the questions. They write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		You let your colleagues answer the questions. They write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues.
+		<br><br>
+
+	<</if>>
+
+<<elseif $phase2 is 1>>
+
+	<<if currentSkillValue('science') gte random(1, 1000)>>
+		<<set $dockquizhome += 1>>
+
+		You write down the answers, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		<<if currentSkillValue('science') lte 300>>You're not confident, but you write down the answers, fold the paper and hand it to the pub owner.<<else>>You write down the answers, fold the paper and hand it to the pub owner.<</if>> The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues. <<if currentSkillValue('science') gte 700>>You were sure you got it right.<</if>>
+		<br><br>
+
+	<</if>>
+
+<<else>>
+
+	You convince your colleagues that you know your stuff, and write down nonsense answers. You fold the paper and hand it to the pub owner.
+	<br><br>
+
+	The owner reads your paper. "The dockers score zero." You grumble with your colleagues. What a surprise.
+	<br><br>
+
+<</if>>
+The owner reads the sailor's answers.
+<<if random(1, 2) is 2>>
+	<<set $dockquizaway += 1>>
+	"That's a point to the sailors." A cheer erupts from their table.
+	<br><br>
+<<else>>
+	"Sorry guys. No points."
+	<br><br>
+
+	The <<person>> shoves the <<person2>><<person>> sat next to <<him>>. <<person1>>"I thought you were good at this shit."
+	<br><br>
+<</if>>
+
+<<link [[Next|Docks Pub Crawl Quiz]]>><</link>>
+<br>
+
+:: Docks Pub Crawl Maths
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $phase2 is 0>>
+
+	<<if random(1, 2) is 2>>
+		<<set $dockquizhome += 1>>
+
+		You let your colleagues answer the questions. They write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		You let your colleagues answer the questions. They write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues.
+		<br><br>
+
+	<</if>>
+
+<<elseif $phase2 is 1>>
+
+	<<if currentSkillValue('maths') gte random(1, 1000)>>
+		<<set $dockquizhome += 1>>
+
+		You write down the answers, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		<<if currentSkillValue('maths') lte 300>>You're not confident, but you write down the answers, fold the paper and hand it to the pub owner.<<else>>You write down the answers, fold the paper and hand it to the pub owner.<</if>> The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues. <<if currentSkillValue('maths') gte 700>>You were sure you got it right.<</if>>
+		<br><br>
+
+	<</if>>
+
+<<else>>
+
+	You convince your colleagues that you know your stuff, and write down nonsense answers. You fold the paper and hand it to the pub owner.
+	<br><br>
+
+	The owner reads your paper. "The dockers score zero." You grumble with your colleagues. What a surprise.
+	<br><br>
+
+<</if>>
+The owner reads the sailor's answers.
+<<if random(1, 2) is 2>><<set $dockquizaway += 1>>
+	"That's a point to the sailors." A cheer erupts from their table.
+	<br><br>
+<<else>>
+	"Sorry guys. No points." They groan.
+	<br><br>
+
+<</if>>
+
+<<link [[Next|Docks Pub Crawl Quiz]]>><</link>>
+<br>
+
+:: Docks Pub Crawl English
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $phase2 is 0>>
+
+	<<if random(1, 2) is 2>>
+		<<set $dockquizhome += 1>>
+
+		You let your colleagues answer the questions. They write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		You let your colleagues answer the questions. They write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues.
+		<br><br>
+
+	<</if>>
+
+<<elseif $phase2 is 1>>
+
+	<<if $englishSuccess>>
+		<<set $dockquizhome += 1>>
+
+		You write down the answers, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		<<if currentSkillValue('english') lte 300>>You're not confident, but you write down the answers, fold the paper and hand it to the pub owner.<<else>>You write down the answers, fold the paper and hand it to the pub owner.<</if>> The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues. <<if currentSkillValue('english') gte 700>>You were sure you got it right.<</if>>
+		<br><br>
+
+	<</if>>
+
+<<else>>
+
+You convince your colleagues that you know your stuff, and write down nonsense answers. You fold the paper and hand it to the pub owner.
+<br><br>
+
+The owner reads your paper. "The dockers score zero." You grumble with your colleagues. What a surprise.
+<br><br>
+
+<</if>>
+The owner reads the sailor's answers.
+<<if random(1, 2) is 2>>
+	<<set $dockquizaway += 1>>
+	"That's a point to the sailors." A cheer erupts from their table.
+	<br><br>
+<<else>>
+	"Sorry guys. No points." They groan.
+	<br><br>
+
+<</if>>
+
+<<link [[Next|Docks Pub Crawl Quiz]]>><</link>>
+<br>
+
+:: Docks Pub Crawl History
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $phase2 is 0>>
+
+	<<if random(1, 2) is 2>>
+		<<set $dockquizhome += 1>>
+
+		You let your colleagues answer the questions. They write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		You let your colleagues answer the questions. They write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues.
+		<br><br>
+
+	<</if>>
+
+<<elseif $phase2 is 1>>
+
+	<<if currentSkillValue('history') gte random(1, 1000)>>
+		<<set $dockquizhome += 1>>
+
+		You write down the answers, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		<<if currentSkillValue('history') lte 300>>You're not confident, but you write down the answers, fold the paper and hand it to the pub owner.<<else>>You write down the answers, fold the paper and hand it to the pub owner.<</if>> The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues. <<if $historytrait gte 4>>You were sure you got it right.<</if>>
+		<br><br>
+
+	<</if>>
+
+<<else>>
+
+You convince your colleagues that you know your stuff, and write down nonsense answers. You fold the paper and hand it to the pub owner.
+<br><br>
+
+The owner reads your paper. "The dockers score zero." You grumble with your colleagues. What a surprise.
+<br><br>
+
+<</if>>
+The owner reads the sailor's answers.
+<<if random(1, 2) is 2>><<set $dockquizaway += 1>>
+	"That's a point to the sailors." A cheer erupts from their table.
+	<br><br>
+<<else>>
+	"Sorry guys. No points." They groan.
+	<br><br>
+
+<</if>>
+
+<<link [[Next|Docks Pub Crawl Quiz]]>><</link>>
+<br>
+
+:: Docks Pub Crawl Love
+<<set $outside to 0>><<set $location to "pub">><<dockeffects>><<effects>>
+
+<<if $phase2 is 0>>
+
+	<<if random(1, 2) is 2>>
+		<<set $dockquizhome += 1>>
+
+		You let your colleagues answer the questions. They argue a bit, but write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues. They make lewd gestures at the sailors, who return the display.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		You let your colleagues answer the questions. They write them down, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues. The sailors laugh. <<if $dockquiz is "body">>"Guess it's up to us to teach you the ropes," the <<person>> teases.<<else>>"Don't worry," the <<person>> teases. "We didn't expect better."<</if>>
+		<br><br>
+
+	<</if>>
+
+<<elseif $phase2 is 1>>
+
+	<<if $promiscuity gte random(1, 100)>>
+		<<set $dockquizhome += 1>>
+
+		You write down the answers, fold the paper and hand it to the pub owner. The sailors do likewise.
+		<br><br>
+
+		"That's a point to the dockers," The owner says. You cheer with your colleagues.
+		<<lstress>><<stress -1>>
+		<br><br>
+
+	<<else>>
+
+		<<if $promiscuity lte 30>>You're not confident, but you write down the answers, fold the paper and hand it to the pub owner.<<else>>You write down the answers, fold the paper and hand it to the pub owner.<</if>> The sailors do likewise.
+		<br><br>
+
+		The owner reads your paper. "The dockers score zero." You grumble with your colleagues. The sailors laugh. <<if $dockquiz is "body">>"Guess it's up to us to teach you the ropes," the <<person>> teases.<<else>>"Don't worry," the <<person>> teases. "We didn't expect better."<</if>>
+		<br><br>
+
+	<</if>>
+
+<<else>>
+
+	You convince your colleagues that you know your stuff, and write down nonsense answers. You fold the paper and hand it to the pub owner.
+	<br><br>
+
+	The owner reads your paper. "The dockers score zero." You grumble with your colleagues. What a surprise.
+	<br><br>
+
+<</if>>
+The owner reads the sailor's answers.
+<<if random(1, 2) is 2>><<set $dockquizaway += 1>>
+	"That's a point to the sailors." A cheer erupts from their table. "You learn a thing or two sailing between ports," the <<person>> says.
+	<br><br>
+<<else>>
+	"Sorry guys. No points." They boo. "You lot don't know nothing," the <<person>> says.
+	<br><br>
+
+<</if>>
+
+<<link [[Next|Docks Pub Crawl Quiz]]>><</link>>
+<br>
+
+:: Docks Fake ID
+<<effects>><<generate1>><<person1>>
+
+You flag down a manager.
+<br><br>
+
+"Need something?" <<he>> asks, only partially paying attention to you. "You know we can't let you work today."
+<br><br>
+
+"I'm not actually a student anymore <<if $speech_attitude is "meek">>...," you mumble,<<else>>," you say,<</if>> handing <<him>> the fake ID you purchased from Briar.
+<br><br>
+
+<<He>> examines it briefly, then hands it back to you. "So you aren't," <<he>> says, making a note of something on <<his>> clipboard. "In that case, you're allowed to work during the week, starting now."
+<br><br>
+
+The two of you hear a loud bang from across the docks. "Woah, careful over there!" <<he>> yells as <<he>> jogs off towards the source of the noise. "Do you idiots have any idea how much that equipment costs?!"
+<br><br>
+
+<<He>> doesn't look back, apparently done with you.
+<br><br>
+
+<<link [[Next|Docks]]>><<endevent>><<pass 2>><<set $idDocksReveal to 2>><</link>>

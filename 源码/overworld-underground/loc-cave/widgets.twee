@@ -1,0 +1,546 @@
+:: Widgets Cave [widget]
+<<widget "eventscavetreasure">>
+	<<if $rng gte 91 and $cave gte 30>>
+		Your foot kicks something hard and hollow. You lift it from the water. It's a chest, long and thin.
+		<br><br>
+		<<set $skulduggerydifficulty to 600>>
+		/* 北极星模组 */
+		<<caveicon "treasure">><<link [[打开它 (0:10)|Beach Cave Hollow Open]]>><<pass 10>><<set $skulduggeryhands to 1>><</link>><<skulduggerydifficulty>>
+		/* 北极星 */
+		<br>
+		<<getouticon>><<link [[Leave it|Beach Cave]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<elseif $rng gte 51>>
+		Your foot kicks something heavy, but not as hard as a rock. You lift it to the surface of the water. It's a chest, long and thin.
+		<br><br>
+		<<set $skulduggerydifficulty to 400>>
+		/* 北极星模组 */
+		<<caveicon "treasure">><<link [[打开它 (0:10)|Beach Cave Heavy Open]]>><<pass 10>><<set $skulduggeryhands to 1>><</link>><<skulduggerydifficulty>>
+		/* 北极星 */
+		<br>
+		<<getouticon>><<link [[Leave it|Beach Cave]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<elseif $rng gte 31>>
+		A tunnel leads away from the main cave, the ceiling dipping below the surface of the water.
+		<br><br>
+
+		<<caveicon "west">><<link [[Explore (0:05)|Beach Cave Explore]]>><<pass 5>><</link>><<swimmingdifficulty 400 1000>>
+		<br>
+		<<getouticon>><<link [[Ignore|Beach Cave]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		The cave branches in two directions.
+		<<if random(1, 2) is 2>>
+			<<if currentSkillValue('history') gte random(1, 1000)>>
+				<span class="green">You recognise the markings along the walls.</span> Something was hidden down the left passage, while the right leads towards the sea.
+				<br><br>
+			<<else>>
+				<br><br>
+			<</if>>
+			<<set $phase to 0>>
+			<<caveicon "left">><<link [[Go left|Beach Cave Treasure]]>><</link>>
+			<br>
+			<<caveicon "right">><<link [[Go right|Beach Cave Back]]>><</link>>
+			<br>
+		<<else>>
+			<<if currentSkillValue('history') gte random(1, 1000)>>
+				<span class="green">You recognise the markings along the walls.</span> Something was hidden down the right passage, while the left leads towards the sea.
+				<br><br>
+			<<else>>
+				<br><br>
+			<</if>>
+			<<set $phase to 1>>
+			<<caveicon "left">><<link [[Go left|Beach Cave Back]]>><</link>>
+			<br>
+			<<caveicon "right">><<link [[Go right|Beach Cave Treasure]]>><</link>>
+			<br>
+		<</if>>
+
+	<</if>>
+<</widget>>
+
+<<widget "eventscavesafe">>
+	<<if $rng gte 61>>
+		<<if $cave gte 50>>
+			The water around your feet surges, tripping you.
+			<<dancedifficulty 1 1000 true>>
+			<<if $danceSuccess>>
+				<span class="green">You manage to keep your footing.</span>
+			<<elseif playerIsPregnant() and playerAwareTheyArePregnant()>>
+				<span class="red">You fall to the cave floor, breaking your fall with one arm and shielding your <<bellyDescription "pc">> with the other.</span><<gstress>><<gpain>><<stress 6>><<pain 6>>
+			<<else>>
+				<span class="red">You fall to the cave floor, breaking your fall with your arms.</span><<gstress>><<gpain>><<stress 6>><<pain 6>>
+			<</if>>
+			<br><br>
+			<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<<elseif $cave gte 20>>
+			The water surges beneath your waist. You grasp an outcrop to avoid being swept away.
+			<<if $worn.lower.name is "naked" and $worn.over_lower is "naked">>
+				<<if $worn.under_lower.name is "naked">>
+					<<if $worn.genitals.name is "naked">>
+
+					<<else>>
+						<<set $worn.genitals.integrity -= 10>>
+						<<if $worn.genitals.integrity lte 0>>
+							The last of the material gives away, and the device <span class="pink">is ripped from your body.</span>
+							<<integritycheck no_text>><<exposure>>
+						<<else>>
+							You feel the water tear at your $worn.genitals.name.
+						<</if>>
+					<</if>>
+				<<else>>
+					<<set $worn.under_lower.integrity -= 10>>
+					<<if $worn.under_lower.integrity lte 0>>
+						The rushing water <span class="pink">tears the $worn.under_lower.name off your body, exposing your <<genitals>>.</span>
+						<<integritycheck no_text>><<exposure>>
+					<<else>>
+						The rushing water tears at your $worn.under_lower.name.
+					<</if>>
+				<</if>>
+			<<elseif $worn.over_lower is "naked">>
+				<<set $worn.lower.integrity -= 10>>
+				<<if $worn.lower.integrity lte 0>>
+					The rushing water <span class="pink">tears the $worn.lower.name off your body, exposing your <<undies>>.</span>
+				<<else>>
+					The rushing water tears at your $worn.lower.name.
+				<</if>>
+			<<elseif $worn.lower is "naked">>
+				<<set $worn.over_lower.integrity -= 10>>
+				<<if $worn.over_lower.integrity lte 0>>
+					The rushing water <span class="pink">tears the $worn.over_lower.name off your body<<if $worn.lower.exposed gte 2>>, exposing your <<undies>><</if>>.</span>
+				<<else>>
+					The rushing water tears at your $worn.lower.name.
+				<</if>>
+			<</if>>
+			<br><br>
+
+			<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<<else>>
+			The water surges around you, pushing you toward the coast.
+			<br><br>
+
+			<<link [[Be carried along|Beach Cave Carry]]>><</link>>
+			<br>
+			<<link [[Swim against the current|Beach Cave Swim]]>><</link>><<swimmingdifficulty 400 1000>>
+			<br>
+
+		<</if>>
+		<br><br>
+
+	<<elseif $rng gte 41>>
+		You hear a weighty groan above, as if the cave were about to collapse. Fortunately, it does not.<<gstress>><<stress 6>>
+		<br><br>
+
+		<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<elseif $rng gte 21>>
+		Something brushes against your ankle. You look down, but see nothing.<<stress 6>><<gstress>>
+		<br><br>
+
+		<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		There are gems embedded in the walls here.
+		<br><br>
+		<<if $awareness gte 400>>
+			Like a thousand watching eyes.<<gstress>><<stress 6>>
+			<br><br>
+
+			<<link [[Tell them to stop staring|Beach Cave Eyes]]>><<awareness 1>><<trauma -6>><</link>><<gawareness>><<ltrauma>>
+			<br>
+			<<link [[Ignore them|Beach Cave]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<<else>>
+			They look pretty in the lichen light.<<lstress>><<stress -6>>
+			<br><br>
+
+			<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "eventscave">>
+	<<if $rng gte 81>>
+		<<beach_cave_caught>>
+	<<elseif $rng gte 61>>
+		<<if $pursuit is 0>>
+			<<set $pursuit += 1>>
+			Your hair bristles. <span class="purple">Something is watching you.</span>
+			<br><br>
+			<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<<elseif $pursuit is 1>>
+			<<set $pursuit += 1>>
+			You shiver. <span class="pink">Something is following you. It's not alone.</span>
+			<br><br>
+			<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<<elseif $tentacledisable is "f" and $hallucinations gte 2>>
+			<<if currentSkillValue('skulduggery') gte random(400, 1200)>>
+				<span class="green">Your hair bristles.</span> You pause, and examine the ground ahead. Then you see it. The tendril of some creature, hanging in the gloom above.
+				<br><br>
+				You step around it, unharmed.
+				<br><br>
+
+				<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+				<br>
+			<<else>>
+				You hear a squish, then a coil drops around you. <span class="red">It seizes your arms,</span> pushing them to your side, and hoists you into the air.<<gstress>><<stress 6>>
+				<br><br>
+
+				The coil slithers against your skin, glistening in the little light of the cave.
+
+				<<if $worn.upper.type.includes("naked")>>
+					<<if $worn.under_upper.type.includes("naked")>>
+						<br><br>
+
+						<span class="pink">You feel a presence close in.</span><<set $pursuit += 1>>
+						<br><br>
+
+						<<link [[Next|Beach Cave Tentacle]]>><</link>>
+						<br>
+					<<else>>
+						It worms beneath your $worn.under_upper.name, heading for your <<breasts>>.
+						<br><br>
+
+						<span class="pink">You feel a presence close in.</span><<set $pursuit += 1>>
+						<br><br>
+
+						<<link [[Wait|Beach Cave Tentacle]]>><</link>>
+						<br>
+						<<link [[Squirm free|Beach Cave Tentacle Under Top]]>><</link>>
+						<br>
+					<</if>>
+				<<else>>
+					It worms beneath your $worn.upper.name, heading for your <<breasts>>.
+					<br><br>
+
+					<span class="pink">You feel a presence close in.</span><<set $pursuit += 1>>
+					<br><br>
+
+					<<link [[Wait|Beach Cave Tentacle]]>><</link>>
+					<br>
+					<<link [[Squirm free|Beach Cave Tentacle Top]]>><</link>>
+					<br>
+				<</if>>
+			<</if>>
+		<<else>>
+			<<if currentSkillValue('skulduggery') gte random(400, 1200)>>
+				<span class="green">Your hair bristles.</span> You pause, and examine the ground ahead. Then you see it. A coiled rope, hanging in the gloom above. Beneath it is a suspicious-looking stone.
+				<br><br>
+				You step around it, unharmed.
+				<br><br>
+
+				<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+				<br>
+			<<else>>
+				Your foot presses down on something. You hear a swish, then a coil drops around you. <span class="red">It seizes your arms,</span> pushing them to your side, and hoists you into the air.
+				<br><br>
+
+				The rope is tight.
+				<<if $worn.upper.type.includes("naked") and $worn.over_upper.type.includes("naked")>>
+					<<if $worn.under_upper.type.includes("naked")>>
+						<br><br>
+
+						<span class="pink">You feel a presence close in.</span><<set $pursuit += 1>>
+						<br><br>
+
+						<<link [[Next|Beach Cave Rope]]>><</link>>
+						<br>
+					<<else>>
+
+						<span class="pink">You feel a presence close in.</span><<set $pursuit += 1>>
+						<br><br>
+
+						<<link [[Wait|Beach Cave Rope]]>><</link>>
+						<br>
+						<<link [[Squirm free|Beach Cave Rope Under Top]]>><</link>>
+						<br>
+					<</if>>
+				<<elseif !$worn.over_upper.type.includes("naked")>>
+					It worms beneath your $worn.over_upper.name, heading for your <<breasts>>.
+					<br><br>
+
+					<span class="pink">You feel a presence close in.</span><<set $pursuit += 1>>
+					<br><br>
+
+					<<link [[Wait|Beach Cave Rope]]>><</link>>
+					<br>
+					<<link [[Squirm free|Beach Cave Rope Over Top]]>><</link>>
+					<br>
+				<<else>>
+					It worms beneath your $worn.upper.name, heading for your <<breasts>>.
+					<br><br>
+
+					<span class="pink">You feel a presence close in.</span><<set $pursuit += 1>>
+					<br><br>
+
+					<<link [[Wait|Beach Cave Rope]]>><</link>>
+					<br>
+					<<link [[Squirm free|Beach Cave Rope Top]]>><</link>>
+					<br>
+				<</if>>
+			<</if>>
+		<</if>>
+	<<elseif $rng gte 41>>
+		<<if $tentacledisable is "f" and $hallucinations gte 2>>
+			Something seizes your ankles. Tendrils wrap around them. A third rises through the water, between your legs.<<gstress>>
+			<br><br>
+
+			<<link [[Soothe|Beach Cave Soothe]]>><</link>><<tendingdifficulty 200 1200>>
+			<br>
+			<<link [[Struggle|Beach Cave Tentacles]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<<else>>
+			Something seizes your ankle. You look down. It's a harmless jellyfish. You shake it off.<<gstress>><<stress 6>>
+			<br><br>
+
+			<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<</if>>
+	<<elseif $rng gte 21>>
+		You notice a crack in the wall up ahead. Anything could be lurking in the dark.<<gstress>><<stress 6>>
+		<br><br>
+		<<set _difficulty to (100 - ($pursuit * 15))>>
+		<<set _difficulty to Math.clamp(_difficulty, 0, 100)>>
+		<<link [[Walk normally|Beach Cave Ignore]]>><</link>><<difficulty _difficulty>>
+		<br>
+		<<link [[Rush by|Beach Cave Rush]]>><<stress 6>><</link>><<athleticsdifficulty 200 1200>><<gstress>>
+		<br>
+	<<else>>
+		The floor gives way, and your foot sinks several inches into silt.<<gstress>><<stress 6>>
+		<br><br>
+
+		<<link [[Wrest it free|Beach Cave Wrest]]>><<pain 10>><</link>><<ggpain>>
+		<br>
+		<<link [[Take your time (0:05)|Beach Cave Take]]>><<pass 5>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "beach_cave_init">>
+	<<set $pursuit to 0>>
+<</widget>>
+
+
+<<widget "beach_cave_end">>
+	<<unset $pursuit>>
+	<<unset $cave>>
+<</widget>>
+
+<<widget "beach_cave_pursuit">>
+	<<switch $pursuit>>
+		<<case 0>>
+			<span class="green">You're alone in the cave.</span>
+		<<case 1>>
+			<span class="teal">You feel watched.</span>
+		<<case 2>>
+			<span class="lblue">You feel followed.</span>
+		<<case 3>>
+			<span class="blue">You feel followed.</span>
+		<<case 4>>
+			<span class="purple">You feel pursued.</span>
+		<<case 5>>
+			<span class="pink">You feel pursued.</span>
+		<<default>>
+			<span class="red">You feel a presence bearing down on you.</span>
+	<</switch>>
+<</widget>>
+
+<<widget "slug_init">>
+	<<set $pursuit to 1>>
+	<<set $cave_exit to random(1, 4)>>
+	<<set $cave_current to 0>>
+	<<set $cave_seen to []>>
+	<<set $stress -= 3000>>
+<</widget>>
+
+<<widget "slug_end">>
+	<<unset $cave_exit>>
+	<<unset $cave_current>>
+	<<unset $cave_seen>>
+	<<set $pursuit to 0>>
+<</widget>>
+
+<<widget "slug_text">>
+	<<if $pursuit gte 3>>
+		<span class="red">The giant slug is right behind you!</span>
+	<<elseif $pursuit is 2>>
+		<span class="pink">The giant slug is very close!</span>
+	<<elseif $pursuit is 1>>
+		<span class="purple">The giant slug is close.</span>
+	<<else>>
+		<span class="blue">The giant slug is some distance away.</span>
+	<</if>>
+<</widget>>
+
+<<widget "gpursuit">> |
+	<span class="red"> - Distance</span>
+<</widget>>
+
+<<widget "lpursuit">> |
+	<span class="green"> + Distance</span>
+<</widget>>
+
+<<widget "slug_caught">>
+	<<if $voredisable is "f">>
+		With a final leap, the giant slug catches up, and forces you to the ground. Its maw wraps around you, and it sucks you inside.
+		<br><br>
+
+		<<link [[Next|Beach Slug Vore]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<else>>
+		With a final leap, the giant slug catches up, and forces you to the ground. The world blackens, and you lose consciousness.
+		<br><br>
+		<<slug_end>>
+		<<link [[Next|Passout Beach]]>><<clotheson>><<pass 1 hour>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "passoutcave">>
+	<<if isPlayerNonparasitePregnancyEnding()>>
+		<<pregnancyWatersBrokenPassout "cave">>
+	<<else>>
+		It's too much. You pass out.
+		<br><br>
+		<<passout>>
+		<<pass 1 hour>>
+		<<trauma 6>><<set $stress -= 2000>>
+		<<set $danger to random(1, 10000)>>
+		<<if $danger gte (9900 - $allure)>>
+			<<if random(1, 2) is 2 and ($bestialitydisable is "f" or $voredisable is "f" or $swarmdisable is "f") and $slugdisable is "f">>
+				<<slug_cave_intro>>
+			<<else>>
+				<<pub_cave_intro>>
+			<</if>>
+		<<else>>
+			<<beach_cave_end>>
+			<<ambulance>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "slug_cave_intro">>
+	You awake in time to feel yourself be pulled beneath the surface. The rushing water takes you, dragging you through some hidden crevice. You soon emerge, plummeting several feet, your fall broken by something soft. Soft, and slimy.
+	<br><br>
+
+	<<if $voredisable is "f">>
+		The ground shudders. You try to stand, but the slime is sticky.<<gstress>><<stress 6>>
+		<br><br>
+
+		Fleshy walls rise around you, separating you from the rest of the cave. <span class="red">You're going to be eaten.</span>
+		<br><br>
+
+		<<if $worn.upper.name is "naked" and $worn.lower.name is "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
+			You pull yourself to your feet, and jump from the closing maw. You're in another cave, tall and well-lit by pink lichen. Slime drips from the ceiling, forming large pools.
+			<br><br>
+
+			The creature rises behind you. A gargantuan slug, larger than a horse. <span class="red">It slithers closer with alarming speed.</span>
+			<br><br>
+
+			<<link [[Run|Beach Slug Start]]>><</link>>
+			<br>
+		<<else>>
+			You try to pull yourself free, but the slime has a particular grip on your clothes. You tug, but you can't get free.
+			<br><br>
+
+			<<link [[Keep trying|Beach Slug Try]]>><</link>><<physiquedifficulty 1 20000>>
+			<br>
+			<<link [[Remove your clothes|Beach Slug Remove]]>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		You stand. You're in another cave, tall and well-lit by pink lichen. Slime drips from the ceiling, forming large pools.
+		<br><br>
+
+		The ground shudders, knocking you forward. You scramble to your feet as a colossal form rises in front of you. A gargantuan slug, larger than a horse. <span class="red">It slithers closer with alarming speed.</span>
+		<br><br>
+
+		<<link [[Run|Beach Slug Start]]>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "pub_cave_intro">>
+	<<facewear 5>>
+	<<bind>>
+	You awake to find yourself being dragged through the water by a strong arm. You've been blindfolded, and your arms bound.
+	<br><br>
+
+	<<generate1>><<generate2>><<person1>>
+	"<<pShes>> awake," says a gruff <<personsimple>>'s voice. "Good. We can speed this up." A hand grasps your hear. You feel breath on your ear. "Found you passed out. Snooping around our cave were you? Naughty. Well, you're safe now." Another <<personsimple>> laughs.
+	<br><br>
+
+	<<link [[Next|Beach Cave Rape Finish 2]]>><</link>>
+	<br>
+<</widget>>
+
+<<widget "pub_cave_arrival">>
+	<<tearful>> you're pushed through the tunnel. Your captors chat either side of you, until the <<person1>><<person>> points out that you're probably listening.
+	<br><br>
+
+	The water becomes shallow, then disappears entirely. It still sounds like you're in the cave, but you can hear voices up ahead. Many voices. You walk closer, and your captors pull you to a stop. A great cheer erupts. You catch some words through the babble.
+	<br><br>
+
+	"Fucking nice."
+	<br>
+	"Where'd you find <<phim>>?"
+	<br>
+	"I'm first."
+	<br><br>
+
+	You're pushed forward again, into the middle of the crowd.
+	<br><br>
+	<<beach_cave_end>>
+	<<endcombat>>
+	<<link [[Next|Smuggler Pub Intro]]>><</link>>
+<</widget>>
+
+<<widget "beach_cave_caught">>
+	<<if $pursuit gte 6>>
+		<<if $bestialitydisable is "f" and $slugdisable is "f" and random(1, 2) is 2>>
+			<span class="red">A shape lunges from the water.</span> It misses, landing on the cave wall behind you. A giant slug. Another swims towards you.
+			<br><br>
+			<<link [[Next|Beach Cave Struggle]]>><<set $struggle_start to 1>><</link>>
+			<br>
+		<<else>>
+			<<generate1>><<generate2>><<generate3>><<generate4>><<generate5>><<generate6>><<person1>>
+
+			A figure rounds a corner up ahead. A <<person>>, wearing a wetsuit. <<He>> stares at you, smiling. Two others join <<him>>.
+			<br><br>
+			"What's a cute <<lass>> like you doing in our cave?"
+			<br>
+			"I think <<pshe>> needs a lesson."
+			<br>
+			"Don't you think about going nowhere <<girl>>."
+			<br><br>
+
+			They walk closer. You turn, and come face-to-face with a <<person4>><<person>>. Two others flank <<him>> as well. You're surrounded.
+			<br><br>
+
+			<<link [[Next|Beach Cave Rape]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<</if>>
+	<<elseif $pursuit is 0>>
+		<<set $pursuit += 1>>
+		Your hair bristles. <span class="purple">Something is watching you.</span>
+		<br><br>
+		<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<elseif $pursuit is 1>>
+		<<set $pursuit += 1>>
+		You shiver. <span class="pink">Something is following you. It's not alone.</span>
+		<br><br>
+		<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		<<set $pursuit += 1>>
+		You shiver. <span class="pink">Another threat follows.</span>
+		<br><br>
+		<<link [[Next|Beach Cave]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<</if>>
+<</widget>>

@@ -1,0 +1,183 @@
+:: Widgets Seasons Island [widget]
+
+<<widget "passoutisland">>
+    你把自己逼得太紧了。
+    <br><br>
+    <<passout>>
+
+    <<if $rng gte 1>>
+    <<link [[醒来|Seasons Island Rape]]>><<strip>><</link>>
+    <</if>>
+
+    <<pass 1 hour>>
+
+    <<trauma 6>><<set $stress -= 2000>>
+<</widget>>
+
+<<widget "eventislanditem">>
+	<<cleareventpool>>
+    <<if $location is "beach">>
+        <<addinlineevent "cannonball">>
+			你的脚趾被沙子下的硬物绊了一下。
+			<br><br>
+			挖开一看，原来是一枚旧炮弹。
+			<br><br>
+			<<set $antiquemoney += 300>><<museumAntiqueStatus "antiquecannonball" "found">>
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+	<<elseif $location is "desert">>
+        <<addinlineevent "arttablet">>
+			你发现沙地上有个石质物品的一角。
+			<br><br>
+			挖开一看，原来是一块古老的彩绘石碑。
+			<br><br>
+			<<set $antiquemoney += 200>><<museumAntiqueStatus "antiquearttablet" "found">>
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+		<<addinlineevent "terracottastatue">>
+			你在沙漠中发现了一个小建筑。
+			<br><br>
+			除了一尊小陶俑之外，里面空无一物。
+			<br><br>
+			<<set $antiquemoney += 500>><<museumAntiqueStatus "antiqueterracottastatue" "found">>
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+    <<elseif $location is "forest" or $location is "snowforest">>
+        <<if $redvial isnot 1>>
+			<<addinlineevent "redvial">>
+				当你穿越湿滑的森林时，你在泥泞中滑倒了。
+				<br><br>
+				在你起身擦拭身体之前，有样东西引起了你的注意。你发现了一个奇怪的红色小瓶，它半陷在泥里。
+				<br><br>
+				<<set $antiquemoney += 1500>><<museumAntiqueStatus "antiqueredvial" "found">>
+				<<link [[继续|Seasons Island]]>><<set $redvial to 1>><<set $eventskip to 1>><</link>>
+			<</addinlineevent>>
+		<</if>>
+		<<addinlineevent "tribemask">>
+			走着走着，你发现一条古老的小路通向一个大土丘。
+			<br><br>
+			附近一棵树上挂着个看起来很古老的石头面具。
+			<br><br>
+			<<set $antiquemoney += 500>><<museumAntiqueStatus "antiquetribemask" "found">>
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+		<<addinlineevent "ebonystatuette">>
+			在探索的过程中，你发现了一个破旧的木棚。
+			<br><br>
+			这里看起来乱糟糟的，但你在抽屉里发现了一个古老的黑檀木雕像。
+			<br><br>
+			<<set $antiquemoney += 800>><<museumAntiqueStatus "antiqueebonystatuette" "found">>
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+	<<elseif $location is "glacier">>
+        <<addinlineevent "glacierplant">>
+			在穿越冰川的过程中，你在冰面上滑倒了。
+			<br><br>
+			你刚要起身，却看到冰面下有东西。你花了一点时间把它们挖出来，发现了些被冰冻的种子。
+			<br><br>
+			<<set $antiquemoney += 1000>><<museumAntiqueStatus "antiqueglacierplant" "found">>
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+	<</if>>
+	<<runeventpool>>
+<</widget>>
+
+<<widget "eventisland">>
+	<<cleareventpool>>
+    <<if $location is "desert" or $location is "beach">>
+        <<addevent "islandant">>
+    <<elseif $location is "forest" or $location is "snowforest">>
+        <<addevent "islandwolf" .5>>
+        <<addevent "islandlurker" .5>>
+	<<elseif $location is "glacier">>
+        <<addevent "islandbear">>
+	<</if>>
+	<<runeventpool>>
+<</widget>>
+
+<<widget "eventislandsafe">>
+	<<cleareventpool>>
+    <<if $location is "beach">>
+        <<addinlineevent "safeisland_beach">>
+			清新的海风拂过你的肌肤，让人身心放松。
+			<<lstress>><<stress -1>>
+			<br><br>
+
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+	<<elseif $location is "desert">>
+        <<addinlineevent "safeisland_sandstorm">>
+			一阵风吹来，沙子四处飞扬。它刺痛了你的眼睛，降低了能见度。
+			<<gstress>><<stress 1>>
+			<<gpain>><<pain 2>>
+			<br><br>
+
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+    <<elseif $location is "forest" or $location is "snowforest">>
+        <<addinlineevent "safeisland_wolfhowl">>
+			你听到远处传来一声狼嚎。
+			<<if $wolfgirl gte 3>>
+				<<garousal>><<arousal 600>>
+			<<else>>
+				<<gstress>><<stress 1>>
+			<</if>>
+			<br><br>
+
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<</addinlineevent>>
+	<<elseif $location is "glacier">>
+        <<addinlineevent "safeisland_snowstorm">>
+			一阵风吹来，雪花四处飞扬。让人看不清东西。
+			<<gstress>><<stress 1>>
+			<br><br>
+
+			<<link [[继续|Seasons Island]]>><<set $eventskip to 1>><</link>>
+		<</addinlineevent>>
+	<</if>>
+	<<runeventpool>>
+<</widget>>
+
+<<widget "islandwolf">>
+	<<beastNEWinit 1 wolf>>
+	<!-- Modified for monster people -->
+	一只孤独的<<beasttype>>从树林间走了出来，展露獠牙。
+	<<if $monster is 1>>
+		"找到你了，"<<bhe>>嚎道，"我的。"
+	<</if>>
+	<br><br>
+	<<link [[继续|Seasons Island Wolf]]>><<set $molestationstart to 1>><<set $eventskip to 1>><</link>>
+	<br>
+<</widget>>
+
+<<widget "islandant">>
+	<<beastNEWinit 1 ant>>
+	<!-- Modified for monster people -->
+	一只孤独的<<beasttype>>从沙漠中走了出来，磨着牙齿。
+	<<if $monster is 1>>
+		"入侵者，"<<bhe>>发出了咯咯声，"我的。"
+	<</if>>
+	<br><br>
+	<<link [[继续|Seasons Island Ant]]>><<set $molestationstart to 1>><<set $eventskip to 1>><</link>>
+	<br>
+<</widget>>
+
+<<widget "islandbear">>
+	<<beastNEWinit 1 bear>>
+	<!-- Modified for monster people -->
+	一只孤独的<<beasttype>>从雪堆中冒了出来，用锐利的目光瞪着你。
+	<<if $monster is 1>>
+		"食物，"<<bhe>>发出了咯咯声。
+	<</if>>
+	<br><br>
+	<<link [[继续|Seasons Island Bear]]>><<set $molestationstart to 1>><<set $eventskip to 1>><</link>>
+	<br>
+<</widget>>
+
+<<widget "islandlurker">>
+	当你翻山越岭时，有东西从一堆<<if $weather is "snow">>雪<<else>>树叶<</if>>中跳了出来，
+	<br><br>
+	<<link [[继续|Seasons Island Struggle]]>><<set $struggle_start to 1>><<set $eventskip to 1>><</link>>
+	<br>
+<</widget>>

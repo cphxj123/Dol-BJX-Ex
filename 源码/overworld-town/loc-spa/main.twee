@@ -1,0 +1,912 @@
+:: Spa
+<<set $outside to 0>><<set $location to "spa">><<effects>>
+
+<<if !$daily.spaEvent>>
+	<<spa_event_select>>
+<</if>>
+
+You are in the spa on Danube Street. Large windows open onto a natural spring, and a corridor to the side leads to other facilities.
+A sign reads: "Tanning beds available.
+<<if Time.season is "summer">>
+	£10
+<<elseif Time.season is "winter">>
+	£60
+<<else>>
+	£25
+<</if>>
+per session. Price may change with the season."
+<br><br>
+<<if $openinghours is 1>>
+	<<if $daily.spaEvent is "party">>
+		<span class="purple">The spring is packed with bodies, and loud music plays.</span> Someone's hired the venue for a party.
+	<<else>>
+		Patrons relax in and around the many pools.
+	<</if>>
+<<else>>
+	You can hear running water, but the establishment is otherwise quiet.
+<</if>>
+<br><br>
+
+<<if $stress gte $stressmax>>
+
+	<<passoutshop>>
+<<else>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "spa">>
+	<</if>>
+	<<if Time.hour is $closinghour>>
+		It's closing time. The receptionist is herding everyone outside.<<if $exposed gte 1>>Panic swells within you as you realise how exposed you'll be should you be found in this state of dress.<</if>>
+		<br>
+	<<elseif $openinghours is 0>>
+		You are alone in the darkness.
+		<br><br>
+	<<elseif $exposed gte 1>>
+		<<if $uncomfortable.nude is false>>
+		You hide in a cupboard. The thought of being caught is thrilling, but you decide it would be wiser to stay put.
+		<<else>>
+		You hide in a cupboard to protect your dignity.
+		<</if>>
+		<br><br>
+	<</if>>
+	<<if $openinghours is 1 and $exposed lt 1>>
+		<<generate1>><<person1>>
+		<<if $spa_job gte 1>>
+			<<ind>><<link [[Work as a masseur (0:50)|Spa Work Start]]>><<endevent>><<set $money += 1000>><</link>>
+			<br>
+		<<else>>
+			The receptionist, a <<person>>, looks up from <<his>> desk, and curls <<his>> nose. "Make it quick," <<he>> says. "Our clientele don't mix with riff-raff off the street."
+			<br><br>
+			<<askicon>><<link [[Ask for work|Spa Work Ask]]>><</link>>
+			<br>
+		<</if>>
+		<<if Time.season is "spring" or Time.season is "autumn">>
+			<<if $money gte 2500>>
+				<<ind>><<link [[Tanning salon (£25 1:00)|Spa Tan]]>><<set $money -= 2500>><</link>><<lstress>><<gggtanned>>
+				<br>
+			<</if>>
+		<<elseif Time.season is "winter">>
+			<<if $money gte 6000>>
+				<<ind>><<link [[Tanning salon (£60 1:00)|Spa Tan]]>><<set $money -= 6000>><</link>><<lstress>><<gggtanned>>
+				<br>
+			<</if>>
+		<<else>>
+			<<if $money gte 1000>>
+				<<ind>><<link [[Tanning salon (£10 1:00)|Spa Tan]]>><<set $money -= 1000>><</link>><<lstress>><<gggtanned>>
+				<br>
+			<</if>>
+		<</if>>
+	<</if>>
+	<<if $openinghours is 0 and Time.hour isnot $closinghour and !$weekly.theft.spa>>
+		<<shopicon "register">><<link [[Examine the cash register|Spa Register]]>><</link>>
+		<br>
+	<</if>>
+	<br>
+<</if>>
+<<danubeicon>><<link [[Leave|Danube Street]]>><<endevent>><</link>>
+<br>
+
+:: Spa Tan
+<<effects>>
+
+The <<person1>><<person>> sniffs, but takes your money without complaint.
+<<endevent>>
+<br><br>
+You enter a small room dominated by a tanning bed. There's a large window, but it's already covered by a curtain.
+<br><br>
+
+<<if $worn.under_lower.name isnot "naked">>
+	<<link [[Strip to your underwear (1:00)|Spa Tan Underwear]]>><<stress -6>><<pass 60>><</link>>
+	<br>
+<</if>>
+<<link [[Strip naked (1:00)|Spa Tan Naked]]>><<stress -6>><<pass 60>><</link>><<exhibitionist1>>
+<br>
+<<if $exhibitionism gte 75>>
+	<<link [[Strip naked, and open the curtains (1:00)|Spa Tan Curtains]]>><<stress -6>><<pass 60>><</link>><<exhibitionist5>>
+	<br>
+<</if>>
+
+
+:: Spa Tan Underwear
+<<effects>>
+
+<<upperstrip>>
+<<lowerstrip>>
+<<tanned 120 "tanLines">>
+
+You leave your clothes in a neat pile, and climb onto the tanning bed, closing it after you.
+<br><br>
+
+Surrounded by a blue glow, you close your eyes and relax as the warmth seeps into your skin.
+<br><br>
+
+<<if $rng gte 91>>
+	<<spa_tan_events>>
+<<elseif $rng gte 81>>
+	Your session ends before you know it, and the lights fade. You dozed off.<<ltiredness>><<tiredness -6>>
+	<br><br>
+
+
+
+	<<link [[Next|Spa]]>><<clotheson>><</link>>
+	<br>
+<<else>>
+	You relax until the session ends, and the lights fade.
+	<br><br>
+
+
+
+	<<link [[Next|Spa]]>><<clotheson>><</link>>
+	<br>
+<</if>>
+
+
+:: Spa Tan Naked
+<<effects>>
+
+<<clothesstrip>>
+<<tanned 120>>
+You strip naked, and leave your clothes in a neat pile.
+<<exhibitionism1>>
+
+Suitably unburdened, you climb onto the tanning bed, and close it after you.
+<br><br>
+
+Surrounded by a blue glow, you close your eyes and relax as the warmth seeps into your skin.
+<br><br>
+
+<<if $rng gte 91>>
+	<<spa_tan_events>>
+<<elseif $rng gte 81>>
+	Your session ends before you know it, and the lights fade. You dozed off.<<ltiredness>><<tiredness -6>>
+	<br><br>
+
+
+
+	<<link [[Next|Spa]]>><<clotheson>><</link>>
+	<br>
+<<else>>
+	You relax until the session ends, and the lights fade.
+	<br><br>
+
+
+
+	<<link [[Next|Spa]]>><<clotheson>><</link>>
+	<br>
+<</if>>
+
+
+
+:: Spa Tan Curtains
+<<effects>>
+
+<<generate1>><<person1>>
+<<clothesstrip>>
+<<tanned 120>>
+<<if $daily.spaEvent is "party">>
+	You pull open the curtains, revealing the party outside. The partiers are too busy dancing and drinking to pay you any attention. For now.
+	<br><br>
+
+	<<flaunting>> you remove your clothes in plain view of anyone who cares to look. You hear an excited shout. A <<person>> in swimwear points at you, and you're soon the centre of attention. You climb onto the tanning bed, closing it after you.
+<<else>>
+	You pull open the curtains, revealing a couple of dozen patrons lounging in the pools outside. A <<person>> glances over, but that's all the attention you get. For now.
+	<br><br>
+
+	<<flaunting>> you remove your clothes in plain view of anyone who cares to look. You feel eyes on you as you climb onto the tanning bed, closing it after you.
+<</if>>
+<<exhibitionism5>>
+
+Surrounded by a blue glow, you feel your heart pump as the warmth seeps into your skin.
+<br><br>
+<<endevent>>
+<<if $rng gte 81>>
+	<<spa_tan_events>>
+<<elseif $rng gte 71>>
+	Your session ends before you know it, and the lights fade. You dozed off.<<ltiredness>><<tiredness -6>>
+	<br><br>
+
+
+
+	<<link [[Next|Spa]]>><<clotheson>><</link>>
+	<br>
+<<else>>
+	You relax until the session ends, and the lights fade.
+	<br><br>
+
+
+
+	<<link [[Next|Spa]]>><<clotheson>><</link>>
+	<br>
+<</if>>
+
+
+
+:: Spa Lock
+
+<<set $outside to 0>><<effects>><<set $lock to 200>>
+<<openinghours>>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>><<link [[Pick it (0:10)|Spa]]>><<pass 10>><<crimeUp 20 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Spa]]>><<set $ghostIn to true>><<pass 1>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Danube Street]]>><</link>>
+<br>
+
+
+:: Spa Work Ask
+<<effects>>
+
+The <<person>> scoffs. "Let me make this clear," <<he>> says, pushing <<his>> spectacles up <<his>> nose.
+<<if $beauty gte ($beautymax / 7) * 6>>
+	<<spa_job_init>>
+	"Our clientele expect-"
+	<br><br>
+	<<He>> cuts off as <<he>> regards you, <span class="green">surprised by your beauty.</span> "Well," <<he>> continues. "Exceptions can be made for particularly... talented individuals. We might have a place for you."
+	<br><br>
+
+	<<He>> clears <<his>> throat. "Just do as the clients tell you. It's 50 minutes per session, but allow an hour. Pay is <span class="gold">£10</span> per hour. Plus tips. You can work when you like. Any questions?"
+	<br><br>
+
+	<<link [[Ask for advice|Spa Work Advice]]>><</link>>
+	<br>
+	<<link [[No|Spa Work No]]>><</link>>
+	<br>
+<<else>>
+	"Our clientele expect a certain," <<he>> pauses. "Standard. <span class="red">You don't meet them.</span> Good day."
+	<br><br>
+
+	<i><<He>> might feel differently were you particularly beautiful.</i>
+	<br><br>
+
+
+	<<link [[Say you have skilled hands|Spa Work Hands]]>><</link>>
+	<br>
+	<<link [[Leave|Danube Street]]>><<endevent>><</link>>
+	<br>
+
+<</if>>
+
+
+
+:: Spa Work Advice
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"C-can you give advice about how to be a masseur?" you ask.
+<<elseif $speech_attitude is "bratty">>
+	"Do I get any training?" you ask. "You haven't asked about my experience."
+<<else>>
+	"Do you have any tips for me?" you ask.
+<</if>>
+<br><br>
+The <<person>> laughs. "No. As I said, just do as the client asks. You can start when you like." <<He>> turns back to <<his>> desk.
+<br><br>
+
+<<link [[Next|Spa]]>><<endevent>><</link>>
+<br>
+
+
+:: Spa Work No
+<<effects>>
+
+You shake your head. "Good," the <<person>> says. "You can start when you like." <<He>> turns back to <<his>> desk.
+<br><br>
+
+<<link [[Next|Spa]]>><<endevent>><</link>>
+<br>
+
+
+:: Spa Work Hands
+<<effects>>
+
+"Skilled hands?" the <<person>> asks. "We'll see." <<He>> reaches over the desk, grasps your hands in <<his>> own, and leans forward to observe them.
+
+<<if currentSkillValue("handskill") gte 400>>
+	<<spa_job_init>>
+	<<He>> frowns. "Unexpected. <span class="green">Maybe there is a place for you.</span>" <<He>> pulls away.
+	<br><br>
+
+	<<He>> clears <<his>> throat. "Just do as the clients tell you. It's 50 minutes per session, but allow an hour. Pay is <span class="gold">£10</span> per hour. Plus tips. You can work when you like. Any questions?"
+	<br><br>
+
+	<<link [[Ask for advice|Spa Work Advice]]>><</link>>
+	<br>
+	<<link [[No|Spa Work No]]>><</link>>
+	<br>
+<<else>>
+	<<He>> releases <<his>> grasp with a disdainful sneer. "You're not suitable. Good day." <<He>> turns back to <<his>> desk.
+	<br><br>
+
+	<i><span class="blue">C</span> Hand Skill or higher required.</i>
+	<br><br>
+
+	<<link [[Next|Spa]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+
+:: Spa Tan Chase
+<<effects>>
+
+<<generate1>><<person1>>
+You tear around the corner, and see the culprit, a <<person>>, up ahead. You rush after <<him>>,
+
+<<if $athleticsSuccess>>
+	<span class="green">and manage to catch up.</span> You dive and throw your arms around <<his>> waist, dragging <<him>> to the ground.
+	<br><br>
+
+	It would seem <<he>> finds the situation awfully funny.
+	<br><br>
+
+	<<if $leftarm isnot "bound" or $rightarm isnot "bound">>
+		<<link [[Slap|Spa Tan Slap]]>><<def 1>><<trauma -6>><</link>><<ltrauma>>
+		<br>
+	<</if>>
+	<<link [[Turn the other cheek|Spa Tan Turn]]>><</link>>
+	<br>
+<<else>>
+	<span class="red">but <<he>> has too great a lead.</span> <<He>> pushes through a pair of doors leading outside, and keeps going, hauling <<himself>> over the exterior wall.
+	<br><br>
+
+	You come to a stop beside the doors. The pools are around a corner, so you don't think anyone would see you. The spa is raised above the surrounding terrain however, and following would be a one-way trip. This wall faces the forest.
+	<br><br>
+
+	<<link [[Follow|Spa Tan Follow]]>><</link>>
+	<br>
+	<<link [[Ask someone for help instead|Spa Tan Help]]>><<endevent>><</link>>
+	<br>
+	<<set $skulduggerydifficulty to 500>>
+	<<link [[Search for towels instead|Spa Tan Sneak]]>><<endevent>><</link>><<skulduggerydifficulty>>
+	<br>
+<</if>>
+
+:: Spa Tan Follow
+<<effects>>
+
+<<covered>> You glance left and right. You don't see anyone. You dart outside, and haul yourself over the wall. You land on grass, surrounded by trees.
+<br><br>
+
+You hear the snap of twigs straight ahead, and you follow. The trees grow dense. You can't run, but neither can your quarry.
+<br><br>
+
+<span class="red">You hear a scream.</span> It came from up ahead.
+<br><br>
+
+<<if $awarelevel gte 2>>
+	You emerge in a clearing, and find the <<person>> dangling limp in the air. A green tendril curls around <<his>> leg. A monstrous plant, oozing thick slime and standing almost as tall as the surrounding trees holds <<him>>. Other tentacles rise from the undergrowth. Your clothes lie discarded on the ground.
+	<<if $awareness lt 400>>
+		<<gawareness>><<awareness 1>>
+	<</if>>
+	<<gstress>><<stress 6>>
+	<br><br>
+
+	<<link [[Grab your clothes and run|Spa Tan Grab]]>><</link>><<athleticsdifficulty 1 400>>
+	<br>
+	<<link [[Leave your clothes and run|Spa Tan Leave]]>><</link>>
+	<br>
+	<<link [[Rescue the thief|Spa Tan Rescue]]>><</link>><<athleticsdifficulty 300 1500>>
+	<br>
+<<else>>
+	You emerge in a clearing, and find the <<person>> lying on the dirt. <<Hes>> unconscious. Maybe <<he>> tripped.
+	<br><br>
+
+	<<link [[Rob|Spa Tan Rob]]>><</link>><<crime "thievery">>
+	<br>
+	<<link [[Just take your clothes|Spa Tan Clothes]]>><</link>>
+	<br>
+<</if>>
+
+:: Spa Tan Grab
+<<effects>>
+<<athleticsdifficulty 1 400 true>>
+<<if $athleticsSuccess>>
+	You retrieve your clothes, <span class="green">and escape between the trees before the monster reacts to you.</span>
+	<br><br>
+
+	<<clotheson>>
+	You run until you reach the spa. The wall is too high to climb from this side. You walk around the perimeter. The trees thin, and you emerge on Danube Street.
+	<br><br>
+
+	<<endevent>>
+
+	<<link [[Next|Danube Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+
+<<else>>
+	You try to retrieve your clothes, <span class="red">but trip when a hidden tentacle rises from the grass.</span> It curls around your leg before you can recover, and hoists you into the air.<<gtrauma>><<gstress>><<gpain>><<trauma 6>><<stress 6>><<pain 4>>
+	<br><br>
+
+	The monster carries you and the <<person>> closer. A maw tears through its side. It means to eat you.<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+	<br><br>
+
+	<<link [[Next|Spa Tan Monks]]>><</link>>
+	<br>
+<</if>>
+
+:: Spa Tan Leave
+<<effects>>
+
+<<set $stealtextskip to 1>>
+<<stealclothes>>
+
+You turn and run. You keep running, until you arrive at the spa.
+<br><br>
+The wall is too high to climb from this side. You walk around the perimeter. The trees thin, and you emerge on Danube Street.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Danube Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Spa Tan Rescue
+<<effects>>
+
+<<athleticsdifficulty 1 1500 true>>
+<<if $athleticsSuccess>>
+	You run toward the <<person>>, and jump. <span class="green">You grasp <<his>> limp arm just before the monster pulls it out of reach.</span> The monster pulls you and the thief closer, and higher, until you're right above.
+	<br><br>
+
+	You use your legs and one arm for purchase as you try to prise the <<person>> free. The tentacle's grip is firm, but not unyielding. You hear a rip. A maw tears open below. The monster means to eat you.
+	<br><br>
+
+	<<link [[Next|Spa Tan Monks Success]]>><</link>>
+	<br>
+<<else>>
+	You run toward the <<person>>, and jump. <span class="red">The monster pulls the limp body out of reach.</span> Your fingers brush <<his>> hand, and then you fall.<<gtrauma>><<gstress>><<gpain>><<trauma 6>><<stress 6>><<pain 4>>
+	<br><br>
+
+	Another tentacle lies in wait beneath the grass. It curls around your ankle before you can recover, and hoists you into the air.
+
+	The monster carries you and the <<person>> closer. A maw tears through its side. It means to eat you.<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+	<br><br>
+
+	<<link [[Next|Spa Tan Monks]]>><</link>>
+	<br>
+<</if>>
+
+:: Spa Tan Monks
+<<effects>>
+
+<<generate2>><<generate3>><<generate4>><<generate5>><<generate6>>
+<span class="green">You hear a sharp crack.</span> Then another. Thin, black tendrils emerge from the trees, wrapping around the monster's tentacles. Figures emerge from the forest. They're dressed as <<monks_and_nuns>>, and each holds a whip in hand, now tensed against the creature's limbs.
+<br><br>
+
+You and the <<person>> are pulled closer to the ground by the newcomers' heaving. A <<person2>><<monk>> rushes forward, and strikes the tentacle with a staff. It releases your ankle, and you tumble to the ground.<<lstress>><<stress -6>>
+<br><br>
+
+With a frightening speed, the monster squirms away, disappearing between the trees. The <<monks_and_nuns>> give chase, aside from one, who kneels beside you.
+<br><br>
+<<person2>>
+<<if $temple_rank is "monk" or $temple_rank is "priest">>
+	"You should know better than to take on a beast like that alone," <<he>> says. <<He>> glances at the <<person1>><<person>>. "I'll see to <<him>>. Get dressed, and return to town." You'd forgotten how exposed you are. <<covered>>
+	<br><br>
+<<elseif $temple_rank is "initiate">>
+	"You're a bit green to be witnessing this," <<he>> says. "Best not mention it to anyone." <<He>> glances at the <<person1>><<person>>. "I'll see to <<him>>. Get dressed, and return to town." You'd forgotten how exposed you are. <<covered>>
+	<br><br>
+<<else>>
+	"It would be best if you kept what you saw here to yourself," <<he>> says. <<He>> glances at the <<person1>><<person>>. "I'll see to <<him>>. Get dressed, and return to town." You'd forgotten how exposed you are. <<covered>>
+	<br><br>
+<</if>>
+
+<<clotheson>>
+
+You return to the spa. The wall is too high to climb from this side. You walk around the perimeter. The trees thin, and you emerge on Danube Street.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Danube Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Spa Tan Monks Success
+<<effects>>
+
+<<generate2>><<generate3>><<generate4>><<generate5>><<generate6>>
+<span class="green">You hear a sharp crack.</span> Then another. Thin, black tendrils emerge from the trees, wrapping around the monster's tentacles. Figures emerge from the forest. They're dressed as <<monks_and_nuns>>, and each holds a whip in hand, now tensed against the creature's limbs.
+<br><br>
+
+The tentacle holding the <<person>> loosens, and you're able to pry <<him>> free. A <<person2>><<monk>> rushes forward and catches <<person1>><<him>> while you make a deft landing on the grass.<<gcontrol>><<control 10>><<lstress>><<stress -6>>
+<br><br>
+
+Another <<person2>><<monk>> rushes by, a staff in both hands, and strikes the main body of the monster. It squirms away with a frightening speed, disappearing between the trees. The <<monks_and_nuns>> give chase, aside from the <<monk>> holding the <<person1>><<person>>.
+<br><br>
+
+<<if $temple_rank is "monk" or $temple_rank is "priest">>
+	"That was daring of you," the <<person2>><<monk>> says. "But you shouldn't try to take on a beast like this alone. I'll see to the civilian. You get dressed, and return to town." You'd forgotten how exposed you are. <<covered>>
+	<br><br>
+<<elseif $temple_rank is "initiate">>
+	"You're not ready for this," the <<person2>><<monk>> says. "But you handled yourself well. You might be ready soon. Still, best not mention it to anyone." <<He>> lays the <<person1>><<person>> on the grass. "I'll see to this one. You get dressed, and return to town." You'd forgotten how exposed you are. <<covered>>
+	<br><br>
+<<else>>
+	"You weren't meant to see this," the <<person2>><<monk>> says. "But you handled yourself well. Have you considered joining the temple? We could use someone like you. Either way, keep what you saw here to yourself." <<He>> lays the <<person2>><<person>> on the grass. "I'll see to this one. Get dressed, and return to town." You'd forgotten how exposed you are. <<covered>>
+	<br><br>
+<</if>>
+
+<<clotheson>>
+
+You return to the spa. The wall is too high to climb from this side. You walk around the perimeter. The trees thin, and you emerge on Danube Street.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Danube Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Spa Tan Rob
+<<effects>>
+
+<<clotheson>>
+
+You get dressed, then rifle through the <<persons>> pockets.
+
+<<if $rng gte 99>>
+	They're empty, but <<his>> watch looks valuable, if you could find a buyer.<<crimeUp 1000 "thievery">><<set $blackmoney += 1000>>
+<<elseif $rng gte 81>>
+	You find <<moneyGain 100 true true>> in cash.
+<<elseif $rng gte 61>>
+	You find <<moneyGain 50 true true>> in cash.
+<<elseif $rng gte 41>>
+	You find <<moneyGain 20 true true>> in cash.
+<<elseif $rng gte 21>>
+	You find <<moneyGain 10 true true>> in cash.
+<<else>>
+	You find <<moneyGain 5 true true>> in cash.
+<</if>>
+<br><br>
+You return to the spa. The wall is too high to climb from this side. You walk around the perimeter. The trees thin, and you emerge on Danube Street.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Danube Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Spa Tan Clothes
+<<effects>>
+
+<<clotheson>>
+You get dressed, and return to the spa. The wall is too high to climb from this side. You walk around the perimeter. The trees thin, and you emerge on Danube Street.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Danube Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Spa Tan Slap
+<<effects>>
+
+You wipe away the <<persons>> smirk with a firm slap, then return to your room, covering your <<bottom>> with a hand.
+<br><br>
+
+<<clotheson>>
+<<endevent>>
+
+<<link [[Next|Spa]]>><</link>>
+<br>
+
+:: Spa Tan Turn
+<<effects>>
+
+You leave the <<person>> to <<his>> mirth, and return to your room, covering your <<bottom>> with a hand.
+<br><br>
+
+<<clotheson>>
+<<endevent>>
+
+<<link [[Next|Spa]]>><</link>>
+<br>
+
+
+:: Spa Tan Help
+<<effects>>
+
+<<set $stealtextskip to 1>>
+<<stealclothes>>
+
+<<covered>> You crouch and peek around the corner. There's no one around. <<tearful>> you creep down the hall. You hear voices up ahead.
+<<generate1>><<generate2>>
+Two members of staff, a <<fullGroup>>, chat in a staff room.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"E-excuse me," you say, interrupting their conversation. "Someone took my clothes. Could you help?"
+<<elseif $speech_attitude is "bratty">>
+	"Hey," you say, interrupting their conversation. "A thief ran off with my clothes. Could you give me a hand?"
+<<else>>
+	"Hello," you say, interrupting their conversation. "Someone stole my clothes. Could you give me a hand?"
+<</if>>
+<br><br>
+
+<<if $rng gte 51>>
+	The pair pause for a moment, then laugh. "Hold tight," the <<person>> says. <<He>> doesn't even pretend <<hes>> not ogling as <<he>> passes by, returning a moment later with some towels. "All we got, sorry. We don't have a staff uniform or anything."
+	<br><br>
+
+	You slip back to the tanning room, and tie a towel around your body.
+	<br><br>
+
+	<<towelup>>
+
+	<<link [[Next|Spa]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	The pair pause for a moment, then share a look. "Sure thing," the <<person>> says. "I'll just get you something." <<He>> looks away as <<he>> approaches, but as <<he>> passes, <span class="red"> wraps a hand around your mouth.</span>
+	<br><br>
+	<<link [[Next|Spa Tan Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Spa Tan Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<enable_rescue>><<set $leftarm to "grappled">><<set $rightarm to "grappled">><<hand_gag 0 left>><<set $NPCList[0].righthand to "arms">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Spa Tan Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Spa Tan Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Spa Tan Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	You're shoved to the ground. A moment later a towel lands on top of you. The staff room door clicks shut.
+	<br><br>
+	<<tearful>> you tie the towel around your body.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	<<link [[Next|Spa]]>><</link>>
+
+<<elseif $enemyhealth lte 0>>
+	The <<person1>><<person>> staggers backwards, loses <<his>> footing, and smashes through a glass table. The noise attracts attention. <<generate3>>A <<person3>><<person>> arrives on the scene, <<his>> eyes flicking over the <<person1>><<personsimple>> lying on the floor, then over your <<nudity>>.
+	<br><br>
+	<<person3>><<He>> seems lost for words.
+	<br><br>
+
+	<<link [[Say you were attacked|Spa Tan Rape Attacked]]>><<stress 6>><<trauma -6>><</link>><<gstress>><<ltrauma>>
+	<br>
+	<<link [[Say the staff were helping you get a towel, but tripped|Spa Tan Rape Tripped]]>><<sub 1>><</link>>
+	<br>
+<<else>>
+	<<set $rescued += 1>>
+	Your cry attracts attention. <<generate3>>A <<person3>><<person>> arrives on the scene, <<his>> eyes flicking over the <<group>>, then over your <<nudity>>.
+	<br><br>
+	<<person3>><<He>> seems lost for words.
+	<br><br>
+
+	<<link [[Say you were attacked|Spa Tan Rape Attacked]]>><<stress 6>><<trauma -6>><</link>><<gstress>><<ltrauma>>
+	<br>
+	<<link [[Say the staff were helping you get a towel, but tripped|Spa Tan Rape Tripped]]>><<sub 1>><</link>>
+	<br>
+<</if>>
+
+:: Spa Tan Rape Attacked
+<<effects>>
+
+You tell the <<person3>><<person>> what happened. Turns out <<hes>> the pair's superior. They deny any wrongdoing, but the <<person>> doesn't believe it. This is not, apparently, the first incident.
+<br><br>
+
+You walk away with a new set of clothes, a refund, and a fearful request that you don't tell anyone what happened here.
+<br><br>
+
+<<if $worn.upper.name is "naked">>
+	<<if $player.gender_appearance is "m">>
+		<<upperwear 4>>
+	<<else>>
+		<<upperwear 1>>
+	<</if>>
+<</if>>
+<<if $worn.lower.name is "naked">>
+	<<if $player.gender_appearance is "m">>
+		<<lowerwear 5>>
+	<<else>>
+
+	<</if>>
+<</if>>
+<<if $worn.under_upper.name is "naked">>
+	<<if $player.gender_appearance is "m">>
+
+	<<else>>
+		<<underupperwear 12>>
+	<</if>>
+<</if>>
+<<if $worn.under_lower.name is "naked">>
+	<<if $player.gender_appearance is "m">>
+		<<underlowerwear 4>>
+	<<else>>
+		<<underlowerwear 1>>
+	<</if>>
+<</if>>
+
+<<if Time.season is "summer">>
+	<<set $money += 1000>>
+<<elseif Time.season is "winter">>
+	<<set $money += 6000>>
+<<else>>
+	<<set $money += 2500>>
+<</if>>
+
+<<endcombat>>
+
+<<link [[Next|Spa]]>><</link>>
+<br>
+
+:: Spa Tan Rape Tripped
+<<effects>>
+
+The <<person3>><<person>> seems relieved, though not entirely convinced. <<He>> apologises for your lost clothing, and gives you some spares.
+<br><br>
+
+<<if $worn.upper.name is "naked">>
+	<<if $player.gender_appearance is "m">>
+		<<upperwear 4>>
+	<<else>>
+		<<upperwear 1>>
+	<</if>>
+<</if>>
+<<if $worn.lower.name is "naked">>
+	<<if $player.gender_appearance is "m">>
+		<<lowerwear 5>>
+	<<else>>
+
+	<</if>>
+<</if>>
+<<if $worn.under_upper.name is "naked">>
+	<<if $player.gender_appearance is "m">>
+
+	<<else>>
+		<<underupperwear 12>>
+	<</if>>
+<</if>>
+<<if $worn.under_lower.name is "naked">>
+	<<if $player.gender_appearance is "m">>
+		<<underlowerwear 4>>
+	<<else>>
+		<<underlowerwear 1>>
+	<</if>>
+<</if>>
+
+<<endcombat>>
+
+<<link [[Next|Spa]]>><</link>>
+<br>
+
+:: Spa Tan Sneak
+<<effects>>
+
+
+<<set $stealtextskip to 1>>
+<<stealclothes>>
+
+You crouch and peek around the door. There's no one around. You sneak through the building. The other rooms are occupied, but one of the doors is ajar. You enter. You see a shape lying in the tanning bed. There's a towel on a rack beside it.
+<br><br>
+
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
+
+	You lift the towel from the rack, <span class="green">and sneak away without being noticed.</span>
+	<br><br>
+
+	<<skulduggeryuse>>
+
+	<<link [[Next|Spa]]>><<towelup>><</link>>
+	<br>
+
+<<else>>
+	<<generate1>><<person1>>As you lift the towel, <span class="red">a hand emerges from the bed and grasps your mouth.</span> "Trying to steal from me?" the <<person>> says as <<he>> climbs naked from the bed. "I'll teach you a lesson."
+	<br><br>
+
+	<<He>> bends you over <<his>> knees.
+	<br><br>
+
+	<<skulduggeryuse>>
+
+	<<link [[Next|Spa Tan Spank]]>><<set $molestationstart to 1>><</link>>
+	<br>
+
+<</if>>
+
+:: Spa Tan Spank
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<enable_rescue>>
+	<<npcspankgag>>
+	<<npcexpose>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Spa Tan Spank Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Spa Tan Spank]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Spa Tan Spank Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	The <<person>> lies back on the bed, exhausted. You snatch the towel. <<tearful>> you run.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	<<link [[Next|Spa]]>><</link>>
+
+<<elseif $enemyhealth lte 0>>
+	You shove the <<person>> back on <<his>> bed. You snatch the towel. <<tearful>> you run.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	<<link [[Next|Spa]]>><</link>>
+
+<<elseif $pain gte 100 and $willpowerpain is 0>>
+	"Let that be a lesson to you," the <<person>> says, giving your <<bottom>> a final smack before grasping your arm and pushing you to the door.
+	<br><br>
+	<<He>> keeps going, marching your exposed body down the hall. You're too hurt to resist.
+	<br><br>
+
+	<<He>> shoves you through another door, this one leading outside. There's no one around, but the pools are just around the corner. <<He>> doesn't take you that way however. Instead, <<he>> grasps your thighs, and hauls you up and over the exterior wall.
+	<br><br>
+
+	You land on grass, surrounded by trees. You look up. The wall is too high to climb from this side. "Good luck getting home," the <<person1>><<person>> laughs.<<gpain>><<pain 4>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Forest]]>><<set $forest to 0>><<set $eventskip to 1>><</link>>
+<<else>>
+	<<set $rescued += 1>>
+	Your cry attracts attention. <<generate2>>A <<person2>><<person>> arrives on the scene, <<his>> eyes taking in the <<person1>><<person>>, and your pained expression.
+	<br><br>
+	<<person2>><<He>> seems lost for words. The <<person1>><<person>> releases you, and tries to stammer an explanation. <<He>> doesn't stop you covering with the towel, or leaving the room.
+	<br><br>
+
+	<<clothesontowel>>
+	<<endcombat>>
+
+	<<link [[Next|Spa]]>><</link>>
+<</if>>

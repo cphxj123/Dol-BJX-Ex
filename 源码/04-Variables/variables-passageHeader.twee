@@ -1,0 +1,60 @@
+:: PassageHeader
+<<set $passagePrev to $passage ? $passage : "none">>
+<<set $passage to $passageOverride ? $passageOverride : passage()>>
+<<set $tags to tags()>>
+<<set l10nStrings.errorTitle = StartConfig.version + " Error" + ($passage ? ` (:: ${$passage})` : "")>>
+
+<<if !["Start", "Start2", "Clothes Testing", "Renderer Test Page", "Tips"].includes($passage) && !$bypassHeader>>
+	<<doVersionCheck>>
+	<<if !["Settings", "Asylum Settings", "Cabin Settings", "Wolf Cave Settings", "Farm Settings", "Livestock Settings", "Prison Settings"].includes($passage)>>
+		<<if $passagePrev isnot $passage>>
+			<<set $passageChangesCount to $passageChangesCount ? $passageChangesCount + 1 : 1>>
+		<</if>>
+		<<set $passageCount to $passageCount ? $passageCount + 1 : 1>>
+	<</if>>
+<</if>>
+
+/* Set current time */
+<<set Time.set()>>
+
+<<unset $passageOverride>>
+<<unset $bypassHeader>>
+
+:: Widgets VersionCheck [widget]
+<<widget "doVersionCheck">>
+	/* Run stuff on every save load */
+	<<if onLoadUpdateCheck>>
+		<<set $saveVersion to ($saveVersions ? $saveVersions.last() : "ancient")>> /*update save version */
+	<</if>>
+
+	/* Run stuff on every page refresh, save load, or version mismatch */
+	<<if versionUpdateCheck or onLoadUpdateCheck or !$saveVersions or $saveVersions.last() isnot StartConfig.version>>
+		<<set versionUpdateCheck to false>>
+		<<set onLoadUpdateCheck to false>>
+
+		/* convert game version to numeric value for use in <<backComp>> */
+		<<set _version to ($saveVersions ? $saveVersions.last().replace(/[^0-9.]+/g, "").split(".") : 0)>>
+		<<set _version to (_version ? _version[0]*1000000 + _version[1]*10000 + _version[2]*100 + _version[3]*1 : 0)>>
+		<<backComp>>
+		/* 北极星模组 */
+		<<variablesBJXModUpdate>>
+		/* 北极星 */
+
+		<<updatehistorycontrols>>
+		<<set _preventUpdate to true>> /*prevent rewriting autosaves */
+		<<setFont>>
+		<<run zoom($options.zoom)>>
+		<<run syncFavourites()>>
+		<<run initCustomLenses()>>	/* push custom eyelenses inside setup.colours.eyes; on every load/refresh it needs to be done. */
+		<<run syncDebugAddedEvents()>>
+		<<run toggleConfirmDialogUponTabClose()>> /* enable/disable confirm dialog when user tries to close browser tab. based on V.options.confirmDialogUponTabClose */
+	<</if>>
+
+	/* Variables that you need to check on every passage */
+	<<set $link_table to []>>
+	<<set $map.hideLinksCheck to []>>
+	/* Determine if the player is in a safe passage. Used to catch softlocks */
+	<<if setup.majorAreas.includes($passage)>>
+		<<set $safePassage to $passage>>
+	<</if>>
+<</widget>>

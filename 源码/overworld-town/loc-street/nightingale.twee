@@ -1,0 +1,106 @@
+:: Nightingale Street
+
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "nightingale">><<getTarget true>>
+You are on Nightingale Street. It is dominated by the civic hospital but there are also several office buildings.
+<<if Time.dayState is "day">>
+	<<if $weather is "rain">>
+		There's a lot of activity around the hospital, despite the rain.
+	<<else>>
+		There's a lot of activity around the hospital.
+	<</if>>
+<<elseif Time.dayState is "dawn">>
+	<<if $weather is "rain">>
+		The car park fills with vehicles, their occupants hurrying to their workplaces.
+	<<elseif $weather is "snow">>
+		The car park fills with vehicles, their occupants hurrying to their workplaces.
+	<<else>>
+		People are arriving at their workplaces.
+	<</if>>
+<<elseif Time.dayState is "dusk">>
+	<<if $weather is "rain">>
+		People hurry through the rain, heading home for the day.
+	<<elseif $weather is "snow">>
+		People trudge through the snow, heading home for the day.
+	<<else>>
+		People are heading home for the day.
+	<</if>>
+<<elseif Time.dayState is "night">>
+	<<if $weather is "rain">>
+		The hospital lights up the rain.
+	<<elseif $weather is "snow">>
+		The snow is lit by an oasis of light around the hospital.
+	<<else>>
+		There's an oasis of light around the hospital.
+	<</if>>
+<</if>>
+<<streeteffects>>
+<br><br>
+<<if $exposed gte 1>>
+	<<exhibitionism "street">>
+<</if>>
+<<if $arousal gte $arousalmax>>
+	<<orgasmstreet>>
+<</if>>
+<<if $stress gte $stressmax and !$possessed>>
+	<<passoutstreet>>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
+		<<eventsstreet>>
+	<<else>>
+		<<if $options.mapTop is true>>
+			<<map "nightingale">>
+			<br>
+		<</if>>
+		Places of interest
+		<br>
+		<<hospitalicon>><<link [[Hospital (0:01)->Hospital front]]>><<pass 1>><</link>>
+		<br>
+		<<if $exposed lte 0>>
+			<<if $chef_state is 4>>
+				<<photographystudioicon>><<link [[Photography studio (3:00)|Photography Chef]]>><</link>>
+				<br>
+			<<elseif Time.dayState is "day">>
+				<<if $photo_known is 1>>
+					<<photographystudioicon>><<link [[Photography studio (0:01)|Photo Entrance]]>><<pass 1>><</link>>
+					<br>
+				<<elseif $photo_known gte 2>>
+					<<photographystudioicon>><<link [[Photography studio (0:01)|Photo]]>><<pass 1>><</link>>
+					<br>
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if $nextPassageCheck is "Forest">>
+			<span class="nextLink"><<foresticon>><<link [[Forest (0:02)|Forest]]>><<pass 2>><</link>></span>
+		<<else>>
+			<<foresticon>><<link [[Forest (0:10)|Forest]]>><<set $eventskip to 1>><<pass 10>><<set $forest to 0>><</link>>
+		<</if>>
+		<br><br>
+		<<if $exposed gte 1 and Time.dayState isnot "night">>
+		<<else>>
+			<<add_link "Travel<br>">><<hideDisplay>>
+			<<wolf>>
+			<<elk>>
+			<<high>>
+			<<oxford>>
+			<<if $exposed lte 0>>
+				<<buswait>>
+			<</if>>
+			/* 北极星模组 */
+			<<if $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+				<<flywait>>
+			<</if>>
+			/* 北极星 */
+			<<loiter>>
+		<</if>>
+		<<add_link "<br>Alternate routes<br>">><<hideDisplay>>
+		<<park>>
+		<<stormdrain>>
+		<<displayLinks>>
+		<<if $options.mapTop isnot true>>
+			<br>
+			<<map "nightingale">>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>

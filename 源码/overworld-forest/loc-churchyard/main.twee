@@ -1,0 +1,136 @@
+:: Churchyard
+<<location "churchyard">><<set $outside to 1>><<effects>>
+
+You are in the old churchyard. A decrepit manor looms from a hill, surrounded by stone ruins and sepulchres.
+
+<<if Time.dayState is "night">>
+	<<if isBloodmoon()>>
+		The graves cast disturbing shadows in the red moonlight.
+	<<else>>
+		<<if $weather is "clear">>
+			The moonlight-cast shadows seem to move.
+		<<elseif $weather is "rain">>
+			The patter of rain on stone drowns out all else.
+		<<elseif $weather is "snow">>
+			Snow rests on the headstones.
+		<<else>>
+			You're careful not to trip in the dark.
+		<</if>>
+	<</if>>
+<<elseif Time.dayState is "day">>
+	Birds nest on statues, and within archways above the sepulchres' entrances.
+<<elseif Time.dayState is "dawn">>
+	The morning sun peers over the trees.
+<<else>>
+	The shadows lengthen in the setting sun.
+<</if>>
+<br><br>
+
+<<foresticon "churchyard">><<link [[Sepulchre|Churchyard Catacombs Lock]]>><</link>>
+<br>
+/* 北极星模组 */
+<<if $demonbookread is 1 and Time.dayState is "night">>
+    <<link [[召唤仪式|Demon Start]]>><</link>>
+    <br>
+<</if>>
+/* 北极星 */
+<<foresticon>><<link [[Enter the forest|Forest]]>><<endevent>><<set $forest to 10>><</link>>
+<br>
+
+:: Churchyard Catacombs Lock
+<<location "sepulchre">><<set $outside to 0>><<effects>>
+
+You approach the sepulchre. Gargoyles sit on either side, watching. The doors are locked by a modern device, at odds with the old stone.
+<br><br>
+
+<<set $lock to 500>>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		You think you'd be able to pick the lock, <span class="blue">if your arms weren't bound.</span>
+		<br><br>
+	<<else>>
+		<span class="green">The lock looks easy to pick.</span>
+		<br><br>
+		<<lockpickicon>><<link [[Pick it (0:10)|Churchyard Catacombs Sneak]]>><<pass 10>><<crimeUp 1 "trespassing">><</link>><<crime "trespassing">>
+		<br>
+	<</if>>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Churchyard Catacombs Sneak]]>><<pass 1>><<set $ghostIn to true>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Churchyard]]>><</link>>
+<br>
+
+:: Churchyard Catacombs Sneak
+<<effects>>
+<<if $crypt_intro is 1>>
+	You enter the sepulchre. Another torch blazes in the sconce. You take it, and descend into the catacombs.
+	<br><br>
+
+	<<link [[Next|Catacombs]]>><<catacombs_init>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	Even with the lock gone, one of the stone doors is stuck tight, but you're able to push the other far enough to slip inside.
+	<br><br>
+
+	The interior is lit by a single flaming torch. The light doesn't reach the far side of the room.
+	<br><br>
+
+	You remove the torch from its sconce, and use it to light your way. The room is empty, save an open sarcophagus.
+	<br><br>
+
+	<<link [[Peer inside slowly|Churchyard Catacombs Peer Slow]]>><<set $crypt_intro to 1>><</link>>
+	<br>
+	<<link [[Peer inside quickly|Churchyard Catacombs Peer Quick]]>><<set $crypt_intro to 1>><</link>>
+	<br>
+	<<link [[Leave|Churchyard Catacombs Leave]]>><<stress 6>><</link>><<gstress>>
+	<br>
+<</if>>
+
+:: Churchyard Catacombs Peer Slow
+<<effects>>
+
+You move the torch forward, illuminating the sarcophagus interior inch by inch, ready to pull back at a moment should you find something you don't want to see. Instead you find steps, leading down.
+<br><br>
+
+<<link [[Descend|Churchyard Catacombs Intro]]>><</link>>
+<br>
+
+:: Churchyard Catacombs Peer Quick
+<<effects>>
+
+You thrust the torch forward, illuminating the sarcophagus interior all at once. You find a set of steps, leading down.
+<br><br>
+
+<<link [[Descend|Churchyard Catacombs Intro]]>><</link>>
+<br>
+
+:: Churchyard Catacombs Intro
+<<effects>>
+
+The steps lead you through a tight passage, until your torch lights up the visage of a six-armed angel. A statue set into a wall, surrounded by stone skulls.
+<br><br>
+
+A path leads further in. Your torchlight carries a little further here, revealing two branching paths up ahead.
+<br><br>
+
+<<link [[Next|Catacombs]]>><<catacombs_init>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Churchyard Catacombs Leave
+<<effects>>
+
+You turn and walk towards the entrance, stopping only to return the torch to the sconce. Your feet quicken before you reach the door.
+<br><br>
+
+<<link [[Next|Churchyard]]>><</link>>
+<br>

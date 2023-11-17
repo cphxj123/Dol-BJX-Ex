@@ -1,0 +1,221 @@
+:: Widgets pregnancyVar [widget]
+<<widget "pregnancyVar">>
+	<<if $pregnancyStats is undefined>>
+		<<set $pregnancyStats to {
+			playerChildren:0,
+			humanChildren:0,
+			wolfChildren:0,
+			npcChildren:0,
+			npcChildrenUnrelatedToPlayer:0,
+			npcTotalBirthEvents:0,
+			humanToysUnlocked: false,
+			wolfToysUnlocked: false,
+			mother: 0,
+			aftermorningpills: 0,
+			pregnancyTestsTaken: 0,
+			parasiteBook: 0,
+			parasiteDoctorEvents: 0,
+			awareOfBirthId: {},
+		}>>
+	<</if>>
+	<<containersInit>>
+	<<if $objectVersion.prenancyObjectRepair isnot 2>>
+		<<prenancyObjectRepair>>
+		<<set $objectVersion.prenancyObjectRepair to 2>>
+	<</if>>
+	<<if $pregnancyStats.morningSicknessGeneral is undefined>>
+		<<set $pregnancyStats.morningSicknessGeneral to 0>>
+		<<set $pregnancyStats.morningSicknessWaking to 0>>
+		<<set $pregnancyStats.parasiteBook to 0>>
+	<</if>>
+	<<if $pregnancyStats.awareOfBirthId is undefined>>
+		/*
+			This will track when the player or npc is aware of a specific pregnancy
+			'birthid:["pc","NPCNameIndex"]'
+		*/
+		<<set $pregnancyStats.awareOfBirthId to {}>>
+	<</if>>
+	<<if $pregnancyStats.childInteractions is undefined>>
+		<<set $pregnancyStats.childInteractions to 0>>
+		<<set $pregnancyStats.childBreastfedInteractions to 0>>
+		<<set $pregnancyStats.childBottlefedInteractions to 0>>
+		<<set $pregnancyStats.childFirstWordInteractions to 0>>
+		<<set $pregnancyStats.orphanageInteractions to 0>>
+		<<set $pregnancyStats.orphanageMilkBottles to 0>>
+		<<set $pregnancyStats.orphanageMilkBottlesTotal to 0>>
+	<</if>>
+	<<if $pregnancyStats.playerVirginBirths is undefined>>
+		<<set $pregnancyStats.playerVirginBirths to []>>
+		<<set $pregnancyStats.totalDaysPregnant to 0>>
+		<<set $pregnancyStats.totalDaysPregnancyKnown to 0>>
+	<</if>>
+	<<if $pregnancyStats.parasiteBook is undefined>>
+		<<set $pregnancyStats.parasiteBook to 0>>
+	<</if>>
+	<<if $pregnancyStats.parasiteDoctorEvents is undefined>>
+		<<set $pregnancyStats.parasiteDoctorEvents to 0>>
+	<</if>>
+	<<if $pregnancyStats.talkedAboutPregnancy is undefined>>
+		/*
+			This will track when the player or npc has ever talked about specific pregnancy, the set should be during the pregnancy only
+			'birthid:["pc","NPCNameIndex"]'
+		*/
+		<<set $pregnancyStats.talkedAboutPregnancy to {}>>
+	<</if>>
+<</widget>>
+
+<<widget "containersInit">>
+	<<if $container is undefined>>
+		<<set $container to {
+			"lastLocation": null,
+			"list":["home", "lake"],
+			"home":{
+				"upgrades":{
+					"capacity":0,
+					"foodStorage":0,
+					"luxury":0
+				},
+				"name": "Tiny Fish Tank",
+				"count": 0,
+				"maxCount": 1,
+				"daysSinceFed": 0,
+				"maxDaysWithoutFood": 3,
+				"creatures":{
+					0: null
+				},
+				"deadCreatures": 0,
+				"visited": false,
+				"leaveLink": "Bedroom"
+			},
+			"portable":{
+				"creatures":[],
+				"value":0
+			},
+			"lake":{
+				"upgrades":{
+					"capacity":0,
+					"foodStorage":0,
+					"luxury":0
+				},
+				"name": "pond",
+				"count": 0,
+				"maxCount": 3,
+				"daysSinceFed": 0,
+				"maxDaysWithoutFood": 31,
+				"creatures":{
+					0: null
+				},
+				"deadCreatures": 0,
+				"visited": false,
+				"leaveLink": "Lake Waterfall"
+			}
+		}>>
+	<</if>>
+	<<if $container.home.kylarDelay is undefined>>
+		<<set $container.home.kylarDelay to 0>>
+		<<set $container.home.kylarFed to false>>
+		<<set $container.home.kylarHelp to false>>
+	<</if>>
+	<<if $container.farm is undefined>>
+		<<set $container.farm to {
+			"upgrades":{
+				"capacity":0,
+				"foodStorage":0,
+				"luxury":0
+			},
+			"name": "Parasite Barn",
+			"count": 0,
+			"maxCount": 5,
+			"daysSinceFed": 0,
+			"maxDaysWithoutFood": 14,
+			"creatures":{
+				0: null
+			},
+			"deadCreatures": 0,
+			"visited": false,
+			"leaveLink": "Farm Work"
+		}>>
+		<<set $container.list.pushUnique("farm")>>
+	<</if>>
+    
+    /* 北极星模组 */
+    <<if $container.lakehouse is undefined>>
+		<<set $container.lakehouse to {
+			"upgrades":{
+				"capacity":0,
+				"foodStorage":0,
+				"luxury":0
+			},
+			"name": "迷你鱼缸",
+			"count": 0,
+			"maxCount": 5,
+			"daysSinceFed": 0,
+			"maxDaysWithoutFood": 14,
+			"creatures":{
+				0: null
+			},
+			"deadCreatures": 0,
+			"visited": false,
+			"leaveLink": "Lake House Bedroom"
+		}>>
+		<<set $container.list.pushUnique("lakehouse")>>
+	<</if>>
+	/* 北极星 */
+	
+	<<if $pregnancyStats.parasiteTypesSeen is undefined or $pregnancyStats.parasiteVariantsSeen is undefined>>
+		<<set $pregnancyStats.parasiteTypesSeen to []>><<set $pregnancyStats.parasiteVariantsSeen to []>>
+		<<for _i range $container.list>>
+			<<for _o to 0; _o lt $container[_i].maxCount; _o++>>
+				<<if $container[_i].creatures[_o] isnot undefined and $container[_i].creatures[_o] isnot null>>
+					<<if $container[_i].creatures[_o].creature.includes("Tentacle")>>
+						<<set $pregnancyStats.parasiteTypesSeen.pushUnique("Tentacle")>>
+					<<elseif $container[_i].creatures[_o].creature.includes("Vine")>>
+						<<set $pregnancyStats.parasiteTypesSeen.pushUnique("Vine")>>
+					<<elseif $container[_i].creatures[_o].creature.includes("Slime")>>
+						<<set $pregnancyStats.parasiteTypesSeen.pushUnique("Slime")>>
+					<<else>>
+						<<set $pregnancyStats.parasiteTypesSeen.pushUnique($container[_i].creatures[_o].creature)>>
+					<</if>>
+					<<if $container[_i].creatures[_o].creature.includes("Pale")>>
+						<<set $pregnancyStats.parasiteVariantsSeen.pushUnique("Pale")>>
+					<<elseif $container[_i].creatures[_o].creature.includes("Metal")>>
+						<<set $pregnancyStats.parasiteVariantsSeen.pushUnique("Metal")>>
+					<</if>>
+				<<else>>
+					<<break>>
+				<</if>>
+			<</for>>
+		<</for>>
+	<</if>>
+
+	<<if $containerVine or $containerMetal or $containerPale>>
+		<<unset $containerVine, $containerMetal, $containerPale>>
+	<</if>>
+<</widget>>
+
+<<widget "prenancyObjectRepair">>
+	<<set _pregnancy to $sexStats.anus.pregnancy>>
+	<<if _pregnancy.type is "parasite">>
+		<<for _i to 0; _i lt 4; _i++>>
+			<<if _pregnancy.fetus[_i]>>
+				<<if _pregnancy.fetus[_i].creature is undefined>>
+					<<set _pregnancy.fetus[_i].creature to either("Tentacle","Spider","Fish","Snake","Eel")>>
+				<</if>>
+			<</if>>
+		<</for>>
+	<</if>>
+	<<set _list to ["home", "lake", "farm", "portable"]>>
+	<<for _i to 0; _i lt _list.length; _i++>>
+		<<set _container to $container[_list[_i]]>>
+		<<for _j to 0; _j lt _container.maxCount; _j++>>
+			<<if _container.creatures[_j] isnot undefined and _container.creatures[_j] isnot null>>
+				<<if _container.creatures[_j].creature is undefined>>
+					<<set _container.creatures[_j].creature to either("Tentacle","Spider","Fish","Snake","Eel")>>
+				<</if>>
+			<</if>>
+			<<if _container.upgrades.luxury is undefined>>
+				<<set _container.upgrades.luxury to 0>>
+			<</if>>
+		<</for>>
+	<</for>>
+<</widget>>

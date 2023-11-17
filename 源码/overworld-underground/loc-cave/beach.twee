@@ -1,0 +1,153 @@
+:: Beach Cave
+<<set $location to "underground">><<set $outside to 0>>
+<<if $cave gte 50>>
+<<elseif $cave gte 20>>
+	<<water waist>>
+<<else>>
+	<<water>>
+<</if>>
+<<effects>>
+<<set $cave = Math.clamp($cave, 0, 100)>>
+You are in a cave along the coast. Bioluminescent lichen clings to the walls.
+<br><br>
+<<if $cave gte 100>>
+	<span class="lblue">You're at the back of the cave.</span> A decayed wooden throne sits in front of you.
+	<<if !$weekly.beachCaveCompass>>
+		A chest sits there.
+	<</if>>
+<<elseif $cave gte 50>>
+	Your feet are submerged in rushing water.
+<<elseif $cave gte 20>>
+	Water comes up to your waist.
+<<elseif $cave gte 1>>
+	Water comes up to your neck.
+<<else>>
+	Water comes up to your neck. The cave ceiling dips beneath the surface nearby. That way leads outside, but you'll need to swim.
+<</if>>
+<br><br>
+
+<<beach_cave_pursuit>>
+<br><br>
+
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+<<if $stress gte $stressmax>>
+	<<passoutcave>>
+<<elseif $eventskip isnot 1 and $cave lt 100>>
+	<<if random(1, 4) is 4>>
+		<<eventscavetreasure>>
+	<<elseif $danger gte (9900 - $allure) and $eventskip is 0>>
+		<<eventscave>>
+	<<else>>
+		<<eventscavesafe>>
+	<</if>>
+<<else>>
+	<<if $cave lt 100>>
+		<<caveicon "west">><<link [[Journey deeper (0:10)|Beach Cave]]>><<set $cave += 5>><<pass 10>><</link>>
+		<br>
+	<<elseif !$weekly.beachCaveCompass>>
+		<<caveicon "treasure">><<link [[Open chest|Beach Cave Open]]>><<set $weekly.beachCaveCompass to true>><</link>>
+		<br>
+	<</if>>
+	<<if $cave gt 0>>
+		<<caveicon "sea">><<link [[Journey towards the sea (0:10)|Beach Cave]]>><<set $cave -= 5>><<pass 10>><</link>>
+		<br>
+	<<else>>
+		<<swimicon "up">><<link [[Swim outside (0:05)|Beach Cave Up]]>><<pass 5>><</link>>
+		<br>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>
+
+
+:: Beach Cave Open
+<<effects>>
+
+You open the chest. Silver glints inside. A compass. It looks valuable. A collector would know more.
+<<set $antiquemoney += 2200>><<museumAntiqueStatus "antiquesilvercompass" "found">>
+<br><br>
+<<set $pursuit += 1>>
+<<if $museumAntiques.antiques.antiqueleathermap isnot "found" and $museumAntiques.antiques.antiqueleathermap isnot "talk" and $museumAntiques.antiques.antiqueleathermap isnot "museum">>
+	<<set $skulduggerydifficulty to 700>>
+	/* 北极星模组 */
+	<<caveicon "treasure">><<link [[更仔细地检查箱子|Beach Cave Examine]]>><<set $skulduggeryhands to 1>><</link>><<skulduggerydifficulty>>
+	/* 北极星 */
+	<br>
+<</if>>
+
+<<getouticon>><<link [[Leave|Beach Cave]]>><<set $eventskip to 1>><</link>>
+<br>
+
+
+:: Beach Cave Examine
+<<effects>>
+
+
+You peer into the chest, then feel along the walls.
+<br><br>
+
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
+	<<earnFeat "X Marks the Spot">>
+	You feel a button, barely perceptible against the wood. You don't push it. Instead, you feel with your fingertip. There's a smaller button, set into the first. You push down with a nail, and <span class="green">a hidden compartment opens</span> from the base of the container.
+	<br><br>
+	<<set $antiquemoney += 4000>><<museumAntiqueStatus "antiqueleathermap" "found">>
+	A leather scroll sits inside, bound by waxy string. You unfurl it. It's a map, and in good condition. A coastal settlement is depicted, squashed beside a forest. Lines criss-cross the sea, some of them dotted. A kraken has been drawn in the top left corner, and a dragon in the bottom right. A collector might know more.
+	<br><br>
+	<<skulduggeryuse>>
+
+	<<link [[Next|Beach Cave]]>><</link>>
+	<br>
+
+<<else>>
+
+	You feel a button, barely perceptible against the wood. You push it. The base of the chest snaps open, <span class="red">and a dart springs out.</span> It fires wide, but startles you. You drop the container. The water catches it, and sucks it down a thin crevice.<<gstress>><<stress 6>>
+	<br><br>
+
+	<<skulduggeryuse>>
+
+	<<link [[Next|Beach Cave]]>><</link>>
+	<br>
+
+<</if>>
+
+
+:: Beach Cave Up
+<<effects>>
+
+You dive beneath the water, and swim. The cave curves upward.
+
+<<if Time.dayState is "night">>
+	<<if $weather is "clear">>
+		You swim toward the moonlight above, emerging in the cold night breeze.
+	<<elseif $weather is "rain">>
+		Such is the darkness that it's hard to tell which way is up. You emerge into the sea-borne rain before panic sets in.<<gstress>><<stress 6>>
+	<<else>>
+		Such is the darkness that it's hard to tell which way is up. You emerge into the cold night breeze before panic sets in.<<gstress>><<stress 6>>
+	<</if>>
+<<else>>
+	<<if $weather is "clear">>
+		You swim toward the sun above, emerging in the cool sea breeze.
+	<<elseif $weather is "rain">>
+		You swim toward the light above, emerging in the sea-borne rain.
+	<<else>>
+		You swim toward the light above, emerging in the cool sea breeze.
+	<</if>>
+<</if>>
+<br><br>
+<<beach_cave_end>>
+<<link [[Next|Rocks Pool]]>><</link>>
+<br>
+
+:: Beach Cave Entrance
+<<set $location to "underground">><<set $outside to 0>><<effects>>
+
+
+You swim into the cave, towards the soft light. Your hands grasp rock, and you pull yourself into a pocket of air. Bioluminescent lichen clings to the walls.
+<br><br>
+
+<<link [[Next|Beach Cave]]>><<set $cave to 0>><<beach_cave_init>><<set $eventskip to 1>><</link>>
+<br>
+
+
+
+

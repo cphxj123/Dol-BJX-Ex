@@ -1,0 +1,722 @@
+:: Robin Trick Hall
+
+<<set $outside to 0>><<set $location to "home">><<effects>>
+<<npc Robin>><<person1>>
+<<set _robin to statusCheck("Robin")>>
+<<set _costume to getHalloweenCostume()>>
+<<if $halloween_robin_costume is "witch">>
+	You approach Robin. <<He>> peeks at you beneath the witch hat.
+	<<if _robin.pronoun isnot "f">>
+		<<His>> locks hang around the brim, and the dress hints at feminine contours. If you didn't know <<him>>, you wouldn't guess <<he>> was a boy.
+	<</if>>
+<<elseif $halloween_robin_costume is "vampire">>
+	You approach Robin. <<He>> peeks at you over the vampire collar.
+	<<if _robin.pronoun isnot "m">>
+		<<His>> locks disappear into the tall collar, hiding their length, while the cloak hides <<his>> feminine curves. If you didn't know <<him>>, you wouldn't guess <<he>> was a girl.
+	<</if>>
+<<elseif $halloween_robin_costume is "ghost">>
+	You approach Robin. <<He>> peeks at you through a pair of crudely cut holes in the bedsheet.
+	<<if _robin.pronoun is "f" and _robin.breastsize gte 5>>
+		The bedsheet hangs over <<his>> _robin.breastsdesc, creating a tent in the fabric around <<his>> chest.
+	<</if>>
+<<else>> <!-- if you don't already know robin is wearing the ghost costume -->
+	You approach the person wearing a makeshift ghost costume.
+	<<if _robin.pronoun is "f" and _robin.breastsize gte 5>>
+		The bedsheet hangs over their _robin.breastsdesc, creating a tent in the fabric around their chest.
+	<</if>>
+	They turn to you, and a pair of eyes peer out from crudely cut holes in the bedsheet. It's Robin.
+	<<set $halloween_robin_costume to "ghost">>
+<</if>>
+<<if $halloween_robin_costume is (_robin.pronoun is "f" ? "vampire" : "witch")>>
+	<<set _robin.cdstart to _robin.cdstart or "halloween">> /* if it's undefined, set it to "halloween" */
+	<<set _robin.crossdress to _robin.crossdress or 1>>
+<</if>>
+<br><br>
+
+<<set _readyToLeave to true>>
+<<if _costume is "none">>
+	"We're about to go trick-or-treating," <<he>> says. "Would you like to come with us? You'll need a costume too, or it won't be proper."
+	<br><br>
+
+	<i>Maybe you have something in your wardrobe.</i>
+	<<set _readyToLeave to false>>
+
+<<elseif _costume is $halloween_robin_costume>>
+	<<He>> looks at your clothes, then at <<his>> own. <<He>> gasps in realisation. "Our costumes match!" <<he>> shouts, jumping with excitement and startling the other orphans. "Sorry everyone." <<He>> turns back to you. "Are you coming trick-or-treating with us? We can be twin
+	<<if _costume is "witch">>
+		witches.<<if $worn.head.name isnot "witch hat">> You're missing your hat, though.<</if>>"
+	<<else>>
+		<<print _costume>>s."
+	<</if>>
+<<elseif _costume is "mummy" and $robinSeen.includes("hospitalMummy")>>
+	<<He>> stares at your costume for a moment, seemingly remembering something, before blinking a few times and giving you a smile. "I like your costume," <<he>> says. "Are you coming trick-or-treating with us?" <!-- Robin is remembering the events of "Robin Hospital 2" -->
+<<elseif _costume is "sailor" and $robinPunishments.includes("docks")>>
+	<<He>> sees your sailor costume and panic flashes in <<his>> eyes for just a moment, leaving <<him>> unnerved. "Oh, it's you." <<he>> hesitates. "I like your costume. Are you going trick-or-treating with us?"
+<<else>>
+	<<He>> looks at your clothes.
+	<<switch _costume>>
+		<<case "vampire">>
+			"I love your costume," <<he>> says, turning to the orphans. "I hope <<pshe>> doesn't suck my blood!" The orphans laugh. <<He>> turns back to you. "Are you coming trick-or-treating with us?"
+		<<case "witch">>
+			"I love your costume," <<he>> says, turning to the orphans. "I hope <<pshe>> doesn't turn me into a newt!" The orphans laugh. <<He>> turns back to you. "Are you coming trick-or-treating with us?"
+		<<case "scarecrow">>
+			"I love your costume," <<he>> says. "Are you coming trick-or-treating with us? You can keep the crows away from our candy!"
+		<<case "gothic">>
+			"I love your costume," <<he>> says. "It's so fancy! Are you coming trick-or-treating with us?"
+		<<case "nun">>
+			"I love your costume," <<he>> says. "Nuns can be very scary. <<if (_tf.angelHalo and _tf.angelWings) or (_tf.fallenAngelHalo and _tf.fallenAngelWings)>>The wings and halo are a nice touch.<</if>> Are you coming trick-or-treating with us?"
+		<<case "maid">>
+			"I love your costume," <<he>> says. "Maids are very cute. Are you coming trick-or-treating with us?"
+		<<case "karate">>
+			"I love your costume," <<he>> says. "You'll keep us safe from ninjas! Are you coming trick-or-treating with us?"
+		<<case "monk">>
+			"I love your costume," <<he>> says. "The robes look authentic. Are you coming trick-or-treating with us?"
+		<<case "football">>
+			"I love your costume," <<he>> says. "You'll be the next football star! Are you coming trick-or-treating with us?"
+		<<case "christmas">>
+			"I love your costume," <<he>> says. "It's not quite Christmas yet, but that's okay. Are you coming trick-or-treating with us?"
+		<<case "belly dancer">>
+			"I love your costume," <<he>> says. "It's so exotic. Are you coming trick-or-treating with us?"
+		<<case "cowboy">>
+			"I love your costume," <<he>> says. "You just need a lasso! Are you coming trick-or-treating with us?"
+		<<case "cheerleader">>
+			"I love your costume," <<he>> says. "Are you coming trick-or-treating with us? You can cheer us on while we get candy!"
+		<<case "cow onesie">>
+			"I love your costume," <<he>> says. "I bet your milk is tasty!" <<He>> seems oblivious to how lewd that statement is. "Are you coming trick-or-treating with us?"
+		<<case "mummy">>
+			"I love your costume," <<he>> says. "It looks a little flimsy, but it's still spooky. Are you coming trick-or-treating with us?"
+		<<case "prison">>
+			"I love your costume," <<he>> says. "So what did they put you in here for?" <<He>> adds in a deeper voice, then laughs. "Are you coming trick-or-treating with us?"
+		<<case "sailor">>
+			"I love your costume," <<he>> says. "Sorry the rest of us are landlubbers! Are you coming trick-or-treating with us?"
+		<<case "skeleton">>
+			"I love your costume," <<he>> says. "You need to eat more! You're all bones!" <<He>> adds with a giggle. "Are you coming trick-or-treating with us?"
+		<<case "futuresuit">>
+			"I love your costume," <<he>> says. "I hope they still have Halloween in the future. Are you coming trick-or-treating with us?"
+		<<case "eyepatch">>
+			"I love your costume," <<he>> says. "Yarrr, matey!" <<He>> giggles. "Are you coming trick-or-treating with us?"
+		<<case "nurse">>
+			"I love your costume," <<he>> says. "It reminds me of the school nurse. Are you coming trick-or-treating with us?"
+		<<case "rags">>
+			"I love your costume," <<he>> says. "Are you a pauper? I know what that feels like." <<He>> nervously giggles. "Are you coming trick-or-treating with us?"
+		<<case "medical eyepatch">>
+			"I love your costume," <<he>> says. "You're not really hurt though, right? Are you coming trick-or-treating with us?"
+		<<case "gasmask">>
+			"I love your costume," <<he>> says. "Looks like you're ready for the apocalypse. Just like that new game! Are you coming trick-or-treating with us?"
+
+		<!-- TF-related lines -->
+		<<case "harpy TF">>
+			"I love your costume," <<he>> says. "I hope you don't fly away before we finish. Are you coming trick-or-treating with us?"
+		<<case "angel TF">>
+			"I love your costume," <<he>> says. "It really looks like the halo is hovering. Are you coming trick-or-treating with us?"
+		<<case "wolf TF">>
+			"I love your costume," <<he>> says. "The ears look so authentic. Are you coming trick-or-treating with us?"
+		<<case "fallen angel TF">>
+			"I love your costume," <<he>> says. "It really looks like the different bits of halo are hovering. Are you coming trick-or-treating with us?"
+		<<case "demon TF">>
+			"I love your costume," <<he>> says. "Make sure your tail doesn't fall off. Are you coming trick-or-treating with us?"
+		<<case "cat TF">>
+			"I love your costume," <<he>> says. "It makes me want to pet you. Are you coming trick-or-treating with us?"
+		<<case "cow TF">>
+			"I love your costume," <<he>> says. "I bet your milk is tasty!" <<He>> seems oblivious to how lewd that statement is. "Are you coming trick-or-treating with us?"
+		<<case "fox TF">>
+			"I love your costume," <<he>> says.
+			<<if $worn.head.name is "spirit mask">>
+				"The mask goes really well with your fox ears.
+			<<else>>
+				"The tail looks so fluffy!
+			<</if>>
+			Are you coming trick-or-treating with us?"
+		/* 北极星模组 */
+		<<case "sheep TF">>
+			"我喜欢你的服装，"<<he>>说。"你的绒毛真柔软！你要和我们一起去不给糖就捣蛋吗？"
+		<<case "bee TF">>
+			"我喜欢你的服装，"<<he>>说。"那根毒刺看起来好吓人! 你要和我们一起不给糖就捣蛋吗？"
+		<<case "dragon TF">>
+			"哇，我从来没见过这么酷的服装。"<<he>>说。"特别是这对翅膀，又大又威猛，简直帅呆了好不好。"
+		<<case "lizard TF">>
+			"唔，很无聊的服装。"
+		/* 北极星 */
+		<!-- Misc lines -->
+		<<default>>
+			"I love your costume," <<he>> says. "I'm not sure what you're supposed to be, but it's very unique! Are you coming trick-or-treating with us?"
+
+	<</switch>>
+<</if>>
+<br><br>
+
+<<if _readyToLeave>>
+	<<foodicon "halloween">><<link [[Go trick-or-treating (3:00)|Robin Trick 1]]>><<pass 30>><</link>>
+	<br>
+<<else>>
+	<<ind>><<link [[Just throw something together|Robin Trick Mummy]]>><</link>>
+	<br>
+<</if>>
+<<getouticon>><<link [[Leave|Orphanage]]>><<endevent>><</link>>
+<br>
+
+
+:: Robin Trick Mummy
+<<effects>>
+
+An idea strikes you. You enter the bathroom, and start wrapping yourself with toilet paper.
+<br><br>
+
+You check yourself out in the mirror. Your mummy costume is complete. You hope Bailey doesn't find out where all the toilet paper went.
+<br><br>
+
+<<upperwear 65>><<lowerwear 57>><<facewear 18>>
+
+<<link [[Next|Robin Trick Mummy 2]]>><</link>>
+<br>
+
+
+:: Robin Trick Mummy 2
+<<effects>>
+
+You return to Robin. <<He>> stares at your costume. <<He>> looks confused at first, but then releases a mirthful laugh. "Why didn't I think of that?" <<he>> asks aloud. <<He>> looks at your costume again, and giggles.
+<br><br>
+
+At last, <<he>> manages to compose <<himself>>. "Are you coming trick-or-treating with us?"
+<br><br>
+
+<<link [[Go trick-or-treating (3:00)|Robin Trick 1]]>><<pass 30>><</link>>
+<br>
+<<link [[Leave|Orphanage]]>><<endevent>><</link>>
+<br>
+
+:: Robin Trick 1
+
+<<set $outside to 0>><<set $location to "town">><<effects>>
+<<addNNPCOutfit "Robin" $halloween_robin_costume>><<getNNPCClothes "Robin">><<npcClothesName $NPCList[0] $halloween_robin_costume>>
+<<if $robinromance is 1>><<set $dateCount.Total++>><<set $dateCount.Robin++>><</if>>
+Together you, Robin and the orphans leave the orphanage, carrying empty bags. The orphans wear a mix of homemade costumes. Some just wear bedsheets with holes cut for eyes.
+
+<<if $halloween_robin_costume is "witch" and $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "m">>
+	<<if $player.gender is "f" and $player.gender_appearance is "m">>
+		"Thanks for dressing up as a boy," Robin says as you pass through the door. "It feels better not being the only one dressed as the opposite sex."
+	<<elseif $player.gender isnot "f" and $player.gender_appearance is "f">>
+		"Thanks for dressing up as a girl too," Robin says as you pass through the door. "It's made me feel more confident."
+	<</if>>
+<<elseif $halloween_robin_costume is "vampire" and $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "f">>
+	<<if $player.gender isnot "m" and $player.gender_appearance is "m">>
+		"Thanks for dressing up as a boy too," Robin says as you pass through the door. "It's made me feel more confident."
+	<<elseif $player.gender is "m" and $player.gender_appearance is "f">>
+		"Thanks for dressing up as a girl," Robin says as you pass through the door. "It feels better not being the only one dressed as the opposite sex."
+	<</if>>
+<</if>>
+<br><br>
+The group stops at the edge of the road. You see other trick-or-treaters up and down the street. "Stay close everyone," Robin announces.
+<br><br>
+
+<<link [[Next|Robin Trick 2]]>><</link>>
+<br>
+
+:: Robin Trick 2
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+You walk up to the nearest house and ring the doorbell. A <<generate2>><<person2>><<person>> answers.
+<br><br>
+
+"Trick or treat!" the orphans shout in unison. The <<person>> smiles and drops a small handful of sweets into each orphan's bag. Some start tearing into the packaging, until Robin convinces them to wait.
+<<ghope>><<hope 1>>
+<br><br>
+
+You move between houses, shouting and filling your bags. Most homes are accommodating, but some have signs warning off trick-or-treaters. You spot a police officer watching from a car parked at the end of the street.
+<br><br>
+
+<<link [[Next|Robin Trick 3]]>><<endevent>><<pass 30>><</link>>
+<br>
+
+:: Robin Trick 3
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+You come to a brightly-lit house. It's covered in extravagant decorations. The orphans brim with excitement as you ring the bell.
+<br><br>
+
+<<generate1>><<person1>>A <<person>> answers. <<He>> casts a dismissive eye over Robin, but smirks when <<he>> looks at you. "Such lovely little costumes," <<he>> says. "Yours especially." <<He>> reaches to one side, and produces a colossal sack of sweets. The orphans gasp.
+<br><br>
+
+"I'm sorry," <<he>> says. "They're nice, but I don't think your costumes are up to scratch." The orphans' disappointment is audible. <<He>> leans in close and lowers <<his>> voice. "Maybe you could convince me otherwise. In private. You don't want to disappoint your friends, do you?"
+<br><br>
+<<saveNPC 0 trick_or_treat>>
+<<if $promiscuity gte 35>>
+	<<link [[Accept|Robin Trick Oral]]>><<set $halloween_trick_NPC to "oral">><<set $sexstart to 1>><</link>><<promiscuous1>><<ghope>>
+	<br>
+<</if>>
+<<link [[Refuse|Robin Trick Refuse]]>><<set $halloween_trick_NPC to "refused">><<hope -1>><</link>><<lhope>>
+
+:: Robin Trick Refuse
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+You step away from the <<person>>. "Fine," <<he>> sneers. "Fuck off my property."
+<br><br>
+
+Robin tries to cheer everyone up, and points out that there are still many houses to go.
+<br><br>
+<<endevent>>
+<<link [[Next|Robin Trick 4]]>><<pass 30>><</link>>
+<br>
+
+:: Robin Trick Oral
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<enable_rescue>>
+	<<if $speech_attitude is "meek">>
+		You turn to the orphans. "I'll change <<his>> mind," you say. "I won't be long."
+	<<elseif $speech_attitude is "bratty">>
+		"That's not fair," you announce. You turn to the orphans. "I'm getting us those sweets."
+	<<else>>
+		You turn to the orphans. "I'm going to change <<his>> mind," you say. "I won't be long."
+	<</if>>
+	You step through the door, chased by a cheer. It's barely shut when the <<person>> presses <<his>> hands on your shoulders, forcing you to your knees.
+	<<promiscuity3>>
+	<<maninit>><<npcoral>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Robin Trick Oral Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Robin Trick Oral]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Robin Trick Oral Finish
+
+<<set $outside to 0>><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>><<hope 1>>
+	<<ejaculation>>
+	"I love Halloween," <<he>> gasps. "Take your sweets, slut." <<He>> staggers further into the building.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+
+	<<tearful>> you pick up the sack of sweets and step outside. The orphans are overjoyed by your success. They crowd around as you pass out the treats. Robin seems oblivious to what you just did.
+	<br><br>
+
+<<elseif $enemyhealth lte 0>><<hope 1>>
+	You shove <<him>> back. <<He>> trips over the sack and crashes to the floor.
+	<br><br>
+
+	<<clothesontowel>>
+	<<endcombat>>
+	<<tearful>> you snatch up the treats and dash outside. The orphans are overjoyed by your success. They crowd around as you pass out the treats. Robin seems oblivious to what you just did.
+	<br><br>
+
+<<elseif $rescue is 1 and $alarm is 1>>
+	You hear a tap at the door. "Are you okay?" It's Robin.
+	<br><br>
+	The <<person>> pulls away from you. "Fucking slut," <<he>> snarls. "No sweets for you." <<He>> lifts the sack and walks deeper into the building.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	<<tearful>> you stagger from the building. The orphans are disappointed to see you empty-handed.
+	<br><br>
+	Robin tries to cheer everyone up, and points out that there are still many houses to go.
+<br><br>
+
+<<else>><<hope -1>>
+	"Fine," the <<person>> snarls. "No sweets for you." <<He>> lifts the sack and walks deeper into the building.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	<<tearful>> you stagger from the building. The orphans are disappointed to see you empty-handed.
+	<br><br>
+	Robin tries to cheer everyone up, and points out that there are still many houses to go.
+	<br><br>
+<</if>>
+
+<<link [[Next|Robin Trick 4]]>><<pass 30>><</link>>
+<br>
+
+:: Robin Trick 4
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+<<npc Robin>><<generatey2>><<person2>>
+
+You continue moving between houses as the sun dips below the rooftops.
+<br><br>
+
+You hear loud music as you approach one house. A <<person>> dressed as a zombie answers the door. "Trick or treat!" the orphans shout. The <<person>> doesn't take <<his>> eyes off Robin as <<he>> hands out sweets.
+<br><br>
+
+One of the orphans shoves another over unclear ownership rights of a sweet. You dash over to stop things getting out of hand.
+<br><br>
+
+<<link [[Next|Robin Trick 5]]>><</link>>
+<br>
+
+:: Robin Trick 5
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+You turn back to find the <<person>> resting <<his>> arm above Robin's head. <<Hes>> standing awfully close.
+<br><br>
+
+"Why don't we go somewhere private,
+<<if $halloween_robin_costume is "witch">>
+	girl," <<he>> says to Robin. "Show me your witchcraft."
+<<elseif $halloween_robin_costume is "vampire">>
+	boy," <<he>> says to Robin. "I have some delicious blood for you to suck."
+<<else>>
+	<<nnpc_gendery "Robin">>," <<he>> says to Robin. "Show me what you're hiding under that sheet."
+<</if>>
+<br><br>
+<<person1>>
+Robin stares at <<his>> feet, too embarrassed to say anything.
+<br><br>
+
+<<if $promiscuity gte 35 and $robinromance is 1>>
+	<<link [[Propose threesome|Robin Trick Threesome]]>><<npcincr Robin trauma 1>><</link>><<promiscuous3>><<grtrauma>>
+	<br>
+<</if>>
+<<link [[Pull Robin away|Robin Trick Pull]]>><<npcincr Robin love 1>><</link>><<glove>>
+<br>
+<<if $robinromance is 1>>
+	<<link [[Slap|Robin Trick Slap]]>><<npcincr Robin dom -1>><<npcincr Robin love 1>><</link>><<ldom>>
+	<br>
+<</if>>
+<<link [[Ignore|Robin Trick Ignore]]>><<npcincr Robin trauma 3>><</link>><<grtrauma>>
+<br>
+
+:: Robin Trick Pull
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+You take Robin's hand and try to pull <<him>> away. The <<person2>><<person>> grasps <<person1>><<his>> other arm and tugs. "Mine," the <<person2>><<person>> growls. "Fuck off."
+<br><br>
+
+You tussle back and forth, until Robin snatches <<person1>><<his>> arm away from the <<person2>><<person>>. The sudden release almost topples you both. Robin clutches your waist. <<person1>><<Hes>> trembling.
+<br><br>
+
+The <<person2>><<person>> glares as you leave the property, but doesn't say anything more.
+<br><br>
+
+<<link [[Next|Robin Trick 6]]>><<endevent>><<pass 30>><</link>>
+<br>
+
+:: Robin Trick Ignore
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+The <<person2>><<person>> becomes more bold,
+
+<<if $halloween_robin_costume is "witch" and $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "m">>
+	and starts groping at <<person1>><<his>> chest and groin. <<person2>><<He>> feels beneath Robin's skirt, and recoils, backing up against the door. "You're a boy!" <<he>> says. "Fucking pervert." <<He>> gropes for the door handle, as if afraid Robin will pounce if <<he>> takes <<his>> eyes off. <<He>> disappears into the building.
+<<elseif $halloween_robin_costume is "vampire" and $NPCName[$NPCNameList.indexOf("Robin")].pronoun is "f">>
+	and starts groping at <<person1>><<his>> chest and groin. <<person2>><<He>> feels beneath Robin's trousers, and recoils, backing up against the door. "You're a girl!" <<he>> says. "Fucking pervert." <<He>> gropes for the door handle, as if afraid Robin will pounce if <<he>> takes <<his>> eyes off. <<He>> disappears into the building.
+<<else>>
+	and starts groping at <<person1>><<his>> chest and groin. Robin squirms away, evading the <<person2>><<persons>> excited hands. <<person1>><<He>> hides behind you.
+	<br><br>
+
+	The <<person2>><<person>> hurls verbal abuse at Robin as you leave <<his>> property.
+	<br><br>
+<</if>>
+<br><br>
+Robin remains quiet as you move to the next house.
+<br><br>
+
+<<link [[Next|Robin Trick 6]]>><<endevent>><<pass 30>><</link>>
+<br>
+
+:: Robin Trick Slap
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+You march up to the <<person2>><<person>>, who turns just in time for a solid slap to the face. Robin covers <<person1>><<his>> eyes. <<person2>>the <<person>> raises <<his>> fists, but you're already stepping forward. You shove <<him>> through the door. It closes behind <<him>>.
+<br><br>
+
+You turn to find the orphans staring at you.
+<br><br>
+
+<<link [[Justify it|Robin Trick Justify]]>><<hope -1>><<reb 1>><</link>><<lhope>><<greb>>
+<br>
+<<link [[Apologise|Robin Trick Apologise]]>><<stress 6>><</link>><<gstress>>
+<br>
+
+:: Robin Trick Justify
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+<<person2>>"<<He>> was asking for it," you say. "Harassing people isn't okay, and Robin didn't like <<him>>."
+<br><br>
+Robin remains quiet as you move to the next house, but stays close to you. You hear the orphans whisper and giggle amongst themselves. You think they'll be talking about your temper for a while.
+<br><br>
+
+<<link [[Next|Robin Trick 6]]>><<endevent>><<pass 30>><</link>>
+<br>
+
+:: Robin Trick Apologise
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+"Sorry everyone," you say. "You shouldn't hit people like that. I lost my temper. That's no excuse."
+<br><br>
+Robin remains quiet as you move to the next house, but stays close to you. You hear the orphans whisper and giggle amongst themselves. You think they'll be talking about your temper for a while.
+<br><br>
+
+<<link [[Next|Robin Trick 6]]>><<endevent>><<pass 30>><</link>>
+<br>
+
+:: Robin Trick Threesome
+<<set $outside to 0>><<set $location to "town">><<effects>>
+<<set _robin to statusCheck("Robin")>>
+
+<<if _robin.dom gte 20>>
+	You walk up to Robin and the <<person2>><<person>>. "Why don't the three of us find somewhere private?" you ask. "The orphans will be okay for a few minutes."
+	<<promiscuity3>>
+	The <<person>> looks eager, but Robin keeps <<person1>><<his>> eyes locked on <<his>> feet <span class="red">and shakes <<his>> head.</span>
+	<<if _robin.trauma gte 30>>
+		"No... I won't." You can see tears starting to build in <<his>> eyes, but <<he>> stands firm.
+	<<else>>
+		"I don't want to."
+	<</if>>
+	<br><br>
+
+	You take Robin's hand and try to pull <<him>> away. The <<person2>><<person>> grasps <<person1>><<his>> other arm and tugs. "Mine," the <<person2>><<person>> growls. "Fuck off."
+	<br><br>
+
+	You tussle back and forth, until Robin snatches <<person1>><<his>> arm away from the <<person2>><<person>>. The sudden release almost topples you both. Robin clutches your waist. <<person1>><<Hes>> trembling.
+	<br><br>
+
+	The <<person2>><<person>> glares as you leave the property, but doesn't say anything more.
+	<br><br>
+
+	<<link [[Next|Robin Trick 6]]>><<endevent>><<pass 30>><</link>>
+	<br>
+<<else>>
+	<<set $seductiondifficulty to 8000>>
+	<<seductioncheck>>
+	<br><br>
+	<<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><</if>><<seductionskilluse>>
+	<br><br>
+
+	You walk up to Robin and the <<person2>><<person>>. "Why don't the three of us find somewhere private?" you ask. "The orphans will be okay for a few minutes."
+	<<promiscuity3>>
+
+	<<if $seductionrating gte $seductionrequired>>
+
+		"Sure," the <<person>> says. Robin keeps <<person1>><<his>> eyes locked on <<his>> feet, <span class="green">but nods.</span>
+		<<if _robin.trauma gte 30>>
+			You can see tears building in <<his>> eyes.
+		<</if>>
+		<br><br>
+
+		You tell the orphans you won't be long, before being led into the house. You pass a noisy room. It sounds like there's a party inside. You enter a ground-level bedroom, and the <<person2>><<person>> closes the door behind you.
+		<br><br>
+
+		Despite <<his>> initial interest in Robin, it's you <<he>> pounces on.
+		<br><br>
+
+		<<link [[Next|Robin Trick Sex]]>><<set $sexstart to 1>><</link>>
+		<br>
+
+	<<else>>
+
+		"Sure," the <<person>> says. Robin keeps <<person1>><<his>> eyes locked on <<his>> feet <span class="red">and shakes <<his>> head.</span>
+		<br><br>
+
+		You take Robin's hand and try to pull <<him>> away. The <<person2>><<person>> grasps <<person1>><<his>> other arm and tugs. "Mine," the <<person2>><<person>> growls. "Fuck off."
+		<br><br>
+
+		You tussle back and forth, until Robin snatches <<person1>><<his>> arm away from the <<person2>><<person>>. The sudden release almost topples you both. Robin clutches your waist. <<person1>><<Hes>> trembling.
+		<br><br>
+
+		The <<person2>><<person>> glares as you leave the property, but doesn't say anything more.
+		<br><br>
+
+		<<link [[Next|Robin Trick 6]]>><<endevent>><<pass 30>><</link>>
+		<br>
+
+	<</if>>
+<</if>>
+
+:: Robin Trick Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 200>><<promiscuity5>>
+<</if>>
+<<set $enemyanger to 0>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($enemyanger gte 20 or $consensual isnot 1)>>
+	<span id="next"><<link [[Next|Robin Trick Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Robin Trick Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Robin Trick Sex Finish
+
+<<set $outside to 0>><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	The <<person2>><<person>> collapses on the bed, one arm over <<his>> face. <<He>> starts to snore.
+	<<promiscuity3>>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you and Robin return to the orphans. Robin doesn't say anything, but kisses you on the cheek as you leave the building.
+	<br><br>
+<<elseif $enemyhealth lte 0>>
+	The <<person2>><<person>> collapses on the bed. You grasp Robin's arm and flee the room.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyanger gte 20 or $consensual isnot 1>>
+	"St-stop," Robin stammers. "Stop. I don't like this. It's too rough."
+	<br><br>
+	"You think this is rough?" the <<person2>><<person>> complains. <<He>> doesn't push the point, but returns to <<his>> party in a bad mood.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you and Robin return to the orphans. Robin doesn't say anything, but kisses you on the cheek as you leave the building.
+	<br><br>
+
+<<else>>
+	"Fucking make up your mind," the <<person2>><<person>> complains. <<He>> returns to <<his>> party in a bad mood.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you and Robin return to the orphans. Robin doesn't say anything, but kisses you on the cheek as you leave the building.
+	<br><br>
+
+<</if>>
+
+Robin remains quiet as you move to the next house, but stays close to you.
+<br><br>
+
+<<link [[Next|Robin Trick 6]]>><<pass 30>><</link>>
+
+:: Robin Trick 6
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+<<npc Robin>>You continue between houses, gathering more and more treats. The sun hangs low in the sky. "We should head back," Robin says. "I think the orphans are getting tired."
+<br><br>
+You return to the orphanage, bags full of sweets.
+<<ghope>><<hope 1>>
+
+<br><br>
+<<link [[Next|Robin Trick 7]]>><<pass 60>><</link>>
+<br>
+
+:: Robin Trick 7
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+"Remember," Robin announces in a hushed tone once outside the orphanage. "Don't let Bailey know. <<endevent>><<npc Bailey>><<person1>><<Hes>> busy today, but be careful anyway."
+<br><br>
+<<endevent>><<npc Robin>><<person1>>
+You walk with Robin to <<his>> room. <<if $halloween_robin_costume is "ghost">><<He>> pulls the sheet off <<his>> head.<<else>><<Hes>> still dressed as a $halloween_robin_costume.<</if>> <<He>> looks tired, but smiles at you. "Thank you for coming," <<he>> says. "It made the orphans easier to manage."
+<br><br>
+
+<<link [[Hug (0:05)|Robin Trick Hug]]>><<npcincr Robin love 1>><<npcincr Robin trauma -2>><<pass 5>><</link>><<glove>><<lrtrauma>>
+<br>
+<<if $robinromance is 1>>
+	<<link [[Kiss (0:05)|Robin Trick Kiss]]>><<pass 5>><<set $sexstart to 1>><<npcincr Robin love 1>><</link>><<promiscuous1>><<glove>>
+	<br>
+<</if>>
+<<link [[Talk (0:05)|Robin Trick Talk]]>><<npcincr Robin love 1>><<pass 5>><</link>><<glove>>
+<br>
+
+:: Robin Trick Hug
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+You embrace Robin, and <<he>> squeezes you back. <<He>> rests <<his>> head on your shoulder. You hold <<him>> for a few minutes, listening to <<him>> breathe, until <<he>> pulls away.
+<br><br>
+
+"My sweets!" <<he>> says. "I almost forgot." <<He>> lifts <<his>> bag and rifles through the contents. "There are so many," <<he>> says. <<He>> points at your bag. "We can trade the ones we don't like."
+<br><br>
+
+You swap sweets with Robin, though <<he>> has trouble making up <<his>> mind, until <<he>> eats one too many and lies back on the bed.
+<<stress -18>><<trauma -18>><<lltrauma>><<llstress>>
+<br><br>
+
+<<robinoptions>>
+
+:: Robin Trick Talk
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+You chat with Robin, until <<he>> jerks to <<his>> feet. "My sweets!" <<he>> says. "I almost forgot." <<He>> lifts <<his>> bag and rifles through the contents. "There are so many," <<he>> says. <<He>> points at your bag. "We can trade the ones we don't like."
+<br><br>
+
+You swap sweets with Robin, though <<he>> has trouble making up <<his>> mind, until <<he>> eats one too many and lies back on the bed.
+<<stress -18>><<trauma -18>><<lltrauma>><<llstress>>
+<br><br>
+
+<<robinoptions>>
+
+:: Robin Trick Kiss
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 200>><<npckiss>><<set $enemyarousalmax to 500>>
+
+	You climb atop Robin, pushing <<him>> down onto the bed. <<He>> gasps as your lips meet. <<takeKissVirginity "Robin" `($robinromance is 1?"loveInterest":"romantic")`>>
+	<br><br>
+<</if>>
+
+<<set $enemyanger to 0>>
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Robin Trick Kiss Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Robin Trick Kiss]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Robin Trick Kiss Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	Robin clings to you. "I'm so lucky to have you," <<he>> says, burying <<his>> face in your neck.
+	<<promiscuity1>>
+
+	<<clotheson>>
+	<<endcombat>>
+
+<<elseif $enemyhealth lte 0>>
+
+	"Not so rough!" Robin says.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $finish is 1>>
+
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+<<npc Robin>><<person1>>
+Robin jerks to <<his>> feet. "My sweets!" <<he>> says. "I almost forgot." <<He>> lifts <<his>> bag and rifles through the contents. "There are so many," <<he>> says. <<He>> points at your bag. "We can trade the ones we don't like."
+<br><br>
+
+You swap sweets with Robin, though <<he>> has trouble making up <<his>> mind, until <<he>> eats one too many and lies back on the bed.
+<<stress -18>><<trauma -18>><<lltrauma>><<llstress>>
+<br><br>
+
+<<robinoptions>>

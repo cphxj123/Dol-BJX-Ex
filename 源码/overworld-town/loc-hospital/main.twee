@@ -1,0 +1,1764 @@
+:: Ambulance rescue
+<<set $outside to 0>><<effects>><<rngWraith 1>>
+
+You feel yourself being lifted onto a stretcher before passing out again.
+<<if _wraithEvent>>
+	You think you saw someone standing next to you. Someone pale and beautiful.
+<</if>>
+<br><br>
+
+<<link [[Sleep|Hospital Bed]]>><</link>>
+<br>
+
+:: Widgets Ambulance [widget]
+<<widget "ambulance">>
+	<<if $NPCName[$NPCNameList.indexOf("Kylar")].rage gte 96 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+		<<link [[Wake up|Kylar Basement]]>><<pass 1 hour>><</link>>
+	<<else>>
+		<<link [[Wake up|Ambulance rescue]]>><<pass 1 hour>><</link>>
+	<</if>>
+<</widget>>
+
+:: Hospital front
+<<set $outside to 1>><<set $location to "hospital">><<effects>>
+
+You are in front of the hospital. It is open at all hours.
+<<if $companion is "Robinrent">>
+	Robin hugs you tightly. "Thanks for saving me," <<nnpc_he "Robin">> says. "I think I'm going to go home. I need a rest."
+	Robin then waves you goodbye and starts walking towards home.
+	<<unset $companion>>
+<</if>>
+<br><br>
+
+<<if $stress gte $stressmax>>
+	<<passouthospital>>
+<<else>>
+	<<if $exposed gte 1>>
+		You are hiding in the bushes just outside the entrance. You should be able to enter without being seen if you time it right.
+		<br><br>
+	<</if>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "hospital">>
+	<</if>>
+
+	<<getinicon>><<link [[Go inside hospital (0:01)->Hospital Foyer]]>><<pass 1>><</link>>
+	<br>
+	<<entertownicon>><<link [[Nightingale Street (0:01)->Nightingale Street]]>><<pass 1>><</link>>
+	<br>
+<</if>>
+
+:: Hospital Foyer
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+You are inside the hospital foyer. <<if $psych is 1>>You see a sign directing to Harper's office. <</if>><<if Time.weekDay is 6 and $daily.harperVisit isnot 1 and $psych is 1 and $trauma gte ($traumamax / 10) * 9>><span class="red">You can't remember when your appointment was.</span><<elseif Time.weekDay is 6 and $daily.harperVisit isnot 1 and $psych is 1>>You're in time for your appointment.<<else>>You don't have an appointment right now.<</if>>
+<br><br>
+
+<<if $stress gte $stressmax>>
+	<<passouthospital>>
+<<else>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "hospital">>
+	<</if>>
+	<<if $exposed gte 1>>
+		You are hiding under a hospital bed, hoping no one spots you in this state of undress. You see a cart full of sheets not far away that you could use to cover yourself. You could wait until the coast looks clear then make a break for it. Alternatively, you could inch the bed closer to the cart to try to remain concealed from view.
+		<br><br>
+
+		<<link [[Make a break for it (0:05)|Hospital Exhibition]]>><<set $phase to 0>><<pass 5>><</link>>
+		<br>
+		<<link [[Slide the bed closer (0:10)|Hospital Exhibition]]>><<set $phase to 1>><<pass 10>><</link>>
+		<br><br>
+	<<else>>
+		<<if isPubfameTaskAccepted("hospital")>>
+			Mickey asked you to steal a hospital keycard for them.
+			<<if Time.hour gte 6 and Time.hour lte 21>>
+				The hospital is open at all times, so it wouldn't be any less busy at night.
+			<<else>>
+				The hospital is open at all times, so it's not any less busy than the daytime.
+			<</if>>
+			<br><br>
+
+			<<ind>><<link [[Approach a receptionist|Hospital Keycard Receptionist]]>><<pass 5>><</link>>
+			<br><br>
+		<</if>>
+
+		<<if $schoolPsych>>
+			<<askicon>><<link [[Ask for Doctor Harper|Doctor Harper's Office School]]>><</link>>
+			<br>
+		<<elseif $psych is 1 and $daily.harperVisit isnot 1>>
+			<<if $trauma gte ($traumamax / 10) * 9>>
+				<<askicon>><<link [[Ask for an emergency appointment with Doctor Harper|Doctor Harper Emergency]]>><<set $daily.harperVisit to 1>><</link>><<note "If Doctor Harper sees you like this, you fear <<nnpc_he 'Harper'>> may intervene" "red">>
+			<<elseif Time.weekDay is 6>>
+				<<officeicon>><<link [[Doctor Harper's office|Doctor Harper's Office]]>><<set $daily.harperVisit to 1>><</link>>
+			<</if>>
+			<br>
+		<</if>>
+		<<if isPlayerNonparasitePregnancyEnding()>>
+			<<ind>><<link [[Say that your waters have broken|Pregnancy Birth Hospital]]>><</link>>
+			<br>
+		<</if>>
+		<<if $vaginalchastityparasite isnot 0>>
+			<span class="pink">You feel $vaginalchastityparasite squirming inside your vagina.</span>
+			<br>
+		<</if>>
+
+		<<if C.npc.Alex.pregnancy.sample is true and playerIsPregnant() and !isPlayerNonparasitePregnancyEnding()>>
+			<<procedureicon "paternity">><<link [[Inquire about a paternity test (0:10)|Hospital Paternity Test]]>><<pass 10>><</link>>
+			<br><br>
+		<</if>>
+
+		<<if $penilechastityparasite is 0 and $vaginalchastityparasite is 0 and $analchastityparasite is 0 and $parasite.clit.name is undefined and $parasite.penis.name is undefined and $parasite.nipples.name is undefined and $parasite.bottom.name is undefined and $parasite.left_ear.name is undefined and $parasite.right_ear.name is undefined>>
+		<<else>>
+			<<askicon>><<link [[Inquire about body parasite removal (0:10)|Hospital Parasite]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+		/* 北极星模组 */
+		<<if $demonhunter gte 2 and $demonhunter lte 4>>
+			<<askicon>><<link [[要求学习催眠术 (0:10)|Hospital Demonhunter]]>><<pass 10>><</link>><<demonhunter>> <<note "获取' 摄魂之眼' " "italic">>
+			<br>
+		<</if>>
+		<<if $mushroom gte 1>>
+			<<askicon>><<link [[咨询你的蘑菇感染问题 (0:10)|Hospital Mushroom]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+		<<if $slime gt 0>>
+			<<askicon>><<link [[咨询你的史莱姆情况(0:10)|Harper Slime Inquiry]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+		/* 北极星 */
+		<<if $player.breastsize lte 11>>
+			<<procedureicon "breast enlarge">><<link [[Inquire about breast enlargement (0:10)|Hospital Breast Enlargement]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+		<<if $player.breastsize gte 1>>
+			<<procedureicon "breast reduce">><<link [[Inquire about breast reduction (0:10)|Hospital Breast Reduction]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+		<<if $player.penisExist and $player.penissize lt $penissizemax>>
+			<<procedureicon "penis enlarge">><<link [[Inquire about penis enlargement (0:10)|Hospital Penis Enlargement]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+		<<if $player.penisExist and $player.penissize gt $penissizemin>>
+			<<procedureicon "penis reduce">><<link [[Inquire about penis reduction (0:10)|Hospital Penis Reduction]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+		<<set _aPregnancy to $sexStats.anus.pregnancy>>
+		<<set _vPregnancy to $sexStats.vagina.pregnancy>>
+		<<if $pregnancyStats.parasiteDoctorEvents is 1>>
+			<<askicon>><<link [[Inquire about movement in your stomach (0:10)|Pregnancy Introduction]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+		<<if $pregnancyStats.parasiteDoctorEvents is 3 or ((_aPregnancy.motherStatus is 2 or (_vPregnancy.motherStatus is 2 and !$worn.genitals.type.includes("hidden"))) and $pregnancyStats.parasiteDoctorEvents gt 3) or ($pregnancyStats.parasiteBook is 1 and $pregnancyStats.parasiteDoctorEvents gte 2) or $container.portable.value gt 0>>
+			<<if $deviancy gte 75>><<set $pregnancyStats.namesParasitesChild to true>><<else>><<set $pregnancyStats.namesParasitesChild to false>><</if>>
+			<<if $pregnancyStats.namesParasitesChild is true>>
+				<<askicon>><<link [[Inquire about your pregnancy and children (0:10)|Pregnancy Discussion]]>><<pass 10>><</link>>
+				<br>
+			<<else>>
+				<<askicon>><<link [[Inquire about the parasites inside you (0:10)|Pregnancy Discussion]]>><<pass 10>><</link>>
+				<br>
+			<</if>>
+		<</if>>
+		<<set _pregnancy to getPregnancyObject()>>
+		<<if _pregnancy.awareOf is true and !$daily.ultrasoundDone and between(_pregnancy.timer / _pregnancy.timerEnd, 0.1, 1)>>
+			<<askicon>><<link [[Inquire about getting an ultrasound (0:10)|Pregnancy ultrasound]]>><<pass 10>><<set $daily.ultrasoundDone to true>><</link>>
+			<br>
+		<</if>>
+		<<for _active_bodypart range setup.bodyparts>>
+			<<if $skin[_active_bodypart].pen is "tattoo">>
+				<<shopicon "tattoo">><<link [[Inquire about tattoo removal (0:10)|Hospital Tattoo Removal]]>><<pass 10>><</link>>
+				<br>
+				<<break>>
+			<</if>>
+		<</for>>
+		<br>
+
+		<<pillicon>><<link [[Pharmacy (0:02)|Pharmacy]]>><<pass 2>><</link>>
+		<br><br>
+
+		<<getouticon>><<link [[Go outside (0:01)->Hospital front]]>><<pass 1>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Abduction Hospital
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<if $phase is 0>>
+	You awaken on a hard metallic surface in a dark room.
+<</if>>
+Dim lights along the walls switch on, illuminating a large and grimy room, the ceiling lost in the darkness above. Cages line one wall, full of golden eyes that stare out at you. The cage doors shift slightly, and a timer blinks into life "1:00, 0:59, 0:58..." Fighting back panic, you head to the door on the other side of the room, which appears to be the only way out.
+<br><br>
+
+Through the door and to the left there is a precipitous drop. You peer down and see dark running water; you can vaguely make out a wide tunnel leading away from the bottom. To the right is a long corridor. A door stands shut at the other end. In front of you is a small hole in the wall, which you might be able to squeeze through.
+<br><br>
+
+<<beastNEWinit 2 wolf>>
+<<if $monster is 1 or $bestialitydisable is "f">>
+	<<link [[Climb down to the water (0:01)|Abduction Hospital Water]]>><<set $molestationstart to 1>><<pass 1>><</link>>
+	<br>
+<</if>>
+<<link [[Head down the corridor (0:01)|Abduction Hospital Corridor]]>><<pass 1>><<endevent>><</link>>
+<br>
+<<link [[Squeeze through the hole (0:01)|Abduction Hospital Hole]]>><<pass 1>><<endevent>><</link>>
+<br>
+
+:: Molestation Hospital
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<generate1>><<nurseinit>><<person1>>You feel a sharp pain in your arm. You open your eyes to see a <<person>> in a nurse outfit and medical mask injecting you with a mystery liquid. Almost immediately a daze descends on you. You find it hard to move, or even think. A perverse warmth starts rising within your belly.
+	<br>
+<</if>>
+
+<<effects>><<set $outside to 0>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $alarm is 1>>
+	<<if $rescue is 0>>
+		<<set $alarm to 0>>
+		<br><br>
+		<<if $enemyarousal gte $enemyarousalmax>>
+			<span id="next"><<link [[Next->Hospital Ejaculation]]>><</link>></span><<nexttext>>
+		<<elseif $enemyhealth lte 0>>
+			<span id="next"><<link [[Next->Hospital Escape]]>><</link>></span><<nexttext>>
+		<<else>>
+			<span id="next"><<link [[Next->Molestation Hospital]]>><</link>></span><<nexttext>>
+		<</if>>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[Next->Hospital Ejaculation]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[Next->Hospital Escape]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next->Molestation Hospital]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Hospital Bed
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<set $hunger to 0>><<set $thirst to 0>><<set $tiredness to 0>><<set $hygiene to 0>>
+<<set $stress -= 2000>>
+
+<<if $hospitalintro is 0>><<set $hospitalintro to 1>>
+	You awaken in a bed at the civic hospital.
+
+	<<generate1>><<person1>>
+	The nurse explains that you have suffered a severe stress response, but you are otherwise physically healthy. <<He>> asks you to wait a moment while <<he>> fetches the doctor.
+	<br><br>
+	<<endevent>>
+
+	<<npc Harper>><<person1>>You don't have to wait long. A <<personsimple>> wearing a white medical coat and carrying a clipboard enters.
+	<br><br>
+
+	<<He>> smiles at you. "Hello, I'm Doctor Harper." <<He>> takes a seat by your bedside and pulls <<his>> blond fringe away from <<his>> eyes. <<He>> looks young, can't be older than 25.
+	<br><br>
+<<else>>
+	You awaken in a bed at the civic hospital.
+
+	<<npc Harper>><<person1>>Doctor Harper enters at that moment, carrying <<his>> usual clipboard. <<He>> assures you that there is no immediate concern, but <<he>> would like to examine you further.
+	<br><br>
+<</if>>
+
+<<link [[Next|Hospital Bed Examination]]>><</link>>
+<br><br>
+
+:: Hospital Ejaculation
+<<effects>>
+
+<<He>> tenses, throws back <<his>> head and lets out a loud moan as <<he>> climaxes.
+<br><br>
+
+<<ejaculation>>
+
+<<if $enemyanger gte ($enemyangermax / 5) * 3>>
+	<<He>> adjusts <<his>> uniform and leaves the room, but not before giving you one last smack to the face.
+	<<violence 3>>
+	<br><br>
+<<elseif $enemyanger gte 1>>
+	Without a word, <<he>> adjusts <<his>> uniform and leaves the room.
+	<br><br>
+<<else>>
+	Smiling, <<he>> kisses you on the cheek. "This is for you." <<He>> adjusts <<his>> uniform and leaves the room.
+	<br>
+	You've gained <<moneyGain 5>>.
+	<br><br>
+<</if>>
+
+<<clotheson>>
+
+<<tearful>> you climb off the bed and stumble onto the ward.
+<br><br>
+
+<<endcombat>>
+
+<span id="next"><<link [[Next|Recovery ward]]>><</link>></span><<nexttext>>
+
+:: Hospital Escape
+<<effects>>
+
+<<He>> recoils in pain. <<tearful>> you seize the opportunity and dart out the room, taking refuge in a maintenance cupboard.
+<br><br>
+
+<<clotheson>>
+
+<<endcombat>>
+
+<<link [[Next|Hospital cupboard]]>><</link>>
+
+:: Hospital cupboard
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+This small maintenance cupboard contains a variety of cleaning implements and chemicals. You peek through the door. There's no one there.
+<br><br>
+
+<<if $stress gte $stressmax>>
+	<<passouthospital>>
+<<else>>
+	<<link [[Leave the cupboard (0:01)|Recovery ward]]>><<pass 1>><</link>>
+	<br>
+<</if>>
+
+:: Recovery ward
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+You are in the recovery ward of the hospital. Several nurses go about their business.
+<br><br>
+
+<<if $stress gte $stressmax>>
+	<<passouthospital>>
+<<else>>
+	<<if $exposed gte 1>>
+		You are hiding under a hospital bed, hoping no one spots you in this state of undress. You see a cart full of sheets not far away that you could use to cover yourself. You could wait until the coast looks clear then make a break for it. Alternatively, you could inch the bed closer to the cart to try to remain concealed from view.
+		<br><br>
+
+		<<link [[Make a break for it (0:05)|Hospital Exhibition]]>><<set $phase to 0>><<pass 5>><</link>>
+		<br>
+		<<link [[Slide the bed closer (0:10)|Hospital Exhibition]]>><<set $phase to 1>><<pass 10>><</link>>
+		<br><br>
+	<<else>>
+		<<link [[Leave the ward (0:01)->Hospital Foyer]]>><<pass 1>><</link>>
+		<br>
+
+		<<link [[Maintenance cupboard (0:01)|Hospital cupboard]]>><<pass 1>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Passout hospital
+You've pushed yourself too much.
+<br><br>
+<<passout>>
+
+<<set $danger to random(1, 10000)>>
+<<if $danger gte (9900 - $allure)>>
+	<!-- Modified for Beast People -->
+	<<if $rng gte 81>>
+		<<link [[Wake up|Abduction Hospital]]>><<set $phase to 0>><</link>>
+	<<else>>
+		<<link [[Wake up|Molestation Hospital]]>><<set $molestationstart to 1>><</link>>
+	<</if>>
+<<else>>
+	<<link [[Wake up|Hospital Bed]]>><</link>>
+<</if>>
+
+<<pass 1 hour>>
+
+<<trauma 6>><<set $stress -= 2000>>
+
+:: Widgets Passout Hospital [widget]
+<<widget "passouthospital">>
+	<<if isPlayerNonparasitePregnancyEnding()>>
+		<<pregnancyWatersBrokenPassout "hospital">>
+	<<else>>
+		<<link [[Everything fades to black...->Passout hospital]]>><</link>>
+	<</if>>
+<</widget>>
+
+:: Hospital Bed Examination
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<unbind>>
+<<if $worn.face.type.includes("gag") or $worn.face.type.includes("blindfold")>>
+	<<set $worn.face.type.push("broken")>>
+	<<faceruined>>
+<</if>>
+<<if $exposed gte 1>>
+	<<if $player.gender is "m" and $backgroundTraits.includes("crossdresser")>>
+		<<set $clothingselector to "f">><!-- PCs with Crossdresser trait are only PC type with a specific known clothing preference and can presumably ask for it here -->
+	<<elseif $player.gender is "f" and $backgroundTraits.includes("crossdresser")>>
+		<<set $clothingselector to "m">>
+	<<else>>
+		<<set $clothingselector to $player.gender_appearance>>
+	<</if>>
+	<<if $clothingselector is "m">>
+		<<underlowerwear 4>>
+		<<upperwear 4>>
+		<<lowerwear 5>>
+	<<else>>
+		<<upperwear 1>>
+		<<underlowerwear 1>>
+	<</if>>
+<</if>>
+
+<<if $trauma lte ($traumamax / 10) * 2>>
+	<<He>> gently interrogates you on a variety of subjects relating to your home life, how school is going and how your well-being has been faring. <<He>> informs you that everything is okay as far as <<he>> can tell, but you should be careful in the future.
+	<br><br>
+	<<wash>>
+	A nurse helps you to your feet, and you soon find yourself being discharged.
+	<br><br>
+
+	<<if Time.dayState is "night">>
+		It's dark out. Maybe you should wait until morning.
+		<br><br>
+
+		<<link [[Wait (0:10)|Hospital Wait]]>><<pass 10>><<endevent>><</link>><<ltiredness>>
+		<br>
+		<<if $renttime lte 0>>
+			<<link [[Leave now (0:10)|Hospital Rent]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif crimeSumCurrent() gte 1000>>
+			<<link [[Leave now (0:10)|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif $baileyhospital lte 2>>
+			<<link [[Leave now (0:10)->Hospital Journey Home]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[Leave now (0:10)->Hospital front]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<if $renttime lte 0>>
+			<<link [[Next (0:10)|Hospital Rent]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif crimeSumCurrent() gte 1000>>
+			<<link [[Next (0:10)|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif $baileyhospital lte 2>>
+			<<link [[Next (0:10)->Hospital Journey Home]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[Next (0:10)->Hospital front]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+<<elseif $trauma lt ($traumamax / 10) * 9>>
+	<<He>> gently interrogates you on a variety of subjects relating to your home life, how school is going and how your well-being has been faring. After a short while, <<he>> summons a nurse and they have a brief conversation in the corner of the room. They talk quietly, and after a short while the nurse nods and leave the room.
+	<br><br>
+
+	<<if $psych is 0>>
+		<span class="gold">The doctor tells you to visit <<him>> here at the hospital on <span class="gold">Fridays</span> for therapy.</span>
+		<br><br>
+		<<set $psych to 1>><<unset $schoolPsych>>
+		<<wash>>
+		A nurse helps you to your feet, and you soon find yourself being discharged.
+		<br><br>
+	<<else>>
+		The doctor reminds you to visit <<him>> here at the hospital on <span class="gold">Fridays</span>.
+		<br><br>
+		<<wash>>
+		A nurse helps you to your feet, and you soon find yourself being discharged.
+		<br><br>
+	<</if>>
+
+	<<if Time.dayState is "night">>
+		It's dark out. Maybe you should wait until morning.
+		<br><br>
+
+		<<link [[Wait (0:10)|Hospital Wait]]>><<pass 10>><<endevent>><</link>><<ltiredness>>
+		<br>
+
+		<<if $renttime lte 0>>
+			<<link [[Leave now (0:10)|Hospital Rent]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif crimeSumCurrent() gte 1000>>
+			<<link [[Leave now (0:10)|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif $baileyhospital lte 2>>
+			<<link [[Leave now (0:10)->Hospital Journey Home]]>><<pass 10>><<endevent>><</link>>
+		<br>
+		<<else>>
+			<<link [[Leave now (0:10)->Hospital front]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<if $renttime lte 0>>
+			<<link [[Next (0:10)|Hospital Rent]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif crimeSumCurrent() gte 1000>>
+			<<link [[Next (0:10)|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<elseif $baileyhospital lte 2>>
+			<<link [[Next (0:10)->Hospital Journey Home]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [[Next (0:10)->Hospital front]]>><<pass 10>><<endevent>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+<<else>>
+	<<set $asylum to 1>><<set $psych to 1>><<unset $schoolPsych>>
+	<<He>> gently interrogates you on a variety of subjects relating to your home life, how school is going and how your well-being has been faring. A look of concern grows on <<his>> face, but you've no idea why. After a short while, <<he>> summons a nurse into the room and they talk quietly for a short time. The nurse keeps glancing at you, looking concerned.
+	<br><br>
+
+	The nurse leaves you alone with the doctor, who presses a cloth to your face. A haze falls on you. "Everything will be fine," you hear <<him>> say through the fog. Two blurred shapes enter the room. They help you to your feet and guide you away from the bed, an arm on each shoulder. Doctor Harper follows close behind.
+	<br><br>
+
+	Once out in the corridor another shape marches toward you. Harper blocks their path. The shape shouts something incomprehensible with Bailey's voice. The two beside you don't stop. They lead you outside and into the back of a waiting van. There's a cot inside. They push you onto it as the last of your consciousness slips.
+	<br><br>
+	<<endevent>>
+	<<link [[Next|Asylum Intro]]>><<pass 120>><</link>>
+	<br>
+<</if>>
+
+:: Hospital Exhibition
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<if $phase is 0>>
+	You wait for the number of people in the vicinity to drop. You soon find yourself almost alone. There are still people at the far end of the hall, but they are facing away from you. You won't get a better chance than this. Steeling yourself, you emerge from beneath the bed and run toward the towels.
+	<br><br>
+	<<if random(1, 3) is 3>>
+	You've barely left the safety of the bed when doors on both sides of the hall open simultaneously. In an instant, the vacant room becomes packed with bodies. They immediately see you, and react in a diverse manner. Some look offended while others laugh, still others stare at you with depravity in their eyes. There's nowhere to hide; you can do nothing but crouch to preserve what little dignity you can. Not seeing any other option, you continue the original plan. You manage to cover yourself before people start filming the event with their phones. Blushing and light-headed, you flee the scene.
+	<<garousal>><<arousal 600>><<gtrauma>><<trauma 6>><<gstress>><<stress 6>>
+	<br><br>
+
+		<<link [[Next|Hospital Foyer]]>><<endevent>><<towelup>><</link>>
+		<br>
+	<<else>>
+		You make it the cart without incident. Crouching beside it, you help yourself to the towels, eyes affixed on a nearby door. You still feel exposed, but at least now you're covered. You should find something more suitable as soon as you can, before you attract unwanted attention.
+		<br><br>
+
+		<<link [[Next|Hospital Foyer]]>><<endevent>><<towelup>><</link>>
+		<br>
+	<</if>>
+<<elseif $phase is 1>>
+
+	You slowly inch the bed forward. Slow enough, you hope, that no one will even notice. Peeking from beneath the bed, you see the towels drawing closer.
+	<br><br>
+	<<if random(1, 5) is 5>>
+		You're almost there when the bed lurches into movement. You cling to the underside as you are pushed further and further away from the towels, through a set of doors, then another, and then down a ramp.
+		<br><br>
+
+		You hear a metallic creaking, then you and the bed are shoved down a steep ramp. A short distance later you plunge into rushing water.
+		<br><br>
+
+		<<link [[Next|Drain Water]]>><<endevent>><<set $bus to "commercialdrain">><</link>>
+	<<else>>
+		When you are within arm's reach, you stretch out and manage to acquire a handful of towels. You awkwardly cover yourself while remaining under the bed. You still feel exposed, but at least now you're covered. You should find something more suitable as soon as you can, before you attract unwanted attention.
+		<br><br>
+
+		<<link [[Next|Hospital Foyer]]>><<endevent>><<towelup>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Hospital Rent
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<set $bus to "hospital">>
+
+As you walk down an empty corridor a door beside you opens and a pair of arms drag you through. <span class="red">It's Bailey.</span>
+The heavy doors slam shut. You're at the top of a staircase leading down into darkness.
+<br><br>
+
+<<if $robinfirstrentfight and ($baileypaychain lt 2 or $renttime lte -1)>>
+	<<rentduerobin 0>>
+<<else>>
+	<<rentdue 0>>
+<</if>>
+
+:: Rent Hospital Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+	"You think I won't beat it out of you?" Bailey says.
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Rent Hospital Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Rent Hospital Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Rent Hospital Fight Robin
+<<set _robin to statusCheck("Robin")>>
+<<if $fightstart is 1>>
+	<<if $baileydefeatedchain gte 3>>
+		<<set $enemyno to 3>>
+		<<set $enemynomax to 3>>
+	<<elseif $baileydefeatedchain gte 1>>
+		<<set $enemyno to 2>>
+		<<set $enemynomax to 2>>
+	<<else>>
+		<<set $enemyno to 1>>
+		<<set $enemynomax to 1>>
+	<</if>>
+	<<set $fightstart to 0>>
+
+	<<neutral 1>>
+
+	<<maninit>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+	"Keep the other one under control, one of you," Bailey says.
+	The <<personselect $enemynomax>><<person>> nods and grabs at Robin, while Bailey returns <<person1>><<his>> gaze to you.
+	<br><br>
+
+	<<set $phase to 1>>
+	<<if _robin.dom gte 80>>
+		<<set $timer to 4>>
+	<<elseif _robin.dom gte 60>>
+		<<set $timer to 3>>
+	<<elseif _robin.dom gte 40>>
+		<<set $timer to 2>>
+	<<else>>
+		<<set $timer to 1>>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+
+<<personselect $enemynomax>>
+<<if $timer gt 1>>
+	<span class="green">
+	<<if $rng gte 81>>
+		Robin struggles in <<nnpc_his "Robin">> restraints.
+	<<elseif $rng gte 61>>
+		Robin tells you not to give up.
+	<<elseif $rng gte 41>>
+		Robin is kicking at the <<person>>'s heels.
+	<<elseif $rng gte 21>>
+		Robin tells you not to worry about <<nnpc_him "Robin">>.
+	<<else>>
+		Robin bites the <<person>>'s hand holding <<nnpc_him "Robin">>.
+	<</if>></span>
+<<elseif $timer is 1>>
+	The <<person>> manages to wrap <<his>> arm around Robin's throat. <span class="red">Robin cries out in pain.</span>
+<<else>>
+	<span class="red">
+	<<if $rng gte 81>>
+		The <<person>> has Robin in a stranglehold.
+	<<elseif $rng gte 61>>
+		You can hear Robin choking.
+	<<elseif $rng gte 41>>
+		The <<person>> spits at Robin's eye while strangling <<nnpc_him "Robin">>.
+	<<elseif $rng gte 21>>
+		Robin tries to surrender, but the <<person>> doesn't lighten up.
+	<<else>>
+		The <<person>> punches Robin while choking <<nnpc_him "Robin">>.
+	<</if>>
+	</span>
+	<<npcincr Robin trauma 2>><<grtrauma true>>
+<</if>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Rent Hospital Robin Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Rent Hospital Fight Robin]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Rent Hospital Fight Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation "short">><<set $baileydefeatedlewd += 1>><<set $baileydefeatedchain += 1>><<earnFeat "Bailey's Trouble Maker">>
+
+	<<He>> grips the bannister as the orgasm wracks <<his>> body. It's all the chance you need to escape back into the hospital proper. That won't be the last of it, but for now you're in the clear.
+	<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<if crimeSumCurrent() gte 1000>>
+		<<link [[Next|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next->Hospital front]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<elseif $enemyhealth lte 0>>
+	<<set $baileydefeated += 1>><<set $baileydefeatedchain += 1>>
+
+	<<He>> trips and tumbles down the stairs, shouting profanities as <<he>> falls. You waste no time and escape back into the hospital proper. That won't be the last of it, but for now you're in the clear.
+	<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<if crimeSumCurrent() gte 1000>>
+		<<link [[Next|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next->Hospital front]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<<set $baileydefeatedchain to 0>>
+	<<unset $bailey_encroach>>
+
+	You fall to the ground, too hurt to move.
+	<br><br>
+
+	<<set $upperoff to 0>>
+	<<set $loweroff to 0>>
+	<<set $underloweroff to 0>>
+	<<set $underupperoff to 0>>
+	<<endcombat>>
+
+
+	<<link [[Next|Rent Intro]]>><</link>>
+<</if>>
+
+:: Rent Hospital Robin Fight Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation "short">><<set $baileydefeatedlewd += 1>><<set $baileydefeatedchain += 1>><<earnFeat "Bailey's Trouble Maker">>
+
+	<<He>> grips the bannister as the orgasm wracks <<his>> body. It's all the chance you need to grab Robin and escape back into the hospital proper.
+	That won't be the last of it, but for now you're in the clear.
+	<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
+	<<set $companion to "Robinrent">>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<if crimeSumCurrent() gte 1000>>
+		<<link [[Next|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next->Hospital front]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<elseif $enemyhealth lte 0>>
+	<<set $baileydefeated += 1>><<set $baileydefeatedchain += 1>>
+
+	<<He>> trips and tumbles down the stairs, shouting profanities as <<he>> falls. You waste no time grabbing Robin and escaping back into the hospital proper.
+	That won't be the last of it, but for now you're in the clear.
+	<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
+	<<set $companion to "Robinrent">>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<if crimeSumCurrent() gte 1000>>
+		<<link [[Next|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next->Hospital front]]>><<pass 10>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<<set $baileydefeatedchain to 0>>
+	<<unset $bailey_encroach>>
+
+	You fall to the ground, too hurt to move.
+	You hear Robin struggling until Bailey hits <<nnpc_him "Robin">> hard on the head and <<nnpc_he "Robin">> falls to the ground as well.
+	<br><br>
+
+	<<set $upperoff to 0>>
+	<<set $loweroff to 0>>
+	<<set $underloweroff to 0>>
+	<<set $underupperoff to 0>>
+	<<endcombat>>
+
+
+	<<link [[Next|Rent Intro]]>><<set $phase to 1>><</link>>
+<</if>>
+
+:: Hospital Journey Home
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<if $baileyhospital gte 2>>
+	<<set $baileyhospital += 1>>
+
+	<<npc Bailey>><<person1>>Bailey waits for you beside <<his>> car. "This is the last time I'm picking you up like this. I've already wasted enough time." The journey home is uneventful.
+	<br><br>
+<<elseif $baileyhospital gte 1>>
+	<<set $baileyhospital += 1>>
+
+	<<npc Bailey>><<person1>>Bailey waits for you beside <<his>> car. "You need to be more careful. Next time you might not be so lucky." The journey home is uneventful.
+	<br><br>
+<<else>>
+	<<set $baileyhospital to 1>>
+
+	<<npc Bailey>><<person1>>Bailey waits for you beside <<his>> car. "I'm glad you're alright," <<he>> says. "You wouldn't believe the paperwork involved when one of you idiots goes missing. Get in." The journey home is uneventful.
+	<br><br>
+<</if>>
+
+<<link [[Next (0:10)|Orphanage]]>><<endevent>><<pass 10>><</link>>
+<br>
+
+:: Hospital Wait
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<set _autosavehere to true>>
+<<set _hour to clone(Time.hour)>>
+<<for _i to 0; _i lt 12; _i++>>
+	<<set _hour++>>
+	<<if _hour % 24 gte 6 and _hour % 24 lte 9>>
+		<<set _multi to _hour - Time.hour>>
+		<<pass `1 * _multi` hour>><<tiredness `-12 * _multi`>><<effects>>
+		<<break>>
+	<</if>>
+<</for>>
+
+The nurse lets you stay in the waiting room until the sun rises.
+<br><br>
+
+<<if $renttime lte 0>>
+	<<link [[Next|Hospital Rent]]>><<pass 10>><<endevent>><</link>>
+	<br>
+<<elseif crimeSumCurrent() gte 1000>>
+	<<link [[Next|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
+	<br>
+<<elseif $baileyhospital lte 2>>
+	<<link [[Next->Hospital Journey Home]]>><<pass 10>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Next->Hospital front]]>><<pass 10>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Hospital Paternity Test
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<generate1>><<person1>>
+The receptionist taps something into <<his>> computer and instructs you to take a seat in the waiting room.
+<br><br>
+<<endevent>>
+
+<<harper_intro>>
+
+"This is a very simple procedure. I'd just need a DNA sample from you and the possible father. It would take a while though," <<he>> says.
+<br><br>
+
+"It costs <<printmoney 500000>>."
+<br><br>
+
+<<if $money gte 5000>>
+
+	<<procedureicon "paternity">>
+
+	<<if C.npc.Alex.pregnancy.sample is true>>
+		<<link [[Test for Alex (1:00)|Hospital Paternity Test 2]]>><<set $money -= 500000>><<set $paternityTestNPC to "Alex">><</link>>
+		<br>
+
+	<</if>>
+
+<<else>>
+	<span class="blue">You can't afford it.</span>
+	<br>
+
+<</if>>
+
+<<getouticon>><<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Paternity Test 2
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<upperstrip>>
+<<lowerstrip>>
+<<underlowerstrip>>
+<<underupperstrip>>
+
+Harper accepts the payment and Alex strand hair. "Please undress," <<he>> says as <<he>> stands to leave the room.
+<br>
+
+You remove your clothing and stand waiting, feeling more than a little exposed.
+<<if playerChastity()>>You can't remove your $worn.genitals.name, you hope it won't be a problem.<</if>>
+<<He>> soon returns, carrying a medical gown.
+<br><br>
+
+"Wear this," <<he>> instructs. You put the gown on. "Right, if you'd like to come with me, it's just a short walk away."
+<br><br>
+
+<<He>> leads you to another room, containing a small bed. "Please lie down. I'll put you under then move you to the theatre."
+<br><br>
+
+You lie down. <<He>> presses a mask against your face, and you feel your consciousness start to slip. <<He>> pulls a camera from <<his>> pocket as you pass out.
+<br><br>
+
+<<fameexhibitionism 10 "pic">>
+
+<<link [[Next|Hospital Paternity Test Done]]>><</link>>
+
+:: Hospital Paternity Test Done
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<set _father to getPregnancyObject().fetus[0].father>>
+<<set _pregnancy to getPregnancyObject()>>
+
+You awaken in the same room you passed out in. You don't feel any different.
+<br><br>
+
+Harper enters the room. "The test was a success," <<he>> says as <<he>> hands you the results.
+<br><br>
+
+You look at the slip of paper. You are the mother,
+
+<<if $paternityTestNPC is "Alex">>
+	<<run delete C.npc.Alex.pregnancy.sample>>
+
+	<<if _father is "Alex">>
+		<<set _pregnancy.potentialFathers to [{type: _pregnancy.type, source: _pregnancy.fetus[0].father}]>>
+		<<set C.npc.Alex.pregnancy.test to true>>
+		<span class="lewd">and Alex is the father.</span>
+
+	<<else>>
+		<<set _pregnancy.potentialFathers to _pregnancy.potentialFathers.filter(father => father.source isnot $paternityTestNPC)>>
+		<span class="red">but Alex is not the father</span>.
+
+	<</if>>
+
+<</if>>
+
+The rest of the document is incomprehensible to you.
+<br><br>
+
+<<He>> checks <<his>> clipboard. "You can leave straight away. Be well." <<He>> leaves you to dress.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Hospital Foyer]]>><<clotheson>><<unset $paternityTestNPC>><</link>>
+<br>
+
+
+:: Hospital Breast Reduction
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<generate1>><<person1>>
+The receptionist taps something into <<his>> computer and instructs you to take a seat in the waiting room.
+<br><br>
+<<endevent>>
+
+<<harper_intro>>
+
+"This is a very simple procedure." <<He>> pulls a chart of breast sizes from <<his>> desk. "You're about here." <<He>> points at a picture labelled <span class="lewd">
+	<<if $player.breastsize is 0>>
+		"flat".
+	<<else>>
+		"<<breasts>>."
+	<</if>>
+</span>
+<br><br>
+
+"It costs £2000 to decrease your breasts by a single size, and a further £2000 for each size beyond that."
+<br><br>
+
+<<if $player.breastsize gte 12>>
+	<<set _breast12 to Math.round(($player.breastsize - 11) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts gigantic|Hospital Breast Reduction 2]]>><<set $phase to 11>><</link>> | <<printmoney _breast12>> <!-- Appears even with blind stats enabled. All are intentional -->
+	<br>
+<</if>>
+<<if $player.breastsize gte 11>>
+	<<set _breast11 to Math.round(($player.breastsize - 10) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts huge|Hospital Breast Reduction 2]]>><<set $phase to 10>><</link>> | <<printmoney _breast11>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 10>>
+	<<set _breast10 to Math.round(($player.breastsize - 9) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts massive|Hospital Breast Reduction 2]]>><<set $phase to 9>><</link>> | <<printmoney _breast10>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 9>>
+	<<set _breast9 to Math.round(($player.breastsize - 8) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts ample|Hospital Breast Reduction 2]]>><<set $phase to 8>><</link>> | <<printmoney _breast9>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 8>>
+	<<set _breast8 to Math.round(($player.breastsize - 7) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts large|Hospital Breast Reduction 2]]>><<set $phase to 7>><</link>> | <<printmoney _breast8>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 7>>
+	<<set _breast7 to Math.round(($player.breastsize - 6) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts full|Hospital Breast Reduction 2]]>><<set $phase to 6>><</link>> | <<printmoney _breast7>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 6>>
+	<<set _breast6 to Math.round(($player.breastsize - 5) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts modest|Hospital Breast Reduction 2]]>><<set $phase to 5>><</link>> | <<printmoney _breast6>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 5>>
+	<<set _breast5 to Math.round(($player.breastsize - 4) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts pert|Hospital Breast Reduction 2]]>><<set $phase to 4>><</link>> | <<printmoney _breast5>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 4>>
+	<<set _breast4 to Math.round(($player.breastsize - 3) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts small|Hospital Breast Reduction 2]]>><<set $phase to 3>><</link>> | <<printmoney _breast4>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 3>>
+	<<set _breast3 to Math.round(($player.breastsize - 2) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts tiny|Hospital Breast Reduction 2]]>><<set $phase to 2>><</link>> | <<printmoney _breast3>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 2>>
+	<<set _breast2 to Math.round(($player.breastsize - 1) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts budding|Hospital Breast Reduction 2]]>><<set $phase to 1>><</link>> | <<printmoney _breast2>>
+	<br>
+<</if>>
+<<if $player.breastsize gte 1>>
+	<<set _breast1 to Math.round(($player.breastsize - 0) * 200000)>>
+	<<procedureicon "breast reduce">><<link [[Make your breasts flat|Hospital Breast Reduction 2]]>><<set $phase to 0>><</link>> | <<printmoney _breast1>>
+	<br>
+<</if>>
+<br>
+
+<<getouticon>><<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Breast Reduction 2
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+"This will cost <span class="gold">£<<print (($player.breastsize - $phase) * 2000)>></span>," <<he>> says. "And take four hours."
+<br><br>
+
+<<if $money gte (($player.breastsize - $phase) * 200000)>>
+	<<link [[Accept (4:00)|Hospital Breast Reduction 3]]>><<pass 4 hours>><</link>>
+	<br>
+<<else>>
+	You can't afford it.
+	<br><br>
+<</if>>
+
+<<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Breast Reduction 3
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<set $money -= (($player.breastsize - $phase) * 200000)>>
+<<set $breastgrowthtimer to 700>>
+
+<<upperstrip>>
+<<lowerstrip>>
+<<underlowerstrip>>
+<<underupperstrip>>
+Harper accepts the payment. "Please undress," <<he>> says as <<he>> stands to leave the room.
+You remove your clothing and stand waiting, feeling more than a little exposed.
+<<if playerChastity()>>You can't remove your $worn.genitals.name, you hope it won't be a problem.<</if>>
+<<He>> soon returns, carrying a medical gown.
+<br><br>
+
+"Wear this," <<he>> instructs. You put the gown on. "Right, if you'd like to come with me, it's just a short walk away."
+<br><br>
+
+<<He>> leads you to another room, containing a small bed. "Please lie down. I'll put you under then move you to the theatre." You lie down.
+<<He>> presses a mask against your face, and you feel your consciousness start to slip. <<He>> pulls a camera from <<his>> pocket as you pass out.
+<br><br>
+
+<<fameexhibitionism 10 "pic">>
+
+<<link [[Next|Hospital Breast Done]]>><</link>>
+<br>
+
+:: Hospital Breast Done
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<set $player.breastsize to $phase>>
+<<set $breastsizeold to $player.breastsize>>
+
+You awaken in the same room you passed out in. You don't feel any different, until you look down and see your <<breasts>>. Harper enters the room.
+<br><br>
+
+"The operation was a success," <<he>> says. <<He>> looks at your chest.
+
+<<if $player.breastsize gte 12>>
+	"I hope those things don't give you back problems."
+<<elseif $player.breastsize gte 9>>
+	"You'll get a lot of attention with those."
+<<elseif $player.breastsize gte 6>>
+	"That's a good size."
+<<elseif $player.breastsize gte 3>>
+	"You look good with those."
+<<elseif $player.breastsize gte 1>>
+	"You look cute with those."
+<<elseif $player.breastsize is 0>>
+	"Your chest looks cute."
+<</if>>
+<br><br>
+
+<<He>> checks <<his>> clipboard. "You can leave straight away. Be well." <<He>> leaves you to dress.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Hospital Foyer]]>><<clotheson>><</link>>
+<br>
+
+:: Hospital Breast Enlargement
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<generate1>><<person1>>
+The receptionist taps something into <<his>> computer and instructs you to take a seat in the waiting room.
+<br><br>
+<<endevent>>
+
+<<harper_intro>>
+
+"This is a simple procedure." <<He>> pulls a chart of breast sizes from <<his>> desk. "You're about here." <<He>> points at a picture labelled <span class="lewd">
+<<if $player.breastsize is 0>>
+	"flat".
+<<else>>
+	"<<breasts>>."
+<</if>>
+</span>
+<br><br>
+
+"It costs £5000 to increase your breasts by a single size, and a further £5000 for each size beyond that."
+<br><br>
+
+<<if $player.breastsize lt 12>>
+	<<set _breast12 to Math.round((12 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts enormous|Hospital Breast Enlargement 2]]>><<set $phase to 12>><</link>> | <<printmoney _breast12>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 11>>
+	<<set _breast11 to Math.round((11 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts gigantic|Hospital Breast Enlargement 2]]>><<set $phase to 11>><</link>> | <<printmoney _breast11>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 10>>
+	<<set _breast10 to Math.round((10 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts huge|Hospital Breast Enlargement 2]]>><<set $phase to 10>><</link>> | <<printmoney _breast10>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 9>>
+	<<set _breast9 to Math.round((9 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts massive|Hospital Breast Enlargement 2]]>><<set $phase to 9>><</link>> | <<printmoney _breast9>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 8>>
+	<<set _breast8 to Math.round((8 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts ample|Hospital Breast Enlargement 2]]>><<set $phase to 8>><</link>> | <<printmoney _breast8>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 7>>
+	<<set _breast7 to Math.round((7 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts large|Hospital Breast Enlargement 2]]>><<set $phase to 7>><</link>> | <<printmoney _breast7>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 6>>
+	<<set _breast6 to Math.round((6 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts full|Hospital Breast Enlargement 2]]>><<set $phase to 6>><</link>> | <<printmoney _breast6>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 5>>
+	<<set _breast5 to Math.round((5 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts modest|Hospital Breast Enlargement 2]]>><<set $phase to 5>><</link>> | <<printmoney _breast5>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 4>>
+	<<set _breast4 to Math.round((4 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts pert|Hospital Breast Enlargement 2]]>><<set $phase to 4>><</link>> | <<printmoney _breast4>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 3>>
+	<<set _breast3 to Math.round((3 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts small|Hospital Breast Enlargement 2]]>><<set $phase to 3>><</link>> | <<printmoney _breast3>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 2>>
+	<<set _breast2 to Math.round((2 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts tiny|Hospital Breast Enlargement 2]]>><<set $phase to 2>><</link>> | <<printmoney _breast2>>
+	<br>
+<</if>>
+<<if $player.breastsize lt 1>>
+	<<set _breast1 to Math.round((1 - $player.breastsize) * 500000)>>
+	<<procedureicon "breast enlarge">><<link [[Make your breasts budding|Hospital Breast Enlargement 2]]>><<set $phase to 1>><</link>> | <<printmoney _breast1>>
+	<br>
+<</if>>
+<br>
+
+<<getouticon>><<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Breast Enlargement 2
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+"This will cost <span class="gold">£<<print (($phase - $player.breastsize) * 5000)>></span>," <<he>> says. "And take four hours."
+<br><br>
+
+<<if $money gte (($phase - $player.breastsize) * 500000)>>
+	<<link [[Accept (4:00)|Hospital Breast Enlargement 3]]>><<pass 4 hours>><</link>>
+	<br>
+<<else>>
+	You can't afford it.
+	<br><br>
+<</if>>
+
+<<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Breast Enlargement 3
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<set $money -= (($phase - $player.breastsize) * 500000)>>
+<<set $breastgrowthtimer to 700>>
+
+<<upperstrip>>
+<<lowerstrip>>
+<<underlowerstrip>>
+<<underupperstrip>>
+Harper accepts the payment. "Please undress," <<he>> says as <<he>> stands to leave the room.
+You remove your clothing and stand waiting, feeling more than a little exposed.
+<<if playerChastity()>>You can't remove your $worn.genitals.name, you hope it won't be a problem.<</if>>
+<<He>> soon returns, carrying a medical gown.
+<br><br>
+
+"Wear this," <<he>> instructs. You put the gown on. "Right, if you'd like to come with me, it's just a short walk away."
+<br><br>
+
+<<He>> leads you to another room, containing a small bed. "Please lie down. I'll put you under then move you to the theatre." You lie down.
+<<He>> presses a mask against your face, and you feel your consciousness start to slip. <<He>> pulls a camera from <<his>> pocket as you pass out.
+<br><br>
+
+<<fameexhibitionism 10 "pic">>
+
+<<link [[Next|Hospital Breast Done]]>><</link>>
+<br>
+
+:: Hospital Penis Reduction
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<generate1>><<person1>>
+The receptionist taps something into <<his>> computer and instructs you to take a seat in the waiting room.
+<br><br>
+<<endevent>>
+
+<<harper_intro>>
+<<if $worn.genitals.type.includes("shrinking")>>
+	"This would normally be a simple procedure..." <<He>> pulls a chart of penis sizes from <<his>> desk drawer. "However, I can't actually tell how large you are."
+    <br><br>
+	After a closer examination, <<he>> continues, "You should get that <<print $worn.genitals.name>> unlocked and removed. I'm afraid we don't have the tools to work with such a small device."
+	<br>
+<<else>>
+	"This is a very simple procedure." <<He>> pulls a chart of penis sizes from <<his>> desk. "You're about here." <<He>> points at
+	<<switch $player.penissize>>
+		<<case 4>>the top
+		<<case -1>>the bottom
+		<<default>>a
+	<</switch>>
+	picture labelled <span class="lewd">"<<print ($player.penissize is 2 ? "average" : "<<penissize>>")>> penis."</span>
+	<br><br>
+
+	"It costs £2000 to decrease your penis by a single size, and a further £2000 for each size beyond that."
+	<br><br>
+
+	<<if $player.penissize gte 4>>
+		<<set _penis4 to Math.round(($player.penissize - 3) * 200000)>>
+		<<procedureicon "penis reduce">><<link [[Make your penis large|Hospital Penis Reduction 2]]>><<set $phase to 3>><</link>> | <<printmoney _penis4>>
+		<br>
+	<</if>>
+	<<if $player.penissize gte 3>>
+		<<set _penis3 to Math.round(($player.penissize - 2) * 200000)>>
+		<<procedureicon "penis reduce">><<link [[Make your penis average|Hospital Penis Reduction 2]]>><<set $phase to 2>><</link>> | <<printmoney _penis3>>
+		<br>
+	<</if>>
+	<<if $player.penissize gte 2>>
+		<<set _penis2 to Math.round(($player.penissize - 1) * 200000)>>
+		<<procedureicon "penis reduce">><<link [[Make your penis small|Hospital Penis Reduction 2]]>><<set $phase to 1>><</link>> | <<printmoney _penis2>>
+		<br>
+	<</if>>
+	<<if $player.penissize gte 1>>
+		<<set _penis1 to Math.round(($player.penissize) * 200000)>>
+		<<procedureicon "penis reduce">><<link [[Make your penis tiny|Hospital Penis Reduction 2]]>><<set $phase to 0>><</link>> | <<printmoney _penis1>>
+		<br>
+	<</if>>
+	<<if $player.penissize gte 0 and $penissizemin lt 0>>
+		<<set _penis0 to Math.round(($player.penissize + 1) * 200000)>>
+		<<procedureicon "penis reduce">><<link [[Make your penis mini|Hospital Penis Reduction 2]]>><<set $phase to -1>><</link>> | <<printmoney _penis0>>
+		<br>
+	<</if>>
+<</if>>
+<br>
+
+<<getouticon>><<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Penis Reduction 2
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+"This will cost <span class="gold">£<<print (($player.penissize - $phase) * 2000)>></span>," <<he>> says. "And take four hours."
+<br><br>
+
+<<if $money gte (($player.penissize - $phase) * 200000)>>
+	<<link [[Accept (4:00)|Hospital Penis Reduction 3]]>><<pass 4 hours>><</link>>
+	<br>
+<<else>>
+	You can't afford it.
+	<br><br>
+<</if>>
+
+<<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Penis Reduction 3
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<set $money -= (($player.penissize - $phase) * 200000)>>
+<<set $penisgrowthtimer to 700>>
+
+<<upperstrip>>
+<<lowerstrip>>
+<<underlowerstrip>>
+<<underupperstrip>>
+Harper accepts the payment. "Please undress," <<he>> says as <<he>> stands to leave the room.
+You remove your clothing and stand waiting, feeling more than a little exposed.
+<<if playerChastity()>>You can't remove your $worn.genitals.name, you hope it won't be a problem.<</if>>
+<<He>> soon returns, carrying a medical gown.
+<br><br>
+
+"Wear this," <<he>> instructs. You put the gown on. "Right, if you'd like to come with me, it's just a short walk away."
+<br><br>
+
+<<He>> leads you to another room, containing a small bed. "Please lie down. I'll put you under then move you to the theatre." You lie down.
+<<He>> presses a mask against your face, and you feel your consciousness start to slip. <<He>> pulls a camera from <<his>> pocket as you pass out.
+<br><br>
+
+<<fameexhibitionism 10 "pic">>
+
+<<link [[Next|Hospital Penis Done]]>><</link>>
+<br>
+
+:: Hospital Penis Done
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<set $player.penissize to $phase>>
+
+You awaken in the same room you passed out in. You don't feel any different, until you look down and see your <<penissize>> penis. Harper enters the room.
+<br><br>
+
+"The operation was a success," <<he>> says. <<He>> looks at your groin.
+
+<<if $player.penissize gte 4>>
+	Stares, in fact. <<He>> blushes and looks away.
+<<elseif $player.penissize gte 3>>
+	Stares, in fact. <<He>> blushes and looks away.
+<<elseif $player.penissize is 2>>
+	"No one would look twice at it now." <<He>> blushes. "N-not that it doesn't look nice."
+<<elseif $player.penissize is 1>>
+	"Such a manageable size."
+<<else>>
+	"It looks so cute."
+<</if>>
+<br><br>
+
+<<He>> checks <<his>> clipboard. "You can leave straight away. Be well." <<He>> leaves you to dress.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Hospital Foyer]]>><<clotheson>><</link>>
+<br>
+
+:: Hospital Penis Enlargement
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<generate1>><<person1>>
+The receptionist taps something into <<his>> computer and instructs you to take a seat in the waiting room.
+<br><br>
+<<endevent>>
+
+<<harper_intro>>
+<<if $worn.genitals.type.includes("shrinking")>>
+	"This would normally be a simple procedure..." <<He>> pulls a chart of penis sizes from <<his>> desk drawer. "However, I can't actually tell how large you are."
+    <br><br>
+	After a closer examination, <<he>> continues, "You should get that <<print $worn.genitals.name>> unlocked and removed. I'm afraid we don't have the tools to work with such a small device."
+	<br>
+<<elseif $player.penissize gte -1>>
+	"This is a simple procedure." <<He>> pulls a chart of penis sizes from <<his>> desk. "You're about here." <<He>> points at
+	<<switch $player.penissize>>
+		<<case 4>>the top
+		<<case -1>>the bottom
+		<<default>>a
+	<</switch>>
+	picture labelled <span class="lewd">"<<print ($player.penissize is 2 ? "average" : "<<penissize>>")>> penis."</span>
+	<br><br>
+
+	"It costs £5000 to increase your penis by a single size, and a further £5000 for each size beyond that."
+	<br><br>
+
+	<<if $player.penissize lt 4>>
+		<<set _penis4 to Math.round((4 - $player.penissize) * 500000)>>
+		<<procedureicon "penis enlarge">><<link [[Make your penis enormous|Hospital Penis Enlargement 2]]>><<set $phase to 4>><</link>> | <<printmoney _penis4>>
+		<br>
+	<</if>>
+	<<if $player.penissize lt 3>>
+		<<set _penis3 to Math.round((3 - $player.penissize) * 500000)>>
+		<<procedureicon "penis enlarge">><<link [[Make your penis large|Hospital Penis Enlargement 2]]>><<set $phase to 3>><</link>> | <<printmoney _penis3>>
+		<br>
+	<</if>>
+	<<if $player.penissize lt 2>>
+		<<set _penis2 to Math.round((2 - $player.penissize) * 500000)>>
+		<<procedureicon "penis enlarge">><<link [[Make your penis average|Hospital Penis Enlargement 2]]>><<set $phase to 2>><</link>> | <<printmoney _penis2>>
+		<br>
+	<</if>>
+	<<if $player.penissize lt 1>>
+		<<set _penis1 to Math.round((1 - $player.penissize) * 500000)>>
+		<<procedureicon "penis enlarge">><<link [[Make your penis small|Hospital Penis Enlargement 2]]>><<set $phase to 1>><</link>> | <<printmoney _penis1>>
+		<br>
+	<</if>>
+	<<if $player.penissize lt 0>>
+		<<set _penis0 to Math.round((0 - $player.penissize) * 500000)>>
+		<<procedureicon "penis enlarge">><<link [[Make your penis tiny|Hospital Penis Enlargement 2]]>><<set $phase to 0>><</link>> | <<printmoney _penis0>>
+		<br>
+	<</if>>
+<<else>>
+	"This would normally be a simple procedure..." <<He>> pulls a chart of penis sizes from <<his>> desk. "However, you're not even at the smallest size." <<He>> points at a picture labelled <span class="lewd">"mini penis."</span>
+	<br><br>
+	While taking a closer look, <<he>> continues, "You should head to our Pharmacy and buy some penis growth pills. I personally recommend taking two doses per day to start with, however, I'm not quite sure if that would be enough to revive it."
+	<br>
+<</if>>
+<br>
+<<getouticon>><<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Penis Enlargement 2
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+"This will cost <span class="gold">£<<print (($phase - $player.penissize) * 5000)>></span>," <<he>> says. "And take four hours."
+<br><br>
+
+<<if $money gte (($phase - $player.penissize) * 500000)>>
+	<<link [[Accept (4:00)|Hospital Penis Enlargement 3]]>><<pass 4 hours>><</link>>
+	<br>
+<<else>>
+	You can't afford it.
+	<br><br>
+<</if>>
+
+<<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Penis Enlargement 3
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<set $money -= (($phase - $player.penissize) * 500000)>>
+<<set $penisgrowthtimer to 300>>
+
+<<upperstrip>>
+<<lowerstrip>>
+<<underlowerstrip>>
+<<underupperstrip>>
+Harper accepts the payment. "Please undress," <<he>> says as <<he>> stands to leave the room.
+You remove your clothing and stand waiting, feeling more than a little exposed.
+<<if playerChastity()>>You can't remove your $worn.genitals.name, you hope it won't be a problem.<</if>>
+<<He>> soon returns, carrying a medical gown.
+<br><br>
+
+"Wear this," <<he>> instructs. You put the gown on. "Right, if you'd like to come with me, it's just a short walk away."
+<br><br>
+
+<<He>> leads you to another room, containing a small bed. "Please lie down. I'll put you under then move you to the theatre." You lie down.
+<<He>> presses a mask against your face, and you feel your consciousness start to slip. <<He>> pulls a camera from <<his>> pocket as you pass out.
+<br><br>
+
+<<fameexhibitionism 10 "pic">>
+
+<<link [[Next|Hospital Penis Done]]>><</link>>
+<br>
+
+:: Hospital Tattoo Removal
+<<effects>>
+
+<<generate1>><<person1>>
+The receptionist taps something into <<his>> computer and instructs you to take a seat in the waiting room.
+<br><br>
+<<endevent>>
+
+<<harper_intro>>
+
+"So you have ink you'd like removed," <<he>> says. "We can facilitate that. The procedure costs £3000, and will take three hours."
+<br><br>
+
+<<if $money gte 300000>>
+	<<for _active_bodypart range setup.bodyparts>>
+		<<if $skin[_active_bodypart].pen is "tattoo">>
+			You have a <<tattoo _active_bodypart>> on your <<bodypart _active_bodypart>>. <<capture _active_bodypart>><<link [[Remove|Hospital Tattoo Removal 2]]>><<pass 3 hours>><<set $money -= 300000>><<set $remove_tattoo to _active_bodypart>><</link>><</capture>>
+			<br>
+		<</if>>
+	<</for>>
+<br>
+<</if>>
+<<link [[Leave|Hospital Foyer]]>><<endevent>><</link>>
+<br>
+
+:: Hospital Tattoo Removal 2
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+
+<<strip>>
+Harper accepts the payment. "Please undress," <<he>> says as <<he>> stands to leave the room. "Everything. The presence of clothing interferes with the delicate apparatus."
+You remove your clothing and stand waiting, feeling more than a little exposed.
+<<if playerChastity()>>You can't remove your $worn.genitals.name, you hope it won't be a problem.<</if>>
+<<He>> soon returns, carrying a medical gown.
+<br><br>
+
+"Wear this," <<he>> instructs. You put the gown on. "Right, if you'd like to come with me, it's just a short walk away."
+<br><br>
+
+<<He>> leads you to another room, containing a small bed. "Please lie down. I'll put you under then move you to the theatre." You lie down.
+<<He>> presses a mask against your face, and you feel your consciousness start to slip. <<He>> pulls a camera from <<his>> pocket as you pass out.
+<br><br>
+
+<<fameexhibitionism 10 "pic">>
+
+<<link [[Next|Hospital Tattoo Removal Done]]>><</link>>
+
+:: Hospital Tattoo Removal Done
+<<effects>>
+
+You awaken in the same room you passed out in.
+<<if $remove_tattoo is "forehead" or $remove_tattoo is "left_cheek" or $remove_tattoo is "right_cheek">>
+	You look in a mirror. The <<tattoo $remove_tattoo>> on your <<bodypart $remove_tattoo>> is gone.
+<<else>>
+	You look down at your <<bodypart $remove_tattoo>>. Your <<tattoo $remove_tattoo>> is gone.
+<</if>>
+Harper enters the room.
+<br><br>
+
+<<bodywriting_clear $remove_tattoo>><<unset $remove_tattoo>>
+
+"The removal was a success," <<he>> says. <<He>> checks <<his>> clipboard. "You can leave straight away. Be well." <<He>> leaves you to dress.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Hospital Foyer]]>><<clotheson>><</link>>
+<br>
+
+:: Doctor Harper Emergency
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<generate1>><<person1>>
+You approach the receptionist and ask for Harper. <<He>> looks at <<his>> screen.
+<<if Time.weekDay is 6>>
+	"You're already scheduled for today-"
+<<else>>
+	"You don't seem to-"
+<</if>>
+<<he>> gives you a quick glance. Worry spreads across <<his>> face, and <<he>> taps something into the computer. "The doctor is currently seeing a patient. Please wait here."
+<br><br>
+<<endevent>>
+You take a seat in the waiting room. With nothing to do but go over your troubled thoughts, you fidget in place. The wait seems unbearable.
+Eventually, the receptionist calls you and points you to Harper's office. The previous patient exits, giving you a crooked smile.
+<br><br>
+
+<<link [[Next|Doctor Harper Emergency 2]]>><</link>>
+<br>
+
+:: Doctor Harper Emergency 2
+<<set $asylum to 1>><<set $psych to 1>><<unset $schoolPsych>><<npc Harper>><<person1>>
+You knock on the door to Harper's office and hear <<his>> voice on the other side. "Come in." You enter. <<He>> sits at <<his>> desk in front of a computer.
+<<if Time.weekDay is 6>>
+	"This isn't our scheduled time. This must be serious."
+<<else>>
+	"I finished up with my last patient as fast as I could. How can I help you?"
+<</if>>
+<br><br>
+You sit down and waste no time going over your grievances with recent events. Harper lets you speak, for the most part, only occasionally asking for clarification regarding your home and school life along with your well-being. You have difficulty remembering when exactly you began to cry. <<He>> reaches for something in <<his>> desk drawer and approaches you. <<He>> gently wraps an arm around you.
+<br><br>
+
+"There, there," Harper says, pressing a cloth against your face while tightening <<his>> grip around you. "Everything will be fine," <<he>> says through a haze that rapidly falls on you. Two blurred shapes enter the office and help you to your feet. They guide you away from the office, an arm on each shoulder. Doctor Harper follows close behind.
+<br><br>
+
+You're quietly led through the corridor. Some shapes seem to glance your way. The two beside you don't stop. They lead you outside and into the back of a waiting van. There's a cot inside. They push you onto it as the last of your consciousness slips.
+<br><br>
+<<endevent>>
+<<link [[Next|Asylum Intro]]>><<pass 120>><</link>>
+<br>
+
+:: Ambulance Sydney
+<<set $outside to 0>><<effects>>
+<<set $worn.face.type.push("broken")>><<faceruined>><<set $worn.neck.type.push("broken")>><<neckruined>>
+<<remove_shackle>><<unbind>><<storeon "duopunish">><<unset $punishmentCounter>><<unset $punishmentTimer>><<unset $sydneyPain>><<unset $sydneyArousal>>
+<<unset $sydneyHold>><<unset $sydneyStop>><<unset $sydneyHit>><<unset $sydneyPlead>><<unset $sydneyTouch>>
+<<set $daily.sydney.punish to 1>>
+
+You feel yourself being lifted onto a stretcher. You're holding onto something. It's holding on to you, too. It's warm, and makes you feel safe in a way you can't explain. Something tries to pull it away from you, so you hold on tighter. You pass out again.
+<br><br>
+
+<<if $player.virginity.penile isnot true or $player.virginity.vaginal isnot true>>
+	<<if $templePromised is "Sydney">>
+		You've gained the <span class="blue">Rite of Promise: Sydney</span> trait.
+		<br><br>
+	<<else>>
+		You've gained the <span class="blue">Chastity Vow</span> trait.
+		<br><br>
+	<</if>>
+<</if>>
+<<set $player.virginity.temple to true>>
+<<set $NPCName[$NPCNameList.indexOf("Sydney")].virginity.temple to true>>
+
+<<link [[Sleep|Hospital Bed Sydney]]>><</link>>
+<br>
+
+:: Hospital Bed Sydney
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<set $hunger to 0>><<set $thirst to 0>><<set $tiredness to 0>><<set $hygiene to 0>>
+<<set $stress -= 2000>>
+
+You awaken in a bed at the civic hospital. You see Sydney on the same bed, asleep. You're still holding each other.
+<<generate1>><<person1>>
+"About time." It's a nurse. "The doctor tried to separate you two, but even unconscious you wouldn't let go." <<He>> points to Sydney. "Eventually <<nnpc_he "Sydney">> sat upright and... growled at me in <<nnpc_his "Sydney">> sleep. Then went right back down like nothing happened. That's when we stopped trying."
+
+The nurse explains that you have suffered a severe stress response, but you are both otherwise physically healthy. <<He>> asks you to wait a moment while <<he>> fetches the doctor.
+<br><br>
+<<endevent>>
+<<if $hospitalintro is 0>><<set $hospitalintro to 1>>
+	<<npc "Harper" 1>><<person1>><<npc "Sydney" 2>><<person2>> You don't have to wait long. A <<person1>><<personsimple>> wearing a white medical coat and carrying a clipboard enters.
+	<br><br>
+	<<He>> smiles at you. "Hello, I'm Doctor Harper." <<He>> takes a seat by your bedside and pulls <<his>> blond fringe away from <<his>> eyes. <<He>> looks young, can't be older than 25.
+	<br><br>
+<<else>>
+	<<npc "Harper" 1>><<person1>><<npc "Sydney" 2>><<person2>>Doctor Harper enters at that moment, carrying <<person1>><<his>> usual clipboard. <<He>> assures you that there is no immediate concern, but <<he>> would like to examine you further.
+	<br><br>
+<</if>>
+
+<<link [[Next|Hospital Bed Examination Sydney]]>><</link>>
+<br>
+
+:: Hospital Bed Examination Sydney
+<<effects>>
+You hear Sydney yawn. <<person2>><<His>> eyes flutter open, and <<he>> smiles. "Glad you're the first thing I'm seeing." <<His>> expression immediately changes when <<he>> sees Doctor Harper. They stare each other down. It's hard to read either of their emotions.
+<br>
+"Not so glad that's the second thing I'm seeing."
+<br>
+<<if !$sydneySeen.includes("Harper")>>
+	<<set $sydneySeen.pushUnique("Harper")>>
+	"Sydney. It's been a while."
+	<br>
+	"Not nearly long enough." You feel like Sydney would jump up and attack were you not still holding each other.
+<<else>>
+	"Let's not do this again. We can get this over with professionally."
+<</if>>
+<br><br>
+Sydney moves in front of you, as if to guard you. "I'm invoking my right to refuse treatment. My <<sydneymum>> will handle the paperwork."
+<br><br>
+Doctor Harper sighs. "Very well. But I must still evaluate <<phim>>."
+<<person1>>
+<<if $trauma lte ($traumamax / 10) * 2>>
+	<<He>> gently interrogates you on a variety of subjects relating to your home life, how school is going and how your well-being has been faring. <<He>> informs you that everything is okay as far as <<he>> can tell, but you should be careful in the future.
+	<br><br>
+	<<wash>>
+	Sydney helps you to your feet, and you soon find yourself being discharged.
+	<br><br>
+
+	<<link [[Leave (0:10)|Hospital Journey Home Sydney]]>><<pass 10>><<endevent>><</link>>
+	<br>
+<<elseif $trauma lt ($traumamax / 10) * 9>>
+	<<He>> gently interrogates you on a variety of subjects relating to your home life, how school is going and how your well-being has been faring. After a short while, <<he>> summons a nurse and they have a brief conversation in the corner of the room. They talk quietly, and after a short while the nurse nods and leave the room.
+	<br><br>
+	<<if $psych is 0>>
+		<span class="gold">The doctor tells you to visit <<him>> here at the hospital on <span class="gold">Fridays</span> for therapy.</span>
+		<br><br>
+		<<set $psych to 1>><<unset $schoolPsych>>
+		<<wash>>
+		Sydney helps you to your feet, and you soon find yourself being discharged.
+		<br><br>
+	<<else>>
+		The doctor reminds you to visit <<him>> here at the hospital on <span class="gold">Fridays</span>.
+		<br><br>
+		<<wash>>
+		Sydney helps you to your feet, and you soon find yourself being discharged.
+		<br><br>
+	<</if>>
+
+	<<link [[Leave|Hospital Journey Home Sydney]]>><<pass 10>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<He>> gently interrogates you on a variety of subjects relating to your home life, how school is going and how your well-being has been faring. A look of concern grows on <<his>> face, but you've no idea why. After a short while, <<he>> summons a nurse into the room and they talk quietly for a short time. The nurse keeps glancing at you, looking concerned.
+	<br><br>
+
+	Sydney looks uneasy. "We need to leave." You find yourself unable to respond. The nurse moves towards Sydney, who pulls you away. "No." The nurse freezes in place as Sydney glares.
+	<br><br>
+
+	"Sydney, I assure you that-"
+	<br>
+	"Everything will be fine? No it won't. We're leaving, and you can't stop us." The nurse grabs Sydney by the arms and holds <<person1>><<him>> back. <<He>> pushes back with surprising strength, but is too slow. The doctor presses a cloth to your face, and a haze falls on you. You hear a yell in Sydney's voice, and everything begins to spin. You feel yourself pulled along, and more yelling.
+	<br><br>
+	Once out in the corridor multiple shapes march toward you. Someone blocks their path. The one holding you doesn't stop. They lead you outside and into the back of a waiting car as your consciousness slips.
+	<br><br>
+	<<endevent>>
+	<<link [[Next|Hospital Sydney Rescue]]>><<pass 1 hour>><</link>>
+	<br>
+<</if>>
+
+:: Hospital Sydney Rescue
+<<effects>>
+You awaken once more, your head spinning. Two figures are talking in the front seats. You slowly begin to recognise them. It's Sydney, and Sirris. <<npc "Sydney" 1>><<person1>><<npc "Sirris" 2>><<person2>>
+<br><br>
+"There, see? I told you they'd be okay, Syd." You notice you're no longer in front of the hospital, but on Elk Street.
+<br><br>
+Sydney practically jumps out of the car, only to open the rear door and jump in, tackle-hugging you into the seat. "I was so worried once <<nnpc_he "Harper">> got that cloth on you." You think about asking Sydney what happened, but the words simply won't form. You mindlessly return the hug.
+<br><br>
+"Alright, get comfortable back there, you two. Sydney, seatbelt! And you wonder why you can't get your license.
+<<if !$sydneySeen.includes("ride")>>
+	<<set $sydneySeen.pushUnique("ride")>>
+	So, where do you live?" Sirris leans back over the seat to look at you.
+	<br><br>
+	You answer Sirris in a monotone, giving flawless directions to the orphanage. You think you see a sympathetic frown, but you're not sure.
+<<else>>
+	The ride won't take long since I know where to go now."
+<</if>>
+Sirris keeps shooting concerned looks at you through the rear mirror. Sydney refuses to let go of you until you get to the orphanage, at which point you both exit the car.
+<br><br>
+Sydney walks you to the front door of the orphanage, and <<if $sydneyromance is 1>>kisses you on the cheek<<else>>hugs you<</if>>.
+"Be careful around that doctor. Don't trust a word <<nnpc_he "Harper">> says."
+<br><br>
+You watch Sydney walk back to the car, and they both wait for you to go inside before leaving.
+<br><br>
+<<link [[Next|Orphanage]]>><<pass 10>><<endevent>><</link>>
+<br>
+
+:: Hospital Journey Home Sydney
+<<effects>>
+Sydney leads you out of the hospital, into a waiting car. Sirris waits in the driver's seat. <<npc "Sydney" 1>><<person1>><<npc "Sirris" 2>><<person2>>
+"You two are quite the handful. Everything alright?" <<He>> looks at you. "Sydney refused to leave your side the whole time. I would have stayed too, had time permitted. Sydney, buckle up or you'll never get your license." Sydney pouts.
+<<if !$sydneySeen.includes("ride")>>
+	<<set $sydneySeen.pushUnique("ride")>>
+	"So, where do you live?" Sirris leans back over the seat to look at you.
+	<br><br>
+	You give Sirris directions to the orphanage. You think you see a sympathetic frown, but you're not sure.
+<<else>>
+	"The ride won't take long since I know where to go now."
+<</if>>
+Sirris keeps shooting concerned looks at you through the rear mirror. You reach the orphanage quickly, and Sydney exits the car to take your hand.
+<br><br>
+<<person1>><<He>> walks you to the front door of the orphanage, and <<if $sydneyromance is 1>>kisses you on the cheek<<else>>hugs you<</if>>.
+"Be careful around that doctor. Don't trust a word <<nnpc_he "Harper">> says."
+<br><br>
+You watch Sydney walk back to the car, and they both wait for you to go inside before leaving.
+<br><br>
+<<link [[Next|Orphanage]]>><<pass 10>><<endevent>><</link>>
+<br>

@@ -1,0 +1,66 @@
+:: Widgets Police [widget]
+
+<<widget "police_computer_action">>
+	The police computer gives access to criminal records. Looking at your own, you see that
+
+	<<if crimeSumCurrent() gte 6000>>
+		<span class="red">you are on the "most wanted" list and they plan to punish you severely.</span>
+	<<elseif crimeSumCurrent() gte 4500>>
+		<span class="red">your arrest is a priority and they have enough on you to warrant extreme punishment.</span>
+	<<elseif crimeSumCurrent() gte 4000>>
+		<span class="red">your arrest is being actively sought</span> and they have enough on you to warrant <span class="red">heavy punishment.</span>
+	<<elseif crimeSumCurrent() gte 3000>>
+		<span class="red">an arrest warrant has been issued for you</span> and they have enough to warrant <span class="red">serious punishment.</span>
+	<<elseif crimeSumCurrent() gte 2000>>
+		<span class="red">an arrest warrant has been issued for you</span> and they have enough to warrant significant punishment.
+	<<elseif crimeSumCurrent() gte 1000>>
+		<span class="red">an arrest warrant</span> has been issued for you. They have enough evidence to warrant a punishment.
+	<<elseif crimeSumCurrent() gte 500>>
+		<span class="gold">they may soon have enough on you to issue an arrest warrant.</span>
+	<<else>>
+		<span class="teal">they have nothing significant on you.</span>
+	<</if>>
+	<br><br>
+
+	<<if crimeSumCurrent() gte 6000>>
+		Options:
+		<br>
+		<span class="teal">Installing a Wiper worm</span> will destroy lots of police records on everyone, including you.
+		<br>
+		<span class="teal">Framing someone</span> will attach all evidence on you to someone else. This should mislead the police.
+		However, you can only attach it to those who already have a record in the system.
+		<br><br>
+		<<link [[Install Wiper (0:10)|Police Computer]]>><<pass 10>><<set $phase to 11>><<crimeDown 0.5 "all">><<set _randomCrime to ((random(5,35) + 20)/100)>><<crimeDown _randomCrime "all">><</link>>
+		<!-- Original crime calculation as follows:
+		<<set $crime /= 2>><<set $crime *= (random(5,35)/100)>> -->
+		<br>
+		<<if $NPCName[$NPCNameList.indexOf("Whitney")].init is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon" and $framed is 0>>
+			<<link [[Frame Whitney (0:10)|Police Computer]]>><<pass 10>><<set $phase to 12>><<crimeClear "all">><</link>>
+			<br>
+		<</if>>
+		<<if $headpolice is 1 and $framed is 0>>
+			<<link [[Frame Leighton (0:10)|Police Computer]]>><<pass 10>><<set $phase to 13>><<crimeClear "all">><</link>>
+			<br>
+		<</if>>
+		<<if $framed isnot 0>>
+			<span class="red">You have already framed <<print ($framed.toUpperFirst())>> for your crimes - you cannot do it again until they have paid for your crimes.</span>
+		<</if>>
+	/* 北极星模组 */
+	<<elseif crimeSumCurrent() gte 1000 or $options.bjx_crimewipe>>
+	/* 北极星 */
+		Options:
+		<br>
+		<span class="teal">Deleting electronic evidence</span> will reduce the amount of crime they can pin on you and should not be detected.
+		<br>
+		<span class="teal">Installing a Wiper worm</span> will destroy lots of police records on everyone, including you.
+		<br>
+		<<link [[Delete evidence (0:15)|Police Computer]]>><<pass 15>><<set $phase to 10>><<set _randomCrime to ((random(5,35) + 20)/100)>><<crimeDown _randomCrime "all">><</link>>
+		<!-- Original crime calculation as follows:
+		<<set $crime -= $crime * ((random(5,35) + 20)/100)>> -->
+		<br>
+		<<link [[Install Wiper (0:10)|Police Computer]]>><<pass 10>><<set $phase to 11>><<crimeDown 0.5 "all">><</link>>
+		<br>
+
+	<</if>>
+	<br>
+<</widget>>

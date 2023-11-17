@@ -1,0 +1,531 @@
+:: Widgets Combat Img [widget]
+
+<<widget "combatimg">>
+	<<if $enemytype is "machine">>
+		<<switch $machine.speed>>
+			<<case 1>>
+				<<set _animspeed to "slow">>
+			<<case 2>>
+				<<set _animspeed to "fast">>
+			<<case 3>>
+				<<set _animspeed to "vfast">>
+		<</switch>>
+	<<else>>
+		<<if _knotted or _knotted_short>>
+			<<set _animspeed to "mid">>
+		<<elseif $enemyarousal gte ($enemyarousalmax / 5) * 4>>
+			<<set _animspeed to "vfast">>
+		<<elseif $enemyarousal gte ($enemyarousalmax / 5) * 3>>
+			<<set _animspeed to "fast">>
+		<<elseif $enemyarousal gte ($enemyarousalmax / 5) * 1>>
+			<<set _animspeed to "mid">>
+		<<else>>
+			<<set _animspeed to "slow">>
+		<</if>>
+	<</if>>
+	<<if window.document.body.clientWidth lt 650>>
+		<div id="divandroidsex" @class="colourContainerClasses() + ($options.combatAnimations isnot false ? '':' noAnimations')">
+			<<charLightCombat $position $prop>>
+			<<if $position is "missionary">>
+				<<missionaryimg>>
+			<<else>>
+				<<doggyimg>>
+			<</if>>
+		</div>
+		<<xrayimg>>
+	<<else>>
+		<div id="divsex" @class="colourContainerClasses() + ($options.combatAnimations isnot false ? '':' noAnimations')">
+			<<charLightCombat $position $prop>>
+			<<if $position is "missionary">>
+				<<missionaryimg>>
+			<<else>>
+				<<doggyimg>>
+			<</if>>
+			<<xrayimg>>
+		</div>
+	<</if>>
+	<<run combatCharacterShadow()>>
+<</widget>>
+
+<<widget "xrayimg">>
+	<<if ["penetrated","tentacle","tentacledeep"].includes($vaginastate) and ["penetrated","tentacle","tentacledeep","otheranus"].includes($penisstate)>>
+		<<set _futaSplit to true>>
+	<<else>>
+		<<set _futaSplit to false>>
+	<</if>>
+	<<set _wide to (window.document.body.clientWidth gte 650)>>
+
+	<<set _vagClass to "i256" + (_futaSplit and _wide ? "":" height64")>>
+	<<set _vagID to (_wide ? "xrayvaginal" : "xrayandroidvaginal")>>
+
+	<<if ["penetrated","tentacle","tentacledeep","doublepenetrated"].includes($vaginastate) or (_pullOutVagina and $orgasmdown gte 1)>>
+		<<set _imgV to "img/sex/xray/vaginal/xray_vaginal_">>
+		<<set _imgVC to "img/sex/xray/vaginal/cum/xray_vaginal_">>
+		<<set $_DPSize to ($vaginastate is "doublepenetrated" && $NPCList[$vaginatarget].penis is "vaginadouble" && $NPCList[$vaginadoubletarget].penis is "vaginadouble" ? "_dp" : "")>>
+		<<set $_penetratorVSize to "">>
+		<<set $_penetratorV2Size to "">>
+		<<set $_knotted to "">>
+		<div @class="_vagClass" @id="_vagID">
+			<<if _pullOutVagina and $orgasmdown gte 1>>
+				<img class="anim-xray-8f-med" @src="_imgV+'twitching.png'" height="120px">
+			<<else>>
+				<<if $enemytype is "machine">>
+					<<set $_penetratorVType to "machine">>
+				<<else>>
+					<<set $_penetratorVType to (["tentacle","tentacledeep"].includes($vaginastate) ? "tentacle" : $NPCList[$vaginatarget].type)>>
+				<</if>>
+				<<switch $_penetratorVType>>
+					<<case "machine">>
+						<<set $_penetratorVSprite to "tentacle">>
+						<<set $_penetratorVColour to "tentacles-peach">>
+						<<set $_penetratorVFilter to "">>
+						<<set $_penetratorVSize to 3>>
+					<<case "tentacle">>
+						<<set $_penetratorVSprite to "tentacle">>
+						<<set $_penetratorVColour to _tentacleColour>>
+						<<if $_penetratorVColour is "tentacles-wraith">><<set $_penetratorVColour to "tentacles-wraith-penetrated">><</if>>
+						<<set $_penetratorVFilter to "">>
+						<<for _i to 0; _i lt $tentacles.max; _i++>>
+							<<if $tentacles[_i] isnot undefined and $tentacles[_i].fullDesc is $tentacleVagina>>
+								<<set $_penetratorVSize to $tentacles[_i].size>>
+								<<break>>
+							<</if>>
+						<</for>>
+					<<case "human" "plant">>
+						/* For DP, bigger penis needs to be the primary target sprite. Doesn't matter if they're the same size. */
+						<<if $_DPSize>>
+							<<if $NPCList[$vaginatarget].penissize lt $NPCList[$vaginadoubletarget].penissize>>
+								<<set $_target1 to $vaginadoubletarget>>
+								<<set $_target2 to $vaginatarget>>
+							<<else>>
+								<<set $_target1 to $vaginatarget>>
+								<<set $_target2 to $vaginadoubletarget>>
+							<</if>>
+						<<else>>
+							<<set $_target1 to $vaginatarget>>
+						<</if>>
+						<<if npcHasStrapon($_target1)>>
+							<<if $NPCList[$_target1].penisdesc.includes("horse")>>
+								<<set $_penetratorVSprite to "penisHorseRed">>
+								<<set $_penetratorVSize to 5>>
+							<<elseif $NPCList[$_target1].penisdesc.includes("knotted")>>
+								<<set $_penetratorVSprite to "penisKnotted">>
+								<<set $_penetratorVSize to 3>>
+							<<elseif $NPCList[$_target1].penisdesc.includes("tentacle")>>
+								<<set $_penetratorVSprite to "tentacle">>
+								<<set $_penetratorVSize to $NPCList[$_target1].penissize>>
+							<<elseif $NPCList[$_target1].penisdesc.includes("dolphin")>>
+								<<set $_penetratorVSprite to "penisPoint">>
+								<<set $_penetratorVSize to 2>>
+							<<else>>
+								<<set $_penetratorVSprite to ($options.tanImgEnabled ? "penisRed" : "penisWhite")>>
+								<<set $_penetratorVSize to $NPCList[$_target1].penissize>>
+							<</if>>
+							<<set $_penetratorVColour to ($options.tanImgEnabled ? "strapon-" + $NPCList[$_target1].strapon.color : "")>>
+							<<set $_penetratorVFilter to "">>
+						<<else>>
+							<<set $_penetratorVSprite to ($options.tanImgEnabled ? "penisRed" : "penisWhite")>>
+							<<set $_penetratorVColour to "">>
+							<<set $_penetratorVFilter to ($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$_target1].skincolour] : "")>>
+							<<set $_penetratorVSize to $NPCList[$_target1].penissize>>
+						<</if>>
+						<<if wearingCondom($_target1)>>
+							<<set $_penetratorVCondom to wearingCondom($_target1)>>
+							<<set $_penetratorVCondomColour to "condom-" + $NPCList[$_target1].condom.colour.replace(/ /g, '-')>>
+						<</if>>
+						<<if $_target2 isnot undefined>>
+							<<if npcHasStrapon($_target2)>>
+								<<if $NPCList[$_target2].penisdesc.includes("horse")>>
+									<<set $_penetratorV2Sprite to "penisHorseRed">>
+									<<set $_penetratorV2Size to 5>>
+								<<elseif $NPCList[$_target2].penisdesc.includes("knotted")>>
+									<<set $_penetratorV2Sprite to "penisKnotted">>
+									<<set $_penetratorV2Size to 3>>
+								<<elseif $NPCList[$_target2].penisdesc.includes("tentacle")>>
+									<<set $_penetratorV2Sprite to "tentacle">>
+									<<set $_penetratorV2Size to $NPCList[$_target2].penissize>>
+								<<elseif $NPCList[$_target2].penisdesc.includes("dolphin")>>
+									<<set $_penetratorV2Sprite to "penisPoint">>
+									<<set $_penetratorV2Size to 2>>
+								<<else>>
+									<<set $_penetratorV2Sprite to ($options.tanImgEnabled ? "penisRed" : "penisWhite")>>
+									<<set $_penetratorV2Size to $NPCList[$_target2].penissize>>
+								<</if>>
+								<<set $_penetratorV2Colour to ($options.tanImgEnabled ? "strapon-" + $NPCList[$_target2].strapon.color : "")>>
+								<<set $_penetratorV2Filter to "">>
+							<<else>>
+								<<set $_penetratorV2Sprite to ($options.tanImgEnabled ? "penisRed" : "penisWhite")>>
+								<<set $_penetratorV2Colour to "">>
+								<<set $_penetratorV2Filter to ($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$_target2].skincolour] : "")>>
+								<<set $_penetratorV2Size to $NPCList[$_target2].penissize>>
+							<</if>>
+							<<if wearingCondom($_target2)>>
+								<<set $_penetratorV2Condom to wearingCondom($_target2)>>
+								<<set $_penetratorV2CondomColour to "condom-" + $NPCList[$_target2].condom.colour.replace(/ /g, '-')>>
+							<</if>>
+							/* Ensure that, if, SOMEHOW, two tiny penises DP, they use the sprite for size 2 */
+							<<if $_penetratorVSize lt 2>><<set $_penetratorVSize to 2>><</if>>
+							<<if $_penetratorV2Size lt 2>><<set $_penetratorV2Size to 2>><</if>>
+							<<set $_DPSize += $_penetratorVSize>>
+							<<set $_DPSize += $_penetratorV2Size>>
+						<</if>>
+					/* 北极星模组 */
+					<<case "horse" "centaur" "cow" "cowgirl" "bull" "bullboy" "deer" "stagboy" "sheepgirl" "deergirl" "ramboy" "sheep">>
+					/* 北极星 */
+						<<set $_penetratorVSprite to "penisHorse">>
+						<<set $_penetratorVColour to "">>
+						<<set $_penetratorVFilter to "">>
+						<<set $_penetratorVSize to 5>>
+					/* 北极星模组 */
+					<<case "dog" "doggirl" "dogboy" "fox" "foxgirl" "foxboy" "wolf" "wolfgirl" "wolfboy" "raccoon" "raccoonboy" "raccoongirl">>
+					/* 北极星 */
+						<<set $_penetratorVSprite to "penisKnotted">>
+						<<set $_penetratorVColour to "">>
+						<<set $_penetratorVFilter to "">>
+						<<set $_penetratorVSize to ($_penetratorVType.includes("wolf") ? 3 : 2)>>
+						<<set $_knotted to ($ejaculating is 1 and (_knotted or _knotted_short) ? "_knotted" : "")>>
+					<<case "pig" "piggirl" "pigboy" "boar" "boargirl" "boarboy">>
+						<<set $_penetratorVSprite to "penisSpiral">>
+						<<set $_penetratorVColour to "">>
+						<<set $_penetratorVFilter to "">>
+						<<set $_penetratorVSize to ($_penetratorVType.includes("boar") ? 3 : 2)>>
+					/* 北极星模组 */
+					<<case "hawk" "harpy" "cat" "catgirl" "catboy" "dolphin" "dolphingirl" "dolphinboy" "bee" "beeboy" "beegirl" "wasp" "waspboy" "waspgirl" "ant" "antboy" "antgirl">>
+					/* 北极星 */
+						<<set $_penetratorVSprite to "penisPoint">>
+						<<set $_penetratorVColour to "">>
+						<<set $_penetratorVFilter to "">>
+						<<set $_penetratorVSize to 2>>
+					<<case "bear" "beargirl" "bearboy" "creature" "horned boy" "horned girl">>
+						<<set $_penetratorVSprite to "tentacle">>
+						/* Trust me this is the most fitting sprite for this right now */
+						<<set $_penetratorVColour to "">>
+						<<set $_penetratorVFilter to "">>
+						<<set $_penetratorVSize to 3>>
+					/* 北极星模组 */
+					<<case "lizard" "lizardgirl" "lizardboy" "dragon" "dragonboy" "dragongirl" "frog" "frogboy" "froggirl">>
+					/* 北极星 */
+						<<set $_penetratorVSprite to "penisRed">>
+						<<set $_penetratorVColour to "">>
+						<<set $_penetratorVFilter to "">>
+						<<set $_penetratorVSize to 2>>
+					<<default>>
+						<<error { message: "Invalid penetrator for xray image. $_penetratorVType" }>>
+				<</switch>>
+
+				/* Vaginal background shape and movement */
+				<img @class="'layer-sexblush anim-xray-8f-'+_animspeed" 
+				@src="_imgV + 'sex_size'+ $_penetratorVSize + $_DPSize + $_knotted +'.png'"
+				height="120px">
+
+				/* Sprite for object penetrating */
+				<img @class="'layer-sexbrow anim-xray-8f-'+_animspeed+' '+$_penetratorVColour" 
+				@src="_imgV + $_penetratorVSprite + '_size' + $_penetratorVSize + $_knotted +'.png'"
+				@style="'filter: '+$_penetratorVFilter"
+				height="120px">
+				<<if $_penetratorVCondom>>
+					<img @class="'layer-sexlashes anim-xray-8f-'+_animspeed+' '+$_penetratorVCondomColour" 
+					@src="_imgV + 'tentacle_size' + $_penetratorVSize +'.png'"
+					height="120px">
+				<</if>>
+				<<if $_target2 isnot undefined>>
+					<img @class="'layer-sextears anim-xray-8f-'+_animspeed+' '+$_penetratorV2Colour" 
+					@src="_imgV + $_penetratorV2Sprite + '_size' + $_penetratorV2Size +'_dp.png'"
+					@style="'filter: '+$_penetratorV2Filter"
+					height="120px">
+					<<if $_penetratorV2Condom>>
+						<img @class="'layer-beastfront anim-xray-8f-'+_animspeed+' '+$_penetratorV2CondomColour" 
+						@src="_imgV + 'tentacle_size' + $_penetratorV2Size +'_dp.png'"
+						height="120px">
+					<</if>>
+				<</if>>
+
+				/* Cum already in the player */
+				<<if !$_knotted and (setup.bodyliquid.combined("vagina") gte 1 or (($ejaculating is 1 and $_penetratorVCondom isnot "worn" and $_penetratorV2Condom isnot "worn") or $vaginastate is "tentacledeep"))>>
+					<<set $_cumAmt to "_cum" + Math.clamp(setup.bodyliquid.combined("vagina"),1,5)>>
+					/* Separated DP cum images are only needed when both penises are the same size and above 2 */
+					<<set $_dpCum to ($_DPSize && $_penetratorVSize gt 2 && $_penetratorVSize is $_penetratorV2Size ? "_dp" : "")>>
+					<img @class="'layer-sexbasefront anim-xray-8f-'+_animspeed"
+					@src="_imgVC + 'sex_size' + $_penetratorVSize + $_dpCum + $_cumAmt +'.png'"
+					height="120px">
+				<</if>>
+
+				/* Penises cumming */
+				/* Tentacles use tentacledeep to ejaculate */
+				<<if ($ejaculating is 1 and $_penetratorVCondom isnot "worn" and $_penetratorV2Condom isnot "worn") or $vaginastate is "tentacledeep">>
+					/* Layers behind penises and cum pool, allowing more general sprites */
+					<<set $_cumSize to ($_penetratorVSize lte 2 ? "sex_size2_cumming" : "sex_size3_cumming")>>
+					<img @class="'layer-sexskin anim-xray-8f-'+_animspeed"
+					@src="_imgVC + $_cumSize + $_knotted +'.png'"
+					height="120px">
+				<</if>>
+			<</if>>
+		</div>
+	<</if>>
+
+	<<set _anusClass to "i256" + (_wide ? " height64" : "")>>
+	<<set _anusID to _wide ? "xrayanal" : "xrayandroidanal">>
+
+	<<if ["penetrated","tentacle","tentacledeep","doublepenetrated"].includes($anusstate)>>
+		<<set _imgA to "img/sex/xray/anal/xray_anal_">>
+		<<set _imgAC to "img/sex/xray/anal/cum/xray_anal_">>
+		<<set $_DPSize to ($anusstate is "doublepenetrated" && $NPCList[$anustarget].penis is "anusdouble" && $NPCList[$anusdoubletarget].penis is "anusdouble" ? "_dp" : "")>>
+		<<set $_penetratorASize to "">>
+		<<set $_penetratorA2Size to "">>
+		<<set $_knotted to "">>
+		<div @class="_anusClass" @id="_anusID">
+			<<if _pullOutAnus>>
+				/* Leaving this open in case we want to make it match Vaginal later */
+			<<else>>
+				<<if $enemytype is "machine">>
+					<<set $_penetratorAType to "machine">>
+				<<else>>
+					<<set $_penetratorAType to (["tentacle","tentacledeep"].includes($anusstate) ? "tentacle" : $NPCList[$anustarget].type)>>
+				<</if>>
+				<<switch $_penetratorAType>>
+					<<case "machine">>
+						<<set $_penetratorASprite to "tentacle">>
+						<<set $_penetratorAColour to "tentacles-peach">>
+						<<set $_penetratorAFilter to "">>
+						<<set $_penetratorASize to 2>>
+					<<case "tentacle">>
+						<<set $_penetratorASprite to "tentacle">>
+						<<set $_penetratorAColour to _tentacleColour>>
+						<<if $_penetratorAColour is "tentacles-wraith">><<set $_penetratorAColour to "tentacles-wraith-penetrated">><</if>>
+						<<set $_penetratorAFilter to "">>
+						<<for _i to 0; _i lt $tentacles.max; _i++>>
+							<<if $tentacles[_i] isnot undefined and $tentacles[_i].fullDesc is $tentacleAnus>>
+								<<set $_penetratorASize to $tentacles[_i].size>>
+								<<break>>
+							<</if>>
+						<</for>>
+					<<case "human" "plant">>
+						/* For DP, bigger penis needs to be the primary target sprite. Doesn't matter if they're the same size. */
+						<<if $_DPSize>>
+							<<if $NPCList[$anustarget].penissize lt $NPCList[$anusdoubletarget].penissize>>
+								<<set $_target3 to $anusdoubletarget>>
+								<<set $_target4 to $anustarget>>
+							<<else>>
+								<<set $_target3 to $anustarget>>
+								<<set $_target4 to $anusdoubletarget>>
+							<</if>>
+						<<else>>
+							<<set $_target3 to $anustarget>>
+						<</if>>
+						<<if npcHasStrapon($_target3)>>
+							<<if $NPCList[$_target3].penisdesc.includes("horse")>>
+								<<set $_penetratorASprite to "penisHorseRed">>
+								<<set $_penetratorASize to 5>>
+							<<elseif $NPCList[$_target3].penisdesc.includes("knotted")>>
+								<<set $_penetratorASprite to "penisKnotted">>
+								<<set $_penetratorASize to 3>>
+							<<elseif $NPCList[$_target3].penisdesc.includes("tentacle")>>
+								<<set $_penetratorASprite to "tentacle">>
+								<<set $_penetratorASize to $NPCList[$_target3].penissize>>
+							<<elseif $NPCList[$_target3].penisdesc.includes("dolphin")>>
+								<<set $_penetratorASprite to "penisPoint">>
+								<<set $_penetratorASize to 2>>
+							<<else>>
+								<<set $_penetratorASprite to ($options.tanImgEnabled ? "penisRed" : "penisWhite")>>
+								<<set $_penetratorASize to $NPCList[$_target3].penissize>>
+							<</if>>
+							<<set $_penetratorAColour to ($options.tanImgEnabled ? "strapon-" + $NPCList[$_target3].strapon.color : "")>>
+							<<set $_penetratorAFilter to "">>
+						<<else>>
+							<<set $_penetratorASprite to ($options.tanImgEnabled ? "penisRed" : "penisWhite")>>
+							<<set $_penetratorAColour to "">>
+							<<set $_penetratorAFilter to ($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$_target3].skincolour] : "")>>
+							<<set $_penetratorASize to $NPCList[$_target3].penissize>>
+						<</if>>
+						<<if wearingCondom($_target3)>>
+							<<set $_penetratorACondom to wearingCondom($_target3)>>
+							<<set $_penetratorACondomColour to "condom-" + $NPCList[$_target3].condom.colour.replace(/ /g, '-')>>
+						<</if>>
+						<<if $_target4 isnot undefined>>
+							<<if npcHasStrapon($_target4)>>
+								<<if $NPCList[$_target4].penisdesc.includes("horse")>>
+									<<set $_penetratorA2Sprite to "penisHorseRed">>
+									<<set $_penetratorA2Size to 5>>
+								<<elseif $NPCList[$_target4].penisdesc.includes("knotted")>>
+									<<set $_penetratorA2Sprite to "penisKnotted">>
+									<<set $_penetratorA2Size to 3>>
+								<<elseif $NPCList[$_target4].penisdesc.includes("tentacle")>>
+									<<set $_penetratorA2Sprite to "tentacle">>
+									<<set $_penetratorA2Size to $NPCList[$_target4].penissize>>
+								<<elseif $NPCList[$_target4].penisdesc.includes("dolphin")>>
+									<<set $_penetratorA2Sprite to "penisPoint">>
+									<<set $_penetratorA2Size to 2>>
+								<<else>>
+									<<set $_penetratorA2Sprite to ($options.tanImgEnabled ? "penisRed" : "penisWhite")>>
+									<<set $_penetratorA2Size to $NPCList[$_target4].penissize>>
+								<</if>>
+								<<set $_penetratorA2Colour to ($options.tanImgEnabled ? "strapon-" + $NPCList[$_target4].strapon.color : "")>>
+								<<set $_penetratorA2Filter to "">>
+							<<else>>
+								<<set $_penetratorA2Sprite to ($options.tanImgEnabled ? "penisRed" : "penisWhite")>>
+								<<set $_penetratorA2Colour to "">>
+								<<set $_penetratorA2Filter to ($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$_target4].skincolour] : "")>>
+								<<set $_penetratorA2Size to $NPCList[$_target4].penissize>>
+							<</if>>
+							<<if wearingCondom($_target4)>>
+								<<set $_penetratorA2Condom to wearingCondom($_target4)>>
+								<<set $_penetratorA2CondomColour to "condom-" + $NPCList[$_target4].condom.colour.replace(/ /g, '-')>>
+							<</if>>
+							/* Ensure that, if, SOMEHOW, two tiny penises DP, they use the sprite for size 2 */
+							<<if $_penetratorASize lt 2>><<set $_penetratorASize to 2>><</if>>
+							<<if $_penetratorA2Size lt 2>><<set $_penetratorA2Size to 2>><</if>>
+							<<set $_DPSize += $_penetratorASize>>
+							<<set $_DPSize += $_penetratorA2Size>>
+						<</if>>
+					/* 北极星模组 */
+					<<case "horse" "centaur" "cow" "cowgirl" "bull" "bullboy" "deer" "stagboy" "deergirl" "sheep" "ramboy" "sheepgirl">>
+					/* 北极星 */
+						<<set $_penetratorASprite to "penisHorse">>
+						<<set $_penetratorAColour to "">>
+						<<set $_penetratorAFilter to "">>
+						<<set $_penetratorASize to 5>>
+					/* 北极星模组 */
+					<<case "dog" "doggirl" "dogboy" "fox" "foxgirl" "foxboy" "wolf" "wolfgirl" "wolfboy" "raccoon" "raccoonboy" "raccoongirl">>
+					/* 北极星 */
+						<<set $_penetratorASprite to "penisKnotted">>
+						<<set $_penetratorAColour to "">>
+						<<set $_penetratorAFilter to "">>
+						<<set $_penetratorASize to ($_penetratorAType.includes("wolf") ? 3 : 2)>>
+						<<set $_knotted to ($ejaculating is 1 and (_knotted or _knotted_short) ? "_knotted" : "")>>
+					<<case "pig" "piggirl" "pigboy" "boar" "boargirl" "boarboy">>
+						<<set $_penetratorASprite to "penisSpiral">>
+						<<set $_penetratorAColour to "">>
+						<<set $_penetratorAFilter to "">>
+						<<set $_penetratorASize to ($_penetratorAType.includes("boar") ? 3 : 2)>>
+					/* 北极星模组 */
+					<<case "hawk" "harpy" "cat" "catgirl" "catboy" "dolphin" "dolphingirl" "dolphinboy" "bee" "beeboy" "beegirl" "wasp" "waspboy" "waspgirl" "ant" "antboy" "antgirl">>
+					/* 北极星 */
+						<<set $_penetratorASprite to "penisPoint">>
+						<<set $_penetratorAColour to "">>
+						<<set $_penetratorAFilter to "">>
+						<<set $_penetratorASize to 2>>
+					<<case "bear" "beargirl" "bearboy" "creature" "horned boy" "horned girl">>
+						<<set $_penetratorASprite to "tentacle">>
+						<<set $_penetratorAColour to "">>
+						<<set $_penetratorAFilter to "">>
+						<<set $_penetratorASize to 3>>
+					/* 北极星模组 */
+					<<case "lizard" "lizardgirl" "lizardboy" "dragon" "dragongirl" "dragonboy" "frog" "frogboy" "froggirl">>
+					/* 北极星 */
+						<<set $_penetratorASprite to "penisRed">>
+						<<set $_penetratorAColour to "">>
+						<<set $_penetratorAFilter to "">>
+						<<set $_penetratorASize to 2>>
+					<<default>>
+						<<error { message: "Invalid penetrator for xray image. $_penetratorAType" }>>
+				<</switch>>
+
+				/* Anal background shape and movement */
+				<img @class="'layer-sexblush anim-xray-8f-'+_animspeed" 
+				@src="_imgA + 'sex_size'+ $_penetratorASize + $_DPSize + $_knotted +'.png'"
+				height="120px">
+
+				/* Sprite for object penetrating */
+				<img @class="'layer-sexbrow anim-xray-8f-'+_animspeed+' '+$_penetratorAColour" 
+				@src="_imgA + $_penetratorASprite + '_size' + $_penetratorASize + $_knotted +'.png'"
+				@style="'filter: '+$_penetratorAFilter"
+				height="120px">
+				<<if $_penetratorACondom>>
+					<img @class="'layer-sexlashes anim-xray-8f-'+_animspeed+' '+$_penetratorACondomColour" 
+					@src="_imgA + 'tentacle_size' + $_penetratorASize +'.png'"
+					height="120px">
+				<</if>>
+				<<if $_target4 isnot undefined>>
+					<img @class="'layer-sextears anim-xray-8f-'+_animspeed+' '+$_penetratorA2Colour" 
+					@src="_imgA + $_penetratorA2Sprite + '_size' + $_penetratorA2Size +'_dp.png'"
+					@style="'filter: '+$_penetratorA2Filter"
+					height="120px">
+					<<if $_penetratorA2Condom>>
+						<img @class="'layer-beastfront anim-xray-8f-'+_animspeed+' '+$_penetratorA2CondomColour" 
+						@src="_imgA + 'tentacle_size' + $_penetratorA2Size +'_dp.png'"
+						height="120px">
+					<</if>>
+				<</if>>
+
+				/* Cum already in the player */
+				<<if !$_knotted and (setup.bodyliquid.combined("anus") gte 1 or (($ejaculating is 1 and $_penetratorACondom isnot "worn" and $_penetratorA2Condom isnot "worn") or $anusstate is "tentacledeep"))>>
+					<<set $_specialCum to "">>
+					<<if $_penetratorASize is 5 and $_penetratorASprite is "penisHorse">>
+						<<set $_specialCum to "_horse">>
+					<</if>>
+					<img @class="'layer-sexbasefront anim-xray-8f-'+_animspeed"
+					@src="_imgAC + 'sex_size' + $_penetratorASize + $_specialCum + '_cum.png'"
+					height="120px">
+				<</if>>
+
+				/* Penises cumming */
+				/* Tentacles use tentacledeep to ejaculate */
+				<<if ($ejaculating is 1 and $_penetratorACondom isnot "worn" and $_penetratorA2Condom isnot "worn") or $anusstate is "tentacledeep">>
+					/* Layers behind penises and cum pool, allowing more general sprites */
+					<<set $_cumSize to ("sex_size" + $_penetratorASize + "_cumming")>>
+					<img @class="'layer-sexskin anim-xray-8f-'+_animspeed"
+					@src="_imgAC + $_cumSize + $_knotted +'.png'"
+					height="120px">
+				<</if>>
+			<</if>>
+		</div>
+	<</if>>
+
+	<<set _penisClass to "i256" + (!_wide ? "" : (_futaSplit ? " height128":" height64"))>>
+	<<set _penisID to _wide ? "xraypenile" : "xrayandroidpenile">>
+	<<if ["penetrated","tentacle","tentacledeep","otheranus"].includes($penisstate)>>
+		<<if $orgasmdown gte 1 and $orgasmcount lte 24 and $femaleclimax isnot 1 and wearingCondom("player") isnot "worn" and !playerHasStrapon()>>
+			<<if $otherFilled is undefined>>
+				<<set $otherFilled to 0>>
+			<</if>>
+			<<if $semen_amount gt ($semen_volume / 24) * 18>>
+				<<set $otherFilled += 2>>
+			<<else>>
+				<<set $otherFilled += 1>>
+			<</if>>
+			<<set $otherFilled to Math.clamp($otherFilled,0,5)>>
+		<</if>>
+		<<if $otherFilled gt 0>>
+			<<set $_otherCum to ($penisstate is "otheranus" ? "_cum" : "_cum" + $otherFilled)>>
+		<</if>>
+		<<set $_penetratedSprite to ($penisstate is "otheranus" ? "anal" : "vaginal")>>
+		<<set $_penetratedColour to (["tentacle","tentacledeep"].includes($penisstate) ? _tentacleColour : "")>>
+		<<if $_penetratedColour is "tentacles-wraith">><<set $_penetratedColour to "tentacles-wraith-penetrated">><</if>>
+		<<set $_playerColour to (playerHasStrapon() ? "strapon-"+$worn.under_lower.colour : "")>>
+		<<set $_playerFilter to (playerHasStrapon() ? "" : _filters.body)>>
+		<<set $_filterColour to ($options.tanImgEnabled ? "penisRed" : "penisWhite")>>
+		<<set $_playerSize to Math.clamp(playerPenisSize(),1,4)>>
+		<div @class="_penisClass" @id="_penisID">
+			
+			/* Background shape and movement */
+			<img @class="'layer-sexblush anim-xray-8f-'+_animspeed+' '+$_penetratedColour"
+			@src="'img/sex/xray/' + $_penetratedSprite + '/xray_' + $_penetratedSprite + '_sex_size' + $_playerSize +'.png'"
+			height="120px">
+
+			/* Player penis or strap-on sprite */
+			<img @class="'layer-sexbrow anim-xray-8f-'+_animspeed+' '+$_playerColour" 
+			@src="'img/sex/xray/' + $_penetratedSprite + '/xray_' + $_penetratedSprite +'_'+ $_filterColour +'_size' + $_playerSize +'.png'"
+			@style="'filter: '+$_playerFilter"
+			height="120px">
+
+			/* Cum already in the target */
+			<<if $otherFilled>>
+				<img @class="'layer-sexbasefront anim-xray-8f-'+_animspeed"
+				@src="'img/sex/xray/' + $_penetratedSprite + '/cum/xray_' + $_penetratedSprite +'_sex_size' + $_playerSize + $_otherCum +'.png'"
+				height="120px">
+			<</if>>
+
+			/* Player cumming */
+			<<if $orgasmdown gte 1 and $orgasmcount lte 24 and $femaleclimax isnot 1 and wearingCondom("player") isnot "worn" and !playerHasStrapon()>>
+				/* Layers behind penises and cum pool, allowing more general sprites */
+				<<set $_cumSize to ($_playerSize lte 2 ? "sex_size2_cumming" : "sex_size3_cumming")>>
+				<img @class="'layer-sexskin anim-xray-8f-'+_animspeed"
+				@src="'img/sex/xray/' + $_penetratedSprite + '/cum/xray_' + $_penetratedSprite +'_'+ $_cumSize +'.png'"
+				height="120px">
+			<</if>>
+		</div>
+	<</if>>
+	
+<</widget>>
+
+

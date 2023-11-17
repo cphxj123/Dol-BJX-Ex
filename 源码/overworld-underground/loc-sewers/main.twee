@@ -1,0 +1,1130 @@
+:: Industrial Drain
+
+<<set $outside to 0>><<set $location to "drain">><<effects>><<set $bus to "industrialdrain">><<wPersist>><<getTarget true>>
+You are within the storm drain system beneath the industrial district.
+<<draindescription>>
+<<drainlinks>>
+<<set $eventskip to 0>>
+
+:: Commercial Drain
+
+<<set $outside to 0>><<set $location to "drain">><<effects>><<set $bus to "commercialdrain">><<wPersist>><<getTarget true>>
+You are within the storm drain system beneath the commercial district.
+<<draindescription>>
+<<drainlinks>>
+<<set $eventskip to 0>>
+
+:: Residential Drain
+
+<<set $outside to 0>><<set $location to "drain">><<effects>><<set $bus to "residentialdrain">><<wPersist>><<getTarget true>>
+You are within the storm drain system beneath the residential district.
+<<draindescription>>
+<<drainlinks>>
+<<set $eventskip to 0>>
+
+:: Passout Drain
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "drain">>
+<<else>>
+	You've pushed yourself too much.
+	<br><br>
+	<<passout>>
+	<<beastNEWinit 4 lizard>>
+	<<set $danger to random(1, 10000)>>
+	<<if $danger gte (9900 - $allure)>>
+		<<if $rng gte 51 and ($monster is 1 or $bestialitydisable is "f")>><!-- Modified for Beast People -->
+			<<link [[Wake up|Passout Beast Drain]]>><<set $molestationstart to 1>><</link>>
+		<<elseif $rng gte 1>>
+			<<link [[Wake up|Passout Drain Abduction]]>><<endevent>><<set $molestationstart to 1>><</link>>
+		<</if>>
+	<<else>>
+		<<ambulance>>
+	<</if>>
+	<<pass 1 hour>>
+	<<trauma 6>><<set $stress -= 2000>>
+<</if>>
+
+:: Passout Beast Drain
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<beastTrainGenerate>>
+	You awaken to the sound of hissing. Four <<beastsplural>> tower above you!
+<</if>>
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if $alarm is 1>>
+	<<if $rescue is 0>>
+		<<set $alarm to 0>>
+		<br><br>
+		<<if $enemyarousal gte $enemyarousalmax>>
+			<span id="next"><<link [[Next|Passout Beast Drain Ejaculation]]>><</link>></span><<nexttext>>
+		<<elseif $enemyhealth lte 0>>
+			<span id="next"><<link [[Next->Passout Beast Drain Escape]]>><</link>></span><<nexttext>>
+		<<else>>
+			<span id="next"><<link [[Next|Passout Beast Drain]]>><</link>></span><<nexttext>>
+		<</if>>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[Next->Passout Beast Drain Ejaculation]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[Next->Passout Beast Drain Escape]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next->Passout Beast Drain]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Passout Beast Drain Ejaculation
+
+<<effects>>
+<<beastejaculation>>
+<<if $combatTrain.length gt 0>>
+	Satisfied, the <<beasttype>> leaves you be. Another takes its place.
+	<<combatTrainAdvance>>
+	<br><br>
+	<<link [[Next|Passout Beast Drain]]>><</link>>
+<<else>>
+	Satisfied, the <<beasttype>> leaves you be.
+	<<combatTrainAdvance>>
+	<br><br>
+	<<link [[Next|Passout Beast Drain End]]>><</link>>
+<</if>>
+
+:: Passout Beast Drain Escape
+
+<<effects>>
+<<beastwound>>
+<<if $combatTrain.length gt 0>>
+	The <<beasttype>> recoils in pain and fear, but another takes its place.
+	<<combatTrainAdvance>>
+	<br><br>
+	<<link [[Next|Passout Beast Drain]]>><</link>>
+<<else>>
+	The <<beasttype>> recoils in pain and fear.
+	<<combatTrainAdvance>>
+	<br><br>
+	<<link [[Next|Passout Beast Drain End]]>><</link>>
+<</if>>
+
+:: Passout Beast Drain End
+
+<<effects>>
+<<if $enemywounded is 1 and $enemyejaculated is 0>>
+	The <<beasttype>> hisses and flees into the darkness.
+<<elseif $enemywounded is 0 and $enemyejaculated is 1>>
+	The <<beasttype>> leaves you lying on the cement.
+<<elseif $enemywounded gte 2 and $enemyejaculated is 0>>
+	Feeling that you're more trouble than you're worth, the <<beastsplural>> flee into the darkness.
+<<elseif $enemywounded is 0 and $enemyejaculated gte 2>>
+	The <<beastsplural>> leave you spent and shivering in the dark.
+<<elseif $enemywounded gte 1 and $enemyejaculated gte 1>>
+	The <<beastsplural>> leave you spent and shivering in the dark. One seems to be limping.
+<</if>>
+<br><br>
+<<tearful>> you gather yourself.
+<br><br>
+<<clotheson>>
+<<endcombat>>
+<<set $stress -= 1000>>
+<<destinationeventend>>
+
+:: Storm Drain Entrance
+
+<<set $outside to 1>><<effects>>
+You peer down the manhole. It leads to the network of storm drains beneath the town.
+<<if $weather is "rain">>
+	You hear a torrent of water.
+<</if>>
+<br><br>
+<<switch $bus>>
+<<case "nightingale">>
+	<<commercialdrainquick>>
+<<case "domus">>
+	<<residentialdrainquick>>
+<<case "elk">>
+	<<industrialdrainquick>>
+<<case "high">>
+	<<commercialdrainquick>>
+<<case "starfish">>
+	<<commercialdrainquick>>
+<<case "barb">>
+	<<residentialdrainquick>>
+<<case "connudatus">>
+	<<commercialdrainquick>>
+<<case "wolf">>
+	<<residentialdrainquick>>
+<<case "harvest">>
+	<<industrialdrainquick>>
+<<case "oxford">>
+	<<commercialdrainquick>>
+<<case "danube">>
+	<<residentialdrainquick>>
+<<case "mer">>
+	<<industrialdrainquick>>
+<<case "cliff">>
+	<<commercialdrainquick>>
+<<case "industrial">>
+	<<industrialdrainquick>>
+<<case "residential">>
+	<<residentialdrainquick>>
+<<case "commercial">>
+	<<commercialdrainquick>>
+<<case "park">>
+	<<commercialdrainquick>>
+<</switch>>
+<br>
+<<destination>>
+
+:: Drain Exit
+
+<<set $outside to 0>><<set $location to "drain">><<effects>><<set $bus to "drainexit">><<wPersist>><<getTarget true>>
+You are within the storm drain system, close to where it flows out into the sea.
+<<if $weather is "rain">>
+	Water rushes down the centre, erupting over the thin walkway on each side.
+<<else>>
+	Water rushes down the centre, flanked by a thin walkway on each side.
+<</if>>
+<<wHunt "drain">>
+<br><br>
+<<drainlinks>>
+
+<<set $eventskip to 0>>
+
+:: Passout Drain Abduction
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<generate1>><<generate2>><<maninit>>
+	<<npcClothesType $NPCList[0] "worker">><<npcClothesType $NPCList[1] "worker">>
+	<<set $leftarm to "bound">><<set $rightarm to "bound">><<upperruined>><<lowerruined>><<underruined>>
+	You awaken in a windowless room. A length of tubing is wrapped around your waist, binding your arms behind your back and suspending you from the ceiling. A <<fullGroup>> sit in front of you. "<<pShe>>'s awake," the <<person>> walks behind you and gives you a firm smack on your rear. "We get to keep anything we find on the job. So we're just gonna help ourselves to you. Don't try to resist."
+	<br><br>
+<</if>>
+<<effects>>
+<<effectsman>><<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if $enemyarousal lt $enemyarousalmax and $enemyhealth gt 0>>
+	<span id="next"><<link [[Next|Passout Drain Abduction]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Passout Drain Abduction Finish]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Passout Drain Abduction Finish
+
+<<if $enemyhealth lte 0>>
+	<<set $stress -= 1000>>
+	<<effects>>
+	You push the <<fullGroup>> away from you. Before they can recover, you twist free of the tubing and escape from the room. <<tearful>> you run up a flight of stairs and another door later you find yourself outside.
+	<br><br>
+	<<endcombat>>
+	<<industrialeventend>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<clotheson>>
+	<<if $enemyanger gte 1>>
+		The <<person1>><<person>> starts untying you from the ceiling while the <<person2>><<person>> opens a hatch on the floor beneath you. You plunge through the hatch and into icy water.
+		<br><br>
+		<<endcombat>>
+		<<link [[Next|Drain Water]]>><<set $bus to "industrialdrain">><</link>>
+	<<else>>
+		Having had their fun, they untie you from the ceiling and shove you outside. "Good luck!" They slam the door behind you.
+		<br><br>
+		<<tearful>> you gather yourself.
+		<br><br>
+		<<endcombat>>
+		<<industrialeventend>>
+	<</if>>
+<</if>>
+<<set $stress -= 1000>>
+
+:: Drain Water
+
+<<set $outside to 0>><<set $location to "drain">><<effects>><<water>><<wPersist>>
+You are within the storm drain system, being pulled along by the <<if $weather is "rain">>violent<<else>>rushing<</if>> water.
+<br><br>
+<<if $unbindattempt is 1>><<set $unbindattempt to 0>>
+	<<if $rng gte 51>>
+		<<unbind>>You try to weaken your bonds against the side of the tunnel. They loosen, and you manage to free your arms!
+		<br><br>
+	<<else>>
+		You try to weaken your bonds against the side of the tunnel, but fail to free your arms.
+		<br><br>
+	<</if>>
+<</if>>
+<<if $stress gte $stressmax>>
+	You can't take any more. You pass out.
+	<br><br>
+	<<link [[Next|Drain Water Passout]]>><</link>>
+<<else>>
+	<<set $danger to random(1, 10000)>>
+	<<if $danger gte (9900 - $allure) and $eventskip isnot 1>>
+		<<rng>>
+		<<if $rng gte 75 and $slimedisable is "f" and $hallucinations gte 2>>
+			The water starts congealing around you.
+			<br><br>
+			<<link [[Next|Drain Water Slime]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<<elseif $rng gte 51 and $swarmdisable is "f">>
+			A swarm of eels moves towards you.
+			<br><br>
+			<<link [[Next|Drain Water Eels]]>><<set $molestationstart to 1>><</link>>
+		<<elseif $rng gte 26 and $worn.upper.exposed gte 2 and $parasite.nipples.name is undefined and $parasitedisable is "f">>
+			You try to swim to the walkway, but you're interrupted by a pinching sensation on your <<nipples>>. Two strange molluscs have attached themselves to you, and suckle as if trying to nurse. They cling more tightly when you touch them, eliciting shameful feelings. You'll need help removing them.
+			<<parasite nipples urchin>><<garousal>><<arousal 600 "breasts">>
+			<br><br>
+			<<link [[Next|Drain Water]]>>
+				<<movealongdrainwater>>
+			<</link>>
+			<br>
+		<<elseif $rng gte 10>><!-- Modified for Beast People -->
+			<<beastNEWinit 1 lizard>>
+			<<if $monster is 1 or $bestialitydisable is "f">>
+				A shadow in the water moves towards you.
+				<br><br>
+				<<link [[Next|Drain Water Lizard]]>><<set $molestationstart to 1>><</link>>
+				<br>
+			<<else>>
+				A shadow in the water moves towards you. You splash at it, and manage to scare it away, whatever it was.<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+				<br><br>
+
+				<<link [[Next|Drain Water]]>><<endevent>><<set $eventskip to 1>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			You try to swim to the walkway, but the water is too strong.
+			<<if $bus is "drainexit">>
+				You are carried into the open air and plummet into the sea below.
+				<br><br>
+				<<link [[Next|Sea Cliffs]]>><<set $worn.over_upper.integrity -= 20>><<set $worn.over_lower.integrity -= 20>><<set $worn.upper.integrity -= 20>><<set $worn.lower.integrity -= 20>><<set $worn.under_lower.integrity -= 20>><</link>>
+			<<else>>
+				It pulls you further along the drain system.
+				<br><br>
+				<<link [[Next|Drain Water]]>><</link>>
+				<br>
+			<</if>>
+			<<movealongdrainwater>>
+		<</if>>
+	<<else>>
+		<<if $leftarm is "bound" and $rightarm is "bound">>
+			You struggle to stay above the surface.
+			<<if $bus isnot "drainexit">>
+				<br><br>
+				<<link [[Free your arms|Drain Water]]>>
+					<<movealongdrainwater>>
+					<<set $unbindattempt to 1>>
+				<</link>>
+			<<else>>
+				The water carries you toward the end of the drain. You try to cling to the side with your restricted arms, but to no avail. You are carried into the open air and plummet into the sea below.
+				<br><br>
+				<<link [[Next|Sea Cliffs]]>><<set $worn.over_upper.integrity -= 20>><<set $worn.over_lower.integrity -= 20>><<set $worn.upper.integrity -= 20>><<set $worn.lower.integrity -= 20>><<set $worn.under_lower.integrity -= 20>><</link>>
+			<</if>>
+		<<else>>
+			You cling to the edge of the tunnel and haul yourself to safety.
+			<br><br>
+			<<if $bus is "residentialdrain">>
+				<<residentialdraineventend>>
+				<br>
+			<<elseif $bus is "commercialdrain">>
+				<<commercialdraineventend>>
+				<br>
+			<<elseif $bus is "industrialdrain">>
+				<<industrialdraineventend>>
+				<br>
+			<<elseif $bus is "drainexit">>
+				<<drainexiteventend>>
+				<br>
+			<</if>>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>
+
+:: Drain Water Eels
+
+<<set $outside to 0>><<set $location to "drain">><<effects>>
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<molested>>
+	<<controlloss>>
+	<<set $combat to 1>>
+	<<set $enemytype to "swarm">>
+	<<swarminit "eels" "swarm" "moving towards you" "encircle you" "fend off" 1 9>>
+	<<if $bus is "residentialdrain">>
+		<<set $timer to 40>>
+	<<elseif $bus is "commercialdrain">>
+		<<set $timer to 30>>
+	<<elseif $bus is "industrialdrain">>
+		<<set $timer to 20>>
+	<<else>>
+		<<set $timer to 10>>
+	<</if>>
+	<<set $water to 1>>
+	<<set $swimdistance to 8>>
+<</if>>
+<<if $bus is "drainexit">>
+	You see the exit of the drains up ahead. If you don't reach safety soon, you'll be carried into the ocean!
+	<br><br>
+<</if>>
+<<swarmeffects>>
+<<set $swimdistance += 1>><<if $swimdistance gte 20>><<set $swimdistance to 20>><</if>>
+The water pulls you further along the tunnel.
+<<if $swimdistancecheck is $swimdistance>>
+	You fight against the current, but it is too strong to make headway. You need to use both arms.
+<<elseif $swimdistancecheck gt $swimdistance>>
+	You fight against the current and move closer to safety.
+<<elseif $swimdistancecheck lt $swimdistance>>
+	You are dragged further away from safety.
+<</if>>
+<<if $swimdistance gte 15>>
+	You've been pulled away from the walkway.
+<<elseif $swimdistance gte 10>>
+	The walkway is some distance away from you.
+<<elseif $swimdistance gte 5>>
+	The walkway is close.
+<<elseif $swimdistance gte 2>>
+	The walkway is almost within reach.
+<<else>>
+	<span class="teal">The walkway is within reach!</span>
+<</if>>
+<<set $swimdistancecheck to $swimdistance>>
+<br><br>
+<<swarm>>
+<<swarmactions>>
+<<if $stress gte $stressmax>>
+	<span id="next"><<link [[Next|Drain Water Eels Finish]]>><</link>></span><<nexttext>>
+<<elseif $timer lte 0>>
+	<span id="next"><<link [[Next|Drain Water Eels Finish]]>><</link>></span><<nexttext>>
+<<elseif $swimdistance lte 1>>
+	<span id="next"><<link [[Next|Drain Water Eels Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Drain Water Eels]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Drain Water Lizard
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	A large <<beasttype>> rears out of the water!
+	<<if $bus is "residentialdrain">>
+		<<set $timer to 40>>
+	<<elseif $bus is "commercialdrain">>
+		<<set $timer to 30>>
+	<<elseif $bus is "industrialdrain">>
+		<<set $timer to 20>>
+	<<else>>
+		<<set $timer to 10>>
+	<</if>>
+<</if>>
+<<if $bus is "drainexit">>
+	You see the exit of the drains up ahead.
+	<br><br>
+<</if>>
+<<effects>>
+<<effectsman>>
+<br><br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if _combatend or $timer lte 0>>
+	<span id="next"><<link [[Next|Drain Water Lizard Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Drain Water Lizard]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Drain Water Eels Finish
+
+<<effects>>
+<<if $swimdistance lte 1>>
+	<<tearful>> you haul yourself out of the water, leaving the swarm behind you. The eels wriggle off of you to escape the open air.
+	<br><br>
+	<<if $timer gte 30>>
+		<<set $bus to "residentialdrain">>
+	<<elseif $timer gte 20>>
+		<<set $bus to "commercialdrain">>
+	<<elseif $timer gte 10>>
+		<<set $bus to "industrialdrain">>
+	<<else>>
+		<<set $bus to "drainexit">>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+	<<destinationeventend>>
+<<elseif $timer lte 0>>
+	The water carries you toward the end of the drain. You try to cling to the side of the tunnel, but to no avail. You are carried into the open air and plummet into the sea below. <<tearful>> you struggle to the surface.
+	<br><br>
+	<<if $upperoff isnot 0>>
+		<<upperruined>>
+	<</if>>
+	<<if $loweroff isnot 0>>
+		<<lowerruined>>
+	<</if>>
+	<<if $underloweroff isnot 0>>
+		<<underlowerruined>>
+	<</if>>
+	<<if $underupperoff isnot 0>>
+		<<underupperruined>>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+	<<seacliffseventend>>
+<<else>>
+	It's all just too much for you. You pass out.
+	<br><br>
+	<<if $upperoff isnot 0>>
+		<<upperruined>>
+	<</if>>
+	<<if $loweroff isnot 0>>
+		<<lowerruined>>
+	<</if>>
+	<<if $underloweroff isnot 0>>
+		<<underlowerruined>>
+	<</if>>
+	<<if $underupperoff isnot 0>>
+		<<underupperruined>>
+	<</if>>
+	<<endcombat>>
+	<<link [[Next|Drain Water Passout]]>><<pass 1 hour>><</link>>
+<</if>>
+
+:: Drain Water Passout
+
+<<effects>>
+/* 北极星模组 */
+<<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
+	你失去知觉的身体被水流带走，直到撞上下水道的河岸，昏了过去。
+	<br><br>
+	不知过了多久，你被耳边传来的奇怪声音惊醒，带着眩晕感勉强睁开眼睛，努力辨认着黑暗中向你接近的黑影。
+	<br><br>
+	一只巨大的黏液生物向你靠近，那是一只史莱姆！你想要逃跑，却被你的耳中史莱姆控制，无法移动，只能惊恐地看着它慢慢开始吞噬你的身体。
+	<br><br>
+	<<link [[继续|Sewers Slime]]>><</link>>
+	<br>
+<<elseif isPlayerNonparasitePregnancyEnding()>>
+/* 北极星 */
+	<<pregnancyWatersBrokenPassout "drain">>
+<<else>>
+	<<passout>>
+	Your unconscious body is carried along the drains until you are dropped into the sea. The shock wakes you.
+	<br><br>
+	<<link [[Next|Sea Cliffs]]>><</link>>
+	<<set $stress -= 2000>><<trauma 6>>
+<</if>>
+
+:: Drain Water Lizard Finish
+
+<<effects>>
+<<if $timer gte 30>>
+	<<set $bus to "residentialdrain">>
+<<elseif $timer gte 20>>
+	<<set $bus to "commercialdrain">>
+<<elseif $timer gte 10>>
+	<<set $bus to "industrialdrain">>
+<<else>>
+	<<set $bus to "drainexit">>
+<</if>>
+<<if $timer lte 0>>
+	The water carries you toward the end of the drain. You try to cling to the side of the tunnel, but to no avail. You are carried into the open air and plummet into the sea below. <<tearful>> you struggle to the surface.
+	<br><br>
+	<<if $upperoff isnot 0>>
+		<<upperruined>>
+	<</if>>
+	<<if $loweroff isnot 0>>
+		<<lowerruined>>
+	<</if>>
+	<<if $underloweroff isnot 0>>
+		<<underlowerruined>>
+	<</if>>
+	<<if $underupperoff isnot 0>>
+		<<underupperruined>>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+	<<seacliffseventend>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	Satisfied, the <<beasttype>> loses interest in you.
+	<br><br>
+	<<tearful>> you gather yourself.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Drain Water]]>><<set $eventskip to 1>><</link>>
+<<else>>
+	<<bHe>> whimpers and flees into the darkness.
+	<br><br>
+	<<tearful>> you gather yourself.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Drain Water]]>><<set $eventskip to 1>><</link>>
+<</if>>
+
+:: Drain Water Slime
+
+<<set $outside to 0>><<set $location to "drain">><<effects>>
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<molested>>
+	<<controlloss>>
+	<<set $combat to 1>>
+	<<set $enemytype to "swarm">>
+	<<swarminit "slimes" "slime mass" "moving towards you" "encircle you" "fend off" 1 10>>
+	<<if $bus is "residentialdrain">>
+		<<set $timer to 40>>
+	<<elseif $bus is "commercialdrain">>
+		<<set $timer to 30>>
+	<<elseif $bus is "industrialdrain">>
+		<<set $timer to 20>>
+	<<else>>
+		<<set $timer to 10>>
+	<</if>>
+	<<set $water to 1>>
+	<<set $swimdistance to 10>>
+<</if>>
+<<if $bus is "drainexit">>
+	You see the exit of the drains up ahead. If you don't reach safety soon, you'll be carried into the ocean!
+	<br><br>
+<</if>>
+<<swarmeffects>>
+<<set $swimdistance += 1>>
+<<if $swimdistance gte 20>><<set $swimdistance to 20>><</if>>
+The water pulls you further along the tunnel.
+<<if $swimdistancecheck is $swimdistance>>
+	You fight against the current, but it is too strong to make headway. You need to use both arms.
+<<elseif $swimdistancecheck gt $swimdistance>>
+	You fight against the current and move closer to safety.
+<<elseif $swimdistancecheck lt $swimdistance>>
+	You are dragged further away from safety.
+<</if>>
+<<if $swimdistance gte 15>>
+	You've been pulled away from the walkway.
+<<elseif $swimdistance gte 10>>
+	The walkway is some distance away from you.
+<<elseif $swimdistance gte 5>>
+	The walkway is close.
+<<elseif $swimdistance gte 2>>
+	The walkway is almost within reach.
+<<else>>
+	<span class="teal">The walkway is within reach!</span>
+<</if>>
+<<set $swimdistancecheck to $swimdistance>>
+<br><br>
+<<swarm>>
+<<swarmactions>>
+<<if $stress gte $stressmax>>
+	<span id="next"><<link [[Next|Drain Water Slime Finish]]>><</link>></span><<nexttext>>
+<<elseif $timer lte 0>>
+	<span id="next"><<link [[Next|Drain Water Slime Finish]]>><</link>></span><<nexttext>>
+<<elseif $swimdistance lte 1>>
+	<span id="next"><<link [[Next|Drain Water Slime Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Drain Water Slime]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Drain Water Slime Finish
+
+<<effects>>
+<<if $swimdistance lte 1>>
+	<<tearful>> you haul yourself out of the water, leaving the slime behind you.
+	<br><br>
+	<<if $timer gte 30>>
+		<<set $bus to "residentialdrain">>
+	<<elseif $timer gte 20>>
+		<<set $bus to "commercialdrain">>
+	<<elseif $timer gte 10>>
+		<<set $bus to "industrialdrain">>
+	<<else>>
+		<<set $bus to "drainexit">>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+	<<destinationeventend>>
+<<elseif $timer lte 0>>
+	The water carries you toward the end of the drain. You try to cling to the side of the tunnel, but to no avail. You are carried into the open air and plummet into the sea below. <<tearful>> you struggle to the surface.
+	<br><br>
+	<<if $upperoff isnot 0>>
+		<<upperruined>>
+	<</if>>
+	<<if $loweroff isnot 0>>
+		<<lowerruined>>
+	<</if>>
+	<<if $underloweroff isnot 0>>
+		<<underlowerruined>>
+	<</if>>
+	<<if $underupperoff isnot 0>>
+		<<underupperruined>>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+	<<seacliffseventend>>
+<<else>>
+	It's all just too much for you. You pass out.
+	<br><br>
+	<<if $upperoff isnot 0>>
+		<<upperruined>>
+	<</if>>
+	<<if $loweroff isnot 0>>
+		<<lowerruined>>
+	<</if>>
+	<<if $underloweroff isnot 0>>
+		<<underlowerruined>>
+	<</if>>
+	<<if $underupperoff isnot 0>>
+		<<underupperruined>>
+	<</if>>
+	<<endcombat>>
+	<<link [[Next|Drain Water Passout]]>><<pass 1 hour>><</link>>
+<</if>>
+
+:: Drain Tentacles
+
+<<set $outside to 0>><<set $location to "drain">>
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<set $combat to 1>>
+	<<set $enemytype to "tentacles">>
+	<<molested>>
+	<<controlloss>>
+	<<tentaclestart 8 15>>
+	<<set $timer to 30>>
+<</if>>
+<<effects>>
+<<effectstentacles>>
+<<tentacles>>
+<<statetentacles>>
+<<actionstentacles>>
+<<if $tentacles.active lte ($tentacles.max / 2)>>
+	<span id="next"><<link [[Next|Drain Tentacles Finish]]>><</link>></span><<nexttext>>
+<<elseif $timer lte 1>>
+	<span id="next"><<link [[Next|Drain Tentacles Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Drain Tentacles]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Drain Tentacles Finish
+
+<<effects>>
+<<if $tentacles.active lte ($tentacles.max / 2)>>
+	The creature loses interest in you, and returns to the depths. <<tearful>> you struggle to your feet.
+	<<clotheson>>
+	<<endcombat>>
+	<<destinationeventend>>
+<<else>>
+	The walkway beneath you gives way under the strain, and you tumble into the water below.
+	<br><br>
+	<<if $upperoff isnot 0>>
+		<<upperruined>>
+	<</if>>
+	<<if $loweroff isnot 0>>
+		<<lowerruined>>
+	<</if>>
+	<<if $underloweroff isnot 0>>
+		<<underlowerruined>>
+	<</if>>
+	<<if $underupperoff isnot 0>>
+		<<underupperruined>>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Drain Water]]>><</link>>
+	<br>
+<</if>>
+
+:: Drain Lichen
+
+<<set $outside to 0>><<set $location to "drain">><<effects>><<set $bus to "drainexit">>
+The walls are covered in a violet lichen. You peel some off. <span class="gold">You can add it to your science project in your room or the school library.</span>
+<br><br>
+<<link [[Next|Drain Exit]]>><</link>>
+<br>
+
+:: Drain Ladder
+
+<<effects>><<set $location to "sewers">>
+/* 北极星模组 */
+<<if $historytrait gte 1>>
+	你听说过雨水渠下面的旧下水道，它们已经有一个多世纪没有被使用过了，据说里面很危险，还有着关于怪物和宝藏的传言。 
+	<<if $slimedisable is "f">>
+    	<span class="green">
+    	你突然想起有小道消息称，在下水道和垃圾填埋场里存在着一种奇怪的黏液生物。
+    	</span>
+	<</if>>
+	你怀疑这些说法的真实性，但无论如何都要保持警惕。
+<<else>>
+	你模糊记得关于雨水渠下面的旧下水道的传言，据说那里有着宝藏和怪物。
+	<<if $slimedisable is "f">>
+    	<span class="green">
+    	里面还有一些关于奇怪的黏液生物的传说......也可能是当地的垃圾填埋场。
+    	</span>
+	<</if>> 
+	你怀疑这些说法的真实性，但无论如何都要保持警惕。
+<</if>>
+/* 北极星 */
+
+<br><br>
+<<laddericon>><<link [[Descend|Sewers Descend]]>><</link>>
+<br>
+<<if $bus is "residentialdrain">>
+	<<getouticon>><<link [[Leave|Residential Drain]]>><</link>>
+	<br>
+<<elseif $bus is "commercialdrain">>
+	<<getouticon>><<link [[Leave|Commercial Drain]]>><</link>>
+	<br>
+<<else>>
+	<<getouticon>><<link [[Leave|Industrial Drain]]>><</link>>
+	<br>
+<</if>>
+
+:: Drain Struggle
+<<effects>>
+
+<<if $struggle_start is 1>>
+	<<struggle_init>>
+	<<set $struggle.creature to "slime">>
+	<<struggle_creatures 1 1>>
+	<<set $combat to 1>>
+	<<controlloss>>
+	<<violence 1>>
+	<<molested>>
+	<<if $phase is 1>>
+		<<set $struggle.anus.creature to "slime">><<set $anususe to "struggle">><<set $anusstate to "struggle">><<set $struggle.enemy[0].location to "anus">>
+	<<elseif $player.penisExist>>
+		<<set $struggle.penis.creature to "slime">><<set $penisuse to "struggle">><<set $penisstate to "struggle">><<set $struggle.enemy[0].location to "penis">>
+	<<else>>
+		<<set $struggle.vagina.creature to "slime">><<set $vaginause to "struggle">><<set $vaginastate to "struggle">><<set $struggle.enemy[0].location to "vagina">>
+	<</if>>
+	<<unset $struggle_start>>
+<</if>>
+
+
+<<struggle>>
+
+
+<<if $struggle.done gte $struggle.number>>
+	<span id="next"><<link [[Next|Drain Struggle End]]>><</link>></span>
+	<br>
+<<else>>
+	<span id="next"><<link [[Next|Drain Struggle]]>><</link>></span>
+	<br>
+<</if>>
+
+
+:: Drain Struggle End
+<<effects>>
+
+The slime jumps in the canal, disappearing underwater.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<set $eventskip to 1>>
+<<destinationstormdrain>>
+
+:: Drain Slime Physique
+<<effects>>
+
+<<if $physiqueSuccess>>
+	You reach over your shoulder, dig your fingers into the slime's warm mass, and pull. It resists, sticking to you with increased force, <span class="green">before peeling off all at once.</span> The force sends it flying across the walkway, where it splatters against the wall and disappears into another drain.
+	<br><br>
+	<<destinationstormdrain>>
+<<else>>
+	You reach over your shoulder, dig your fingers into the slime's warm mass, and pull. It resists, sticking to you with increased force, <span class="red">and ensnaring your hand.</span>
+	<br><br>
+
+	While you struggle, the slime spreads over your back,
+	<<if !$worn.upper.type.includes("naked")>>
+		<span class="pink">dissolving your <<print $worn.upper.name>> with a steaming hiss.</span>.
+		<<set $worn.upper.integrity -= 1000>>
+		<<integritycheck>>
+		<<exposure>>
+		<br><br>
+	<<elseif !$worn.under_upper.type.includes("naked")>>
+		<span class="pink">dissolving your <<print $worn.under_upper.name>> with a steaming hiss.</span>
+		<<set $worn.under_upper.integrity -= 1000>>
+		<<integritycheck>>
+		<<exposure>>
+		<br><br>
+	<<else>>
+		tickling your skin.<<garousal>><<arousal 600>>
+		<br><br>
+	<</if>>
+
+	<<link [[Tug it off|Drain Slime Physique 2]]>><</link>><<physiquedifficulty 1 30000>>
+	<br>
+	<<link [[Watch for an opening|Drain Slime Watch]]>><<arousal 1800>><</link>><<ggarousal>>
+	<br>
+	<<if !$worn.under_upper.type.includes("naked")>>
+		<<link [[Sacrifice your top|Drain Slime Sacrifice Under]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+
+:: Drain Slime Physique 2
+<<effects>>
+
+<<if $physiqueSuccess>>
+	You grasp the slime with your other hand, and try once more. This time <span class="green">you manage to tear it from your body.</span> The force sends it sailing over the waterway, where it splats against the wall and escapes into a drain.
+	<br><br>
+
+	<<destinationstormdrain>>
+<<else>>
+	You grasp the slime with your other hand, and try once more. <span class="red">It snares you again, leaving your arms helpess</span> as it spreads further down your body,
+	<<if !$worn.under_upper.type.includes("naked")>>
+		dissolving your <<print $worn.under_upper.name>> with a hiss.
+		<<set $worn.under_upper.integrity -= 1000>>
+		<<integritycheck>>
+		<<exposure>>
+	<<else>>
+		tickling your skin.<<garousal>><<arousal 600>>
+	<</if>>
+	When it reaches your <<bottom>>, it clings to the nearby wall for leverage, and forces you to the ground.
+	<br><br>
+	
+	/* 北极星模组 */
+    <<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime" and $ghost is 0 and $mushroom is 0>>
+    	大型史莱姆的行动似乎让你耳朵里的史莱姆也变得疯狂起来! 它们蠕动着，似乎产生了某种共鸣，起初共鸣频率很慢，但很快就开始剧烈加速。
+    	<br><br>
+    	与此同时，一股暖流从你的头顶蔓延开来，流遍全身。<span class='green'>吞噬你的史莱姆化作球状将你完全包裹起来，</span>尽管情况如此，你却感到异常平静。
+    	<br><br>
+    	这种感觉既陌生又熟悉，犹如在母亲的子宫中，让你感到安宁，昏昏欲睡。周围的粘液开始有节奏地抚摸着你的身体，而你渐渐沉入梦乡...
+    	<br><br>
+    	<<link [[顺其自然|Slime Transformation 1]]>><<pass 60>><</link>>
+        <br>
+	<</if>>
+	<<link [[抵抗|Drain Struggle]]>><<set $phase to 1>><<set $struggle_start to 1>><</link>>
+	<br>
+	/* 北极星 */
+<</if>>
+
+:: Drain Slime Watch
+<<effects>>
+
+You observe the slime as it spreads down your back.
+<<if !$worn.upper.type.includes("naked")>>
+	<span class="pink">It dissolves your <<print $worn.upper.name>> with a steaming hiss.</span>
+	<<set $worn.upper.integrity -= 1000>>
+	<<integritycheck>>
+	<<exposure>>
+<<elseif !$worn.under_upper.type.includes("naked")>>
+	<span class="pink">It dissolves your <<print $worn.under_upper.name>> with a steaming hiss.</span>
+	<<set $worn.under_upper.integrity -= 1000>>
+	<<integritycheck>>
+	<<exposure>>
+<<else>>
+	It tickles your skin.<<ggarousal>><<arousal 600>>
+	<br>
+<</if>>
+<br>
+You notice a pattern. It spreads by jumping, flattening itself each time.
+<br><br>
+<<if $arousal gte 10000>>
+	You wait for your moment, but a fel warmth spreads through your skin. <<orgasm>>
+	<br><br>
+
+	You knees buckle, and you collapse to the ground. The slime takes advantage of your weakness.
+	<br><br>
+
+	/* 北极星模组 */
+    <<if $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime" and $ghost is 0 and $mushroom is 0>>
+	    在你的反复高潮中，你耳朵里的史莱姆也变得疯狂起来! 它们蠕动着，似乎产生了某种共鸣，起初共鸣频率很慢，但很快就开始剧烈加速。
+	    <br><br>
+    	与此同时，一股暖流从你的头顶蔓延开来，流遍全身。<span class='green'>吞噬你的史莱姆化作球状将你完全包裹起来，</span>尽管情况如此，你却感到异常平静。
+    	<br><br>
+    	这种感觉既陌生又熟悉，犹如在母亲的子宫中，让你感到安宁，昏昏欲睡。周围的粘液开始有节奏地抚摸着你的身体，而你渐渐沉入梦乡...
+    	<br><br>
+    	<<link [[顺其自然|Slime Transformation 1]]>><<pass 60>><</link>>
+        <br>
+	<</if>>
+	<<link [[抵抗|Drain Struggle]]>><<set $phase to 1>><<set $struggle_start to 1>><</link>>
+	<br>
+	/* 北极星 */
+<<else>>
+	You wait for your moment, and catch it at a moment of weakness, throwing it across the waterway. It splats against the far wall, and disappears into another drain.
+	<br><br>
+
+	<<destinationstormdrain>>
+<</if>>
+
+:: Drain Slime Sacrifice Upper
+<<effects>>
+
+You tear off your <<print $worn.upper.name>>, and the slime with it. The fabric dissolves in a hiss as you make your escape.
+<br><br>
+
+<<set $worn.upper.integrity -= 1000>>
+<<integritycheck>>
+<<exposure>>
+
+<<destinationstormdrain>>
+
+:: Drain Slime Sacrifice Under
+<<effects>>
+
+You tear off your <<print $worn.under_upper.name>>, and the slime with it. The fabric dissolves in a hiss as you make your escape.
+<br><br>
+
+<<set $worn.under_upper.integrity -= 1000>>
+<<integritycheck>>
+<<exposure>>
+
+<<destinationstormdrain>>
+
+:: Widgets Drain Descriptions [widget]
+<<widget "draindescription">>
+	<<if $weather is "rain">>
+		Water surges down the centre, almost flooding the thin walkways on each side.
+	<<elseif $weather is "snow">>
+		Water rushes down the centre, carrying chunks of ice.
+	<<else>>
+		Water rushes down the centre, flanked by a thin walkway on each side.
+	<</if>>
+	<<wHunt "drain">>
+	<br><br>
+	You can access several parts of town from here.
+	<br><br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		'Mickey' said the USB was somewhere in the sewer system, and that they think <<if $sewersintro is 1>>Morgan has it.<<else>>someone down there has it. You notice a ladder leading down.<</if>>
+		<br><br>
+	<</if>>
+<</widget>>
+
+<<widget "drainlinks">>
+	<<if $stress gte $stressmax and !$possessed>>
+		<<passoutdrain>>1
+	<<else>>
+		<<rng>>
+		<<if ($weather is "rain" or $weather is "snow") and $rng gte 75 and $eventskip is 0>>
+			<<eventsdrain>>
+		<<elseif ($rng gte 92 or $eventforced) and $eventskip is 0>>
+			<<eventsdrain>>
+		<<else>>
+			<<if $arousal gte $arousalmax and $bus isnot "drainexit">>
+				<<orgasmLocation "sewers">>
+			<</if>>
+			<<switch $bus>>
+				<<case "industrialdrain">>
+					<<industrialdrainlinks>>
+				<<case "commercialdrain">>
+					<<commercialdrainlinks>>
+				<<case "residentialdrain">>
+					<<residentialdrainlinks>>
+				<<case "drainexit">>
+					<<drainexitlinks>>
+			<</switch>>
+		<</if>>
+		<<displayLinks>>
+	<</if>>
+<</widget>>
+
+<<widget "industrialdrainlinks">>
+	<<drainladderdownlink "industrial">>
+	<<commercialdrain>>
+	<br>
+	<<drainexit>>
+	<br>
+	<<if $exposed gte 1 and Time.dayState isnot "night">>
+	<<else>>
+		<<elk>>
+		<<mer>>
+		<<harvest>>
+	<</if>>
+	<br>
+	<<industrial>>
+<</widget>>
+
+<<widget "commercialdrainlinks">>
+	<<drainladderdownlink "commercial">>
+	<<residentialdrain>>
+	<br>
+	<<industrialdrain>>
+	<<if $exposed gte 1 and Time.dayState isnot "night">>
+	<<else>>
+		<<high>>
+		<<connudatus>>
+		<<cliff>>
+		<<nightingale>>
+		<<starfish>>
+		<<oxford>>
+	<</if>>
+	<br>
+	<<commercial>>
+	<<park>>
+	<br>
+	<<if $historytrait gte 2 and $schooldrainintro gte 1>>
+		<<schoolicon "building">><<link [[Secret tunnel to school (0:02)|School Toilets]]>><<pass 2>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "residentialdrainlinks">>
+	<<drainladderdownlink "residential">>
+	<<commercialdrain>>
+	<br>
+	<<if $exposed gte 1 and Time.dayState isnot "night">>
+	<<else>>
+		<<domus>>
+		<<barb>>
+		<<danube>>
+		<<wolf>>
+	<</if>>
+	<br>
+	<<residential>>
+<</widget>>
+
+<<widget "drainexitlinks">>
+	<<if $scienceproject is "ongoing" and $sciencelichendrain is 0>>
+		<<scienceicon "violet lichen">><<link [[Examine lichen|Drain Lichen]]>><<set $sciencelichendrain to 1>><</link>>
+		<br>
+	<</if>>
+	<<industrialdrain>>
+	<br><br>
+<</widget>>
+
+<<widget "drainladderdownlink">>
+	<<if $sewersintro is 1>>
+		<<laddericon>>
+		<<set _dest to "Sewers " + _args[0].toLocaleUpperFirst()>>
+		<<link [[Climb down|_dest]]>> <<sewersstart>><<set $eventskip to 1>><</link>>
+		<br><br>
+	<<elseif $historytrait gte 1 or isPubfameTaskAccepted("morgan")>>
+		<<laddericon>><<link [[Examine a ladder leading down|Drain Ladder]]>><</link>>
+		<br><br>
+	<</if>>
+<</widget>>
+
+:: Widgets Drain Water [widget]
+<<widget "movealongdrainwater">>
+	<<if $bus is "residentialdrain">>
+		<<set $bus to "commercialdrain">>
+	<<elseif $bus is "commercialdrain">>
+		<<set $bus to "industrialdrain">>
+	<<elseif $bus is "industrialdrain">>
+		<<set $bus to "drainexit">>
+	<</if>>
+<</widget>>

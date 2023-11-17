@@ -1,0 +1,1305 @@
+:: StoryCaption
+<div @class="(Errors.log.length==0?'hidden':'') + ' error-reporter-btn'" onclick="Errors.Reporter.toggle()"></div>
+<<run T.buttons = new window.Tab("overlayButtons", "macro-button-selected")>>
+<<if $intro is 0>>
+	<<if $debug is 1>>
+		<div id="debugOverlay" class="debugOverlay unstowable"></div>
+	<</if>>
+
+	<<weatherdisplay>>
+	<<if $gamemode is "soft">>
+		<<set $pain to 0>>
+	<</if>>
+	<<if $options.images is 1>>
+		<<addclass body has-images>>
+		<<removeclass body no-images>>
+		<div id="sidebar-img-container">
+			<<img>>
+		</div>
+	<<else>>
+		<<removeclass body has-images>>
+		<<addclass body no-images>>
+	<</if>>
+	<<combateffects>>
+	<div id="storyCaptionDiv" @class="($extendedStats ? 'statsExtended' : '')">
+		
+	<div id="debugWindow"></div>
+	<<if $options.images is 1>>
+		<div id="stats" onclick="extendStats()">
+			<<statsCaption>>
+		</div>
+	<</if>>
+	<div id="storyCaptionContent">
+		
+		<<if $options.numpad is true>>
+			<style>
+				.mob-btn-group{
+					position: fixed;
+					top: 100px;
+					right: 0;
+					display: flex;
+					align-items: end;
+					flex-direction: column;
+					cursor: pointer;
+					color: #fff;
+				}
+				.mob-btn-group>div{
+					padding: 10px;
+					background-color: var(--850);
+					border: 1px solid var(--750);
+					border-radius: 5px 0 0 5px;
+				}
+				.mob-btn-group>div:hover{
+					background-color: var(--800);
+				}
+			</style>
+			<div class="mob-btn-group unstowable">
+				<div class="mob-btn-h" onclick="mobBtnShow()" style="display:none;"></div>
+				<div class="mob-btn" onclick="mobBtnHide()"></div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 1 ? ' red' : '')" onclick="mobClick(1)">1</div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 2 ? ' link-disabled' : '')" onclick="mobClick(2)">2</div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 3 ? ' link-disabled' : '')" onclick="mobClick(3)">3</div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 4 ? ' link-disabled' : '')" onclick="mobClick(4)">4</div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 5 ? ' link-disabled' : '')" onclick="mobClick(5)">5</div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 6 ? ' link-disabled' : '')" onclick="mobClick(6)">6</div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 7 ? ' link-disabled' : '')" onclick="mobClick(7)">7</div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 8 ? ' link-disabled' : '')" onclick="mobClick(8)">8</div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 9 ? ' link-disabled' : '')" onclick="mobClick(9)">9</div>
+				<div @class="'mob-btn' + (Links.currentLinks.length < 10 ? ' link-disabled' : '')" onclick="mobClick(10)">0</div>
+			</div>
+		<</if>>
+		<<if $endeventerror isnot undefined>>
+			<<if $options.debugdisable is "f">>
+				<<if $options.images is 1>><img class="layer-sexmouth" src="img/ui/sym_awareness.png"><</if>><span class="red"><<print StartConfig.version>> Error: An NPC generated on the "$endeventerror" passage broke free. Please inform Vrelnir. <<if $cheatdisable is "f">>Disregard this if you've just used a cheat.<</if>></span>
+				<br><br>
+			<</if>>
+			<<unset $endeventerror>>
+		<</if>>
+
+		<<if $physiquechange is 1>><<set $physiquechange to 0>>
+			<<if $physiqueuse gte $physique / 1000>>
+				<span class="gold">Your physique is improving due to all the exercise you are getting.</span>
+				<<set $physiqueuse to 0>>
+				<br><br>
+			<<else>>
+				<span class="pink">You didn't get enough exercise yesterday, your physique has deteriorated slightly as a result.</span>
+				<<set $physiqueuse to 0>>
+				<br><br>
+			<</if>>
+		<</if>>
+		<<if !$lessonmissedtext>>
+		<<else>>
+			<<if $lessonmissedtext is 1>>
+				<span class="pink">You missed a lesson yesterday.</span>
+			<<elseif $lessonmissedtext gte 2>>
+				<span class="pink">You missed $lessonmissedtext lessons yesterday.</span>
+			<</if>>
+			<<if $lessonmissed gte 25>>
+				<span class="red">You've missed many lessons. Your reputation has taken a hit.</span>
+				<<detention 50>><<gggdelinquency>><<status -5>><<lcool>>
+			<</if>>
+			<<set $lessonmissedtext to 0>>
+			<br>
+		<</if>>
+		<<if $options.images is 0>>
+			<div id="money-noimg">
+				<<statsMoneyNoImg>>
+			</div>
+			<br>
+
+			It is <<ampm>>.
+			<br>
+			It is <<print Time.weekDayName>>.
+			<br>
+		<</if>>
+		<<schoolday>>
+		<br>
+		/* 北极星模组 */
+		<<support>>
+		/* 北极星 */
+		<div id="sidebar-look-description">
+			<<sidebarlookdescription>>
+		</div>
+		<br>
+
+		<<caption_clamp>>
+
+		<<calculateallure>>
+		<<rng>>
+
+		<<if $worn.neck.collared gte 1>>
+			<span class="pink">A collar encases your neck.</span>
+			<br>
+		<</if>>
+
+		<<if $penilechastityparasite isnot 0>>
+			<span class="pink">You feel $penilechastityparasite squirming around your penis.</span>
+			<br>
+		<</if>>
+		<<if $vaginalchastityparasite isnot 0 and $vaginalchastityparasite eq $analchastityparasite>>
+			<span class="pink">You feel $vaginalchastityparasite squirming inside your vagina and lower intestine.</span>
+			<br>
+		<<else>>
+			<<if $vaginalchastityparasite isnot 0>>
+				<span class="pink">You feel $vaginalchastityparasite squirming inside your vagina.</span>
+				<br>
+			<</if>>
+			<<if $analchastityparasite isnot 0>>
+				<span class="pink">You feel $analchastityparasite squirming inside your lower intestine.</span>
+				<br>
+			<</if>>
+		<</if>>
+
+		<<for _type range $parasite.types>>
+			<<switch $parasite[_type].length>>
+			<<case 0>>
+			<<case 1>>
+				<<if $parasite[_type][0] is "nipples">>
+					<span class="pink">The _type parasites clinging to your <<print $parasite[_type][0]>> suck and massage you.</span>
+				<<else>>
+					<span class="pink">The _type parasite clinging to your <<print $parasite[_type][0]>> sucks and massages you.</span>
+				<</if>>
+				<br>
+			<<case 2>>
+				<span class="pink">The _type parasites clinging to your <<print $parasite[_type][0]>> and <<print $parasite[_type][1]>> suck and massage you.</span>
+				<br>
+			<<default>>
+				<<set _pstring to $parasite[_type][0]>>
+				<<for _i to 1; _i lt $parasite[_type].length - 1; _i++>>
+					<<set _pstring += ", " + $parasite[_type][_i]>>
+				<</for>>
+				<<set _pstring += ", and " + $parasite[_type][_i]>>
+				<span class="pink">The _type parasites clinging to your _pstring suck and massage you.</span>
+				<br>
+			<</switch>>
+		<</for>>
+
+		<<if $parasite.left_ear.name and $parasite.left_ear.name eq $parasite.right_ear.name>>
+			<<if $parasite.left_ear.name is "slime">>
+				<span class="lewd">The $parasite.left_ear.name in each ear influences your thoughts<<if $earSlime.growth gte 100>> and actions<</if>>.</span>
+				<br>
+			<</if>>
+		<<else>>
+			<<if $parasite.left_ear.name is "slime">>
+				<span class="lewd">The $parasite.left_ear.name in your left ear influences your thoughts.</span>
+				<br>
+			<</if>>
+			<<if $parasite.right_ear.name is "slime">>
+				<span class="lewd">The $parasite.right_ear.name in your right ear influences your thoughts.</span>
+				<br>
+			<</if>>
+		<</if>>
+
+		<<if $leftarm is "bound" and $rightarm is "bound">>
+			<span class="pink">Your arms are bound.</span>
+			<br>
+		<<elseif $leftarm is "bound">>
+			<span class="purple">Your left arm is bound.</span>
+			<br>
+		<<elseif $rightarm is "bound">>
+			<span class="purple">Your right arm is bound.</span>
+			<br>
+		<</if>>
+		<<if $feetuse is "bound" or $worn.feet.type.includes("shackle")>>
+			<span class="pink">Your legs are bound.</span>
+			<br>
+		<</if>>
+		<<goo>>
+
+		<div id="statmeters">
+			<<if $gamemode isnot "soft">>
+				<<paincaption>>
+			<</if>>
+			<<arousalcaption>>
+			<<tirednesscaption>>
+			<<stresscaption>>
+			<<if $innocencestate is 1>>
+				<<innocencecaption>>
+			<<else>>
+				<<traumacaption>>
+			<</if>>
+			<<if $gamemode isnot "soft">>
+				<<controlcaption>>
+			<</if>>
+			<<allurecaption>>
+			<<if $underwater is 1>>
+				<<oxygencaption true>>
+			<</if>>
+			<<drunkcaption>><<druggedcaption>><<hallucinogencaption>>
+		</div>
+		<br>
+		<<if $passage isnot "Start" and $passage isnot "Start2">>
+			<<if $options.sidebarTime is "top">>
+				<<append #mobileStats>><<mobileStatsTime>><</append>>
+			<</if>>
+			<<if $options.sidebarStats isnot "disabled">>
+				<<append #mobileStats>><<mobileStats>><</append>>
+			<</if>>
+			<<if $options.sidebarTime is "bottom">>
+				<<append #mobileStats>><<mobileStatsTime>><</append>>
+			<</if>>
+		<</if>>
+		
+		/* 北极星模组 */
+		<<if $options.bjx_antiques and ($museumAntiques.antiques.antiquescroll is "found" or $museumAntiques.antiques.antiquescroll is "take")>>
+		    <<if $antiquescrollText is undefined>>
+		        <<set $antiquescrollText to "">>
+		    <</if>>
+			你携带着言灵卷轴，上面写着$antiquescrollText
+			<br><br>
+		<</if>>
+		/* 北极星 */
+
+		<<if $options.tipdisable is "f">>
+			<span class="gold">Tip:</span> <<tips>>
+			<br><br>
+		<</if>>
+
+		<div id="overlayButtons">
+			<<button CHARACTERISTICS>>
+				<<overlayReplace "characteristics">>
+			<</button>>
+			<<button SOCIAL>>
+				<<overlayReplace "social">>
+			<</button>>
+			<div class="sidebarButtonSplit">
+				<<button TRAITS>>
+					<<overlayReplace "traits">>
+				<</button>>
+				<<button JOURNAL>>
+					<<overlayReplace "journal">>
+				<</button>>
+			</div>
+			<div class="sidebarButtonSplit">
+				<<button STATS>>
+					<<overlayReplace "statistics">>
+				<</button>>
+				<<button FEATS>>
+					<<overlayReplace "gameFeats">>
+				<</button>>
+			</div>
+			<br>
+			<div class="sidebarButtonSplit">
+				<<if $dancing is 0 and $combat is 0 and $passage isnot "Start2" and $cheatdisable is "f" or $debug is 1>>
+					<<button CHEATS>>
+						<<overlayReplace "cheats">>
+					<</button>>
+				<</if>>
+				<<if $debug is 1>>
+					<<debug>>
+				<</if>>
+			</div>
+			<!-- Event debug button - Shows an overlay stored in debug-events.twee. -->
+			<<if $event isnot undefined and $options.debugdisable is "f">>
+				<!-- Default _temp to what we should people regularly if an event active. -->
+				<<set _temp to "<span class='yellow'>SHOW EVENT INFO</span>">>
+				<!-- Prepare for cases where we want to update the button view. -->
+				<<if EventSystem.any()>>
+					<<if !EventSystem.validate()>>
+						<!-- Could not validate the NPC list with event data. -->
+						<<set _temp to "<span class='red'>EVENT ERROR</span>">>
+					<<elseif EventSystem.has(0) and EventSystem.get(0).area[0] is $passage>>
+						<<set _eventAlertMajorArea to false>>
+						<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
+					<<elseif setup.majorAreas.includes($passage)>>
+						<<set _eventAlertMajorArea to true>>
+						<<set _temp to "<span class='red'>EVENT ACTIVE</span>">>
+					<<elseif $event.buffer.map(e => e.area[0]).length is 1 and EventSystem.has(0) and ["Forest Cabin", "Eden Cabin", "Eden Clearing"].includes(EventSystem.get(0).area[0])>>
+						<<set _temp to "<span class='green'>EVENT ACTIVE</span>">>
+					<</if>>
+				<</if>>
+				<<button _temp>><<overlayReplace "eventExtraInfo">><</button>>
+				<<unset _temp>>
+			<</if>>
+			<<if $options.showDebugRenderer>>
+				<<button "DEBUG RENDERER">><<overlayReplace "canvasModel">><</button>>
+			<</if>>
+			<div class="sidebarButtonSplit">
+				<<button OPTIONS>>
+					<<overlayReplace "options">>
+				<</button>>
+				<<button SAVES>>
+					<<overlayReplace "saves">>
+				<</button>>
+			</div>
+		</div>
+	</div>
+</div>
+<<else>>
+	<<if StartConfig.enableImages is true>>
+		<div id="startingPlayerImage" class="hidden"></div>
+	<</if>>
+	<div id="overlayButtons">
+		<div id="versioninfo"><<versioninfo>></div>
+			<<button SAVES>>
+				<<overlayReplace "saves">>
+			<</button>>
+		<div class="sidebarButtonSplit">
+			<<button OPTIONS>>
+				<<overlayReplace "options">>
+			<</button>>
+			<<button FEATS>>
+				<<overlayReplace "startFeats">>
+			<</button>>
+		</div>
+	</div>
+<</if>>
+
+<br>
+
+<<unset _currentOverlay>>
+
+
+:: Widgets Clothing Caption [widget]
+<<widget "sidebarlookdescription">>
+	<!--old version
+	<<clothingcaption>>
+	<br>
+	<<stripcaption>>
+
+	<<if ($player.gender is "m" or $player.gender is "h") and $player.gender_appearance is "f">>
+		<<if $breastindicator is 1>>
+			<span class="pink">Your exposed breasts will make people think you're a girl!</span>
+			<br>
+		<<elseif $exposed gte 2>>
+			<span class="pink">The way you look, people will think you're a girl!</span>
+			<br>
+		<<else>>
+			<span class="pink">The way you're dressed, people will think you're a girl!</span>
+			<br>
+		<</if>>
+	<<elseif ($player.gender is "f" or $player.gender is "h") and $player.gender_appearance is "m">>
+		<<if $breastindicator is 0 and $worn.upper.exposed is 2 and $worn.under_upper.exposed gte 1>>
+			<span class="pink">Your exposed flat chest will make people think you're a boy!</span>
+			<br>
+		<<elseif $exposed gte 2>>
+			<span class="pink">The way you look, people will think you're a boy!</span>
+		<<else>>
+			<span class="pink">The way you're dressed, people will think you're a boy!</span>
+			<br>
+		<</if>>
+	<</if>>-->
+	<<clothingCaptionText>>
+
+	<<switch $body_temperature>>
+	<<case "hot">>
+		<span class="red">You are sweltering.</span>
+	<<case "warm">>
+		<span class="purple">You are warm and sweaty.</span>
+	<<case "chilly">>
+		<<if _water_warmth>>
+			<span class="purple">You're chilled by cold water.</span>
+		<<else>>
+			<span class="purple">You are chilly.</span>
+		<</if>>
+	<<case "cold">>
+		<<if _water_warmth>>
+			<span class="red">You shiver in freezing water.</span>
+		<<else>>
+			<span class="red">You shiver.</span>
+		<</if>>
+	<<default>>
+		<<if _water_warmth>>
+			<span class="green">The water feels warm.</span>
+		<<else>>
+			<span class="green">You are snug.</span>
+		<</if>>
+	<</switch>>
+<</widget>>
+
+<<widget "calculateallure">>
+	<<if Time.dayState is "night">>
+		<<set $nightmod to 1.5>>
+	<<else>>
+		<<set $nightmod to 1>>
+	<</if>>
+
+	<<if $exposed gte 2>>
+		<<set $exposedmod to 1.4>>
+	<<elseif $exposed gte 1>>
+		<<set $exposedmod to 1.2>>
+	<<else>>
+		<<set $exposedmod to 1>>
+	<</if>>
+
+	/* 北极星模组 */
+	<<if $options.bjx_animal and $transformationParts.traits.incognito isnot "disabled">>
+        <<set $allure to ($worn.upper.reveal + $worn.lower.reveal)>>
+    <<else>>
+        <<set $allure to (($beauty / 3) + $hairlength / 4 + $worn.upper.reveal + $worn.lower.reveal)>>
+    <</if>>
+	/* 北极星 */
+	<<if $worn.upper.type.includes("naked")>><<set $allure += $worn.under_upper.reveal>><</if>>
+	<<if $worn.lower.type.includes("naked")>><<set $allure += $worn.under_lower.reveal>><</if>>
+	<<set $allure *= $nightmod>>
+	<<set $allure *= $exposedmod>>
+	<<set $allure += $worn.head.reveal>>
+	<<set $allure += $worn.face.reveal>>
+	<<set $allure += $worn.neck.reveal>>
+	<<set $allure += $worn.legs.reveal>>
+	<<set $allure += $worn.feet.reveal>>
+	/* 北极星模组 */
+	<<if $options.bjx_divine>>
+    	<<if $demon gte 6>><<set $allure += 500>><</if>>
+    	<<if $angel gte 6>><<set $allure += 500>><</if>>
+    	<<if $fallenangel gte 2>><<set $allure -= 500>><</if>>
+    <<else>>
+    	<<if $demon gte 6>><<set $allure += 500>><</if>>
+	    <<if $angel gte 6>><<set $allure += 500>><</if>>
+	    <<if $fallenangel gte 2>><<set $allure += 500>><</if>>
+	<</if>>
+	<<if $options.bjx_animal>>
+    	<<if $wolfgirl gte 6>><<set $allure -= 250>><</if>>
+    	<<if $cat gte 6>><<set $allure += 250>><</if>>
+    	<<if $cow gte 6>><<set $allure -= 250>><</if>>
+    	<<if $harpy gte 6>><<set $allure -= 250>><</if>>
+    	<<if $fox gte 6>><<set $allure += 250>><</if>>
+    	<<if $sheep gte 6>><<set $allure += 250>><</if>>
+    	<<if $bee gte 6>><<set $allure -= 250>><</if>>
+    	<<if $deer gte 6>><<set $allure += 250>><</if>>
+    	<<if $bear gte 6>><<set $allure -= 250>><</if>>
+    	<<if $dragon gte 6>><<set $allure -= 250>><</if>>
+    	<<if $lizard gte 6>><<set $allure -= 250>><</if>>
+    	<<if $dolphin gte 6>><<set $allure += 250>><</if>>
+    	<<if $dog gte 6>><<set $allure += 250>><</if>>
+    	<<if $raccoon gte 6>><<set $allure += 250>><</if>>
+    	<<if $fish gte 6>><<set $allure += 250>><</if>>
+    	<<if $horse gte 6>><<set $allure += 250>><</if>>
+    	<<if $pig gte 6>><<set $allure -= 250>><</if>>
+    	<<if $spider gte 6>><<set $allure -= 250>><</if>>
+    	<<if $frog gte 6>><<set $allure -= 250>><</if>>
+    <<else>>
+        <<if $wolfgirl gte 6>><<set $allure += 500>><</if>>
+    	<<if $cat gte 6>><<set $allure += 500>><</if>>
+    	<<if $cow gte 6>><<set $allure += 500>><</if>>
+    	<<if $harpy gte 6>><<set $allure += 500>><</if>>
+    	<<if $fox gte 6>><<set $allure += 750>><</if>>
+    <</if>>
+    <<if $options.bjx_eventTF>>
+	    <<if $mushroom gte 1>>
+	        <<mushroomtfcheck>>
+	        <<set $allure -= $mushroomtf.allure>>
+	    <</if>>
+	<</if>>
+	/* 北极星 */
+	<<goocount>><<set $allure += ($liquidcount * 50)>>
+
+	<<if $makeup.lipstick != 0>><<set $allure += 100>><</if>>
+	<<if $makeup.eyeshadow != 0>><<set $allure += 100>><</if>>
+	<<if $makeup.mascara != 0>><<set $allure += 100>><</if>>
+
+	<<if $earSlime.growth gt 50>><<set $allure += ($earSlime.growth - 50) * 10>><</if>>
+	<<if !["island"].includes($location)>>
+		<<set $allure += ($fame.sex / 10)>>
+		<<set $allure += ($fame.prostitution / 10)>>
+		<<set $allure += ($fame.rape / 10)>>
+		<<set $allure += ($fame.bestiality / 10)>>
+		<<set $allure += ($fame.exhibitionism / 10)>>
+		<<set $allure += ($fame.pregnancy / 10)>>
+		<<set $allure += ($fame.impreg / 10)>>
+
+		<<set $allure -= ($fame.scrap / 2)>>
+		<<set $allure -= ($fame.good / 2)>>
+		<<set $allure -= ($fame.business / 2)>>
+		<<set $allure -= ($fame.social / 2)>>
+		<<set $allure -= ($fame.model / 2)>>
+		<<if $debug is 1>>
+			<<set $allure -= ($fame.pimp / 2)>>
+		<</if>>
+	<</if>>
+	<<if $moonstate is "evening" and Time.hour gte 21 or $moonstate is "morning" and Time.hour lt 6>>
+		<<set $allure += 2000>>
+	<</if>>
+	<<set $baseAllure to $allure>>
+	<<set $allure *= $alluremod>>
+	<<if $allure gte 8000 * $alluremod>><<set $allure to 8000 * $alluremod>><</if>>
+	<<if $moorLuck gt 0>>
+		<<set $allure to Math.floor($allure * (1 - ($moorLuck / 100)))>>
+	<</if>>
+	<<if $allure lt 0>>
+		<<set $allure to 0>>
+	<</if>>
+
+	<<set $attractiveness to (($beauty / 3) + $hairlength / 4 + $worn.upper.reveal + $worn.lower.reveal)>>
+	<<if $worn.upper.type.includes("naked")>><<set $attractiveness += $worn.under_upper.reveal>><</if>>
+	<<if $worn.lower.type.includes("naked")>><<set $attractiveness += $worn.under_lower.reveal>><</if>>
+	<<set $attractiveness += $worn.head.reveal>>
+	<<set $attractiveness += $worn.face.reveal>>
+	<<set $attractiveness += $worn.neck.reveal>>
+	<<set $attractiveness += $worn.legs.reveal>>
+	<<set $attractiveness += $worn.feet.reveal>>
+	/* 北极星模组 */
+	<<if $options.bjx_divine>>
+    	<<if $demon gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $angel gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $fallenangel gte 2>><<set $attractiveness -= 500>><</if>>
+    <<else>>
+        <<if $demon gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $angel gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $fallenangel gte 2>><<set $attractiveness += 500>><</if>>
+    <</if>>
+    <<if $options.bjx_animal>>
+    	<<if $wolfgirl gte 6>><<set $attractiveness -= 500>><</if>>
+    	<<if $cat gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $cow gte 6>><<set $attractiveness -= 500>><</if>>
+    	<<if $harpy gte 6>><<set $attractiveness -= 500>><</if>>
+    	<<if $fox gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $raccoon gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $fish gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $sheep gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $bee gte 6>><<set $attractiveness -= 500>><</if>>
+    	<<if $deer gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $bear gte 6>><<set $attractiveness -= 500>><</if>>
+    	<<if $dragon gte 6>><<set $attractiveness -= 500>><</if>>
+    	<<if $lizard gte 6>><<set $attractiveness -= 500>><</if>>
+    	<<if $dolphin gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $dog gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $horse gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $pig gte 6>><<set $attractiveness -= 500>><</if>>
+    	<<if $spider gte 6>><<set $attractiveness -= 500>><</if>>
+    	<<if $frog gte 6>><<set $attractiveness -= 500>><</if>>
+    <<else>>
+        <<if $wolfgirl gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $cat gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $cow gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $harpy gte 6>><<set $attractiveness += 500>><</if>>
+    	<<if $fox gte 6>><<set $attractiveness += 750>><</if>>
+    <</if>>
+    <<if $options.bjx_eventTF>>
+	    <<if $mushroom gte 1>>
+	        <<mushroomtfcheck>>
+	        <<set $attractiveness += $mushroomtf.attractive>>
+	    <</if>>
+    <</if>>
+    /* 北极星 */
+	<<if $makeup.lipstick != 0>><<set $attractiveness += 100>><</if>>
+	<<if $makeup.eyeshadow != 0>><<set $attractiveness += 100>><</if>>
+	<<if $makeup.mascara != 0>><<set $attractiveness += 100>><</if>>
+<</widget>>
+
+<!-- NOTE: THIS WIDGET IS UNUSED
+<<widget "clothingcaption">>
+	<<if $worn.upper.name is "naked">>
+		<<if $worn.lower.name is "naked">>
+			<<if $worn.under_lower.name is "naked" and $worn.genitals.name is "naked">>
+				<<if $worn.under_upper.name is "naked">>
+				<span class="red">You are completely naked!</span>
+				<<else>>
+				<span class="red">Your bottom half is completely exposed!</span> <span class="pink">Your <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name <<if $worn.under_upper.plural is 1>>give<<else>>gives<</if>> little comfort.</span>
+				<</if>>
+			<<elseif $worn.under_lower.name is "naked" and $worn.genitals.name isnot "naked">>
+				<<if $worn.under_upper.name is "naked">>
+					<span class="red">Your <<genitalsintegrity>> $worn.genitals.name <<if playerChastity("anus")>>with an anal shield<</if>> gives you no comfort.</span>
+				<<else>>
+					<span class="red">Other than your <<genitalsintegrity>> $worn.genitals.name <<if playerChastity("anus")>>with an anal shield<</if>>, your bottom half is completely exposed!</span>
+				<</if>>
+			<</if>>
+			<<if $worn.under_lower.name isnot "naked">>
+				<<if $worn.under_upper.name is "naked">>
+				<span class="pink">You are wearing nothing but a<<if $worn.under_lower.name.last() is "s">> pair of<</if>> <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name.</span>
+				<<else>>
+					<<if $worn.under_lower.set is $worn.under_upper.set>>
+					<span class="pink">You are wearing nothing but <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name.</span>
+					<<else>>
+					<span class="pink">You are wearing a<<if $worn.under_lower.name.last() is "s">> pair of<</if>> <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name and <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name.</span>
+					<</if>>
+				<</if>>
+				<<if $worn.genitals.name isnot "naked">>
+					You wear <<genitalsword>> <<genitalsintegrity>> $worn.genitals.name<<if playerChastity("anus")>> with an anal shield<</if>>.
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if $worn.lower.name isnot "naked">>
+			<<if $worn.under_lower.name is "naked">>
+				<<if $worn.under_upper.name is "naked">>
+				<span class="pink">You are topless and wearing no underwear</span> but your lower half is covered by <<lowerword>> <<lowerintegrity>> <<clothescolour 'lower'>> $worn.lower.name.
+				<<else>>
+				<span class="pink">You are wearing <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name</span> and <<lowerword>> <<lowerintegrity>> <<clothescolour 'lower'>> $worn.lower.name, <span class="purple">with nothing underneath.</span>
+				<</if>>
+				<<if $worn.genitals.name isnot "naked">>
+					You wear <<genitalsword>> <<genitalsintegrity>> $worn.genitals.name<<if playerChastity("anus")>> with an anal shield<</if>>.
+				<</if>>
+			<</if>>
+			<<if $worn.under_lower.name isnot "naked">>
+				<<if $worn.under_upper.name is "naked">>
+				<span class="pink">You are topless</span> with <<lowerword>> <<lowerintegrity>> <<clothescolour 'lower'>> $worn.lower.name and <<underlowerword>> <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name.
+				<<else>>
+				Your lower half is covered by <<lowerword>> <<lowerintegrity>> <<clothescolour 'lower'>> $worn.lower.name and <<underlowerword>> <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name, <span class="pink">but only <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name protects your chest.</span>
+				<</if>>
+				<<if $worn.genitals.name isnot "naked">>
+					You wear <<genitalsword>> <<genitalsintegrity>> $worn.genitals.name<<if playerChastity("anus")>> with an anal shield<</if>>.
+				<</if>>
+			<</if>>
+		<</if>>
+	<<elseif $worn.upper.name isnot "naked">>
+		<<if $worn.lower.name is "naked">>
+			<<if $worn.under_lower.name is "naked">>
+				<<if $worn.upper.one_piece is "broken" and $worn.lower.set isnot $worn.upper.set>>
+					<<if $worn.under_upper.name is "naked">>
+					You are wearing just <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name that <<upperhas>> been torn at the waist <span class="red"> leaving your bottom half completely exposed!</span>
+					<<else>>
+					You are wearing <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name beneath <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name that <<upperhas>> been torn at the waist <span class="red"> leaving your bottom half completely exposed!</span>
+					<</if>>
+				<<else>>
+					<<if $worn.under_upper.name is "naked">>
+					<span class="red">Your bottom half is completely exposed!</span> Your top half is covered by <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name, <span class="purple">with nothing beneath.</span>
+					<<else>>
+					<span class="red">Your bottom half is completely exposed!</span> Your top half is covered by <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name, with <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name beneath.
+					<</if>>
+				<</if>>
+				<<if $worn.genitals.name isnot "naked">>
+					<span class="red">Your <<genitalsintegrity>> $worn.genitals.name<<if playerChastity("anus")>> with an anal shield<</if>> gives you no comfort.</span>
+				<</if>>
+			<</if>>
+			<<if $worn.under_lower.name isnot "naked">>
+				<<if $worn.upper.one_piece is "broken" and $worn.lower.set isnot $worn.upper.set>>
+					<<if $worn.under_upper.name is "naked">>
+					You are wearing <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name that has been torn at the waist <span class="purple"> leaving your <<underlowerword>> <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name exposed.</span>
+					<<else>>
+					You are wearing <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name beneath <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name that has been torn at the waist <span class="purple"> leaving your <<underlowerword>> <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name exposed.</span>
+					<</if>>
+				<<else>>
+					<<if $worn.under_upper.name is "naked">>
+					You are wearing <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name and <<underlowerword>> <span class="purple">exposed <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name.</span>
+					<<else>>
+						<<if $worn.under_upper.one_piece is 1>>
+						You are wearing <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name beneath <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name. <span class="purple">Your $worn.under_upper.name is visible beneath your waist.</span>
+						<<else>>
+						You are wearing <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name beneath <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name and <<underlowerword>> <span class="purple">exposed <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name.</span>
+						<</if>>
+					<</if>>
+				<</if>>
+				<<if $worn.genitals.name isnot "naked">>
+					Your <<genitalsintegrity>> $worn.genitals.name<<if playerChastity("anus")>> with an anal shield<</if>> <<if $worn.under_lower.reveal gte 500>>is clearly visible<<else>>can be made out<</if>> underneath.
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if $worn.lower.name isnot "naked">>
+			<<if $worn.under_lower.name is "naked">>
+				<<if $worn.under_upper.name is "naked">>
+				You are wearing <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name
+					<<if $worn.lower.one_piece isnot 1>>
+					and <<lowerword>> <<lowerintegrity>> <<clothescolour 'lower'>> $worn.lower.name
+					<</if>>
+				<span class="purple"><<if $worn.lower.type.includes("swim")>>and<<else>>but<</if>> you are not wearing underwear.</span>
+				<<else>>
+					You are wearing <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name
+					<<if $worn.lower.one_piece isnot 1>>
+					and <<lowerword>> <<lowerintegrity>> <<clothescolour 'lower'>> $worn.lower.name
+					<</if>>
+					<<if $worn.under_upper.one_piece is "broken">>
+					<span class="purple">with just <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name that has been torn at the waist beneath.</span>
+					<<else>>
+					<span class="purple">with just <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name beneath.</span>
+					<</if>>
+				<</if>>
+				<<if $worn.genitals.name isnot "naked">>
+					You wear <<genitalsword>> <<genitalsintegrity>> $worn.genitals.name<<if playerChastity("anus")>> with an anal shield<</if>>.
+				<</if>>
+			<</if>>
+			<<if $worn.under_lower.name isnot "naked">>
+				<<if $worn.under_upper.name is "naked">>
+				You are wearing <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name
+					<<if $worn.lower.one_piece isnot 1>>
+					and <<lowerword>> <<lowerintegrity>> <<clothescolour 'lower'>> $worn.lower.name
+					<</if>>
+					<<if $player.breastsize lt 3>>
+						with <<underlowerword>> <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name beneath.
+					<<else>>
+						<span class="purple">with just <<underlowerword>> <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name beneath.</span>
+					<</if>>
+				<<else>>
+				You are wearing <<upperword>> <<upperintegrity>> <<clothescolour 'upper'>> $worn.upper.name
+					<<if $worn.lower.one_piece isnot 1>>
+					and <<lowerword>> <<lowerintegrity>> <<clothescolour 'lower'>> $worn.lower.name
+					<</if>>
+					<<if $worn.under_lower.one_piece is 1>>
+					with <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name beneath.
+					<<else>>
+					with <<underlowerword>> <<underlowerintegrity>> <<clothescolour 'under_lower'>> $worn.under_lower.name and <<underupperword>> <<underupperintegrity>> <<clothescolour 'under_upper'>> $worn.under_upper.name beneath.
+					<</if>>
+				<</if>>
+				<<if $worn.genitals.name isnot "naked">>
+					You wear <<genitalsword>> <<genitalsintegrity>> $worn.genitals.name<<if playerChastity("anus")>> with an anal shield<</if>>.
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<if $worn.face.type.includes("mask")>>
+	<br>
+	Your identity is concealed by your $worn.face.name.
+	<</if>>
+<</widget>>
+-->
+
+<!-- NOTE: THIS WIDGET IS UNUSED
+<<widget "stripcaption">>
+	<<if !$worn.upper.type.includes("naked") and $upperwetstage gte 3 and !$worn.lower.type.includes("naked") and $lowerwetstage gte 3 and !$worn.under_lower.type.includes("naked") and !playerChastity() and $underlowerwetstage gte 3 and !$worn.under_upper.type.includes("naked") and $underupperwetstage gte 3>>
+		<<if $worn.under_upper.set is $worn.under_lower.set>>
+			<<if $worn.upper.set is $worn.lower.set>>
+		<br>
+		Your $worn.upper.name and $worn.under_upper.name are drenched, <span class="pink">revealing your <<breasts>> and <<genitals>>.</span>
+		<br>
+			<<else>>
+		<br>
+		Your $worn.upper.name, $worn.lower.name and $worn.under_upper.name are drenched, <span class="pink">revealing your <<breasts>> and <<genitals>>.</span>
+		<br>
+			<</if>>
+
+		<<else>>
+			<<if $worn.upper.set is $worn.lower.set>>
+		<br>
+		Your $worn.upper.name, $worn.under_lower.name and $worn.under_upper.name are drenched, <span class="pink">revealing your <<breasts>> and <<genitals>>.</span>
+		<br>
+			<<else>>
+		<br>
+		Your $worn.upper.name, $worn.lower.name, $worn.under_lower.name and $worn.under_upper.name are drenched, <span class="pink">revealing your <<breasts>> and <<genitals>>.</span>
+		<br>
+			<</if>>
+		<</if>>
+
+	<<elseif !$worn.upper.type.includes("naked") and $upperwetstage gte 3 and !$worn.lower.type.includes("naked") and $lowerwetstage gte 3 and !$worn.under_lower.type.includes("naked") and !playerChastity() and $underlowerwetstage gte 3>>
+		<<if $worn.upper.set is $worn.lower.set>>
+	<br>
+	Your $worn.upper.name, and $worn.under_lower.name are drenched, <span class="pink">revealing your <<undertop>> and <<genitals>>.</span>
+	<br>
+		<<else>>
+	<br>
+	Your $worn.upper.name, $worn.lower.name and $worn.under_lower.name are drenched, <span class="pink">revealing your <<undertop>> and <<genitals>>.</span>
+	<br>
+		<</if>>
+
+	<<elseif !$worn.upper.type.includes("naked") and $upperwetstage gte 3 and !$worn.under_upper.type.includes("naked") and $underupperwetstage gte 3 and $lowerwetstage gte 3 and !$worn.lower.type.includes("naked")>>
+		<<if $worn.upper.set is $worn.lower.set>>
+		<br>
+		Your $worn.upper.name and $worn.under_upper.name are drenched, <span class="purple">revealing your <<breasts>> and <<undies>>.</span>
+		<br>
+		<<else>>
+		<br>
+		Your $worn.upper.name, $worn.lower.name and $worn.under_upper.name are drenched, <span class="purple">revealing your <<breasts>> and <<undies>>.</span>
+		<br>
+		<</if>>
+
+	<<elseif !$worn.upper.type.includes("naked") and $upperwetstage gte 3 and $lowerwetstage gte 3 and !$worn.lower.type.includes("naked")>>
+		<<if $worn.upper.set is $worn.lower.set>>
+	<br>
+	Your $worn.upper.name is drenched, <span class="purple">revealing your <<undertop>> and <<undies>>.</span>
+	<br>
+		<<else>>
+	<br>
+	Your $worn.upper.name and $worn.lower.name are drenched, <span class="purple">revealing your <<undertop>> and <<undies>>.</span>
+	<br>
+		<</if>>
+
+	<<elseif !$worn.upper.type.includes("naked") and $upperwetstage gte 3>>
+	<br>
+	Your $worn.upper.name <<upperplural>> drenched, <span class="purple">revealing your <<breasts>>.</span>
+	<br>
+
+	<<elseif !$worn.lower.type.includes("naked") and $lowerwetstage gte 3 and !$worn.under_lower.type.includes("naked") and !playerChastity() and $underlowerwetstage gte 3>>
+	<br>
+	Your $worn.lower.name and $worn.under_lower.name are drenched, <span class="pink">revealing your <<genitals>>.</span>
+	<br>
+
+	<<elseif !$worn.lower.type.includes("naked") and $lowerwetstage gte 3>>
+	<br>
+	Your $worn.lower.name <<lowerplural>> drenched, <span class="purple">revealing your <<undies>>.</span>
+	<br>
+
+	<<elseif !$worn.under_lower.type.includes("naked") and !playerChastity() and $underlowerwetstage gte 3>>
+	<br>
+	Your $worn.under_lower.name <<underlowerplural>> drenched, <span class="pink">revealing your <<genitals>>.</span>
+	<br>
+
+	<<elseif !$worn.under_upper.type.includes("naked") and $underupperwetstage gte 3>>
+	<br>
+	Your $worn.under_upper.name <<underupperplural>> drenched, <span class="pink">revealing your <<breasts>>.</span>
+	<br>
+
+	<<elseif !$worn.upper.type.includes("naked") and $worn.upper.exposed is 2 and !$worn.lower.type.includes("naked") and $worn.lower.exposed is 2 and !$worn.under_lower.type.includes("naked") and !playerChastity() and $worn.under_lower.state isnot "waist" and !$worn.under_upper.type.includes("naked") and $worn.under_upper.state isnot setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base>>
+		<<if $worn.under_upper.set is $worn.under_lower.set>>
+			<<if $worn.upper.set is $worn.lower.set>>
+		<br>
+		Your $worn.upper.name, skirt and $worn.under_upper.name have been pulled aside, <span class="pink">revealing your <<breasts>> and <<genitals>>.</span>
+		<br>
+			<<else>>
+		<br>
+		Your $worn.upper.name, $worn.lower.name and $worn.under_upper.name have been pulled aside, <span class="pink">revealing your <<breasts>> and <<genitals>>.</span>
+		<br>
+			<</if>>
+		<<else>>
+			<<if $worn.upper.set is $worn.lower.set>>
+		<br>
+		Your $worn.upper.name, skirt, $worn.under_upper.name and $worn.under_lower.name have been pulled aside, <span class="pink">revealing your <<breasts>> and <<genitals>>.</span>
+		<br>
+			<<else>>
+		<br>
+		Your $worn.upper.name, $worn.lower.name, $worn.under_upper.name and $worn.under_lower.name have been pulled aside, <span class="pink">revealing your <<breasts>> and <<genitals>>.</span>
+		<br>
+			<</if>>
+		<</if>>
+
+	<<elseif !$worn.upper.type.includes("naked") and $worn.upper.exposed is 2 and !$worn.lower.type.includes("naked") and $worn.lower.exposed is 2 and !$worn.under_lower.type.includes("naked") and !playerChastity() and $worn.under_lower.state isnot "waist">>
+		<<if $worn.upper.set is $worn.lower.set>>
+	<br>
+	Your $worn.upper.name, skirt and $worn.under_lower.name have been pulled aside, <span class="pink">revealing your <<undertop>> and <<genitals>>.</span>
+	<br>
+		<<else>>
+	<br>
+	Your $worn.upper.name, $worn.lower.name and $worn.under_lower.name have been pulled aside, <span class="pink">revealing your <<undertop>> and <<genitals>>.</span>
+	<br>
+		<</if>>
+
+	<<elseif !$worn.upper.type.includes("naked") and $worn.upper.exposed is 2 and $worn.lower.exposed is 2 and !$worn.lower.type.includes("naked") and !$worn.under_upper.type.includes("naked") and $worn.under_upper.state isnot setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base>>
+		<<if $worn.upper.set is $worn.lower.set>>
+	<br>
+	Your $worn.upper.name, skirt and $worn.under_upper.name have been pulled aside, <span class="purple">revealing your <<breasts>> and <<undies>>.</span>
+	<br>
+		<<else>>
+	<br>
+	Your $worn.upper.name, $worn.lower.name and $worn.under_upper.name have been pulled aside, <span class="purple">revealing your <<breasts>> and <<undies>>.</span>
+	<br>
+		<</if>>
+
+	<<elseif !$worn.upper.type.includes("naked") and $worn.upper.exposed is 2 and $worn.lower.exposed is 2 and !$worn.lower.type.includes("naked")>>
+		<<if $worn.upper.set is $worn.lower.set>>
+	<br>
+	Your $worn.upper.name and skirt have been pulled aside, <span class="purple">revealing your <<undertop>> and <<undies>>.</span>
+	<br>
+		<<else>>
+	<br>
+	Your $worn.upper.name and $worn.lower.name have been pulled aside, <span class="purple">revealing your <<undertop>> and <<undies>>.</span>
+	<br>
+		<</if>>
+
+	<<elseif !$worn.upper.type.includes("naked") and $worn.upper.exposed is 2>>
+	<br>
+	Your $worn.upper.name <<upperhas>> been pulled aside, <span class="purple">revealing your <<breasts>>.</span>
+	<br>
+
+	<<elseif !$worn.lower.type.includes("naked") and $worn.lower.exposed is 2 and !$worn.under_lower.type.includes("naked") and !playerChastity() and $worn.under_lower.state isnot "waist">>
+	<br>
+	Your $worn.lower.name <<lowerhas>> been pulled aside and your $worn.under_lower.name pulled down, <span class="pink">revealing your <<genitals>>.</span>
+	<br>
+
+	<<elseif !$worn.lower.type.includes("naked") and $worn.lower.exposed is 2>>
+	<br>
+	Your $worn.lower.name <<lowerhas>> been pulled aside, <span class="purple">revealing your <<undies>>.</span>
+	<br>
+
+	<<elseif !$worn.under_lower.type.includes("naked") and !playerChastity() and $worn.under_lower.state isnot setup.clothes.under_lower[clothesIndex('under_lower', $worn.under_lower)].state_base>>
+	<br>
+
+	Your $worn.under_lower.name <<underlowerhas>> been pulled
+	<<if $worn.under_lower.state is "totheside">>
+		pulled aside,
+	<<else>>
+		down to your $worn.under_lower.state,
+	<</if>>
+	<span class="pink">revealing your <<genitals>>.</span>
+	<br>
+
+	<<elseif !$worn.under_upper.type.includes("naked") and $worn.under_upper.state isnot setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].state_base>>
+	<br>
+
+	Your $worn.under_upper.name <<underupperhas>> been pulled to your $worn.under_upper.state, <span class="pink">revealing your <<breasts>>.</span>
+	<br>
+
+	<</if>>
+<</widget>>
+-->
+
+/* Obsolete - replaced with js
+<<widget "clock">><<silently>>
+	<<if Time.hour gte 12>>
+		<<set _hour to Time.hour - 12>>
+	<<else>>
+		<<set _hour to Time.hour>>
+	<</if>>
+	<<if Time.minute lt 30>>
+		<<switch _hour>>
+			<<case 1>><<set _text_output to "🕐">>
+			<<case 2>><<set _text_output to "🕑">>
+			<<case 3>><<set _text_output to "🕒">>
+			<<case 4>><<set _text_output to "🕓">>
+			<<case 5>><<set _text_output to "🕔">>
+			<<case 6>><<set _text_output to "🕕">>
+			<<case 7>><<set _text_output to "🕖">>
+			<<case 8>><<set _text_output to "🕗">>
+			<<case 9>><<set _text_output to "🕘">>
+			<<case 10>><<set _text_output to "🕙">>
+			<<case 11>><<set _text_output to "🕚">>
+			<<case 0>><<set _text_output to "🕛">>
+			<<default>><<set _text_output to "OHNO">>
+		<</switch>>
+	<<else>>
+		<<switch _hour>>
+			<<case 1>><<set _text_output to "🕜">>
+			<<case 2>><<set _text_output to "🕝">>
+			<<case 3>><<set _text_output to "🕞">>
+			<<case 4>><<set _text_output to "🕟">>
+			<<case 5>><<set _text_output to "🕠">>
+			<<case 6>><<set _text_output to "🕡">>
+			<<case 7>><<set _text_output to "🕢">>
+			<<case 8>><<set _text_output to "🕣">>
+			<<case 9>><<set _text_output to "🕤">>
+			<<case 10>><<set _text_output to "🕥">>
+			<<case 11>><<set _text_output to "🕦">>
+			<<case 0>><<set _text_output to "🕧">>
+			<<default>><<set _text_output to "OHNO">>
+		<</switch>>
+	<</if>>
+<</silently>><<print _text_output>><</widget>> */
+
+<<widget "statsCaption">>
+	<<printmoney $money true>>
+	&nbsp;
+	<<if !$options.oldclock>>
+		<<clock>>
+	<<else>>
+		<img class="icon_ui" src="img/ui/icon_time.png">
+	<</if>>
+	<<ampm>>
+	&nbsp;
+	<<if $extendedStats>>
+		<br>
+	<</if>>
+	<img class="icon_ui" src="img/ui/icon_day.png">
+	<<print Time.weekDayName.slice(0, 3)>>
+	<<if $extendedStats>>
+		<<print ordinalSuffixOf(Time.monthDay) + " " + Time.monthName.slice(0,3)>>
+	<</if>>
+<</widget>>
+
+<<widget "statsMoneyNoImg">>
+	You have <<printmoney $money true>>
+	<br>
+<</widget>>
+
+<<widget "startingPlayerImage">>
+	<<set $naturalhaircolour to $hairselect>>
+	<<set _filters to {
+		"body": skinColor("t", $skinColor.range, setup.skinColor[$skinColor.natural]),
+		"breasts": skinColor("t", $skinColor.range, setup.skinColor[$skinColor.natural]),
+		"penis": skinColor("t", $skinColor.range, setup.skinColor[$skinColor.natural]),
+		"mouth": skinColor("t", $skinColor.range, setup.skinColor[$skinColor.natural]),
+	}>>
+	<<set _img to setup.tanImg.sidebar["t"]>>
+	<<if $hairlength gte 900>>
+		<<set _hairlengthstage to "feet">>
+	<<elseif $hairlength gte 700>>
+		<<set _hairlengthstage to "thighs">>
+	<<elseif $hairlength gte 600>>
+		<<set _hairlengthstage to "navel">>
+	<<elseif $hairlength gte 400>>
+		<<set _hairlengthstage to "chest">>
+	<<elseif $hairlength gte 200>>
+		<<set _hairlengthstage to "shoulder">>
+	<<else>>
+		<<set _hairlengthstage to "short">>
+	<</if>>
+
+	<<set _fringelengthstage to "short">>
+	<<if _showClothes is undefined>>
+		<<set _showClothes to true>>
+	<</if>>
+
+	<<if $player.gender is "m">>
+		<<set _clothesType to "male">>
+	<<elseif $player.gender is "h">>
+		<<if $player.gender_body is "m" or ($player.gender_body is "a" and $player.breastsize lte 3)>>
+			<<set _clothesType to "male">>
+		<<else>> <!-- if $player.gender_body is "f" or ($player.gender_body is "a" and $player.breastsize gt 3)) -->
+			<<set _clothesType to "female">>
+		<</if>>
+	<<else>> <!-- if $player.gender is "f" -->
+		<<set _clothesType to "female">>
+	<</if>>
+
+	<<if $background is "crossdresser">>
+		<<set _clothesType to (_clothesType is "male" ? "female" : "male")>>
+	<</if>>
+
+	<div id="img" @class="'hair-'+ $hairselect + ' noAnimations'">
+		<<charLight "118px" "187px" "limited">>
+		/*Prep for image checks*/
+		<<switch $player.breastsize>>
+		<<case 12>>
+			<<set _breastSize to 6>>
+		<<case 8 9 10 11>>
+			<<set _breastSize to 5>>
+		<<case 6 7>>
+			<<set _breastSize to 4>>
+		<<case 4 5>>
+			<<set _breastSize to 3>>
+		<<case 3>>
+			<<set _breastSize to 2>>
+		<<case 1 2>>
+			<<set _breastSize to 1>>
+		<<default>>
+			<<set _breastSize to 0>>
+		<</switch>>
+		<<if $player.gender is "m" or $player.gender is "h">>
+			<<set _penisSize to $player.penissize>>
+		<<else>>
+			<<unset _penisSize>>
+		<</if>>
+		<<set _disabled to ["disabled","hidden"]>>
+
+		<<if $options.sidebarRenderer is undefined>>
+			<<set $options.sidebarRenderer to 'canvas'>>
+		<</if>>
+		<<if $options.sidebarRenderer isnot 'img'>>
+			<<selectmodel "main" "sidebar">> <!-- reuse sidebar cache slot -->
+			<<twinescript>>
+				_modeloptions.body_type = $player.gender_body;
+				_modeloptions.breast_size = _breastSize;
+				_modeloptions.breasts = (!_showUnderwear && !_showClothes) ? "default" : "cleavage";
+				if (_penisSize isnot undefined) {
+					_modeloptions.penis = $player.virginity.penile is true ? "virgin" : "default";
+					_modeloptions.penis_size = _penisSize;
+					_modeloptions.balls = $player.gender is "h" ? $player.ballsExist : true;
+				}
+
+				_modeloptions.skin_type = $skinColor.natural;
+				_modeloptions.skin_tone = $skinColor.range/100;
+
+				_modeloptions.hair_colour = $hairselect;
+				_modeloptions.hair_fringe_colour = $hairselect;
+				_modeloptions.hair_sides_position = $hairposition;
+				_modeloptions.hair_sides_length = _hairlengthstage;
+				_modeloptions.hair_fringe_length = _hairlengthstage;
+
+				_modeloptions.left_eye = $eyeselect;
+				_modeloptions.right_eye = $eyeselect;
+				_modeloptions.mouth = "neutral";
+				_modeloptions.freckles = $player.freckles is true;
+				_modeloptions.toast = _toast is true;
+
+				_modeloptions.demon_wings_type = $transformationParts.demon.wings;
+				_modeloptions.angel_wings_type = $transformationParts.angel.wings;
+				_modeloptions.fallen_wings_type = $transformationParts.fallenAngel.wings;
+				/* 北极星模组 */
+				_modeloptions.angel_halo_type = $transformationParts.angel.halo;
+				_modeloptions.fallen_halo_type = $transformationParts.fallenAngel.halo;
+				_modeloptions.demon_tail_type = $transformationParts.demon.tail;
+				_modeloptions.demon_horns_type = $transformationParts.demon.horns;
+				_modeloptions.wolf_tail_type = $transformationParts.wolf.tail;
+				_modeloptions.wolf_ears_type = $transformationParts.wolf.ears;
+				_modeloptions.wolf_pits_type = $transformationParts.wolf.pits;
+				_modeloptions.wolf_pubes_type = $transformationParts.wolf.pubes;
+				_modeloptions.cat_tail_type = $transformationParts.cat.tail;
+				_modeloptions.cat_ears_type = $transformationParts.cat.ears;
+				_modeloptions.cow_horns_type = $transformationParts.cow.horns;
+				_modeloptions.cow_tail_type = $transformationParts.cow.tail;
+				_modeloptions.cow_ears_type = $transformationParts.cow.ears;
+				_modeloptions.bird_wings_type = $transformationParts.bird.wings;
+				_modeloptions.bird_tail_type = $transformationParts.bird.tail;
+				_modeloptions.bird_eyes_type = $transformationParts.bird.eyes;
+				_modeloptions.bird_malar_type = $transformationParts.bird.malar;
+				_modeloptions.bird_plumage_type = $transformationParts.bird.plumage;
+				_modeloptions.bird_pubes_type = $transformationParts.bird.pubes;
+				_modeloptions.fox_tail_type = $transformationParts.fox.tail;
+				_modeloptions.fox_ears_type = $transformationParts.fox.ears;
+				_modeloptions.fox_cheeks_type = $transformationParts.fox.cheeks;
+				_modeloptions.bee_tail_type = $transformationParts.bee.tail;
+				_modeloptions.bee_ears_type = $transformationParts.bee.ears;
+				_modeloptions.bee_wings_type = $transformationParts.bee.wings;
+				_modeloptions.bear_tail_type = $transformationParts.bear.tail;
+				_modeloptions.bear_ears_type = $transformationParts.bear.ears;
+				_modeloptions.deer_tail_type = $transformationParts.deer.tail;
+				_modeloptions.deer_ears_type = $transformationParts.deer.ears;
+				_modeloptions.deer_horns_type = $transformationParts.deer.horns;
+				_modeloptions.dragon_tail_type = $transformationParts.dragon.tail;
+				_modeloptions.dragon_eyes_type = $transformationParts.dragon.eyes;
+				_modeloptions.dragon_horns_type = $transformationParts.dragon.horns;
+				_modeloptions.dragon_wings_type = $transformationParts.dragon.wings;
+				_modeloptions.lizard_tail_type = $transformationParts.lizard.tail;
+				_modeloptions.lizard_eyes_type = $transformationParts.lizard.eyes;
+				_modeloptions.lizard_horns_type = $transformationParts.lizard.horns;
+				_modeloptions.sheep_ears_type = $transformationParts.sheep.ears;
+				_modeloptions.sheep_horns_type = $transformationParts.sheep.horns;
+				_modeloptions.dolphin_tail_type = $transformationParts.dolphin.tail;
+				_modeloptions.dog_tail_type = $transformationParts.dog.tail;
+				_modeloptions.dog_ears_type = $transformationParts.dog.ears;
+				_modeloptions.horse_ears_type = $transformationParts.horse.ears;
+				_modeloptions.horse_tail_type = $transformationParts.horse.tail;
+				_modeloptions.pig_ears_type = $transformationParts.pig.ears;
+				_modeloptions.pig_tail_type = $transformationParts.pig.tail;
+				_modeloptions.spider_eyes_type = $transformationParts.spider.eyes;
+				_modeloptions.spider_tail_type = $transformationParts.spider.tail;
+				_modeloptions.frog_eyes_type = $transformationParts.frog.eyes;
+				_modeloptions.frog_cheeks_type = $transformationParts.frog.cheeks;
+				_modeloptions.raccoon_ears_type = $transformationParts.raccoon.ears;
+				_modeloptions.raccoon_mask_type = $transformationParts.raccoon.mask;
+				_modeloptions.raccoon_tail_type = $transformationParts.raccoon.tail;
+				_modeloptions.fish_fins_type = $transformationParts.fish.fins;
+				_modeloptions.fish_tail_type = $transformationParts.fish.tail;
+				_modeloptions.horse_ears_type = $transformationParts.horse.ears;
+				_modeloptions.horse_tail_type = $transformationParts.horse.tail;
+				/* 北极星 */
+
+				if (_clothesType is "male") {
+					if (_showClothes) {
+						_modeloptions.worn_upper = 4; /* t-shirt */
+						_modeloptions.worn_upper_colour = "tangerine";
+						_modeloptions.worn_lower = 5; /* shorts */
+						_modeloptions.worn_lower_colour = "blue";
+						_modeloptions.worn_legs = 2; /* boysgymsocks */
+						_modeloptions.worn_feet = 1; /* schoolshoes */
+					}
+					if (_showUnderwear) {
+						_modeloptions.worn_under_lower = 4; /* briefs */
+						_modeloptions.worn_under_lower_colour = "black";
+					}
+				} else if (_clothesType is "female") {
+					if (_showClothes) {
+						_modeloptions.worn_upper = 1; /* sundress */
+						_modeloptions.worn_upper_colour = "white";
+						_modeloptions.worn_lower = 1; /* sundress */
+						_modeloptions.worn_lower_colour = "white";
+						_modeloptions.worn_legs = 3; /* girlsgymsocks */
+						_modeloptions.worn_feet = 1; /* schoolshoes */
+					}
+					if (_showUnderwear) {
+						if ($player.breastsize > 3) {
+							_modeloptions.worn_under_upper = 12; /* plainbra */
+							_modeloptions.worn_under_upper_colour = "pale white";
+						}
+						_modeloptions.worn_under_lower = 1; /* plainpanties */
+						_modeloptions.worn_under_lower_colour = "pale white";
+					}
+				}
+				_modeloptions.crotch_visible = !_showClothes && !_showUnderwear;
+			<</twinescript>>
+			<<rendermodel `($options.sidebarRenderer is 'both' ? 'canvasimg-both' : '')`>>
+		<</if>>
+		<<if $options.sidebarRenderer isnot 'canvas'>>
+		<img class="layer-base" @src="_img.basenoarms" @style="'filter: '+_filters.body">
+		<img class="layer-basehead" @src="_img.basehead" @style="'filter: '+_filters.body">
+
+		<img class="layer-breasts" @src="_img['breasts'+ _breastSize]" @style="'filter: '+_filters.breasts">
+		<<if $options.tanImgEnabled and $skinColor.tanValues[0] isnot $skinColor.tanValues[1]>>
+			<img class="layer-breasts" @src="_img.baseTanBikini_UUpper + _breastSize + '.png'" @style="'filter: '+_filters.bikiniTop">
+		<</if>>
+
+		<img class="layer-base" @src="_img.leftarmidle" @style="'filter: '+_filters.body">
+
+		<<if !_disabled.includes($transformationParts.demon.wings)>>
+			<<if $exposed gte 2 and $dontHide is false and $transformationParts.traits.flaunting is "default">>
+				<img class="layer-tailPenisCover" @src="'img/transformations/demon/flauntwings/'+$transformationParts.demon.wings+'.png'">
+			<<else>>
+				<img class="layer-backhair" @src="'img/transformations/demon/wings/'+$transformationParts.demon.wings+'.png'">
+			<</if>>
+		<</if>>
+		<<if !_disabled.includes($transformationParts.angel.wings)>>
+			<img class="layer-backhair" @src="'img/transformations/angel/rightwing/'+$transformationParts.angel.wings+'.png'">
+		<</if>>
+		<<if !_disabled.includes($transformationParts.fallenAngel.wings)>>
+			<img class="layer-backhair" @src="'img/transformations/fallen/rightwing/'+$transformationParts.fallenAngel.wings+'.png'">
+		<</if>>
+
+		<img class="layer-base" @src="_img.rightarmidle" @style="'filter: '+_filters.body">
+
+		<<if $hairposition is "front">>
+			<img class="layer-hairforwards colour-hair" @src="'img/hair/sides/default/' + _hairlengthstage + '.png'">
+		<<else>>
+			<img class="layer-backhair colour-hair" @src="'img/hair/sides/default/' + _hairlengthstage + '.png'">
+		<</if>>
+		<img class="layer-fronthair colour-hair" @src="'img/hair/fringe/default/' + _fringelengthstage + '.png'">
+
+		<<if _hairlengthstage is "thighs" and $hairtype is "default">>
+			<img class="layer-backhair colour-hair" src="img/hair/red/backhairthighsred.png">
+		<<elseif _hairlengthstage is "feet" and $hairtype is "default">>
+			<img class="layer-backhair colour-hair" src="img/hair/red/backhairfeetred.png">
+		<</if>>
+
+		<!-- P image insert here - This is not compatible with female pdmod, requires additional editing - add new layer in base.css-->
+		<<if _penisSize isnot undefined and _showClothes is false and _showUnderwear is false>>
+			<<if $player.virginity.penile is true>>
+				<img class="layer-penis" @src="_img['penis_virgin' + ($player.ballsExist ? '':'noballs') + _penisSize]" @style="'filter: '+_filters.penis">
+			<<else>>
+				<img class="layer-penis" @src="_img['penis' + ($player.ballsExist ? '':'noballs') + _penisSize]" @style="'filter: '+_filters.penis">
+			<</if>>
+		<</if>>
+		<<if !$options.tanImgEnabled>>
+			<<set $options.tanImgEnabled to true>>
+			<<set _tanReset to true>>
+		<</if>>
+		<<faceimg 1>>
+		<<if _tanReset>>
+			<<set $options.tanImgEnabled to false>>
+			<<unset _tanReset>>
+		<</if>>
+		<<if _clothesType is "male">>
+			<<if _showClothes is true>>
+				<div class="clothes-div layer-upper">
+					<img class="anim-idle-2f clothes-tangerine" src="img/clothes/upper/tshirt/full.png">
+				</div>
+				<div class="clothes-div layer-rightarmclothes">
+					<img class="anim-idle-2f clothes-tangerine" src="img/clothes/upper/tshirt/right.png">
+				</div>
+				<div class="clothes-div layer-leftarmclothes">
+					<img class="anim-idle-2f clothes-tangerine" src="img/clothes/upper/tshirt/left.png">
+				</div>
+				<div class="clothes-div layer-lower">
+					<img class="anim-idle-2f clothes-blue" src="img/clothes/lower/shorts/full.png">
+				</div>
+				<div class="clothes-div layer-legs">
+					<img class="anim-idle-2f" src="img/clothes/legs/boysgymsocks/full.png">
+				</div>
+				<div class="clothes-div layer-feet">
+					<img class="anim-idle-2f" src="img/clothes/feet/schoolshoes/full.png" style="">
+				</div>
+			<</if>>
+			<<if _showUnderwear is true>>
+				<div class="clothes-div layer-under_lower">
+					<img class="anim-idle-2f clothes-black" src="img/clothes/under_lower/briefs/full.png">
+					<img class="anim-idle-2f " src="img/clothes/under_lower/briefs/acc.png">
+				</div>
+			<</if>>
+		<<elseif _clothesType is "female">>
+			<<if _showClothes is true>>
+				<div class="clothes-div layer-upper">
+					<img class="anim-idle-1f clothes-white" src="img/clothes/upper/sundress/full.png">
+					<img class="anim-idle-1f clothes-white" src="img/clothes/upper/sundress/0.png">
+				</div>
+				<div class="clothes-div layer-lower">
+					<img class="anim-idle-1f clothes-white" src="img/clothes/lower/sundress/full.png">
+					<img class="anim-idle-1f clothes-white" @src="'img/clothes/upper/sundress/'+_breastSize+'.png'">
+				</div>
+				<div class="clothes-div layer-legs">
+					<img class="anim-idle-1f" src="img/clothes/legs/girlsgymsocks/full.png">
+				</div>
+				<div class="clothes-div layer-feet">
+					<img class="anim-idle-2f" src="img/clothes/feet/schoolshoes/full.png" style="">
+				</div>
+			<</if>>
+			<<if _showUnderwear is true>>
+				<<if $player.breastsize gt 3>>
+					<div class="clothes-div layer-under_upper">
+						<img class="anim-idle-2f clothes-pale-white" src="img/clothes/under_upper/plainbra/full.png">
+						<img class="anim-idle-2f clothes-pale-white" @src="'img/clothes/under_upper/plainbra/'+_breastSize+'.png'">
+					</div>
+				<</if>>
+				<div class="clothes-div layer-under_lower">
+					<img class="anim-idle-1f clothes-pale-white" src="img/clothes/under_lower/plainpanties/full.png">
+				</div>
+			<</if>>
+		<</if>>
+		<</if>> <!-- renderer switch -->
+	</div>
+<</widget>>
+
+<<widget "startingPlayerImageUpdate">>
+	<<if $passage is "Start" and StartConfig.enableImages is true>>
+		<<replace #startingPlayerImage>>
+			<<startingPlayerImage>>
+		<</replace>>
+	<</if>>
+<</widget>>
+
+:: StoryRightSidebar
+
+Testing

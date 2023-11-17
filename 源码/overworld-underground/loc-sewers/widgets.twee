@@ -1,0 +1,728 @@
+:: Widgets Industrial Drain [widget]
+
+<<widget "industrialdrain">>
+	<<if $nextPassageCheck is "Industrial Drain">>
+		<<sewericon>><span class="nextLink"><<link [[Industrial drain system (0:05)|Industrial Drain]]>><<pass 5>><</link>></span>
+	<<else>>
+		<<sewericon>><<link [[Industrial drain system (0:05)|Industrial Drain]]>><<pass 5>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "industrialdrainquick">>
+	<<sewericon>><<link [[Industrial drain system|Industrial Drain]]>><</link>>
+<</widget>>
+
+<<widget "industrialdraineventend">>
+	<<link [[Next|Industrial Drain]]>><<set $eventskip to 1>><</link>>
+<</widget>>
+
+:: Widgets Commercial Drain [widget]
+
+<<widget "commercialdrain">>
+	<<if $nextPassageCheck is "Commercial Drain">>
+		<<sewericon>><span class="nextLink"><<link [[Commercial drain system (0:05)|Commercial Drain]]>><<pass 5>><</link>></span>
+	<<else>>
+		<<sewericon>><<link [[Commercial drain system (0:05)|Commercial Drain]]>><<pass 5>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "commercialdrainquick">>
+	<<sewericon>><<link [[Commercial drain system|Commercial Drain]]>><</link>>
+<</widget>>
+
+<<widget "commercialdraineventend">>
+	<<link [[Next|Commercial Drain]]>><<set $eventskip to 1>><</link>>
+<</widget>>
+
+:: Widgets Residential Drain [widget]
+
+<<widget "residentialdrain">>
+	<<if $nextPassageCheck is "Residential Drain">>
+		<<sewericon>><span class="nextLink"><<link [[Residential drain system (0:05)|Residential Drain]]>><<pass 5>><</link>></span>
+	<<else>>
+		<<sewericon>><<link [[Residential drain system (0:05)|Residential Drain]]>><<pass 5>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "residentialdrainquick">>
+	<<sewericon>><<link [[Residential drain system|Residential Drain]]>><</link>>
+<</widget>>
+
+<<widget "residentialdraineventend">>
+	<<link [[Next|Residential Drain]]>><<set $eventskip to 1>><</link>>
+<</widget>>
+
+:: Widgets Passout Drain [widget]
+
+<<widget "passoutdrain">>
+	<<if isPlayerNonparasitePregnancyEnding()>>
+		<<pregnancyWatersBrokenPassout "drain">>
+	<<else>>
+		<<link [[Everything fades to black...->Passout Drain]]>><</link>>
+	<</if>>
+<</widget>>
+
+:: Widgets Storm Drain Entrance [widget]
+
+<<widget "stormdrain">>
+	<<add_link "<<sewericon>><<link [[Manhole (0:05)|Storm Drain Entrance]]>><<pass 5>><</link>><br>">><<hideDisplay>>
+<</widget>>
+
+:: Widgets Drain Exit [widget]
+
+<<widget "drainexit">>
+	<<sewericon "drain">><<link [[Drain ocean exit (0:05)|Drain Exit]]>><<pass 5>><</link>>
+<</widget>>
+
+<<widget "drainexitquick">>
+	<<sewericon "drain">><<link [[Drain ocean exit|Drain Exit]]>><</link>>
+<</widget>>
+
+<<widget "drainexiteventend">>
+	<<link [[Next|Drain Exit]]>><<set $eventskip to 1>><</link>>
+<</widget>>
+
+:: Widgets Events Drain [widget]
+
+<<widget "eventsdrain">>
+	<<rng>>
+	<<if $wraith.state and $wraith.hunt gte 10 and $wraithIntro is true and isBloodmoon()>>
+		The water congeals and warps, forming translucent tendrils that burst from the water. One collides with you, sending you sprawling. <<pain 4>><<gpain>>
+		<br><br>
+		A pale figure rises from the water, creating no disturbance on the surface. It wears a mad smile.
+		<br><br>
+		"<span class="wraith">You will never get away.</span>" <<rainWraith>>
+		<br><br>
+		<<generateWraith 1 true>><<initWraith>><<set $wraith.exit to "town">>
+		<<switch $wraith.gen>>
+			<<case "man">>
+				<<He>> raises <<his>> hand to the air, and an unseen force pushes you to the ground.
+			<<case "tentacles" "abomination" "slimetentacles">>
+				The tendrils become a solid white, and shoot towards you!
+			<<case "slime">>
+				<<He>> raises <<his>> hands to the air, and a swarm of pale slimes jump onto the walkway from the water.
+			<<case "arms">>
+				Several additional pairs of arms spring from <<his>> back, each one gesturing in strange patterns.
+		<</switch>>
+		<br><br>
+		<<link [[Next|Wraith Caught]]>><</link>>
+		<br>
+	<<elseif $rng gte 80 and $hallucinations gte 2 and $tentacledisable is "f">>
+		Several tentacles rise from the water, blocking your path and trapping you on the walkway.
+		<br><br>
+		<<link [[Next|Drain Tentacles]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<elseif $rng gte 60 and $hallucinations gte 2 and $slimedisable is "f">>
+
+		A torrent of water rushes through a pipe to your right, colliding with you and knocking you to the ground.
+		<br>
+		<<water>>
+		<br>
+
+		You feel a weight on your groin. The water passes, leaving a living slime sat atop you.
+		<br><br>
+
+		<<link [[Next|Drain Struggle]]>><<set $struggle_start to 1>><</link>>
+		<br>
+	<<elseif $rng gte 40 and $hallucinations gte 2 and $slimedisable is "f">>
+		You feel a weight on your shoulder. A slime oozes through a set of bars in the drain wall, and climbs over your shoulders with a life of its own.
+		<br><br>
+
+		<<if $leftarm is "bound" and $rightarm is "bound">>
+			<span class="blue">With your arms bound, there's nothing you can do to defend yourself.</span>
+			It spreads over your back,
+			<<if !$worn.upper.name isnot "naked">>
+				<<if $worn.under_upper.name isnot "naked">>
+					dissolving your <<print $worn.upper.name>> and <<print $worn.under_upper.name>> with a hiss.
+					<<set $worn.upper.integrity -= 1000>>
+					<<set $worn.under_upper.integrity -= 1000>>
+					<<integritycheck>>
+					<<exposure>>
+				<<else>>
+					dissolving your <<print $worn.upper.name>> with a hiss.
+					<<set $worn.upper.integrity -= 1000>>
+					<<integritycheck>>
+					<<exposure>>
+				<</if>>
+			<<elseif !$worn.under_upper.name isnot "naked">>
+				dissolving your <<print $worn.under_upper.name>> with a hiss.
+				<<set $worn.under_upper.integrity -= 1000>>
+				<<integritycheck>>
+				<<exposure>>
+			<<else>>
+				tickling your skin.<<garousal>><<arousal 600>>
+			<</if>>
+			When it reaches your <<bottom>>, it clings to the nearby wall for leverage, and forces you to the ground.
+			<br><br>
+
+			<<link [[Next|Drain Struggle]]>><<set $phase to 1>><<set $struggle_start to 1>><</link>>
+			<br>
+		<<else>>
+			<<link [[Tug it off|Drain Slime Physique]]>><</link>><<physiquedifficulty 1 20000>>
+			<br>
+			<<link [[Watch for an opening|Drain Slime Watch]]>><<arousal 1800>><</link>><<ggarousal>>
+			<br>
+			<<if !$worn.upper.type.includes("naked")>>
+				<<link [[Sacrifice your top|Drain Slime Sacrifice Upper]]>><</link>>
+				<br>
+			<<elseif !$worn.under_upper.type.includes("naked")>>
+				<<link [[Sacrifice your top|Drain Slime Sacrifice Under]]>><</link>>
+				<br>
+			<</if>>
+		<</if>>
+	<<elseif $rng gte 20>>
+
+		A torrent of water rushes through a pipe to your right, colliding with you and knocking you into the canal!
+		<br>
+		<<water>>
+		<br>
+		<<set $worn.over_upper.integrity -= 10>><<set $worn.over_lower.integrity -= 10>><<set $worn.upper.integrity -= 10>><<set $worn.lower.integrity -= 10>><<set $worn.under_lower.integrity -= 10>><<pain 1>>
+		<<link [[Next|Drain Water]]>><</link>>
+	<<else>>
+
+		A torrent of water rushes through a pipe to your right, colliding with you and knocking you into the canal!
+		<br>
+		<<water>>
+		<br>
+		<<set $worn.over_upper.integrity -= 10>><<set $worn.over_lower.integrity -= 10>><<set $worn.upper.integrity -= 10>><<set $worn.lower.integrity -= 10>><<set $worn.under_lower.integrity -= 10>><<pain 1>>
+		You are sucked to the drain floor, and through a gap in the concrete. You are pulled deeper through the dark until you emerge in a dim light. The water leaves you sprawled on the stone floor.
+		<br><br>
+		<<sewersstart>>
+		<<if $sewersintro is 1>>
+			<<if $bus is "residentialdrain">>
+				<<laddericon>><<link [[Climb down|Sewers Residential]]>><</link>>
+				<br><br>
+			<<elseif $bus is "commercialdrain">>
+				<<laddericon>><<link [[Climb down|Sewers Commercial]]>><</link>>
+				<br><br>
+			<<else>>
+				<<laddericon>><<link [[Climb down|Sewers Industrial]]>><</link>>
+				<br><br>
+			<</if>>
+		<<else>>
+			<<link [[Next|Sewers Intro]]>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $eventforced>>
+		<<unset $eventforced>>
+	<</if>>
+<</widget>>
+
+:: Widgets Sewers [widget]
+
+<<widget "sewerssleep">>
+	<<sewerssleephour>>
+	<<sewerssleephour>>
+	<<sewerssleephour>>
+	<<sewerssleephour>>
+	<<sewerssleephour>>
+	<<sewerssleephour>>
+	<<sewerssleephour>>
+	<<sewerssleephour>>
+<</widget>>
+
+<<widget "sewerssleephour">>
+	<<if Time.hour lte 7>>
+		<<pass 60>>
+		<<tiredness -12>>
+		<<set $sleepStat++>>
+	<</if>>
+<</widget>>
+
+<<widget "sewerscountdown">>
+	<<ind>><<link [[Press 1|Sewers Ticking Number]]>><<set $sewerswatchattempt to 1>><</link>>
+	<br>
+	<<ind>><<link [[Press 2|Sewers Ticking Number]]>><<set $sewerswatchattempt to 2>><</link>>
+	<br>
+	<<ind>><<link [[Press 3|Sewers Ticking Number]]>><<set $sewerswatchattempt to 3>><</link>>
+	<br>
+	<<ind>><<link [[Press 4|Sewers Ticking Number]]>><<set $sewerswatchattempt to 4>><</link>>
+	<br>
+	<<ind>><<link [[Press 5|Sewers Ticking Number]]>><<set $sewerswatchattempt to 5>><</link>>
+	<br>
+	<<ind>><<link [[Press 6|Sewers Ticking Number]]>><<set $sewerswatchattempt to 6>><</link>>
+	<br>
+	<<ind>><<link [[Press 7|Sewers Ticking Number]]>><<set $sewerswatchattempt to 7>><</link>>
+	<br>
+	<<ind>><<link [[Press 8|Sewers Ticking Number]]>><<set $sewerswatchattempt to 8>><</link>>
+	<br>
+	<<ind>><<link [[Press 9|Sewers Ticking Number]]>><<set $sewerswatchattempt to 9>><</link>>
+	<br>
+	<<ind>><<link [[Press 0|Sewers Ticking Number]]>><<set $sewerswatchattempt to 0>><</link>>
+	<br>
+	<<runicon>><<link [[Run (0:01)|Sewers Ticking Run]]>><<pass 1>><</link>>
+	<br>
+<</widget>>
+
+<<widget "sewerspassout">>
+	<<sewersend>>
+	<<link [[Next|Drain Water Passout]]>><</link>>
+	<br>
+<</widget>>
+
+<<widget "morgancaught">>
+	<<set $sewerschased to 0>>
+	<<npc Morgan>><<person1>>Morgan lurches from the darkness, smiling in anger. "<<charles>> my sweet," <<he>> says. "Come home with <<mummy>>."
+	<<morganoptions>>
+<</widget>>
+
+<<widget "morganoptions">>
+	<<if !$worn.over_lower.type.includes("naked")>>
+		<<He>> grasps your $worn.over_lower.name.
+	<<elseif !$worn.over_upper.type.includes("naked")>>
+		<<He>> grasps your $worn.over_upper.name.
+	<<elseif !$worn.lower.type.includes("naked")>>
+		<<He>> grasps your $worn.lower.name.
+	<<elseif !$worn.upper.type.includes("naked")>>
+		<<He>> grasps your $worn.upper.name.
+	<<elseif !$worn.under_lower.type.includes("naked")>>
+		<<He>> grasps your $worn.under_lower.name.
+	<<else>>
+		<<He>> grasps your arm.
+	<</if>>
+	<br><br>
+	<<link [[Go quietly|Sewers Return]]>><</link>>
+	<br>
+	<<if !$worn.over_lower.type.includes("naked")>>
+		<<link [[Struggle free|Sewers Over Lower Struggle]]>><</link>>
+		<br>
+	<<elseif !$worn.over_upper.type.includes("naked")>>
+		<<link [[Struggle free|Sewers Over Upper Struggle]]>><</link>>
+		<br>
+	<<elseif !$worn.lower.type.includes("naked")>>
+		<<link [[Struggle free|Sewers Lower Struggle]]>><</link>>
+		<br>
+	<<elseif !$worn.upper.type.includes("naked")>>
+		<<link [[Struggle free|Sewers Upper Struggle]]>><</link>>
+		<br>
+	<<elseif !$worn.under_lower.type.includes("naked")>>
+		<<link [[Struggle free|Sewers Under Struggle]]>><</link>>
+		<br>
+	<</if>>
+	<<link [[Fight|Sewers Fight]]>><<set $fightstart to 1>><</link>>
+	<br>
+<</widget>>
+
+<<widget "morgantext">>
+	<<if $morgantext is 0>>
+		<<set $morgantext += 1>>
+		"I'm sorry for hurting you, beloved."
+	<<elseif $morgantext is 1>>
+		<<set $morgantext += 1>>
+		"I promise I'll be gentle this time."
+	<<elseif $morgantext is 2>>
+		<<set $morgantext += 1>>
+		"I have a present for you."
+	<<elseif $morgantext is 3>>
+		<<set $morgantext += 1>>
+		"Where are you? I can smell you."
+	<<elseif $morgantext is 4>>
+		<<set $morgantext += 1>>
+		"Don't hide from me."
+	<<elseif $morgantext is 5>>
+		<<set $morgantext += 1>>
+		"I know you can hear me <<charles>>. Come here."
+	<<elseif $morgantext is 6>>
+		<<set $morgantext += 1>>
+		"I have sweets for you."
+	<<else>>
+		<<set $morgantext to 0>>
+		"Darling, please come home."
+	<</if>>
+<</widget>>
+
+<<widget "morganhunt">>
+	<<if $sewerschasedstep is 3>>
+		<span class="purple">Morgan is getting closer.</span><<morgantext>>
+	<<elseif $sewerschasedstep is 2>>
+		<span class="pink">Morgan is getting closer.</span><<morgantext>>
+	<<elseif $sewerschasedstep is 1>>
+		<span class="red">Morgan is close.</span><<morgantext>>
+	<<else>>
+	<</if>>
+	<<set $sewerschasedstep -= 1>>
+<</widget>>
+
+<<widget "sewersend">>
+	<<set $sewerschasedstep to 0>>
+	<<set $sewerschased to 0>>
+	<<endevent>>
+<</widget>>
+
+<<widget "sewersstart">>
+	<<set $sewersevent to random(2, 5)>>
+<</widget>>
+
+<<widget "destinationsewers">>
+	<<switch $bus>>
+		<<case "sewersresidential">>
+			<<link [[Next|Sewers Residential]]>><<endevent>><</link>>
+		<<case "sewerscommercial">>
+			<<link [[Next|Sewers Commercial]]>><<endevent>><</link>>
+		<<case "sewersindustrial">>
+			<<link [[Next|Sewers Industrial]]>><<endevent>><</link>>
+		<<case "sewersalgae">>
+			<<link [[Next|Sewers Algae]]>><<endevent>><</link>>
+		<<case "sewersworkshop">>
+			<<link [[Next|Sewers Workshop]]>><<endevent>><</link>>
+		<<case "sewerswood">>
+			<<link [[Next|Sewers Wood]]>><<endevent>><</link>>
+		<<case "sewerswebs">>
+			<<link [[Next|Sewers Webs]]>><<endevent>><</link>>
+		<<case "sewersruins">>
+			<<link [[Next|Sewers Ruins]]>><<endevent>><</link>>
+		<<case "sewersshrooms">>
+			<<link [[Next|Sewers Shrooms]]>><<endevent>><</link>>
+		<<case "sewersrubble">>
+			<<link [[Next|Sewers Rubble]]>><<endevent>><</link>>
+		<<case "sewershole">>
+			<<link [[Next|Sewers Hole]]>><<endevent>><</link>>
+		<<case "sewersscrap">>
+			<<link [[Next|Sewers Scrap]]>><<endevent>><</link>>
+		<<case "sewersmud">>
+			<<link [[Next|Sewers Mud]]>><<endevent>><</link>>
+		<<case "sewerswaterfall">>
+			<<link [[Next|Sewers Waterfall]]>><<endevent>><</link>>
+		<<case "sewerslake">>
+			<<link [[Next|Sewers Lake]]>><<endevent>><</link>>
+	<</switch>>
+	<br>
+	<<set $eventskip to 1>>
+<</widget>>
+
+<<widget "destinationsewersrandom">>
+	<<rng>>
+	<<if $rng gte 90>>
+		<<link [[Next|Sewers Wood]]>><</link>>
+	<<elseif $rng gte 80>>
+		<<link [[Next|Sewers Webs]]>><</link>>
+	<<elseif $rng gte 70>>
+		<<link [[Next|Sewers Algae]]>><</link>>
+	<<elseif $rng gte 60>>
+		<<link [[Next|Sewers Rubble]]>><</link>>
+	<<elseif $rng gte 50>>
+		<<link [[Next|Sewers Waterfall]]>><</link>>
+	<<elseif $rng gte 40>>
+		<<link [[Next|Sewers Hole]]>><</link>>
+	<<elseif $rng gte 30>>
+		<<link [[Next|Sewers Lake]]>><</link>>
+	<<elseif $rng gte 20>>
+		<<link [[Next|Sewers Ruins]]>><</link>>
+	<<elseif $rng gte 10>>
+		<<link [[Next|Sewers Shrooms]]>><</link>>
+	<<else>>
+		<<link [[Next|Sewers Mud]]>><</link>>
+	<</if>>
+	<br>
+	<<set $eventskip to 1>>
+<</widget>>
+
+<<widget "eventssewers">>
+	<<set $sewersevent to random(5,12)>>
+	<<rng>>
+	<<if $wraith.state and $eventforced and isBloodmoon() and !_wraithEventSkipped>>
+		<<wraithEventSewers>>
+	<<elseif $rng gte 91>>
+		You hear chanting echo through the tunnels.	It's hard to pinpoint the direction.
+		<br><br>
+
+		<<link [[Investigate|Sewers Cult Investigate]]>><</link>>
+		<br>
+		<<set $skulduggerydifficulty to 500>>
+		<<link [[Avoid|Sewers Cult Ignore]]>><</link>><<skulduggerydifficulty>>
+		<br>
+	<<elseif $rng gte 81>><!-- Modified for Beast People -->
+		<<beastNEWinit 1 lizard>>
+		<<if $monster is 1 or $bestialitydisable is "f">>
+			An enormous <<beasttype>> stalks out of the darkness in front of you! <<if $monster is 1>><<bHe>> licks <<bhis>> lips.<<else>>Its mouth is wide open.<</if>>
+			<br><br>
+			<<if $deviancy gte 35 and $voredisable is "f" and $monster isnot 1>>
+				<<link [[Give it a taste|Sewers Lizard Vore]]>><</link>><<deviant3>>
+				<br>
+			<</if>>
+			<<link [[Fight|Sewers Lizard Rape]]>><<set $molestationstart to 1>><</link>>
+			<br>
+		<<else>>
+			An enormous <<beasttype>> stalks out of the darkness in front of you! You manage to escape, but not unscathed.<<beastescape>>
+			<br><br>
+			<<destinationsewers>>
+		<</if>>
+	<<elseif $rng gte 71>>
+		You hear a click as your feet sink into the ground. A metal shackle clamps round your ankle. The sound echoes down the tunnel. A chain ties it to the ground.
+		<<gstress>><<stress 6>>
+		<br><br>
+		<<if $wraith.hunt>>
+			<<pass 5>><<set $wraith.hunt++>>
+			It takes you a few minutes to get your feet free. You feel whaever's hunting you draw closer.
+			<br><br>
+			<<destinationsewers>>
+		<<else>>
+			<<set $sewerschased to 1>>
+			<<set $sewerschasedstep to 3>>
+			Morgan's voice echoes in response. "I'm coming <<charles>>," followed by a clatter as the ladders leading up to the drains retract. <span class="red">You are being hunted.</span>
+			<br><br>
+			<<set $phase to 0>>
+			<<link [[Struggle|Sewers Shackle Struggle]]>><</link>><<physiquedifficulty 10000 20000>>
+			<br>
+			<<set $skulduggerydifficulty to 600>>
+			/* 北极星模组 */
+			<<link [[尝试撬锁|Sewers Shackle Pick]]>><<set $skulduggeryhands to 1>><</link>><<skulduggerydifficulty>>
+			/* 北极星 */
+			<br>
+		<</if>>
+	<<elseif $rng gte 61>>
+		You walk through a rope suspended a foot off the ground. A log hurtles out of the dark and collides with you, knocking you to the ground and leaving you winded.
+		<<gtrauma>><<gstress>><<gpain>><<trauma 6>><<stress 6>><<pain 6>>
+		<br><br>
+		<<if $wraith.hunt>>
+			<<set $wraith.hunt++>>
+			<<tearful>> you stand up. Nothing responds to you, but you still feel the presence of whatever's hunting you grow stronger.
+		<<else>>
+			<<set $sewerschasedstep to 3>>
+			<<set $sewerschased to 1>>
+			"Can you hear me, <<charles>>?" Morgan's voice rings out. "Are you hurt? Stay where you are." <span class="red">You are being hunted.</span>
+		<</if>>
+		<br><br>
+		<<destinationsewers>>
+	<<elseif $rng gte 56 and $slimedisable is "f">>
+		<<if !$worn.over_lower.type.includes("naked")>>
+			A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your $worn.over_lower.name.
+			<<set $worn.over_lower.integrity -= 20>>
+			<<if $worn.over_lower.integrity lte 0>>
+				You try to wipe it off, but your fingers get stuck. You keep tugging, until your $worn.over_lower.name rips from your body with a tear.
+				<<integritycheck>>
+				<br><br>
+				<<destinationsewers>>
+			<<else>>
+				You try to wipe it off, but your fingers get stuck. You keep tugging, until you free yourself with a tear.
+				<br><br>
+				<<destinationsewers>>
+			<</if>>
+		<<elseif !$worn.lower.type.includes("naked")>>
+			A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your $worn.lower.name.
+			<<set $worn.lower.integrity -= 20>>
+			<<if $worn.lower.integrity lte 0>>
+				You try to wipe it off, but your fingers get stuck. You keep tugging, until your $worn.lower.name rips from your body with a tear.
+				<<integritycheck>>
+				<br><br>
+				<<destinationsewers>>
+			<<else>>
+				You try to wipe it off, but your fingers get stuck. You keep tugging, until you free yourself with a tear.
+				<br><br>
+				<<destinationsewers>>
+			<</if>>
+		<<elseif !$worn.under_lower.type.includes("naked")>>
+			A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your $worn.under_lower.name.
+			<<set $worn.under_lower.integrity -= 20>>
+			<<if $worn.under_lower.integrity lte 0>>
+				You try to wipe it off, but your fingers get stuck. You keep tugging, until your $worn.under_lower.name rips from your body with a tear.
+				<<integritycheck>>
+				<br><br>
+				<<destinationsewers>>
+			<<else>>
+				You try to wipe it off, but your fingers get stuck. You keep tugging, until you free yourself with a tear.
+				<br><br>
+				<<destinationsewers>>
+			<</if>>
+		<<else>>
+			<<if $player.penisExist>>
+				<<if !$parasite.penis.name>>
+					A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your <<penis>>.
+					<<if $parasitedisable is "f" and !($parasite.penis.name is "parasite" or $parasite.clit.name is "parasite")>>
+						You try to wipe it off, but it's stuck. You'll need help to remove it.
+						<<parasite penis slime>>
+						<br><br>
+						You take another step, and the fluid on your penis squirms. It starts to suck and tease your length.
+					<</if>>
+					<br><br>
+					<<destinationsewers>>
+				<<else>>
+					A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over the $parasite.penis.name on your <<penis>>, which shakes it off.
+					<br><br>
+					<<destinationsewers>>
+				<</if>>
+			<<else>>
+				<<if !$parasite.clit.name>>
+					A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your <<pussy>>. You try to wipe it off, but it sticks firm to your clitoris. You'll need help to remove it.
+					<<parasite clit slime and !($parasite.penis.name is "parasite" or $parasite.clit.name is "parasite")>>
+					<br><br>
+					You take another step, and the fluid on your clit squirms. It starts to suck and tease you.
+					<br><br>
+					<<destinationsewers>>
+				<<else>>
+					A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over the $parasite.clit.name on your <<pussy>>, which shakes it off.
+					<br><br>
+					<<destinationsewers>>
+				<</if>>
+			<</if>>
+		<</if>>
+	<<elseif $rng gte 51 and $slimedisable is "f">>
+		You notice the ceiling glisten.
+		<<if !$worn.over_upper.type.includes("naked")>>
+			It drips on your $worn.over_upper.name. It's thick, slimy and sticky. You try to pull it off, but it's stuck. So are your fingers.
+			<<set $worn.over_upper.integrity -= 20>>
+			<<if $worn.over_upper.integrity lte 0>>
+				You keep tugging, until your whole top comes off with a tear.
+				<br><br>
+				<<integritycheck>>
+				<<destinationsewers>>
+			<<else>>
+				You keep tugging, until it comes away with a tear.
+				<br><br>
+				<<destinationsewers>>
+			<</if>>
+		<<elseif !$worn.upper.type.includes("naked")>>
+			It drips on your $worn.upper.name. It's thick, slimy and sticky. You try to pull it off, but it's stuck. So are your fingers.
+			<<set $worn.upper.integrity -= 20>>
+			<<if $worn.upper.integrity lte 0>>
+				You keep tugging, until your whole top comes off with a tear.
+				<br><br>
+				<<integritycheck>>
+				<<destinationsewers>>
+			<<else>>
+				You keep tugging, until it comes away with a tear.
+				<br><br>
+				<<destinationsewers>>
+			<</if>>
+		<<elseif !$worn.under_upper.type.includes("naked")>>
+			It drips on your $worn.under_upper.name. It's thick, slimy and sticky. You try to pull it off, but it's stuck. So are your fingers.
+			<<set $worn.under_upper.integrity -= 20>>
+			<<if $worn.under_upper.integrity lte 0>>
+				You keep tugging, until your whole top comes off with a tear.
+				<br><br>
+				<<integritycheck>>
+				<<destinationsewers>>
+			<<else>>
+				You keep tugging, until it comes away with a tear.
+				<br><br>
+				<<destinationsewers>>
+			<</if>>
+		<<else>>
+			<<if $parasite.nipples.name>>
+				It drips on the $parasite.nipples.name attached to your <<breasts>>, which shakes the moisture off.
+				<br><br>
+				<<destinationsewers>>
+			<<else>>
+				It drips on your bare <<breasts>>, right on your nipples. It's thick, slimy and sticky.
+				<<if $parasitedisable is "f">>
+					You try to pull it off, but it's stuck firm. You'll need help to remove it.
+					<<parasite nipples slime>>
+					<br><br>
+					You take another step, and the slime moves against your skin, sucking and teasing.
+					<<garousal>><<arousal 600 "breasts">>
+				<</if>>
+				<br><br>
+				<<destinationsewers>>
+			<</if>>
+		<</if>>
+	<<elseif $rng gte 46 and $slimedisable is "f">>
+		You slip on something slimy, and land on your <<bottom>>.
+		<br><br>
+		<<if !$worn.lower.type.includes("naked")>>
+			<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+				<<if !$parasite.bottom.name>>
+					You try to stand up, but your butt is stuck firm. Your $worn.lower.name flared as you fell, leaving your bare skin exposed to the sticky substance. You keep tugging, until you manage to pull yourself to your feet.
+					<br><br>
+					<<if $parasitedisable is "f">>
+						Something squirms against your bottom. Some of the sticky substance remains on your skin. You'll need help to remove it.
+						<<parasite bottom slime>>
+						<br><br>
+						It squirms with more fervour. You feel warm.
+						<<garousal>><<arousal 600 "bottom">>
+						<br><br>
+					<</if>>
+					<<destinationsewers>>
+				<<else>>
+					Your $worn.lower.name flared as you fell, leaving your bare skin exposed to the sticky substance. Fortunately, the $parasite.bottom.name stuck to your butt broke your fall.
+					<br><br>
+					<<destinationsewers>>
+				<</if>>
+			<<else>>
+				You try to stand up, but your $worn.lower.name is stuck. You tug at it, but it won't budge.
+				<br><br>
+				<<link [[Leave your clothes behind|Sewers Slime Lower Lost]]>><</link>>
+				<br>
+				<<link [[Keep trying (0:30)|Sewers Slime Lower Try]]>><<pass 30>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			You try to stand up, but your butt is stuck firm. You keep tugging, until you manage to pull yourself to your feet.
+			<br><br>
+			<<if !$parasite.bottom.name>>
+				<<if $parasitedisable is "f">>
+					Something squirms against your bottom. You feel behind you, and find that some of the sticky substance remains on your skin. You'll need help to remove it.
+					<<garousal>><<arousal 600 "bottom">><<parasite bottom slime>>
+					<br><br>
+				<</if>>
+			<<else>>
+				Your bare bottom lands on the sticky substance. Fortunately, the $parasite.bottom.name stuck to your butt broke your fall.
+				<br><br>
+			<</if>>
+			<<destinationsewers>>
+		<</if>>
+	<<elseif $rng gte 41 and $slimedisable is "f" and $tentacledisable is "f" and $hallucinations gte 2>>
+		You feel a squelch beneath your foot. A living slime rises from the dark, twisting around your leg and climbing higher.<<gstress>><<stress 6>>
+		<br><br>
+
+		<<if $leftarm isnot "bound" or $rightarm isnot "bound">>
+			<<link [[Reach down and tug it free|Sewers Floor Slime Physique]]>><</link>><<physiquedifficulty 1 16000>>
+			<br>
+		<</if>>
+		<<link [[Soothe|Sewers Floor Slime Soothe]]>><</link>><<tendingdifficulty 1 1000>>
+		<br>
+		<<link [[Struggle|Sewers Floor Slime Struggle]]>><</link>>
+		<br>
+	<<elseif $rng is 1>>
+		The sounds of the sewers cut off. The dripping of water ceases, and even the canal seems to hold still. Your ears ring briefly.
+		<br><br>
+		You hear a voice echo off the winding walls, its distance from you impossible to determine. After a moment, you realise that it's singing. <span class="teal">The melody is faintly familiar,</span> but you're not sure where you've heard it.
+		<br><br>
+		You feel profoundly calm. The imposing darkness seems just a little bit brighter, and you let out a breath you didn't know you were holding. Eventually, the song stops. <<stress -6>><<lstress>>
+		<br><br>
+		<<destinationsewers>>
+	<<else>>
+		<<if $wraith.hunt>>
+			A scream echoes through the tunnels. It doesn't sound like Morgan.
+			<<set $wraith.hunt++>>
+		<<else>>
+			<<set $sewerschasedstep to 3>>
+			<<set $sewerschased to 1>>
+			A scream echoes through the tunnels. <span class="red">You are being hunted.</span>
+		<</if>>
+		<<gstress>><<stress 6>>
+		<br><br>
+		<<destinationsewers>>
+	<</if>>
+	<<if $eventforced>>
+		<<unset $eventforced>>
+	<</if>>
+<</widget>>
+
+:: Widgets Destination Drain [widget]
+
+<<widget "destinationdrain">>
+	<<switch $bus>>
+		<<case "nightingale" "high" "starfish" "connudatus" "oxford" "cliff" "commercial" "park">>
+			<<commercialdrainquick>>
+		<<case "domus" "barb" "wolf" "danube" "residential">>
+			<<residentialdrainquick>>
+		<<case "elk" "harvest" "mer" "industrial">>
+			<<industrialdrainquick>>
+	<</switch>>
+	<br>
+<</widget>>
+
+<<widget "destinationstormdrain">>
+	<<switch $bus>>
+		<<case "residentialdrain">>
+			<<link [[Next|Residential Drain]]>><</link>>
+		<<case "commercialdrain">>
+			<<link [[Next|Commercial Drain]]>><</link>>
+		<<case "industrialdrain">>
+			<<link [[Next|Industrial Drain]]>><</link>>
+		<<default>>
+			<<link [[Next|Drain Exit]]>><</link>>
+	<</switch>>
+	<br>
+<</widget>>

@@ -1,0 +1,265 @@
+:: Farmers Centre
+<<set $outside to 0>><<set $location to "factory">><<effects>>
+<<if $farmersProduce is undefined>>
+	<<set $farmersProduce to {
+		selling:{},
+		toSell:{},
+		money:0,
+		sold:0,
+		totalSold:0,
+	}>>
+<</if>>
+
+<<if !$NPCList[0].pronoun>>
+	<<generate1>>
+<</if>>
+<<person1>>
+
+<<if $factory_intro is undefined>>
+	<<set $factory_intro to 1>>
+	You approach the factory, a colossal brick structure at the entrance of town. A <<person>> stands by the gate, waving through a fleet of lorries.
+	<br><br>
+	<<He>> turns to you as the gate clanks shut. "Nothing for you to see here," <<he>> says. "Not unless you have a lot of produce to sell. We could handle that for you. For a cut."
+	<br><br>
+	<<link [[Next|Farmers Centre]]>><</link>>
+	<br>
+<<else>>
+	You are outside a factory on Harvest Street. They'll process and sell produce on your behalf, but only so fast, and won't pay as much as customers at market.
+	<br><br>
+
+	<<if $rng gte 91>>
+		A <<person>> sits in a kiosk outside, thumbing through a magazine.
+	<<elseif $rng gte 81>>
+		A <<person>> leans against the wall, smoking a cigarette.
+	<<elseif $rng gte 71>>
+		A <<person>> sits in a kiosk outside, staring at a small television in the corner.
+	<<elseif $rng gte 61>>
+		A <<person>> sits in a kiosk outside, staring at <<his>> phone.
+	<<elseif $rng gte 51>>
+		A <<person>> waves a fleet of lorries through the gate.
+	<<elseif $rng gte 41>>
+		A <<person>> sits in a kiosk outside, talking on <<his>> phone.
+	<<elseif $rng gte 31>>
+		A <<person>> sits in a kiosk outside, thumbing through paper.
+	<<elseif $rng gte 21>>
+		A <<person>> leans against the wall, watching the traffic pass.
+	<<elseif $rng gte 11>>
+		A <<person>> watches you from a kiosk.
+	<<else>>
+		A <<person>> sits in a kiosk outside, reclining in a chair.
+	<</if>>
+	<br><br>
+
+	<<if $farmersProduce.money gt 10000>>
+		<<link [[Collect money|Farmers Centre Money Collection]]>><</link>>
+		<br>
+	<</if>>
+	<<link [[Inquire about selling produce|Farmers Centre Produce Sale]]>><</link>>
+	<br><br>
+	<<link [[Leave|Harvest Street]]>><<endevent>><</link>>
+
+<</if>>
+
+:: Farmers Centre Money Collection
+
+The <<person>> enters the factory proper, and emerges with a wad of notes. You've made <<moneyGain `(parseFloat($farmersProduce.money / 100).toFixed(2))`>>.
+<<set $farmersProduce.money to 0>>
+<br><br>
+<<link [[Leave|Farmers Centre]]>><</link>>
+
+:: Farmers Centre Produce Sale
+The <<person>> opens a laptop. "So what do you have for me?"
+<br><br>
+<i>Money from sales will become available every day at noon. Higher business fame will help the factory sell your produce faster.</i>
+<br><br>
+<<set $farmersProduce.toSell to {}>>
+<<set _plant_keys to Object.keys($plants)>>
+<<set _plantItems to {}>>
+<<if _plant_keys.length gte 1>>
+	<<for _i to 0; _i lt _plant_keys.length; _i++>>
+		<<if ["produce","vegetable","fruit","shroom"].includes(setup.plants[_plant_keys[_i]].type)>>
+			<<set _plantItems[_plant_keys[_i]] to clone($plants[_plant_keys[_i]])>>
+		<</if>>
+	<</for>>
+	<div id="produceDisplay">
+		<<produceDisplay>>
+	</div>
+<<else>>
+	You don't have any produce.
+	<br><br>
+<</if>>
+<br><br>
+<<link [[Leave|Farmers Centre]]>><<set $farmersProduce.toSell to {}>><</link>>
+
+:: Farmers Centre Produce Sale Confirm
+
+The gate shudders open, and a lorry rumbles out, on its way to collect your produce.
+<br><br>
+<<link [[Leave|Farmers Centre]]>><</link>>
+
+
+:: Farmers Centre Widgets [widget]
+<<widget "produceDisplay">>
+	<<set _listMaxItems to 10>>
+	<<set _keys to (Object.keys(_plantItems) gt Object.keys($farmersProduce.toSell) ? Object.keys(_plantItems) : Object.keys($farmersProduce.toSell))>>
+	<<if _listPage is undefined>>
+		<<set _listPage to 1>>
+	<</if>>
+	<<set _listPageMax to Math.ceil(_keys.length / _listMaxItems)>>
+	<<set _indexStart to ((_listPage - 1) * _listMaxItems)>>
+	<<set _indexEnd to (_indexStart + _listMaxItems gt _keys.length ? _keys.length : _indexStart + _listMaxItems)>>
+
+	<<for _i to _indexStart; _i lt _indexEnd; _i++>>
+		<<set _item to _keys[_i]>>
+		<div @id="'produceItem-'+_item" class="produceItem">
+			<<produceDisplayItem _item>>
+		</div>
+	<</for>>
+	<<run $(() => {
+		$('.produceItem input').on('input change', e => {
+			let valSpan = $(e.currentTarget).siblings().first();
+			let item = e.currentTarget.id.split("producetosell")[1].replace(/-/g,"_");
+			let value = valSpan.text();
+			if(!value.includes("£")){
+				valSpan.text((i, value) => value + " - £" + (bulkProduceValue(SugarCube.setup.plants[item],value) / 100).toFixed(2));
+				$('#produceConfirm').replaceWith(new Wikifier(null, '<<produceDisplayConfirm>>').output);
+			}
+		})
+	})>>
+	<div id="produceDisplayControls">
+		<<set _disabled = _listPage > 1 ? "" : "disabled">>
+		<div @class="'div-link btn-pagination prev ' + _disabled">
+			<<link "Previous">>
+				<<if _listPage > 1>>
+					<<set _listPage -= 1>>
+					<<replace #produceDisplay>><<produceDisplay>><</replace>>
+				<</if>>
+			<</link>>
+			<div class="btn-pagination-arrow">&lt;</div>
+		</div>
+		<div>
+			<<print (_listPage) + " out of " + _listPageMax>>
+		</div>
+		<<set _disabled = _listPage < _listPageMax ? "" : "disabled">>
+		<div @class="'div-link btn-pagination next ' + _disabled">
+			<<link "Next">>
+				<<if _listPage < _listPageMax>>
+					<<set _listPage += 1>>
+					<<replace #produceDisplay>><<produceDisplay>><</replace>>
+				<</if>>
+			<</link>>
+			<div class="btn-pagination-arrow">&gt;</div>
+		</div>
+	</div>
+	<<run linkifyDivs('#produceDisplayControls')>>
+
+	<<produceDisplayConfirm>>
+<</widget>>
+
+<<widget "produceDisplayConfirm">>
+	<div id="produceConfirm">
+		<<set $_total to 0>>
+		<<for _label, _value range $farmersProduce.toSell>>
+			<<if _value gt 0>>
+				<<set $_total += bulkProduceValue(SugarCube.setup.plants[_label],_value)>>
+			<</if>>
+		<</for>>
+		Total: <<printmoney $_total>>
+		<br>
+		<<if $_total gt 0>>
+			<<link [[Sell produce|Farmers Centre Produce Sale Confirm]]>>
+				<<for _label, _value range $farmersProduce.toSell>>
+					<<if _value gt 0>>
+						<<if $farmersProduce.selling[_label] is undefined>>
+							<<set $farmersProduce.selling[_label] to _value>>
+						<<else>>
+							<<set $farmersProduce.selling[_label] += _value>>
+						<</if>>
+						<<set $plants[_label].amount -= _value>>
+					<</if>>
+				<</for>>
+				<<set $farmersProduce.toSell to {}>>
+			<</link>>
+		<<else>>
+
+		<</if>>
+	</div>
+<</widget>>
+
+<<widget "produceDisplayItem">>
+	<<if _args[0]>>
+		<<set _item to _args[0]>>
+		<<capture _item>>
+			<div>
+				<<if $farmersProduce.toSell[_item] is undefined>>
+					<<set $farmersProduce.toSell[_item] to 0>>
+				<</if>>
+				<<if $plants[_item] is undefined>>
+					You don't have any <<print $plants[_item].plural>> right now.
+				<<elseif $plants[_item].amount lt 250>>
+					<<print $plants[_item].plural.toLocaleUpperFirst()>>: Not enough to sell.
+				<<else>>
+					<<set _max to $plants[_item].amount - ($plants[_item].amount % 250)>>
+					<<set _base to bulkProduceValue(setup.plants[_item])>>
+					<<print $plants[_item].plural.toLocaleUpperFirst()>> - Sold for <<printmoney _base>> per 250.
+					<<numberslider `"$farmersProduce.toSell['"+_item+"']"` $farmersProduce.toSell[_item] 0 `_max` 250>>
+				<</if>>
+			</div>
+			<<if $farmersProduce.selling[_item]>>
+				<div>
+					They are still processing <<print $farmersProduce.selling[_item]>> <<print $plants[_item].plural>>.
+				</div>
+			<</if>>
+		<</capture>>
+	<</if>>
+<</widget>>
+
+<<widget "dailySellProduce">>
+	<<if $farmersProduce is undefined>>
+	<<elseif Object.keys($farmersProduce.selling).length gt 0>>
+		<<set _baseSaleQuantity to 250>>
+		<<if between($fame.business, 1900, 2000)>>
+			<<set _baseSaleQuantity to _baseSaleQuantity * 6>>
+		<<elseif between($fame.business, 1500, 1900)>>
+			<<set _baseSaleQuantity to _baseSaleQuantity * 5>>
+		<<elseif between($fame.business, 1000, 1500)>>
+			<<set _baseSaleQuantity to _baseSaleQuantity * 4>>
+		<<elseif between($fame.business, 500, 1000)>>
+			<<set _baseSaleQuantity to _baseSaleQuantity * 3>>
+		<<elseif between($fame.business, 200, 500)>>
+			<<set _baseSaleQuantity to _baseSaleQuantity * 2>>
+		<</if>>
+		<<set _itemsSold to 0>>
+		<<for _label, _value range $farmersProduce.selling>>
+			<<set _quantity to clone(_baseSaleQuantity)>>
+			<<if !setup.plants[_label].season.includes(Time.season)>>
+				<<set _quantity to Math.floor(_quantity * 0.9)>>
+			<</if>>
+			<<set _rng to 800 + Math.floor(currentSkillValue('tending') / 5)>>
+			<<set _quantity to Math.floor(_quantity * (random(_rng,_rng + 400)/1000))>>
+			<<if _value lt _quantity>>
+				<<set _quantity to _value>>
+			<</if>>
+			<<set $farmersProduce.sold += _quantity>>
+			<<set $farmersProduce.totalSold += _quantity>>
+
+			<<set $farmersProduce.money += bulkProduceValue(setup.plants[_label],_quantity)>>
+			<<set $farmersProduce.selling[_label] -= _quantity>>
+
+			<<if $farmersProduce.selling[_label] lte 0>>
+				<<run delete $farmersProduce.selling[_label]>>
+			<</if>>
+		<</for>>
+		/* 北极星模组 */
+		<<set _basesellnum to 5000>>
+		<<if $options.bjx_sellproduce>>
+			<<set _basesellnum to 250>>
+		<</if>>
+		<<if $farmersProduce.sold gt _basesellnum>>
+			<<set _famebusinessSold to $farmersProduce.sold - ($farmersProduce.sold % _basesellnum)>>
+			<<set $farmersProduce.sold -= _famebusinessSold>>
+			<<famebusiness `Math.floor(_famebusinessSold / _basesellnum)`>>
+		<</if>>
+		/* 北极星 */
+	<</if>>
+<</widget>>

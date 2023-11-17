@@ -1,0 +1,171 @@
+:: Domus Street
+
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "domus">><<getTarget true>>
+You are on Domus Street. The orphanage is here. The street is dominated by small homes similar in appearance.
+<<if Time.dayState is "day">>
+	<<if $weather is "rain">>
+		People walk quickly, driven by the rain.
+	<<elseif $weather is "snow">>
+		People walk brisk against the cold.
+	<<else>>
+		People tend to their gardens and go about their business all along the street.
+	<</if>>
+<<elseif Time.dayState is "dawn">>
+	<<if $weather is "rain">>
+		It's busy. People are on their way to work, wearing raincoats or carrying umbrellas.
+	<<elseif $weather is "snow">>
+		It's busy. People are on their way to work, bundled against the cold.
+	<<else>>
+		It's busy. People are on their way to work.
+	<</if>>
+<<elseif Time.dayState is "dusk">>
+	<<if $weather is "rain">>
+		People return to their homes, eager to be out of the rain.
+	<<elseif $weather is "snow">>
+		People return to their homes, eager to be out of the cold.
+	<<else>>
+		People return to their homes, tired after a long day.
+	<</if>>
+<<else>>
+	<<if $weather is "rain">>
+		The street is dark, and drenched with the patter of rain.
+	<<elseif $weather is "snow">>
+		The street is dark and silent in the snow.
+	<<else>>
+		The street is dark and silent, save the occasional engine.
+	<</if>>
+<</if>>
+<<if $halloween is 1>>
+	Jack-o'-lanterns, skeletons, and spiders decorate the houses.
+<</if>>
+<<if Time.season is "winter">>
+	Snowmen stand in gardens.
+<</if>>
+<<streeteffects>>
+<br><br>
+<<if $exposed gte 1>>
+	<<exhibitionism "street">>
+<</if>>
+<<if $arousal gte $arousalmax>>
+	<<orgasmstreet>>
+<</if>>
+<<if $tutorial is 0 and $debug is 0>><<set $tutorial to 1>>
+	<<generate1>><<person1>>As you leave the orphanage you bump into a <<person>> passing by. <<He>> staggers back and looks at you with anger, but <<his>> rage turns to lechery as <<he>> beholds you. "You're the cutest thing I've seen all week! Come 'ere."
+	<br><br>
+	<<link [[Next|Tutorial]]>><<set $molestationstart to 1>><<set $tutorialExit to "Domus Street">><</link>>
+<<else>>
+	<<if $stress gte $stressmax and !$possessed>>
+		<<passoutstreet>>
+	<<else>>
+		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+		<<if $halloween is 1 and Time.monthDay is 31 and Time.hour gte 19 and C.npc.Whitney.state isnot "dungeon" and C.npc.Whitney.init is 1 and $halloween_whitney_proposed isnot 1 and !$possessed>>
+			<<set $halloween_whitney_proposed to 1>>
+			<<halloweenwhitney>>
+		<<elseif $averyDismissalScene and $averyDismissalSceneWait isnot 1 and Time.weekDay is 7 and Time.hour is 20>>
+			<<loadNPC 0 avery_sidepiece>><<person1>>
+			<<if $averyDismissalScene is 1>>
+				You see a <<person>> standing outside the orphanage wearing a
+				<<if $pronoun is "f">>
+					fancy gown. <<He>> paces around, trying to get used to being in heels.
+				<<else>>
+					sharp suit. <<He>> paces around, and it looks like <<hes>> trying to work off <<his>> nerves.
+				<</if>>
+				<span class = "blue">You recognise <<him>> now. <<Hes>> Avery's new date.</span>
+				<br><br>
+				As if on queue, you see a familiar car stopping nearby.
+				The <<personsimple>> excitedly walks over to it<<if $pronoun is "f">>, almost tripping in the process<</if>>.
+				You see <<him>> give Avery a peck on the lips as <<he>> climbs onboard. The door shuts, and the new couple drives away.
+			<<else>>
+				You bump into a <<person>>. "Oh! Sorry!" <<He>> frantically apologises, looking you over. <<He>> seems to recognise you, and smiles.
+				"Ah! I'm glad I ran into you. I never got to thank you for warning me about Avery." <span class = "blue">You recognise <<him>> now. <<Hes>> the <<personsimple>> Avery tried to replace you with.</span>
+				<br><br>
+				"It's funny, had you not warned me that day, I'd actually be out on a date with <<nnpc_him "Avery">> right now. You really helped me dodge a bullet."
+				<<He>> suddenly hugs you.
+				<br><br>
+				"I can't thank you enough. I'll see you around the orphanage!" <<stress -6>><<lstress>>
+			<</if>>
+			<<unset $averyDismissalScene>>
+			<<clearNPC avery_sidepiece>>
+			<br><br>
+			<<endevent>>
+			<<destinationeventend>>
+
+		<<elseif $adultshopgrandopening is true and $adultshopopeningevent is undefined and Time.hour gte 6 and Time.hour lte 20>>
+			<<set $adultshopopeningevent to true>>
+			<<generate1>><<person1>>
+			"Excuse me," says a voice to your right. It's a <<person>>. <<He>> holds out a flyer. 'Sirris' adult shop' is written across the top, above a collection of sex toys.
+			<br><br>
+			<span class="gold">"We're hosting a grand opening event, today only.</span> We're open until <<ampm 21 00>>. Hope you can make it."
+			<br><br>
+
+			<<He>> crosses the street to hand out a flyer to another pedestrian.
+			<br><br>
+			<<endevent>>
+			<<destinationeventend>>
+		<<elseif ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
+			<<eventsstreet>>
+		<<else>>
+			<<if $options.mapTop is true>>
+				<<map "domus">>
+				<br>
+			<</if>>
+			<<if $averydate is 1 and Time.hour is 20 and $averydatedone isnot 1>>
+				Avery waits for you by <<nnpc_his "Avery">> car.
+				<br>
+				<<ind>><<link [[Date (1:20)|Avery Date]]>><</link>>
+				<br><br>
+			<</if>>
+
+			Places of interest
+			<br>
+			<<homeicon>><<link [[Go home (0:01)->Orphanage]]>><<pass 1>><</link>>
+			<br>
+			<<if Time.dayState is "night">>
+				<<dooricon "domus">><<link [[Approach one of the houses (0:02)|Domus House Lock]]>><<pass 2>><</link>>
+				<br>
+			<<elseif $exposed lte 0>>
+				<<dooricon "domus">><<link [[Knock on one of the houses (0:02)|Domus House Knock]]>><<pass 2>><</link>>
+				<br>
+			<</if>>
+			<<if $demon gte 6 and Time.dayState is "night" and $promiscuity gte 15>>
+				<<demonicon>><<link [[Climb through a window (0:30)|Domus Window]]>><<pass 30>><</link>><<demon>>
+				<br>
+			<</if>>
+			<<if $exposed gte 2 and Time.dayState isnot "night" and $exhibitionism gte 75>>
+				<<dooricon "domus">><<link [[Beg for clothing (0:02)|Domus House Nude]]>><<pass 2>><</link>><<exhibitionist5>>
+				<br>
+			<</if>>
+			<<if $exposed gte 1 and Time.dayState isnot "night">>
+			<<else>>
+				<<add_link "Travel<br>">><<hideDisplay>>
+				<<barb>>
+				<<danube>>
+				<<if $exposed lte 0>>
+					<<buswait>>
+				<</if>>
+				/* 北极星模组 */
+    			<<if $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+    				<<flywait>>
+    			<</if>>
+    			/* 北极星 */
+				<br>
+			<</if>>
+			<<add_link "<br>Alternate Routes<br>">><<hideDisplay>>
+			<<residential>>
+			<<stormdrain>>
+			<<loiter>>
+
+			<<displayLinks>>
+			<<if $options.mapTop isnot true>>
+				<br>
+				<<map "domus">>
+			<</if>>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>
+
+:: Domus Alley
+<<set $location to "alley">>
+
+<<street2>>

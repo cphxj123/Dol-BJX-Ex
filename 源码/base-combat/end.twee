@@ -1,0 +1,910 @@
+:: Widgets End Combat [widget]
+
+<<widget "endcombat">>
+	<<set $enemytrust to 0>>
+
+	<<if $enemyhealth lte 0>>
+		<<if $enemytype is "man">>
+			<<famescrap $enemynomax>>
+		<</if>>
+		<<if $audiencepresent is 1>>
+			<<famescrap 10>>
+		<</if>>
+	<</if>>
+	
+	/* 北极星模组 */
+	<<set $enemyoverarousal to 0>>
+	<<set $againfail to false>>
+	
+	<<for _i = 0; _i < $NPCList.length; _i++>>
+        <<set $NPCList[_i].poison = 0>>
+	<</for>>
+
+	<<if $demonabsorb gte 1>>
+	    <<if $demonhunter gte 2>>
+		    <<set $daynoabsorb = 0>>
+            <<pain `(5 * $demonabsorb)`>>
+    		<<set $stress += (300 * $demonabsorb)>>
+    		<<set $trauma += (150 * $demonabsorb)>>
+    		<span class="red">你变异的身体排斥着外来的体液，仿佛泼入了冷水的油锅，让你痛不欲生。</span>
+        <<elseif $demon gte 2 and $options.bjx_divine>>
+            <<set $daynoabsorb = 0>>
+			<<pain `-(5 * $demonabsorb)`>>
+			<<set $stress -= (300 * $demonabsorb)>>
+			<<set $trauma -= (150 * $demonabsorb)>>
+    		<span class="lewd">你吸收了性爱的精华，精华滋补着你，让你感到身心舒畅。</span>
+    	<<elseif $demon gte 6 and !$options.bjx_divine>>
+            <<set $daynoabsorb = 0>>
+            <<if $enemytype is "tentacles" or $enemytype is "struggle">>
+    			<<pain `-(5 * $demonabsorb)`>>
+    			<<set $stress -= (300 * $demonabsorb)>>
+    		<<else>>
+    			<<set $trauma -= (150 * $demonabsorb)>>
+    		<</if>>
+    		<span class="lewd">你吸收了性爱的精华，精华滋补着你，让你感到身心舒畅。</span>
+        <</if>>
+		<<set $demonabsorb to 0>>
+		<<traumaclamp>>
+		<<set $_br to true>>
+		<br>
+	<</if>>
+		
+	<<if $demonejac gte 1>>
+	    <<if $demon gte 2 and $demonhunter lt 2>>
+            <<set $daynoabsorb = 0>>
+			<<set $stress -= (300 * $demonabsorb)>>
+			<<set $trauma -= (150 * $demonabsorb)>>
+    		<span class="lewd">内射他人让你无比愉悦，玷污他人的快感，让你感到满足。</span>
+        <</if>>
+		<<set $demonejac to 0>>
+		<<traumaclamp>>
+		<<set $_br to true>>
+		<br>
+	<</if>>
+	/* 北极星 */
+
+	<<if $transformationParts.traits.mateForLife isnot "disabled" and $sexavoid is 0>>
+		<<if $enemyno is 1 and isLoveInterest($npc[$npcrow.indexOf(0)])>>
+			<<if $fox gte 3>>
+				<<transform fox 1>>
+			<</if>>
+			<<stress -10>><<trauma -5>>
+			<span class="lewd">Copulating with your chosen partner fulfills an instinctual desire.</span><<llstress>><<ltrauma>>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	
+	/* 北极星模组 */
+	<<if $slime gt 0 and $options.bjx_eventTF>> 
+		<<if $weather isnot "rain" and $underwater isnot 1 and $inwater isnot 1 and $pain gt 10 and $liquidcount gte 2>>
+			<<wash>>
+			<<pain -20>>
+			<span class ='green'>你的身体吸收了大量的液体，并进行自我修复。</span><br><br>
+		<<elseif $weather isnot "rain" and $underwater isnot 1 and $inwater isnot 1 and $pain gte 10 and $liquidcount lt 2>>
+			<<pain -10>>
+			<<wash>>
+			<span class ='green'>你的身体通过吸收可用液体来试着自愈。</span><br><br>
+		<<elseif $weather isnot "rain" and $underwater isnot 1 and $inwater isnot 1 and $pain lt 10>>
+			<<wash>>
+			<span class ='green'>你的身体基本上没有伤口，但还是吸收了可用的液体。</span><br><br>
+		<<elseif $weather is "rain" and $outside is 1 or $underwater is 1 or $inwater is 1 and $pain gte 0>>
+			<span class ='red'>你的身体试图自愈，但环境过于恶劣。请避免与水直接接触！</span><br><br>
+		<</if>>
+	<</if>>
+
+	<<if $deathlychill is 1>>
+		<<set $deathlychill to 0>>
+	<</if>>
+
+	<<if $mushroom gte 1 and ($worn.upper.set is "mushroom" or $worn.lower.set is "mushroom")>>
+		<<if $worn.upper.set is "mushroom" and $worn.lower.state is 0>>
+			<<lowerruined>>
+		<</if>>
+		<<if $worn.lower.set is "mushroom" and $worn.upper.state is 0>>
+			<<upperruined>>
+		<</if>>
+	<</if>>
+	/* 北极星 */
+
+	<<if $assertive gte 1>>
+		You were
+		<<if $assertive lte 5>>
+			<span class="pink">slightly</span>
+		<<elseif $assertive lte 10>>
+			<span class="pink">a little</span>
+		<<elseif $assertive lte 30>>
+			<span class="purple">somewhat</span>
+		<<elseif $assertive lte 40>>
+			<span class="blue">quite</span>
+		<<elseif $assertive lte 50>>
+			<span class="lblue">pretty</span>
+		<<elseif $assertive lte 60>>
+			<span class="teal">very</span>
+		<<else>>
+			<span class="green">extremely</span>
+		<</if>>
+		assertive.
+
+		<<if $assertiveaction isnot 0 and $assertiveaction isnot undefined>>
+			<<if $assertiveaction is "trauma">>
+				<<set $trauma -= $assertive>>
+				<span class="meek">I'm so naughty.</span>
+				<<ltrauma>>
+				<<traumaclamp>>
+				<br>
+			<<elseif $assertiveaction is "stress">>
+				<<set $stress -= ($assertive * 10)>>
+				<span class="green">That was fun.</span>
+				<<lstress>>
+				<br>
+			<<elseif $assertiveaction is "submissive">>
+				<<sub `($assertive / 40)`>>
+				<<if $enemytype is "beast">>
+					<<if $NPCList[0].type is "wolf">>
+						<<set _plural_beast_type to "wolves">>
+					<<elseif $NPCList[0].type is "fox">>
+						<<set _plural_beast_type to "foxes">>
+					<<else>>
+						<<set _plural_beast_type to $NPCList[0].type + "s">>
+					<</if>>
+					<span class="meek">It's nice to make _plural_beast_type feel good.</span>
+				<<elseif $enemytype is "tentacles">>
+					<span class="meek">It's nice to make tentacles feel good.</span>
+				<<elseif $enemytype is "struggle">>
+					<span class="meek">It's nice to make creatures feel good.</span>
+				<<else>>
+					<span class="meek">It's nice to make people feel good.</span>
+				<</if>>
+				<br>
+			<<elseif $assertiveaction is "defiant">>
+				<<def `($assertive / 40)`>>
+				<span class="brat">It's nice to be in control.</span>
+				<br>
+			<</if>>
+			<<set $assertive to 0>>
+			<<set $_br to true>>
+		<</if>>
+
+	<</if>>
+
+	<<unset $enemytype>>
+
+	<<endevent _args[0]>>
+	<<struggle_end>>
+
+	<<set $combat to 0>>
+	<<set $rapeavoid to 1>>
+	<<set $sexavoid to 1>>
+	<<set $orgasmdown to 0>>
+	<<set $penisbitten to 0>>
+	<<set $breastbitten to 0>>
+	<<set $apologised to 0>>
+	<<unset $bodywriting_special>>
+	<<unset $machine_tattoo_success>>
+	<<unset $dodging>>
+	<<unset $feet_planted>>
+	<<unset $left_guard>>
+	<<unset $right_guard>>
+	<<unset $speechspraycycleplant>>
+	<<unset $newlyWritten>>
+	<<unset $combatBegun>>
+	<<unset $combatPhase>>
+	<<unset $fightTargets>>
+	<<unset $pounce_delay>>
+	<<unset $hypnosis_deviancy_check>>
+	<<unset $animOverride>>
+
+	<<switch $player.gender>>
+	<<case "f">>
+		/*state*/
+		<<set $vaginastate to 0>>
+		<<set $penisstate to "none">>
+		/*use*/
+		<<set $vaginause to 0>>
+		<<set $penisuse to "none">>
+	<<case "m">>
+		/*state*/
+		<<set $vaginastate to "none">>
+		<<set $penisstate to 0>>
+		/*use*/
+		<<set $penisuse to 0>>
+		<<set $vaginause to "none">>
+	<<case "h">>
+		/*state*/
+		<<set $vaginastate to 0>>
+		<<set $penisstate to 0>>
+		/*use*/
+		<<set $vaginause to 0>>
+		<<set $penisuse to 0>>
+	<</switch>>
+	<<if playerHasStrapon()>>
+		<<set $penisstate to 0>>
+		<<set $penisuse to 0>>
+		/*<<if $playerPenisSizeBackup isnot undefined>>
+			<<set $player.penissize to $playerPenisSizeBackup>>
+		<</if>>*/
+	<</if>>
+
+	<<set $anusstate to 0>>
+	<<set $mouthstate to 0>>
+	<<set $finish to 0>>
+	<<unset $stalk_end>>
+	<<unset $stalk_event>>
+	<<unset $stalk_clothes>>
+	<<unset $stalk>>
+	<<unset $stalk_assess>>
+	<<unset $audience_active>>
+	<<unset $combat_end_text>>
+	<<set $gloryhole to 0>>
+	<<set $mouthuse to 0>>
+	<<set $anususe to 0>>
+	<<set $thighuse to 0>>
+	<<set $bottomuse to 0>>
+	<<if $feetuse isnot "bound">>
+		<<set $feetuse to 0>>
+	<</if>>
+	<<if $leftarm isnot "bound">>
+		<<set $leftarm to 0>>
+	<</if>>
+	<<if $rightarm isnot "bound">>
+		<<set $rightarm to 0>>
+	<</if>>
+	<<set $chestuse to 0>>
+	<<set $cheststate to 0>>
+	<<if $head isnot "bound">>
+		<<set $head to 0>>
+	<</if>>
+	<<if $position is "wall">>
+		<<set $leftarm to 0>>
+		<<set $rightarm to 0>>
+		<<set $head to 0>>
+	<</if>>
+	<<unset $neckuse>>
+	<<set $position to 0>>
+
+	<<set $walltype to 0>>
+
+	<<set $underlowerstruggle to 0>>
+	<<set $lowerstruggle to 0>>
+	<<set $upperstruggle to 0>>
+	<<set $overlowerstruggle to 0>>
+	<<set $overupperstruggle to 0>>
+	<<set $alarm to 0>>
+	<<set $rescue to 0>>
+	<<set $noise to 0>>
+	<<set $timer to 0>>
+	<<set $beastname to "none">>
+	<<set $panicparalysis to 0>>
+	<<set $panicviolence to 0>>
+	<<set $pullaway to 0>>
+	<<set $novaginal to 0>>
+	<<set $noanal to 0>>
+	<<set $nopenile to 0>>
+	<<set $nochoke to 0>>
+	<<unset $pullOut>>
+	<<unset $pullOutAsk>>
+	<<set $player.condom to false>>
+	<<unset $otherFilled>>
+	<<unset $noupper>>
+	<<unset $noupperasked>>
+	<<set $askedtochoke to 0>>
+	<<unset $speechwheeze>>
+	<<set $speechorgasmweakcumcount to 0>>
+	<<set $speechorgasmnocumcount to 0>>
+	<<set $speechorgasmcount to 0>>
+	<<set $speechorgasmrepeat to 0>>
+	<<set $underwatertime to 0>>
+	<<if $underwater isnot 1>>
+		<<oxygenrefresh>>
+		<<set $suffocating to 0>>
+	<</if>>
+	<<set $walltype to "wall">>
+	<<set $angelforgive to 0>>
+	/* 北极星模组 */
+	<<set $fallenangelretribution to 0>>
+	<<set $fallenangelvirginitylost to 0>>
+	<<set $demonseduce to 0>>
+	<<set $demonhunterhypnosis to 0>>
+	<<set $tailshaked to false>>
+	/* 北极星 */
+	<<unset $banishDisable>>
+	<<unset $penisfucked>>
+	<<unset $vaginafucked>>
+	<<unset $anusfucked>>
+	<<set $speechdisable to 0>>
+	<<unset $stealstateleft>>
+	<<unset $stealstateright>>
+	<<unset $position_lock>>
+	<<unset $handGuideLeft>>
+	<<unset $handGuideRight>>
+	<<unset $easySteal>>
+
+
+	<<set $leftactiondefault to $leftaction>>
+	<<set $rightactiondefault to $rightaction>>
+	<<set $feetactiondefault to $feetaction>>
+	<<set $mouthactiondefault to $mouthaction>>
+	<<set $vaginaactiondefault to $vaginaaction>>
+	<<set $penisactiondefault to $penisaction>>
+	<<set $anusactiondefault to $anusaction>>
+	<<set $thighactiondefault to $thighaction>>
+	<<set $cheekactiondefault to $cheekaction>>
+	<<set $chestactiondefault to $chestaction>>
+
+	<<actioncarry>>
+
+	<<set $penisaction to 0>>
+	<<set $vaginaaction to 0>>
+	<<set $anusaction to 0>>
+	<<set $leftaction to 0>>
+	<<set $rightaction to 0>>
+	<<set $mouthaction to 0>>
+	<<set $thighaction to 0>>
+	<<set $cheekaction to 0>>
+	<<set $feetaction to 0>>
+	<<set $chestaction to 0>>
+	<<set $mockaction to "none">>
+	<<set $bodyaction to 0>>
+	<<set $stealdifficulty to 1>>
+	/* 北极星模组 */
+	<<set $tailaction to 0>>
+	/* 北极星 */
+
+	<<set $lefttarget to 0>>
+	<<set $righttarget to 0>>
+	<<set $feettarget to 0>>
+	<<unset $leglocktarget>>
+	<<set $mouthtarget to 0>>
+	<<if $player.penisExist>>
+		<<set $penistarget to 0>>
+	<</if>>
+	<<if $player.vaginaExist>>
+		<<set $vaginatarget to 0>>
+		<<unset $vaginadoubletarget>>
+	<</if>>
+	<<set $anustarget to 0>>
+	<<unset $anusdoubletarget>>
+	<<set $chesttarget to 0>>
+	<<set $thightarget to 0>>
+	<<set $stealtarget to "">>
+
+	<<set $carryblock to 0>>
+
+	<<set $enemywounded to 0>>
+	<<set $enemyejaculated to 0>>
+	<<set $semenpuddle to 0>>
+	<<set $masturbationorgasm to 0>>
+
+	<<set $swarm to {
+		"type":0,
+		"name":0,
+		"move":0,
+		"spill":0,
+		"steady":0,
+		"amount":{},
+		"data":{}
+	}>>
+
+	<<unset $nowiggle>>
+	<<unset $cumbucket>>
+
+	<<set $tentacles.max to 0>>
+	<<set $tentacles.active to 0>>
+	<<set _tentacles to $tentacles>>
+	<<for _i to 0; _i lt 20; _i++>>
+		<<set _tentacles[_i] to null>>
+	<</for>>
+	<<set $abomination to 0>>
+	<<unset $tentacleColour>>
+	<<set $tentacleMouth to 0>>
+	<<set $tentacleAnus to 0>>
+	<<set $tentacleAnusBaby to 0>>
+	<<set $tentacleVagina to 0>>
+	<<set $tentaclePenis to 0>>
+
+	<<set $leftaction to 0>>
+	<<set $rightaction to 0>>
+	<<set $back to 0>>
+	<<set $front to 0>>
+	<<set $chest to 0>>
+
+	<!-- <<set $claws to 1>> -->
+	<<set $water to 0>>
+
+	<<set $vorestrength to 0>>
+	<<set $vorestruggle to 0>>
+	<<set $voretentacles to 0>>
+	<<set $vorestage to 0>>
+	<<set $vorecreature to 0>>
+	<<set $vorestomach to 0>>
+	<<set $swallowed to 0>>
+
+	<<set $leftleg to 0>>
+	<<set $rightleg to 0>>
+	<<set $leftnipple to 0>>
+	<<set $rightnipple to 0>>
+	<<set $leftarmstate to 0>>
+	<<set $rightarmstate to 0>>
+	<<set $feetstate to 0>>
+
+	<<set $audienceselector to 0>>
+	<<set $audiencecamera to 0>>
+	<<set $audiencecamera1 to 0>>
+	<<set $audiencecamera2 to 0>>
+	<<set $audiencecamera3 to 0>>
+	<<set $audiencecamera4 to 0>>
+	<<set $audiencecamera5 to 0>>
+	<<set $audiencecamera6 to 0>>
+
+	<<set $audiencemember to 0>>
+	<<set $audienceforceboy to 0>>
+	<<set $audienceforcegirl to 0>>
+	<<set $audienceforceteen to 0>>
+	<<set $audiencepresent to 0>>
+
+	<<unset $speechcrossdressangry>>
+	<<unset $speechcrossdressaroused>>
+	<<unset $speechcrossdressshock>>
+	<<unset $speechcrossdressdisappointed>>
+
+	<<unset $speechhermangry>>
+	<<unset $speechhermaroused>>
+	<<unset $speechhermshock>>
+	<<unset $speechhermdisappointed>>
+
+	<<unset $speechsextoyangry>>
+	<<unset $speechsextoyshocked>>
+	<<unset $speechsextoyaroused>>
+	<<unset $speechsextoydisappointed>>
+	<<unset $speechsextoy>>
+
+	<<set $prop to []>>
+
+	<<set $arousalmasochism to 0>>
+	<<unset $willpowerpain>>
+
+	<<set $active_enemy to 0>>
+
+	<<set $combatTrain to {
+		length: 0,
+		generateInit: 1,
+		beastTypes: [],
+		numberPerTrain: [],
+	}>>
+
+	<<if $seductionskillup gte 1>>
+		<<set $seductionskillup to 0>>
+		<<if $seductionskill lt 1000>>
+			<span class="gold">You feel more confident in your seduction skills.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $oralskillup gte 1>>
+		<<set $oralskillup to 0>>
+		<<if $oralskill lt 1000>>
+			<span class="gold">You feel more confident in your ability to give pleasure with your mouth.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $vaginalskillup gte 1>>
+		<<set $vaginalskillup to 0>>
+		<<if $vaginalskill lt 1000>>
+			<span class="gold">You feel more confident in your ability to give pleasure with your vagina.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $analskillup gte 1>>
+		<<set $analskillup to 0>>
+		<<if $analskill lt 1000>>
+			<span class="gold">You feel more confident in your ability to give pleasure with your anus.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $handskillup gte 1>>
+		<<set $handskillup to 0>>
+		<<if $handskill lt 1000>>
+			<span class="gold">You feel more confident in your ability to give pleasure with your hands.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $feetskillup gte 1>>
+		<<set $feetskillup to 0>>
+		<<if $feetskill lt 1000>>
+			<span class="gold">You feel more confident in your ability to give pleasure with your feet.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $bottomskillup gte 1>>
+		<<set $bottomskillup to 0>>
+		<<if $bottomskill lt 1000>>
+			<span class="gold">You feel more confident in your ability to give pleasure with your buttocks.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $thighskillup gte 1>>
+		<<set $thighskillup to 0>>
+		<<if $thighskill lt 1000>>
+			<span class="gold">You feel more confident in your ability to give pleasure with your thighs.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $chestskillup gte 1>>
+		<<set $chestskillup to 0>>
+		<<if $chestskill lt 1000>>
+			<span class="gold">You feel more confident in your ability to use your <<breasts>> to pleasure others.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $penileskillup gte 1>>
+		<<set $penileskillup to 0>>
+		<<if $penileskill lt 1000>>
+			<span class="gold">You feel more confident in your ability to pleasure others with <<= $player.penisExist ? "your penis" : "a strap-on">>.</span>
+			<<set $_br to true>>
+			<br>
+		<</if>>
+	<</if>>
+	<<set $enemyArousalLossReduction to 1>>
+
+	<<unset $phalluscolorA>>
+	<<unset $phalluscolorB>>
+	<<unset $currentSexToyLeft>>
+	<<unset $currentSexToyRight>>
+	<<unset $selectedItemLeft>>
+	<<unset $selectedItemRight>>
+
+	<<manend>>
+	<<turnend>>
+	<<getCombatDefaultsTypeClear>>
+
+	<<unset $disableNormalImpregnation>>
+	<<unset $disableImpregnation>>
+	<<if $_br>>
+		<br>
+	<</if>>
+<</widget>>
+
+:: Widgets Clear NPC [widget]
+
+<<widget "clearnpc">>
+	<<for _i = 0; _i < $NPCList.length; _i++>>
+		<<if Object.keys($per_npc).includes($NPCList[_i].per)>>
+			<<updateNPC $NPCList[_i]>>
+		<</if>>
+		<<set $NPCList[_i] to clone(setup.baseNPC)>>
+		<<if $NPCList[_i].strapon isnot undefined>>
+			<<run delete $NPCList[_i].strapon>>
+		<</if>>
+	<</for>>
+
+	<<set $pronoun to 0>>
+
+	<<set $beastgenderoverride to 0>>
+
+	<<set $enemyno to 0>>
+	<<set $enemynomax to 0>>
+
+	<<set $combattype to 0>>
+	<!-- Clear the arrays but don't unset them. -->
+	<<set $npc.splice(0)>>
+	<<set $npcnum.splice(0)>>
+	<<set $npcrow.splice(0)>>
+	<<if $endeventerror is undefined>>
+		<<run EventSystem.clear()>>
+	<</if>>
+<</widget>>
+
+:: Widgets Clear Single NPC [widget]
+
+<!-- usage tip: if you want to clear an npc and copy another into its position, don't forget to use clone(). example:
+	<<set $NPCList[1] to clone($NPCList[2])>>
+	<<clearsinglenpc 2>>
+-->
+<<widget "clearsinglenpc">>
+	<<if typeof _args[0] isnot "number">>
+		<span class="red">Widget "clearsinglenpc" used incorrectly! Please report this!</span>
+	<</if>>
+
+	<<set _i to _args[0]>>
+	<<set $NPCList[_i] to clone(setup.baseNPC)>>
+	<<if $enemyno gt 0>>
+		<<set $enemyno -= 1>>
+	<</if>>
+	<<if $endeventerror is undefined>>
+		<<run EventSystem.pop(_i)>>
+	<</if>>
+	<<if $enemyno is 0>>
+		<<set $pronoun to 0>>
+		<<if $endeventerror is undefined>>
+			<<run EventSystem.clear()>>
+		<</if>>
+	<</if>>
+	<<if $NPCList[_i].strapon isnot undefined>>
+		<<run delete $NPCList[_i].strapon>>
+	<</if>>
+<</widget>>
+
+:: Widgets End Event [widget]
+
+<<widget "endevent">>
+	<<if $dancing is 1>>
+		<<famedance>>
+		<<unset $dance_place>>
+		<<unset $dance_stage_cum>>
+	<</if>>
+
+	<<set $molestavoid to 1>>
+
+	<<if _args[0] isnot "phaseless">>
+		<<set $phaselast to $phase>>
+		<<set $phase to 0>>
+		<<set $phase2 to 0>>
+	<</if>>
+	<<endnpc>>
+	/*<<clearnpc>> is already called in endnpc */
+	<<set $dancelocation to 0>>
+	<<set $forceddance to 0>>
+
+	<<set $consensual to 0>>
+	<<set $danceaction to 0>>
+	<<set $danceactiondefault to 0>>
+	<<set $attention to 0>>
+	<<set $audience to 0>>
+	<<set $audienceexcitement to 0>>
+	<<set $audiencearousal to 0>>
+	<<set $audiencemod to 1>>
+	<<set $venuemod to 1>>
+	<<set $danceevent to 0>>
+	<<set $dancing to 0>>
+	<<set $privatedanceoffered to 0>>
+	<<set $trance to 0>>
+	<<set $robinhugging to 0>>
+	<<set $robinroomentered to 0>>
+	<<set $crossdressing to 0>>
+	<<unset $tip_add>>
+	<<unset $monster>>
+	<<set $enemyno to 0>>
+	<<set $enemynomax to 0>>
+	<<unset $noFinish>>
+	<<unset $promiscuityIgnore>>
+	<<unset $npcSub>>
+	<<unset $purityEvent>>
+	<<unset $corruptionEvent>>
+	<<unset $speechNPCKissVirgin>>
+	<<unset $speechNPCHandholdingVirgin>>
+	<<unset $sydneyComments>>
+	<<unset $sydneyUniqueComments>>
+	<<unset $noBodyWriting>>
+	<<unset $noAdmire>>
+	<<unset $breakIgnore>>
+	<<unset $eventforced>>
+
+	<<unset $internalejac>>
+
+	<<set $orgasmcurrent to 0>>
+
+	<<set $beastname to "none">>
+
+	<<unset $action_unclad_over_outfit>>
+	<<unset $action_unclad_over_upper>>
+	<<unset $action_unclad_over_lower>>
+	<<unset $action_unclad_outfit>>
+	<<unset $action_unclad_upper>>
+	<<unset $action_unclad_lower>>
+	<<unset $action_unclad_under_lower>>
+	<<set $clothingselector to 0>>
+	<<unset $stealtextskip>>
+	<<set $trueconsensual to 0>>
+
+	<<unset $speechcum>>
+	<<set $speechorgasmcount to 0>>
+
+	<<set $npc_named to 0>>
+	<<unset $setupMidOrgasm>>
+
+	<<unset $childSelected>>
+
+	<<set $index to 0>>
+	<<set $modeloptionsOverride to {}>>
+<</widget>>
+
+:: Widgets End Speech [widget]
+<<widget "manend">>
+	<<unset $speechpenispenetrated>>
+	<<unset $speechvaginapenetrated>>
+	<<unset $speechanuspenetrated>>
+	<<unset $speechmouthpenetrated>>
+	<<unset $speechotheranuspenetrated>>
+	<<unset $speechvaginaimminent>>
+	<<unset $speechpenisimminent>>
+	<<unset $speechanusimminent>>
+	<<unset $speechmouthimminent>>
+	<<unset $speechotheranusimminent>>
+	<<unset $speechvaginaentrance>>
+	<<unset $speechanusentrance>>
+	<<unset $speechmouthentrance>>
+	<<unset $speechpenisentrance>>
+	<<unset $speechotheranusentrance>>
+	<<unset $speechvaginawithhold>>
+	<<unset $speechanuswithhold>>
+	<<unset $speechpeniswithhold>>
+	<<unset $speechotheranuswithhold>>
+	<<unset $speechvagina>>
+	<<unset $speechpenis>>
+	<<unset $speechanus>>
+	<<unset $speechvaginamouth>>
+	<<unset $speechvaginavagina>>
+	<<unset $speechbeat>>
+	<<unset $speechhit>>
+	<<unset $speechtribentrance>>
+	<<unset $speechfacesit>>
+	<<unset $speechmouthotheranus>>
+	<<unset $speechanallick>>
+	<<unset $speechanalkiss>>
+
+	<<unset $speechfencingentrance>>
+	<<unset $speechpenispenis>>
+
+	<<unset $speechheadbreasts>>
+	<<unset $speechheadchest>>
+	<<unset $speechheadnipple>>
+	<<unset $speechheadsuckle>>
+	<<unset $speechheadnippleclosed>>
+	<<unset $speechheadsuckleclosed>>
+
+	<<unset $speechfeet>>
+	<<unset $speechthigh>>
+	<<unset $speechcheeks>>
+	<<unset $speechhandjobpenis>>
+	<<unset $speechhandjobvagina>>
+	<<unset $speechmasturbate>>
+	<<unset $speechdildovagina>>
+	<<unset $speechdildoanus>>
+	<<unset $speechstroker>>
+
+	<<unset $speechthroat>>
+	<<unset $speechvaginafoot>>
+	<<unset $speechpenisfoot>>
+	<<unset $speechchastity>>
+	<<unset $speechNPCChastity>>
+	<<unset $speechstruggle>>
+	<<unset $speechstripstruggle>>
+	<<unset $speechspank>>
+	<<unset $speecharms>>
+	<<unset $speechclit>>
+	<<unset $speechglans>>
+	<<unset $speechfutapenis>>
+	<<unset $speechbottom>>
+	<<unset $speechhair>>
+	<<unset $speechchestrub>>
+	<<unset $speechbreastrub>>
+	<<unset $speechvaginaflaunt>>
+	<<unset $speechpenisbig>>
+	<<unset $speechpenisescape>>
+	<<unset $speechvaginaescape>>
+	<<unset $speechanusescape>>
+	<<unset $speechsteal>>
+	<<unset $speechnamedrop>>
+	<<unset $speechadmired>>
+	<<unset $speechaskrough>>
+
+	<<unset $speechwheeze>>
+
+	<<unset $speechNPCPenisVirgin>>
+	<<unset $speechNPCVaginaVirgin>>
+	<<unset $speechNPCAnusVirgin>>
+	<<unset $speechNPCOralVirgin>>
+	<<unset $speechNPCKissVirgin>>
+	<<unset $speechNPCHandholdingVirgin>>
+
+	<<set $npcspeechcycle += 1>>
+	<<if $npcspeechcycle gte 7>>
+		<<set $npcspeechcycle to 0>>
+	<</if>>
+<</widget>>
+
+<<widget "turnend">>
+	<<if $enemyarousal lt 0>>
+		<<set $enemyarousal to 0>>
+	<</if>>
+
+	<<unset $speechcum>>
+	<<set $speechorgasmrepeat to 0>>
+
+	<<unset $speechgenitals>>
+	<<unset $speechbreasts>>
+	<<unset $speechscream>>
+	<<unset $speechapologise>>
+	<<unset $speechplead>>
+	<<unset $speechmoan>>
+	<<unset $speechdemand>>
+	<<unset $speechcoverface>>
+	<<unset $speechcoverpenis>>
+	<<unset $speechcovervagina>>
+	<<unset $speechapologiseno>>
+	<<unset $speechforgive>>
+	<<unset $speechspray>>
+	<<unset $speechvaginavirgin>>
+	<<unset $speechanusvirgin>>
+	<<unset $speechmouthvirgin>>
+	<<unset $speechpenisvirgin>>
+	<<unset $speechkissvirgin>>
+	/* 北极星模组 */
+	<<unset $speechdragonbreath>>
+	/* 北极星 */
+	<<unset $speechgrowl>>
+	<<unset $speechgrowlheat>>
+	<<unset $speechgrowlrut>>
+	<<unset $speechpregnant>>
+	<<unset $speechleglock>>
+
+	<<if $speechcrossdressangry is 2>>
+		<<set $speechcrossdressangry to 1>>
+	<<elseif $speechcrossdressangry is 1>>
+		<<unset $speechcrossdressangry>>
+	<</if>>
+
+	<<if $speechcrossdressaroused is 2>>
+		<<set $speechcrossdressaroused to 1>>
+	<<elseif $speechcrossdressaroused is 1>>
+		<<unset $speechcrossdressaroused>>
+	<</if>>
+
+	<<if $speechcrossdressshock is 2>>
+		<<set $speechcrossdressshock to 1>>
+	<<elseif $speechcrossdressshock is 1>>
+		<<unset $speechcrossdressshock>>
+	<</if>>
+
+	<<if $speechcrossdressdisappointed is 2>>
+		<<set $speechcrossdressdisappointed to 1>>
+	<<elseif $speechcrossdressdisappointed is 1>>
+		<<unset $speechcrossdressdisappointed>>
+	<</if>>
+
+	<<if $speechhermangry is 2>>
+		<<set $speechhermangry to 1>>
+	<<elseif $speechhermangry is 1>>
+		<<unset $speechhermangry>>
+	<</if>>
+
+	<<if $speechhermaroused is 2>>
+		<<set $speechhermaroused to 1>>
+	<<elseif $speechhermaroused is 1>>
+		<<unset $speechhermaroused>>
+	<</if>>
+
+	<<if $speechhermshock is 2>>
+		<<set $speechhermshock to 1>>
+	<<elseif $speechhermshock is 1>>
+		<<unset $speechhermshock>>
+	<</if>>
+
+	<<if $speechhermdisappointed is 2>>
+		<<set $speechhermdisappointed to 1>>
+	<<elseif $speechhermdisappointed is 1>>
+		<<unset $speechhermdisappointed>>
+	<</if>>
+<</widget>>
+
+<<widget "manspeech">>
+	<<set _n to _args[0]>>
+	<<if $NPCList[_n].speechpenisescape is 1>>
+		<<set $speechpenisescape to 1>>
+	<</if>>
+	<<if $NPCList[_n].speechvaginaescape is 1>>
+		<<set $speechvaginaescape to 1>>
+	<</if>>
+	<<if $NPCList[_n].speechanusescape is 1>>
+		<<set $speechanusescape to 1>>
+	<</if>>
+<</widget>>

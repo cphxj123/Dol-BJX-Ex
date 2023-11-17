@@ -1,0 +1,1249 @@
+:: Farm Kennel
+<<set $outside to 0>><<effects>>
+<<beastNEWinit 1 dog>>
+<<if $kennel_intro isnot true>>
+	<<set $kennel_intro to true>>
+	You enter the kennel. The scent of <<beastsplural>> surrounds you. <<if $farm.kennel gte 1>>Here, you can train them to defend the farm.<</if>>
+	<br><br>
+	<<if $wolfgirl gte 5>>
+		It doesn't take long for the first <<beasttype>> to notice you. Soon enough, the entire kennel looks your way. They cock their heads as they examine your tail, as if unsure what to make of it, before one barks approval.<<ggrespect>><<farm_dogs 3>>
+		<br><br>
+
+		<<kennel_intro>>
+		<br><br>
+
+	<<elseif $cat gte 5>>
+		It doesn't take long for the <<beastsplural>> to notice you. Your cat-like smell must be betraying your presence. They seem agitated. The smell is riling them up. You purr, but it doesn't help.<<llrespect>><<farm_dogs -3>>
+		<br><br>
+
+		<<kennel_intro>>
+		<br><br>
+	<<elseif $harpy gte 5>>
+		They examine your wings, and back away. You remind them of something terrible.<<lrespect>><<farm_dogs -1>>
+		<br><br>
+
+		<<kennel_intro>>
+		<br><br>
+	<<elseif $cow gte 5>>
+		<<if $lactating is 1 and $milk_amount gte 30>>
+			Their noses twitch. They can smell your milk, and it puts them at ease. They are used to cattle, after all.<<ggrespect>><<farm_dogs 3>>
+		<<else>>
+			They barely seem to register your presence. They are used to cattle, after all.<<grespect>><<farm_dogs 1>>
+		<</if>>
+		<br><br>
+
+		<<kennel_intro>>
+		<br><br>
+	<<elseif $fox gte 5>>
+		It doesn't take long for the first <<beasttype>> to notice you. Your fox-like smell must be betraying your presence. They cock their heads as they examine your tail, as if unsure what to make of it, before one barks hesitant approval.<<ggrespect>><<farm_dogs 1>>
+		<br><br>
+
+		<<kennel_intro>>
+		<br><br>
+	/* 北极星模组 */
+	<<elseif $dragon gte 6>>
+        它们审视着你的龙角，看起来很是困惑。
+        <br><br>
+
+        <<kennel_intro>>
+        <br><br>
+    /* 北极星 */
+
+	<<else>>
+
+		One <<beasttype>> looks up. Soon enough, the entire kennel looks your way.
+
+		<<kennel_intro>>
+		<br><br>
+	<</if>>
+
+	<<link [[Next|Farm Kennel]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You are in the kennel.
+	<<if $farm.beasts.dogs gte 20>>
+		The <<beastsplural>> await your words, their tails wagging.
+	<<elseif $farm.beasts.dogs gte 5>>
+		The <<beastsplural>> await your words.
+	<<elseif $farm.beasts.dogs gte -5>>
+		The <<beastsplural>> ignore you.
+	<<elseif $farm.beasts.dogs gte -20>>
+		A <<beasttype>> growls at you.
+	<<else>>
+		The <<beastsplural>> watch you with unrestrained lust.
+	<</if>>
+	<<if $farm.kennel gte 1>>Training equipment lines one wall.<</if>>
+	<br><br>
+
+	<<if $farm.kennel gte 1>>
+		<<link [[Train (1:00)|Farm Kennel Train]]>><<set $farm_kennel to 1>><<pass 60>><</link>>
+		<br>
+	<</if>>
+	<<link [[Give treats|Farm Kennel Treats]]>><</link>>
+	<br>
+	<<link [[Play|Farm Kennel Play]]>><<set $farm_kennel to 1>><</link>>
+	<br>
+	<<link [[Leave|Farm Work]]>><<endevent>><</link>>
+	<br>
+
+<</if>>
+
+:: Widgets Kennel [widget]
+<<widget "kennel_intro">>
+	<<if $farm.beasts.dogs gte 5>>
+		They seem content with your presence.
+	<<elseif $farm.beasts.dogs gte -5>>
+		They tolerate your presence, and most look away after recognising you.
+	<<elseif $farm.beasts.dogs gte -20>>
+		<span class="pink">You feel unwelcome.</span>
+	<<else>>
+		You push away one as <<bhe>> tries to hump your leg. <span class="red">They have little respect for you.</span>
+	<</if>>
+<</widget>>
+
+<<widget "kennel_treats">>
+	<<if _args[0]>>
+		<<set $kennel_treats += _args[0]>>
+		<<if $kennel_treats lt 0>>
+			<<set $kennel_treats to 0>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "kennel_treat_options">>
+	<<if $kennel_treats gte 20>>
+		<<link [[Feed all (20)|Farm Kennel Treats All]]>><<farm_dogs 3>><<kennel_treats -20>><</link>><<ggrespect>>
+		<br>
+	<</if>>
+	<<if $kennel_treats gte 10>>
+		<<link [[Feed half (10)|Farm Kennel Treats Half]]>><<farm_dogs 2>><<kennel_treats -10>><</link>><<grespect>>
+		<br>
+	<</if>>
+	<<if $kennel_treats gte 5>>
+		<<link [[Feed some (5)|Farm Kennel Treats Some]]>><<farm_dogs 1>><<kennel_treats -5>><</link>><<grespect>>
+		<br>
+	<</if>>
+	<<if $kennel_treats gte 1>>
+		<<link [[Feed one|Farm Kennel Treats One]]>><<kennel_treats -1>><</link>>
+		<br>
+	<<else>>
+		You're out of treats.
+		<br>
+	<</if>>
+	<<link [[Leave|Farm Work]]>><<endevent>><</link>>
+	<br>
+<</widget>>
+
+<<widget "kennel_play_options">>
+	<<link [[Play fetch (1:00)|Farm Kennel Play Fetch]]>><<tiredness 6>><<farm_dogs 3>><<pass 60>><</link>><<ggrespect>>
+	<br>
+	<<link [[Race (1:00)|Farm Kennel Play Race]]>><<athletics 6>><<tiredness 6>><<pass 60>><</link>><<gathletics>>
+	<br>
+	<<if $farm.beasts.dogs gte -5>>
+		<<if $deviancy gte 35>>
+			<<link [[Private playtime (1:00)|Farm Kennel Play Lewd]]>><<pass 60>><</link>><<deviant3>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $farm.beasts.dogs gte 5>>
+		<<if $deviancy gte 75>>
+			<<link [[Play a special game (1:00)|Farm Kennel Play Gang]]>><<pass 60>><</link>><<deviant5>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $farm.beasts.dogs gte 20>>
+		<<if $deviancy gte 75>>
+			<<link [[Join them as a member of the kennel (1:00)|Farm Kennel Play Member]]>><<pass 60>><</link>><<deviant5>><<grespect>>
+			<br>
+		<</if>>
+	<</if>>
+<</widget>>
+
+
+
+:: Farm Kennel Treats
+<<effects>>
+
+You open the locked cupboard in an adjoining room, and find the bag of treats.
+
+<<if !$kennel_treats>>
+	It's empty. You can buy more treats from the pet shop in town.
+	<br><br>
+
+	<<link [[Next|Farm Kennel]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<set $farm_kennel to 1>>
+	You carry it to the <<beastsplural>>.
+
+	<<if $farm.beasts.dogs gte 20>>
+		They gather around with an eager vigour. You don't need treats to hold their attention.
+		<br><br>
+
+		<<kennel_treat_options>>
+	<<elseif $farm.beasts.dogs gte 5>>
+		They gather around with an eager vigour. The smell of treats has reached their noses.
+		<br><br>
+
+		<<kennel_treat_options>>
+	<<elseif $farm.beasts.dogs gte -5>>
+		They gather around you.
+		<br><br>
+
+		<<kennel_treat_options>>
+	<<elseif $farm.beasts.dogs gte -20>>
+		They might not respect you, but their desire for food outweighs that for now. They tolerate you.
+		<br><br>
+
+		<<kennel_treat_options>>
+	<<else>>
+		They rush at you, with no regard for your intentions or instructions. They want their treats.
+		<br><br>
+
+		<<link [[Next|Farm Kennel Fight]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+
+:: Farm Kennel Treats All
+<<effects>>
+
+<<if $farm.beasts.dogs gte 20>>
+
+	The <<beastsplural>> sit upright and await their treats. Not a single one acts out. They all wait with their mouths open. You feed them one by one. They devour their treats in moments, then lick your hand as you pet them.
+	<br><br>
+
+	They remain seated, watching you obediently.
+	<br><br>
+
+	<<link [[Hug|Farm Kennel Treats Hug]]>><<farm_dogs 1>><</link>><<grespect>>
+	<br>
+	<<if $deviancy gte 15>>
+		<<link [[Seduce|Farm Kennel Treats Seduce]]>><</link>><<deviant2>>
+	<</if>>
+	<br>
+	<<if $deviancy gte 35 and $lactating gte 1 and $milk_amount gte 30 and $breastfeedingdisable is "f">>
+		<<link [[Breastfeed|Farm Kennel Treats Breastfeed]]>><<farm_dogs 3>><</link>><<deviant3>><<ggrespect>>
+		<br>
+	<</if>>
+	<br>
+
+<<elseif $farm.beasts.dogs gte 5>>
+	The <<beastsplural>> gather around you. Not a single one acts out. They wait their turn as you hand out treats, then devour them in moments.
+	<<if $monster is 1>>
+		Some thank you as you hand them a treat.
+	<<else>>
+		Some growl softly as you feed them.
+	<</if>>
+	<br><br>
+
+	They lie with wagging tails as you leave the kennel.
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+
+<<elseif $farm.beasts.dogs gte -5>>
+	The <<beastsplural>> relax around you. They're eager for the treats, but respect you enough to wait their turn. They devour them in moments.
+	<br><br>
+
+	You walk away from the kennel, leaving them to lick their lips.
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You have plenty of treats. You toss them freely to the <<beastsplural>>. They devour them in moments, then bark for more, their eyes shining with hunger.
+	<<if $monster is 1>>
+		They demand more treats.
+	<<else>>
+		Two release a guttural growl as they march closer.
+	<</if>>
+	<br><br>
+
+	You back away, and manage to escape before the situation escalates.
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Farm Kennel Treats Seduce
+<<effects>>
+
+You drop to the ground in front of a <<beasttype>>. <<bHe 0>> looks eager.
+<<deviancy2>>
+
+<<link [[Next|Farm Kennel Sex]]>><<set $sexstart to 1>><</link>>
+<br>
+
+:: Farm Kennel Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+<</if>>
+
+The other <<beastsplural>> watch.
+<br><br>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Farm Kennel Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Farm Kennel Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Farm Kennel Sex Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<beastejaculation>>
+
+	<<tearful>> you leave the kennel. The <<beastsplural>> lie down, their tails wagging.<<ggrespect>><<farm_dogs 3>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Farm Work]]>><</link>>
+	<br>
+
+<<elseif $enemyhealth lte 0>>
+
+	Scolded, the <<beasttype>> whimpers and backs away from you.
+	<br><br>
+
+	<<tearful>> you leave the kennel.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Farm Work]]>><</link>>
+	<br>
+
+<<else>>
+
+	The <<beasttype>> backs away from you, afraid <<bhe 0>> has done something wrong.
+	<br><br>
+
+	<<tearful>> you leave the kennel.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Farm Work]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Farm Kennel Treats Breastfeed
+<<effects>>
+
+You offer a <<beasttype>> your <<breasts>>. <<bHe 0>> hesitates, then licks your bud. Milk flows into <<bhis 0>> mouth.
+<<deviancy3>><<breastfeed>>
+
+Satisfied, the <<beasttype>> lies down. Their tails wag as you return to the farm.
+<br><br>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>
+
+
+:: Farm Kennel Treats Hug
+<<effects>>
+
+You give a <<beasttype>> a gentle hug. <<bHe 0>> seems to appreciate it. The <<beastsplural>> lie down as you leave, their tails wagging.
+<br><br>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>
+
+
+:: Farm Kennel Treats Half
+<<effects>>
+
+You take out ten treats. The <<beastsplural>> put on their best behaviour, hoping to increase their odds. You hand out treats to the lucky, and suggest the rest might have a turn next time.
+<br><br>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>
+
+:: Farm Kennel Treats Some
+<<effects>>
+
+You take out five treats, and take a firm tone. "If you bicker over them, I'm giving you none."
+<br><br>
+
+The <<beastsplural>> put on their best behaviour, hoping to increase their odds. You hand the treats out. The recipients break the treats apart to share with the rest of the kennel.
+<br><br>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>
+
+:: Farm Kennel Treats One
+<<effects>>
+
+You take out one treat.
+<<if $farm.beasts.dogs lte -5>>
+	The <<beastsplural>> glare in defiance. They see only one treat, and they do not approve.
+	<br><br>
+
+	You hurl the treat across the kennel. The <<beastsplural>> lose interest in you at once, and run at the treat in a mad dash. You make your exit.
+	<br><br>
+<<else>>
+	The <<beastsplural>> look disappointed, but not angry. They lie on the ground around you.
+	<br><br>
+	You toss the treat across the kennel. An older <<beasttype>> walks over, and breaks it into pieces to share out.
+	<br><br>
+<</if>>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>
+
+
+:: Farm Kennel Fight
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $enemyanger += 200>>
+	<<set $enemytrust -= 50>>
+<</if>>
+
+The other <<beastsplural>> watch.
+<br><br>
+
+<<effects>>
+<<effectsman>>
+<br><br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Farm Kennel Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Farm Kennel Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Farm Kennel Fight Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<beastejaculation>>
+
+	You manage to keep the bag of treats close. None of the others try anything, for now.
+	<br><br>
+
+	<<tearful>> you struggle to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<if !$kennel_treats>>
+		<<link [[Next|Farm Work]]>><</link>>
+	<<else>>
+		<<beastNEWinit 1 dog>>
+		<<kennel_treat_options>>
+	<</if>>
+<<elseif $enemyhealth lte 0>>
+
+	The <<beasttype>> backs away from you, cowed. The others don't try anything.<<ggrespect>><<farm_dogs 1>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<if !$kennel_treats>>
+		<<link [[Next|Farm Work]]>><</link>>
+	<<else>>
+		<<beastNEWinit 1 dog>>
+		<<kennel_treat_options>>
+	<</if>>
+<<else>>
+
+	<<kennel_treats -100>>The <<beastsplural>> lose interest in you as you collapse. They tear apart the bag of treats, and feast.<<llrespect>><<farm_dogs -3>>
+	<br><br>
+
+	<<tearful>> you stagger from the kennel.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Farm Work]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Farm Kennel Play
+<<effects>>
+
+You decide to make things fun for the <<beastsplural>>.
+
+<<if $farm.beasts.dogs gte 20>>
+	They gather around you, their tails wagging. They will obey without question.
+	<br><br>
+
+	How do you want to play with them?
+	<br><br>
+
+	<<kennel_play_options>>
+<<elseif $farm.beasts.dogs gte 5>>
+	They gather around you with vigour, their tails wagging.
+	<br><br>
+
+	How do you want to play with them?
+	<br><br>
+
+	<<kennel_play_options>>
+<<elseif $farm.beasts.dogs gte -5>>
+	They gather around you. They don't care for you.
+	<br><br>
+
+	How do you want to play with them?
+	<br><br>
+
+	<<kennel_play_options>>
+<<elseif $farm.beasts.dogs gte -20 or random(1, 2) is 2>>
+	They gather around you. They don't trust you much.
+	<br><br>
+
+	How do you want to play with them?
+	<br><br>
+
+	<<kennel_play_options>>
+<<else>>
+	Unfortunately, they have a different sort of fun in mind. They rush you down.
+	<br><br>
+
+	<<endevent>>
+	<<beastNEWinit 6 dog>>
+	<<link [[Next|Farm Kennel Gang Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Farm Kennel Gang Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<beastTrainGenerate>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Farm Kennel Gang Rape End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Farm Kennel Gang Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Farm Kennel Gang Rape End
+<<effects>>
+<<if $enemyhealth lte 0>>
+	<<beastwound>>
+	<<if $combatTrain.length gt 0>>
+		The <<beasttype>> recoils in pain and fear, but another is eager for a go.
+
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Farm Kennel Gang Rape]]>><</link>>
+	<<else>>
+		The <<beasttype>> recoils in pain and fear.
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Farm Kennel Gang Rape End]]>><<set $finish to 1>><</link>>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<if $combatTrain.length gt 0>>
+		Satisfied, the <<beasttype>> moves and another takes its turn.
+
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Farm Kennel Gang Rape]]>><</link>>
+	<<else>>
+		Satisfied, the <<beasttype>> moves away from you.
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Farm Kennel Gang Rape End]]>><<set $finish to 1>><</link>>
+	<</if>>
+<<else>>
+	<<if $enemywounded is 1 and $enemyejaculated is 0>>
+		The <<beasttype>> whimpers and flees.
+	<<elseif $enemywounded is 0 and $enemyejaculated is 1>>
+		Satisfied, the <<beasttype>> leaves.
+	<<elseif $enemywounded gte 2 and $enemyejaculated is 0>>
+		Feeling that you're more trouble than you're worth, the beasts flee.
+	<<elseif $enemywounded is 0 and $enemyejaculated gte 2>>
+		The beasts leave you spent and shivering.
+	<<elseif $enemywounded gte 1 and $enemyejaculated gte 1>>
+		The beasts leave you spent and shivering.
+	<</if>>
+	<br><br>
+	<<tearful>> you stagger from the kennel.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Farm Work]]>><</link>>
+	<br>
+<</if>>
+
+:: Farm Kennel Play Fetch
+<<effects>>
+
+You take a ball from a cupboard, and throw it across the kennel.
+<br><br>
+
+<<if $farm.beasts.dogs gte 5>>
+	The <<beastsplural>> run and chase the ball, until one manages to get a solid grip. They bring it back to you, and wait for you throw it again.
+	<br><br>
+
+	It's hard work keeping up with their energy, but you feel better for it.<<physique 6>>
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	The <<beastsplural>> run and chase the ball, but are more interested in fighting amongst themselves than bringing it back to you. They continue until they tire themselves out.
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Farm Kennel Play Race
+<<effects>>
+
+You let the <<beastsplural>> outside, and race them around the field.
+<br><br>
+
+<<if currentSkillValue('athletics') gte 800>>
+	You manage to keep up with them, which they seem to appreciate.<<grespect>><<farm_dogs 1>>
+	<br><br>
+<<elseif currentSkillValue('athletics') gte 400>>
+	You can't quite keep up with them, but you're able to follow behind. They seem happy for the exercise regardless, and are tired out by the time you return them to the kennel.
+	<br><br>
+<<else>>
+	They outpace you at once, and you soon give up trying to follow. They seem happy for the exercise regardless, and are tired out by the time you return them to the kennel.
+	<br><br>
+<</if>>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>
+
+:: Farm Kennel Play Lewd
+<<effects>>
+
+You attach a collar and leash to a <<beasttype>>, and lead it into an adjoining room. You close the door behind you, and drop to the ground. The <<beasttype>> knows what's up.
+<<deviant3>>
+<br><br>
+
+<<link [[Next|Farm Kennel Play Sex]]>><<set $sexstart to 1>><</link>>
+<br>
+
+
+:: Farm Kennel Play Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Farm Kennel Play Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Farm Kennel Play Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Farm Kennel Play Sex Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<beastejaculation>>
+
+	<<tearful>> you rise to your feet. "Good <<if $pronoun is "f">>girl<<else>>boy<</if>>," you say.
+	<br><br>
+
+	You return the <<beasttype>> to the kennel proper.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Farm Work]]>><</link>>
+	<br>
+
+<<elseif $enemyhealth lte 0>>
+
+	The <<beasttype>> backs away from you. <<tearful>> you climb to your feet.
+	<br><br>
+
+	You return <<bhim 0>> to the kennel proper.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Farm Work]]>><</link>>
+	<br>
+
+<<else>>
+
+	The <<beasttype>> backs away from you. <<tearful>> you climb to your feet.
+	<br><br>
+
+	You return <<bhim 0>> to the kennel proper.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Farm Work]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Farm Kennel Play Gang
+<<effects>>
+
+The <<beastsplural>> wait obediently, until you give a seductive wiggle. The most dominant approaches first.
+<<deviant5>>
+<br><br>
+<<endevent>>
+<<beastNEWinit 6 dog>>
+<<link [[Next|Farm Kennel Play Gang Sex]]>><<set $sexstart to 1>><</link>>
+<br>
+
+:: Farm Kennel Play Gang Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<beastCombatInit>>
+	<<beastTrainGenerate>>/* - Delete if there aren't multiple beasts*/
+<</if>>
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<br><br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Farm Kennel Play Gang Sex End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Farm Kennel Play Gang Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Farm Kennel Play Gang Sex End
+<<effects>>
+<<if $enemyhealth lte 0>>
+	<<beastwound>>
+	<<if $combatTrain.length gt 0>>
+		The <<beasttype>> recoils in pain and fear, but another is eager for a go.
+
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Farm Kennel Play Gang Sex]]>><</link>>
+	<<else>>
+		The <<beasttype>> recoils in pain and fear.
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Farm Kennel Play Gang Sex End]]>><<set $finish to 1>><</link>>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<if $combatTrain.length gt 0>>
+		Satisfied, the <<beasttype>> moves and another takes its turn.
+
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Farm Kennel Play Gang Sex]]>><</link>>
+	<<else>>
+		Satisfied, the <<beasttype>> moves away from you.
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Farm Kennel Play Gang Sex End]]>><<set $finish to 1>><</link>>
+	<</if>>
+<<else>>
+	The <<beastsplural>> give you satisfied licks as you rise to your feet.
+	<br><br>
+	<<tearful>> you leave the kennel.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Farm Work]]>><</link>>
+	<br>
+<</if>>
+
+:: Farm Kennel Play Member
+<<effects>>
+
+<<strip>>
+You lock the kennel door. The <<beastsplural>> give you a quizzical look as you drop to all fours and <<if $wolfgirl gte 6 or $cat gte 6 or $cow gte 6 or $harpy gte 6 or $fox gte 6>>wag your tail<<else>>shake your <<bottom>><</if>> but they seem happy to welcome you as one of them.
+<br><br>
+
+You walk on your hands and knees through the kennel.
+<<deviant5>>
+<br><br>
+<<link [[Next|Farm Kennel Play Member 2]]>><</link>>
+<br>
+
+:: Farm Kennel Play Member 2
+<<effects>>
+
+You grow hungry, and crawl over to the feeding trench. The food doesn't look appealing, but the <<beastsplural>> on either side of you chow down.
+<br><br>
+
+<<if $wolfgirl gte 6>>
+	You bite into the food. It tastes good. You eat your fill, then lie back with a full stomach. Others join you, and you're soon lying in the centre of a huge pile, surrounded by flicking tails.<<ltrauma>><<trauma -4>>
+<<else>>
+	You try a little. It tastes horrible. You try to keep eating, the others have no trouble after all, but soon give up. You lie down before you get a sore stomach. Some of the others cuddle up to you.
+<</if>>
+<br><br>
+
+<<link [[Next|Farm Kennel Play Member 3]]>><</link>>
+<br>
+
+
+:: Farm Kennel Play Member 3
+<<effects>>
+
+You wake up after a while. Seems you dozed off. The other <<beastsplural>> are licking each other clean. One marches up to you, and licks behind your ears.
+<br><br>
+
+<<if $wolfgirl gte 6>>
+	You eagerly lick behind one of the <<beastsplural>>'s ears in return. You flick your tongue in straight lines from the ear down to the back. It comes naturally.
+	<br><br>
+
+	<span class="lewd">You feel a warm wetness on your <<genitals 1>></span>, and freeze in surprise. The <<beasttype>> responsible moves on soon enough.
+	<br><br>
+
+	Sharing this moment with the <<beastsplural>> gives you an odd sense of peace.<<lawareness>><<awareness -6>><<ltrauma>><<lstress>><<trauma -6>><<stress -6>>
+	<br><br>
+
+<<else>>
+	You hesitate, then lick behind the <<beasttype>>'s ear in return. It tastes bad, like hair. Some gets stuck on your tongue as well. The <<beasttype>> seems to appreciate the effort though.
+	<br><br>
+<</if>>
+
+You rise to your feet. Time to return to the farm.
+<br><br>
+
+<<link [[Next|Farm Work]]>><<clotheson>><<endevent>><</link>>
+<br>
+
+
+:: Farm Kennel Train
+<<effects>>
+
+You round up the <<beastsplural>> for training.
+
+<<if $farm.beasts.dogs gte 20>>
+	They obey, eager for your approval.
+	<br><br>
+<<elseif $farm.beasts.dogs gte 5>>
+	They obey without complaint.
+	<br><br>
+<<elseif $farm.beasts.dogs gte -5>>
+	They complain a little, but obey.
+	<br><br>
+<<elseif $farm.beasts.dogs gte -20>>
+	They look wary of you.
+	<br><br>
+<<else>>
+	They growl at you.
+	<<if $monster is 1>>
+		"Intruder!" one barks.
+		<br>
+		"Plaything!" offers another. The rest agree.
+	<</if>>
+	Their lack of respect is clear.
+	<br><br>
+<</if>>
+
+What kind of training do you attempt?
+<br><br>
+
+<<link [[Strict|Farm Kennel Train Strict]]>><<stress 12>><<tiredness 12>><<farm_dogs 3>><</link>><<gstress>><<ggtiredness>><<gggrespect>>
+<br>
+<<link [[Mild|Farm Kennel Train Mild]]>><<stress 6>><<tiredness 6>><<farm_dogs 2>><</link>><<gstress>><<gtiredness>><<ggrespect>>
+<br>
+<<link [[Easygoing|Farm Kennel Train Easy]]>><<farm_dogs 1>><</link>><<grespect>>
+<br>
+
+:: Farm Kennel Train Strict
+<<effects>>
+
+<<if $farm.beasts.dogs gte 20>>
+
+	You don't need to yell during training. The <<beastsplural>> follow every command without issue. They jump when you tell them to jump, roll when you tell them to roll, and attack what you tell them to attack.
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+
+
+<<elseif $farm.beasts.dogs gte 5>>
+
+	You yell orders at the <<beastsplural>>. They obey without hesitation. You're not sure yelling was even necessary. They seem eager to train.
+	<br><br>
+
+	<<if $rng gte 80>>
+		You're just about to wrap things up when a <<beasttype>> runs up to you. <<bHe 0>>
+		<<if $monster is 1>>
+			looks up at you. "Can master stroke my head?" <<bhe 0>> pleads.
+		<<else>>
+			looks up at you, tail wagging.
+		<</if>>
+		<br><br>
+
+		<<link [[Pat|Farm Kennel Train Pat]]>><<trauma -6>><<stress -6>><</link>><<ltrauma>><<lstress>>
+		<br>
+		<<link [[Wrap things up|Farm Work]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		The training goes well. You wrap things up.<<grespect>><<farm_dogs 1>>
+		<br><br>
+
+		<<link [[Next|Farm Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+
+
+<<elseif $farm.beasts.dogs gte -5>>
+	You yell at the <<beastsplural>>, demanding they follow orders. They obey without much enthusiasm.
+	<br><br>
+
+	<<if $rng gte 51>>
+		The training goes well, but at the end one <<beasttype>> limps up to you, and holds out <<bhis 0>> <<if $monster is 1>>foot<<else>>paw<</if>>.
+		<br><br>
+
+		<<link [[Tend to the paw|Farm Kennel Train Paw]]>><<stress 6>><<trauma -6>><</link>><<gstress>><<ltrauma>>
+		<br>
+		<<link [[Wrap things up|Farm Work]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		The training felt productive.<<grespect>><<farm_dogs 1>>
+		<br><br>
+
+		<<link [[Next|Farm Work]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<elseif $farm.beasts.dogs gte -20>>
+	You yell at the <<beastsplural>>, demanding they follow orders. They ignore most of your commands, with only some of them obeying some of the time.
+	<br><br>
+
+	<<if $rng gte 51>>
+		It's slow going, but you think you're getting through to some.<<grespect>><<farm_dogs 1>>
+	<<else>>
+		You hope the next training session goes better.
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You yell at the <<beastsplural>>, demanding they follow orders. <span class="red">They ignore you.</span>
+	<br><br>
+
+	<<if $rng gte 40>>
+		You end the training with a sigh, and feel disappointed as you leave the kennel.
+		<br><br>
+		<<link [[Next|Farm Work]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		You end the training with a sigh, and head for the exit. <span class="red">A <<beasttype>> steps in your way, and growls.</span> Others approach from behind.
+		<br><br>
+
+		<<link [[Force your way through|Farm Kennel Gang Rape]]>><<endevent>><<beastNEWinit 3 dog>><<set $molestationstart to 1>><</link>>
+		<br>
+		<<link [[Plead|Farm Kennel Train Strict Plead]]>><</link>>
+		<br>
+		<<link [[Submit|Farm Kennel Train Strict Submit]]>><<sub 1>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Farm Kennel Train Pat
+<<effects>>
+
+You smile at the <<beasttype>>, and give <<bhis 0>> head a gentle pat. <<bHe 0>> closes <<bhis 0>> eyes in bliss. You feel warm inside.
+<br><br>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>
+
+
+
+:: Farm Kennel Train Paw
+<<effects>>
+
+You take a closer look. There's no visible injury, but you give it a careful runover with your hands. You find a small rock wedged inside. It's easy to dislodge.
+<br><br>
+
+The grateful <<beasttype>> returns to the others as you wrap things up.
+<br><br>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>
+
+
+
+
+:: Farm Kennel Train Strict Plead
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Please let me through," you try. The <<beastsplural>> remain firm. There's something they want from you.
+	<br><br>
+	<<endevent>>
+	<<beastNEWinit 3 dog>>
+	<<link [[Next|Farm Kennel Gang Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<<elseif $speech_attitude is "bratty">>
+	"Lie down," you say, your voice firm. "Right now."
+	<br><br>
+	The <<beastsplural>> hesitate, then the one blocking your path does as instructed. <<bHe 0>> watches you with lust-filled eyes as you leave the kennel.
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	"Let me through," you say. "That's a command."
+	<br><br>
+	The <<beastsplural>> hesitate, then the one blocking your path does as instructed. <<bHe 0>> watches you with lust-filled eyes as you leave the kennel.
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+<br><br>
+
+
+:: Farm Kennel Train Strict Submit
+<<effects>>
+
+You drop to the ground. You know what they want, and it'll be easier to give it.
+<br><br>
+<<endevent>>
+<<beastNEWinit 3 dog>>
+<<link [[Next|Farm Kennel Gang Rape]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+
+:: Farm Kennel Train Mild
+<<effects>>
+
+You set up a simple parkour. The goal for the <<beastsplural>> is to finish without your help.
+
+<<if $farm.beasts.dogs gte 5>>
+
+	They follow your orders with vigour, vying for your attention by putting in extra effort.
+	<br><br>
+
+	<<link [[Wrap things up|Farm Work]]>><<endevent>><</link>>
+	<br>
+	<<if $deviancy gte 35>>
+		<<link [[Reward the most impressive|Farm Kennel Train Mild One]]>><<handskill 6>><</link>><<deviant3>><<ghandskill>>
+		<br>
+	<</if>>
+	<<if $deviancy gte 75>>
+		<<link [[Reward them all|Farm Kennel Train Mild All]]>><<farm_dogs 3>><</link>><<deviant5>><<ggrespect>>
+		<br>
+	<</if>>
+
+
+<<elseif $farm.beasts.dogs gte -5>>
+
+	They follow your orders without enthusiasm, but the training goes well.<<grespect>><<farm_dogs 1>>
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+
+<<elseif $farm.beasts.dogs gte -20>>
+
+	However, it's soon clear they have their own ideas. They don't outright ignore you, but many ignore the obstacles. You yell firm instructions, which helps a bit. It might be best to ignore the remaining troublemakers.
+	<br><br>
+
+	<<link [[Discipline them|Farm Kennel Train Mild Discipline]]>><</link>>
+	<br>
+	<<link [[Wrap things up|Farm Work]]>><<endevent>><</link>>
+	<br>
+
+
+<<else>>
+	However, it's soon clear that they have different ideas. They walk past the obstacles, and ignore the hoops.
+	<br><br>
+
+	<<link [[Give up|Farm Work]]>><<endevent>><</link>>
+	<br>
+	<<link [[Yell|Farm Kennel Train Mild Yell]]>><</link>><<tendingdifficulty 1 1000>>
+	<br>
+<</if>>
+
+:: Farm Kennel Train Mild Discipline
+<<effects>>
+
+You single out a <<beasttype>>, though you don't expect <<bhim 0>> to respond well.
+
+<<if $rng gte 20>>
+	<<if $monster is 1>>
+		<<bHe 0>> glares at you,
+	<<else>>
+		<<bHe 0>> barks back,
+	<</if>>
+	then bites your ankle before fleeing to hide amongst the rest.<<gpain>><<pain 4>>
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	Your harsh words get through, a little.<<grespect>><<farm_dogs 1>>
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+
+:: Farm Kennel Train Mild Yell
+<<effects>>
+
+You yell at the <<beastsplural>>, demanding they obey you.
+
+<<if $tendingSuccess>>
+	They growl back, <span class="green">then back down.</span> Some attempt some of the obstacles, at least.<<ggrespect>><<farm_dogs 3>>
+	<br><br>
+
+	<<link [[Next|Farm Work]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<span class="red">It does nothing but agitate them.</span> They advance on you, determined to put you in your place.
+	<br><br>
+	<<endevent>>
+	<<beastNEWinit 3 dog>>
+	<<link [[Next|Farm Kennel Gang Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+
+
+:: Farm Kennel Train Mild One
+<<effects>>
+
+The <<beastsplural>> did their best, but you choose one in particular to reward. <<bHis 0>> tail wags as you lead it into the adjoining room, and crouch beside <<bhim 0>>.
+<br><br>
+
+<<if $NPCList[0].penis isnot "none">>
+	<<bHe 0>>'s already erect in anticipation, eager for <<bhis 0>> reward. You give <<bhis 0>> belly a good rub first, your hand creeping down until you slide <<bhis 0>> cock into your palm.
+	<<deviancy3>>
+
+	You stroke <<bhis 0>> penis until it pulses, and releases spurts of hot fluid over the ground.
+	<<if $monster is 1>>
+		"Th-thank you master," <<bhe 0>> pants.
+	<</if>>
+	<br><br>
+<<else>>
+	<<bHe 0>>'s eager for <<bhis 0>> reward. You give <<bhis 0>> belly a good rub first, your hand creeping down until you slide a finger into <<bhis 0>> warm pussy.
+	<<deviancy3>>
+
+	You slide your finger in and out, until <<bhis 0>> body shudders in orgasm.
+	<<if $monster is 1>>
+		"Th-thank you master," <<bhe 0>> pants.
+	<</if>>
+	<br><br>
+<</if>>
+
+Satisfied, the <<beasttype>> follows you back to the kennel.
+<br><br>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>
+
+:: Farm Kennel Train Mild All
+<<effects>>
+
+<<strip>>
+You remove your clothing, and drop to the ground. Despite their eager vigour, the <<beastsplural>> remain obedient until you give the order.
+<<endevent>>
+<<beastNEWinit 6 dog>>
+<br><br>
+<<link [[Next|Farm Kennel Play Gang Sex]]>><<set $sexstart to 1>><</link>>
+<br>
+
+
+:: Farm Kennel Train Easy
+<<effects>>
+
+You give the <<beastsplural>> an easy set of tasks, and let those who'd rather ignore you do so.
+
+<<if $farm.beasts.dogs gte 20>>
+	They all seem quite eager to pay attention however, and have no trouble following orders.<<grespect>><<farm_dogs 1>>
+	<br><br>
+<<elseif $farm.beasts.dogs gte 5>>
+	A few wander off, but most seem eager to pay attention.
+	<br><br>
+<<elseif $farm.beasts.dogs gte -5>>
+	Some follow your instructions, sometimes.
+	<br><br>
+<<elseif $farm.beasts.dogs gte -20>>
+	This turns out to be most of them, though a few are happy to follow your commands sometimes.
+	<br><br>
+<<else>>
+	This turns out to be all of them, and you get little done.<<lrespect>><<farm_dogs -1>>
+	<br><br>
+<</if>>
+
+<<link [[Next|Farm Work]]>><<endevent>><</link>>
+<br>

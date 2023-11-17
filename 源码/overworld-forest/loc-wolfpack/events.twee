@@ -1,0 +1,1053 @@
+:: Wolf Cave Fight
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+
+	You shift your body to make things easier for the horny <<beasttype>>.
+	<<deviancy1>><<set $enemytrust -= 20>>
+		<<if $wolfpackharmony gte 1>>
+		<<enable_rescue>>
+	<</if>>
+
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+
+	<<set $enemytrust -= 40>>
+	<<if $wolfpackharmony gte 1>>
+		<<enable_rescue>>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate '<span class="red">The pack is too busy thinking about themselves to help you.</span>'>>
+<<beast $enemyno>>
+<br><br>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Wolf Cave Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Wolf Cave Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Help
+<<set $location to "wolf_cave">><<effects>>
+
+You cry for help.
+
+<<if $wolfpackharmony gte 1>>
+	The other <<beastsplural>> growl at the aggressor, who slinks away in response.
+	<<lharmony>>
+	<br><br>
+
+	<<destinationwolfcave>>
+<<else>>
+	The other <<beastsplural>> don't care.
+	<br><br>
+
+	<<link [[Next|Wolf Cave Fight]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Wolf Cave Fight Finish
+<<set $location to "wolf_cave">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>><<wolfpacktrust>>
+	<br>
+	The <<beasttype>> yawns and lies down.
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyhealth lte 0>>
+	The <<beasttype>> limps away from you. <<if $monster is 1>>"Was just playing... too rough..."<</if>>
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $rescue is 1 and $alarm is 1>><<set $rescued += 1>>
+	The other <<beastsplural>> growl at the <<beasttype>> assaulting you. <<bHe>> growls back at first, but then backs down and leaves you alone.
+	<<lharmony>>
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<<else>>
+	The <<beasttype>> yawns and lies down.
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+
+<<destinationwolfcave>>
+
+:: Wolf Cave Rank
+<<set $location to "wolf_cave">><<effects>>
+
+<<if $phase is 0>>
+	You stroke the low ranking <<beasttype 0>>, and its ears perk up. The more dominant <<beasttype 1>> growls, but doesn't press it.
+	<<gharmony>><<lferocity>><<deviancy1>>
+
+	<<endevent>>
+	<<loadNPC 0 wolf_rank_1>>
+	<<clearNPC wolf_rank_1>>
+	<<clearNPC wolf_rank_2>>
+
+	<<link [[Next|Wolf Cave Fight]]>><<set $sexstart to 1>><</link>>
+	<br>
+<<elseif $phase is 1>>
+	You stroke the high ranking <<beasttype 1>>. The less dominant <<beasttype 0>> walks away with its tail down.
+	<<lharmony>><<gferocity>><<deviancy1>>
+	<<endevent>>
+	<<loadNPC 0 wolf_rank_2>>
+	<<clearNPC wolf_rank_1>>
+	<<clearNPC wolf_rank_2>>
+
+	<<link [[Next|Wolf Cave Fight]]>><<set $sexstart to 1>><</link>>
+	<br>
+<<elseif $phase is 2>>
+	You stroke both of them. The dominant <<beasttype 1>> seems less pleased, but doesn't cause a fuss. It insists it takes you first.
+	<<gharmony>><<gferocity>><<deviancy2>>
+
+	<<clearNPC wolf_rank_1>>
+	<<clearNPC wolf_rank_2>>
+	<<link [[Next|Wolf Cave Fight Duo]]>><<set $sexstart to 1>><</link>>
+	<br>
+<<else>>
+	You turn away from them both. The more dominant <<beasttype 1>> growls, but doesn't press it.
+	<br><br>
+	<<endevent>>
+
+	<<destinationwolfcave>>
+<</if>>
+
+:: Wolf Cave Intervene
+<<set $location to "wolf_cave">><<effects>>
+
+<<if $phase is 0>>
+	You cover the wounded <<beasttype>> with your body. The other <<beasttype>> bares its teeth at you, but relents.
+	<<gharmony>><<lferocity>>
+	<br><br>
+<<elseif $phase is 1>>
+	You stroke the <<beasttype>> who drew blood. <<bHe>> jumps at your touch, as if expecting attack, but continues once <<bhe>> realises what you're doing.
+	<<lharmony>><<gferocity>>
+	<br><br>
+<<else>>
+	You ignore the <<beastsplural>>. The wounded <<beasttype>> whimpers, and the other stops.
+	<br><br>
+<</if>>
+
+<<destinationwolfcave>>
+
+:: Wolf Cave Calm
+<<set $location to "wolf_cave">><<effects>>
+
+<<if $phase is 0>>
+	You walk over to the Black Wolf and drop to your knees to stroke <<bhis>> head. <<bHe>> shakes you off, then presents <<bhis>> genitals to you.
+	<<if $monster is 1>>
+		"Angry. Help.<<print ((playerHeatMinArousal() and (V.player.vaginaExist or canBeMPregnant()) and V.NPCList[0].penis !== "none") ? ' You ready.' : '')>><<print ((playerRutMinArousal() and $NPCList[0].vagina isnot "none") ? " I'm ready." : '')>>"
+	<</if>>
+<br><br>
+
+<<link [[Take in hand|Wolf Cave Black Wolf]]>><<set $sexstart to 1>><</link>><<deviant1>>
+<br>
+<<if $deviancy gte 55>>
+	<<link [[Take in mouth|Wolf Cave Black Wolf]]>><<set $phase to 1>><<set $sexstart to 1>><</link>><<deviant4>>
+	<br>
+<</if>>
+<<if $wolfgirl gte 6 and $deviancy gte 75>>
+	<<if playerAwareTheyAreInHeat() and $NPCList[0].penis isnot "none" and (($player.vaginaExist and !playerChastity("vagina")) or (canBeMPregnant() and !playerChastity("anus")))>>
+		<<link [[Present your behind|Wolf Cave Black Wolf]]>><<set $phase to 2>><<set $sexstart to 1>><</link>><<deviant5>><<wolfgirl>><<heat>>
+		<br>
+	<</if>>
+	<<if playerRutMinArousal() and $NPCList[0].vagina isnot "none" and !playerChastity("penis")>>
+		<<link [[Playful bite|Wolf Cave Black Wolf]]>><<set $phase to 3>><<set $sexstart to 1>><</link>><<deviant5>><<wolfgirl>><<rut>>
+		<br>
+	<</if>>
+<</if>>
+<br>
+<<link [[Refuse|Wolf Cave Calm]]>><<set $phase to 1>><</link>>
+<br>
+
+<<elseif $phase is 1>>
+	<<if $monster is 1>>
+		"No challenge. Obey!"
+	<</if>>
+	The Black Wolf continues harassing the other <<wolf_cave_plural>>, who do their best to avoid <<bhim>>. <<bHe>> calms down, but leaves the rest of the pack anxious.
+	<<lharmony>>
+	<br><br>
+
+	<<destinationwolfcave>>
+
+<<else>>
+	You look the Black Wolf right in the eyes and bare your teeth. <<bHis>> anger is wiped from <<bhis>> face for a moment, but soon returns. <<bHe>> growls and lunges at you.
+	<<if $monster is 1>>
+		"I am alpha. I'll punish you."
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Wolf Cave Challenge]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Wolf Cave Black Wolf
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+
+	<<if $phase is 0>>
+		You reach beneath the <<beasttype>> and take it in your hand.
+		<<npchand>><<deviancy1>>
+	<<elseif $phase is 2>>
+		<<clothesstrip>><<deviancy5>>
+		You bend forward, assuming a submissive stance on your hands and knees, before bringing your shoulders down to stick your butt up and leave your <<print ($player.vaginaExist ? '<<pussy>>' : 'anus')>> exposed to the wolf. <<bHe>> bears down on you, keeping you grounded under its massive size.
+		<<npc_attempt_sex>>
+		<<set $position to "doggy">>
+		<<set $position_lock to 1>>
+		<<set $NPCList[0].location.head to "head">>
+		<<set $NPCList[0].location.genitals to "genitals">>
+	<<elseif $phase is 3>>
+		<<clothesstrip>><<deviancy5>>
+		You draw closer to the Black Wolf, bringing your mouth closer to <<bhis>> dark fur. You attempt to place a playful bite on <<bhim>> but the Black Wolf puts <<bhis>> paw on you, before driving you down onto the ground with little to no effort. <<bHis>> overwhelming weight and size leaves you with few other options.
+		<<npc_attempt_sex>>
+		<<set $position to "missionary">>
+		<<set $position_lock to 1>>
+		<<set $NPCList[0].location.head to "head">>
+		<<set $NPCList[0].location.genitals to "genitals">>
+	<<else>>
+		You lean beneath the <<beasttype>>.
+		<<npcoral>><<deviancy4>>
+	<</if>>
+	<<blackwolfhealth>><<set $enemytrust -= 20>>
+	<!--Prevents the mate event from occurring back to back with black wolf sex-->
+	<<set $daily.blackWolfHeatEvent to Time.hour>>
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+
+	<<blackwolfhealth>><<set $enemytrust -= 40>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Wolf Cave Black Wolf Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Wolf Cave Black Wolf]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Black Wolf Finish
+<<set $location to "wolf_cave">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<if $phase is 3 and $orgasmcurrent is 0 and $NPCList[0].vagina is "penis">>
+		<<set _forcedOrgasm to true>>
+		<<set $orgasmdown to 3>>
+	<</if>>
+	<<beastejaculation>><<wolfpacktrust>>
+	<br>
+
+	<<if _forcedOrgasm>>
+		Despite having an orgasm, the Black Wolf continues pleasuring your <<penis>>.
+		<<set $penisuse to "othervagina">>
+		<<orgasm>>
+	<</if>>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<beastNEWinit 2 wolf>>
+	The Black Wolf calms down. The other <<beastsplural>> look grateful and relieved.
+	<<gharmony>>
+	<br><br>
+	<<endevent>>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<destinationwolfcave>>
+
+<<elseif $enemyhealth lte 0>>
+
+	<<if $wolfpackleader is 1>>
+		The Black Wolf limps away from you. The pack looks relieved.
+		<<gharmony>>
+	<br><br>
+
+	<<else>>
+		The whole pack watches as the Black Wolf rolls onto <<bhis>> back in submission.
+		<br><br>
+
+		<<tearful>> you howl. The other <<wolf_cave_plural>> howl with you.
+		<<if $monster is 1>>
+			The Black Wolf speaks. "You're... strong. Stronger than Black Wolf. I knew taking you was right choice."
+		<</if>>
+		The Black Wolf hobbles away to nurse <<bhis>> injuries. <span class="gold">You can now lead the pack on hunts.</span>
+		<<set $wolfpackleader to 1>><<earnFeat "Head of the Pack">>
+		<br><br>
+	<</if>>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationwolfcave>>
+<<else>>
+	The Black Wolf stops bothering you, but continues to bite and growl at the others.
+	<<lharmony>>
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationwolfcave>>
+<</if>>
+
+:: Wolf Cave Challenge
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+
+	<<blackwolfhealth>><<set $enemyanger += 200>><<set $enemytrust -= 40>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Wolf Cave Challenge Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Wolf Cave Challenge]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Challenge Finish
+<<set $location to "wolf_cave">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>><<wolfpacktrust>>
+	<br>
+
+	The Black Wolf calms down. The other <<beastsplural>> look grateful and relieved.
+	<<gharmony>>
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationwolfcave>>
+<<elseif $enemyhealth lte 0>>
+	The whole pack watches as the Black Wolf rolls onto <<bhis>> back in submission.
+	<br><br>
+
+	<<tearful>> you howl. The other <<beastsplural>> howl with you.
+	<<if $monster is 1>>
+		The Black Wolf speaks. "You're... strong. Stronger than Black Wolf. I knew taking you was right choice."
+	<</if>>
+	The Black Wolf hobbles away to nurse its injuries. <span class="gold">You can now lead the pack on hunts.</span>
+	<<set $wolfpackleader to 1>><<earnFeat "Head of the Pack">>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationwolfcave>>
+<<else>>
+	You fall to the ground, unable to fight any longer. The Black Wolf grabs your neck<<if $monster isnot 1>> in its jaws<</if>> and holds you to the floor for a moment, then releases you.
+	<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+	<br><br>
+
+	<<if $wolfpackpoisoned isnot 1>>
+		<i>The Black Wolf is very strong. There must be a way to even things.</i>
+		<br><br>
+	<</if>>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationwolfcave>>
+<</if>>
+
+:: Wolf Cave Black Wolf Before Mate
+<<deviancy5>>
+<<if $phase is 1>>
+	<<if $NPCList[0].monster>>
+		You draw closer to the Black Wolf, bringing your mouth closer to <<bhis>> dark fur. You place a playful bite on <<bhim>>. You begin rubbing your head against <<bhim>> while you continue to bite at <<bhis>> body. "Very frisky today," <<bhe>> says. "<<pPackbrother>> must be in a rut."
+		<br><br>
+		<<bHe>> allows you to continue, but only for a few moments. After a while, the Black Wolf places <<bhis>> hand on your chest, before effortlessly pushing you down onto the ground. Before you have a chance to respond, <<bhe>> moves up and pins you down under its massive size. "<<pPackbrother>> wants breed? Will give breed," <<bhe>> says with a big, lustful smile.
+	<<else>>
+		You draw closer to the Black Wolf, bringing your mouth closer to <<bhis>> dark fur. You place a playful bite on <<bhim>>. You begin rubbing your head against <<bhim>> while you continue to bite at <<bhis>> body. Shortly after, <<bhe>> reciprocates your affection with a gentle bite of <<bhis>> own. <<bHe>> nuzzles you in return.
+		<br><br>
+		Your teasing continues, albeit briefly. The Black Wolf puts <<bhis>> paw on you, before driving you down onto the ground with little to no effort. <<bHe>> eyes you with lustful desire, <<bhis>> leering hinting at what's to come. The Black Wolf eases down on you, intent on mating. <<bHis>> overwhelming weight and size leaves you with few other options.
+	<</if>>
+<<else>>
+	You bend forward, assuming a submissive stance on your hands and knees, before bringing your shoulders down to stick your butt up and leave your <<print ($player.vaginaExist ? '<<pussy>>' : 'anus')>> exposed to the wolf. You begin to whimper softly, demanding the Black Wolf's attention.
+	<<if $NPCList[0].monster>>
+		<br><br>
+		"Pack leader must be ready to mate." <<bHe>> says. "Will gladly help with that." <<bHe>> bears down on you, keeping you grounded under its massive size.
+	<<else>>
+		<br><br>
+		<<bHe>> takes notice of your invitation, and draws near to sniff your groin. <<bHe>> seems to understand your intentions, and bears down on you, keeping you grounded under its massive size.
+	<</if>>
+<</if>>
+<br><br>
+<<link [[Next|Wolf Cave Black Wolf Mate]]>><<set $sexstart to 1>><</link>>
+
+:: Wolf Cave Black Wolf Mate
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<clothesstrip>>
+	<<if $phase is 1>>
+		<<set $position to "missionary">>
+		<<set $position_lock to 1>>
+	<<else>>
+		<<set $position to "doggy">>
+		<<set $position_lock to 1>>
+	<</if>>
+	<<npc_attempt_sex>>
+	<<set $NPCList[0].location.head to "head">>
+	<<set $NPCList[0].location.genitals to "genitals">>
+	<<blackwolfhealth>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Wolf Cave Black Wolf Mate Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Wolf Cave Black Wolf Mate]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Black Wolf Mate Finish
+<<if $enemyarousal gte $enemyarousalmax and $phase is 1 and $NPCList[0].vagina is "penis">>
+	<<if $orgasmcurrent is 0>>
+		<<set _forcedOrgasm to true>>
+		<<set $orgasmdown to 3>>
+	<</if>>
+	<<beastejaculation>>
+	<br>
+	<<if _forcedOrgasm>>
+		Despite having an orgasm, the Black Wolf continues pleasuring your <<penis>>.
+		<<set $penisuse to "othervagina">>
+		<<orgasm>>
+	<</if>>
+
+	The Black Wolf pulls back once satisfied, having hardly broken a sweat.
+	<<if $monster is 1>>
+		"Tired already?" <<bHe>> taunts. "Guess <<ppackbrother>> doesn't want another go." <<bHe>> turns in place, before finally settling down to rest once again. "Felt very good," <<bhe>> turns to you. "Never felt as good and special as with <<ppackbrother>>, hope to birth some strong pups."
+	<<else>>
+		It turns around before slowly dropping it's body down to <<bhis>> settle upon <<bhis>> rock once again. Despite <<bhis>> apparently absent attitude, <<bhe>> seems geniuenly satisfied and even relieved to have you with <<bhim>>.
+	<</if>>
+	<br><br>
+<<elseif $enemyarousal gte $enemyarousalmax and $phase is 0 and (($player.vaginaExist and $NPCList[0].penis is "vagina") or (!$player.vaginaExist and $NPCList[0].penis is "anus"))>>
+	<<beastejaculation>>
+	<br>
+	The Black Wolf pulls back once satisfied, having hardly broken a sweat.
+	<<if $monster is 1>>
+		"Tired already?" <<bHe>> taunts. "Guess <<ppackbrother>> doesn't want another go." <<bHe>> turns in place, before finally settling down to rest once again. "Felt very good," <<bhe>> turns to you. "Never felt as good and special as with <<ppackbrother>>, hope you birth some strong pups."
+	<<else>>
+		It turns around before slowly dropping it's body down to <<bhis>> settle upon <<bhis>> rock once again. Despite <<bhis>> apparently absent attitude, <<bhe>> seems geniuenly satisfied and even relieved to have you with <<bhim>>.
+	<</if>>
+	<br><br>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<br>
+	The Black Wolf looks perplexed.
+
+	<<if $monster is 1>>
+		"Didn't you need to mate?"
+	<<else>>
+		<<bHe>> nudges your belly with <<bhis>> nose.
+	<</if>>
+	<br><br>
+<<else>>
+	The Black Wolf looks perplexed.
+
+	<<if $monster is 1>>
+		"Didn't you need to mate?"
+	<<else>>
+		<<bHe>> nudges your belly with <<bhis>> nose.
+	<</if>>
+	<br><br>
+<</if>>
+
+You climb to your feet.
+<br>
+<<clotheson>>
+<<endcombat>>
+
+<<destinationwolfcave>>
+
+:: Wolf Cave Young
+<<set $location to "wolf_cave">><<effects>>
+
+<<if $phase is 0>>
+	You rush over to the young <<beasttype>> and stroke <<bhis>> head. <<bHe>> rears up and licks your face. <<bHe>>'s fine, just upset by the fall.
+	<<gharmony>><<lferocity>><<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
+	<br><br>
+
+	<<destinationwolfcave>>
+<<else>>
+	You ignore the young <<beasttype>>. <<bHe>> soon starts playing again. <<bHe>>'s fine.
+	<<lharmony>><<gferocity>>
+	<br><br>
+
+	<<destinationwolfcave>>
+<</if>>
+
+:: Wolf Cave Plant
+<<set $outside to 1>><<set $location to "wolf_cave">><<effects>>
+
+<<if $phase is 1>>
+<<set $phase to 0>>
+	You search for plants long and sturdy enough to build an improvised garment. You find some suitable specimens and tie them together around your chest. It's fragile and revealing, but it's better than nothing.
+	<<plantupper>>
+	<br><br>
+<<elseif $phase is 2>><<set $phase to 0>>
+	You search for plants long and sturdy enough to build an improvised garment. You find some suitable specimens and tie them together around your waist. It's fragile and revealing, but it's better than nothing.
+	<<plantlower>>
+	<br><br>
+<</if>>
+
+<<link [[Next|Wolf Cave Clearing]]>><</link>>
+<br>
+
+:: Wolf Cave Play Fight
+<<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
+
+You play fight with the young <<beasttype>>. <<bHe>> bites your arm and tries to drag you to the ground. When that fails, <<bhe>> bites your leg and tries there. <<bHe>>'s not very strong.
+<br><br>
+
+<<destinationwolfcave>>
+
+:: Wolf Cave Lewd Play
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+
+	You adopt a mating posture and present yourself to the <<beasttype>>.
+	<<deviancy2>><<set $enemytrust -= 20>>
+	<<if $wolfpackharmony gte 1>>
+		<<enable_rescue>>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate "<span class='red'>The <<beastsplural>> are too busy thinking about themselves to help you.</span>">>
+<<beast $enemyno>>
+<br><br>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Wolf Cave Lewd Play Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Wolf Cave Lewd Play]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Lewd Play Finish
+<<set $location to "wolf_cave">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>><<wolfpacktrust>>
+	<br>
+
+	The <<beasttype>> yawns and lies down.
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyhealth lte 0>>
+	The <<beasttype>> limps away from you.
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+ 1>><<set $rescued += 1>>
+	The other <<beastsplural>> growl at the <<beasttype>> assaulting you. <<bHe>> growls back at first, but then backs down and leaves you alone.
+	<<lharmony>>
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<<else>>
+	The <<beasttype>> yawns and lies down.
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+
+<<destinationwolfcave>>
+
+:: Wolf Cave Fight Duo
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+
+	<<beastTrainGenerate>>
+
+	You shift your body to make things easier for the horny <<beasttype>>.
+	<<deviancy1>><<set $enemytrust -= 20>>
+	<<if $wolfpackharmony gte 1>>
+		<<enable_rescue>>
+	<</if>>
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+
+	<<set $enemytrust -= 40>>
+	<<if $wolfpackharmony gte 1>>
+		<<enable_rescue>>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate "<span class='red'>The <<wolf_cave_plural>> are too busy thinking about themselves to help you.</span>">>
+<<beast $enemyno>>
+<br><br>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Wolf Cave Fight Duo Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Wolf Cave Fight Duo]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Fight Duo Finish
+<<effects>>
+
+<<if $enemyhealth lte 0>>
+	<<beastwound>>
+		<<if $combatTrain.length gt 0>>
+		The <<beasttype>> recoils in pain and fear, but the other is eager for a go.
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Wolf Cave Fight Duo]]>><</link>>
+	<<else>>
+		The <<beasttype>> recoils in pain and fear.
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Wolf Cave Fight Duo Finish]]>><<set $finish to 1>><</link>>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<if $combatTrain.length gt 0>>
+		Satisfied, the <<beasttype>> moves and another takes its turn.
+		<<wolfpacktrust>>
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[Next|Wolf Cave Fight Duo]]>><</link>>
+	<<else>>
+		Satisfied, the <<beasttype>> moves away from you.
+		<<combatTrainAdvance>>
+		<<wolfpacktrust>>
+		<br><br>
+		<<link [[Next|Wolf Cave Fight Duo Finish]]>><<set $finish to 1>><</link>>
+	<</if>>
+<<else>>
+	<<if $consensual is 1>>
+	The wolves groom each other.
+	<br><br>
+	<<else>>
+		<<if $enemywounded is 1 and $enemyejaculated is 0>>
+			The <<beasttype>> whimpers and flees into the darkness between the trees.
+		<<elseif $enemywounded is 0 and $enemyejaculated is 1>>
+			The <<beasttype>> leaves you lying on the grass.
+		<<elseif $enemywounded gte 2 and $enemyejaculated is 0>>
+			Feeling that you're more trouble than you're worth, the wolves flee between the trees.
+		<<elseif $enemywounded is 0 and $enemyejaculated gte 2>>
+			The wolves leave you spent and shivering on the grass.
+		<<elseif $enemywounded gte 1 and $enemyejaculated gte 1>>
+			The wolves leave you spent and shivering on the grass.
+		<</if>>
+		<br><br>
+	<</if>>
+
+	<<tearful>> you gather yourself.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationwolfcave>>
+<</if>>
+
+:: Wolf Cave Howl
+<<effects>>
+<<if $phase is 0>>
+	You sit on a nearby log and watch the <<wolf_cave_plural>> howling lively into the crisp air.
+	<<if $sciencetrait gte 3>>
+		You think back to your biology lessons. Wolves can howl for a multitude of reasons, such as bonding, communicating positions, or warding off trespassers.
+	<<else>>
+		You are unsure as to why wolves howl together, but you're content with knowing that it must be a sign of a healthy and sociable pack.
+	<</if>>
+	<br><br>
+
+	Seeing the pack united and willing to partake in such activities together brings you a feeling of content.
+	<<stress -6>><<trauma -3>><<lstress>><<ltrauma>>
+<<else>>
+	You take a spot in the middle of the noisy crowd. You take a deep breath, before shutting your eyes and raising your head to howl into the crisp forest air.
+	<br><br>
+	<<if $wolfgirl gte 6>>
+		You let your wilder, primal senses take over. <span class="green">Your howling blends beautifully and naturally with that of your brethren.</span> The other <<wolf_cave_plural>> seem to accept you among them, content with letting you howl along with them as just another wolf of the pack.
+		<<stress -12>><<trauma -12>><<llstress>><<lltrauma>>
+	<<elseif $fox gte 6>>
+		You join the rest of the <<wolf_cave_plural>>, letting your instincts take over. You manage some high-pitched yipps and yowls, and it doesn't sound too out of place. The <<wolf_cave_plural>> seem to hesitantly accept you among them.
+		<<stress -6>><<lstress>>
+	<<elseif $harpy gte 6>>
+		You join the rest of the <<wolf_cave_plural>>, or so you think. Your instincts take over, and your howling is instead more reminiscent of a cheerful singing. Your harmonic melodies clash with your brethren's howling, leaving them mildly exasperated.
+		<<stress -3>><<lstress>>
+	/* 北极星模组 */
+	<<elseif $raccoon gte 6>>
+		你加入了<<wolf_cave_plural>>中的其他成员，尽最大努力融入其中。你的声音和嚎叫让其他狼分心，但它们似乎能容忍你的努力。
+		<<stress -3>><<lstress>>
+	<<elseif $dragon gte 6>>
+		你加入了其他的<<wolf_cave_plural>>，发出了一声非常响亮的吼叫。那些狼都很害怕你发出的巨大声音。 
+		<<stress -3>><<lstress>>
+	/* 北极星 */
+	<<else>>
+		Despite your best efforts, your <<if $cat gte 6>>yowling<<elseif $cow gte 6>>mooing<<else>>scratchy howling<</if>> doesn't seem to convince most of the <<wolf_cave_plural>>. Most don't seem to mind, but some of them are put off by your lackluster attempts.
+		<<stress -3>><<lstress>>
+	<</if>>
+<</if>>
+<br><br>
+
+<<destinationwolfcave>>
+
+:: Wolf Cave Spar
+<<effects>><<beastNEWinit 1 wolf>><<person1>>
+
+You approach the hunters who are resting in their usual spots in preparation for the upcoming hunt.
+<br><br>
+
+Feeling like you could do with a bit of exercise, you assume a belligerent position on all fours and bare your <<if $transformationParts.traits.fangs isnot "disabled">>fangs<<else>>teeth<</if>>.
+<br><br>
+
+One of the hunters, a <<beasttype>>,
+<<if $wolfpackharmony gte 10 and $wolfpackferocity gte 10>>
+	answers your call to spar and prepares to fight.
+	<<if $monster is 1>>
+		"<<pPackbrother>> should not hold back!"
+	<</if>>
+<<elseif $wolfpackharmony gte 10>>
+	yawns and lazily walks over to answer your call to spar.
+	<<if $monster is 1>>
+		"Worse ways to kill time."
+	<</if>>
+<<elseif $wolfpackferocity gte 10>>
+	eagerly jumps up and answers your call to spar.
+	<<if $monster is 1>>
+		"<<pPackbrother>>, you will fall!"
+	<</if>>
+<<elseif $wolfpackferocity gte 1>>
+	huffs and walks over to you, answering your call to spar.
+	<<if $monster is 1>>
+		"This is fine."
+	<</if>>
+<<else>>
+	glances your way, before lying down.
+	<<if $monster is 1>>
+		"<span class="red">Cannot waste energy. No point.</span>"
+	<<else>>
+		<span class="red"><<bHe>> doesn't have the energy to spare.</span>
+	<</if>>
+	<<set _reject to 1>>
+<</if>>
+<br><br>
+
+<<if _reject>>
+	<<link [[Next|Wolf Cave Clearing]]>><</link>>
+<<else>>
+	<<pass 20>><<stress -6>>
+	<<link [[Go for heavy hits|Wolf Cave Spar 2]]>><<set $phase to 0>><</link>><<physiquedifficulty 2000 $physiquemax>>
+	<br>
+	<<link [[Win by stamina|Wolf Cave Spar 2]]>><<set $phase to 1>><</link>><<athleticsdifficulty 200 1000>>
+	<br>
+	<<link [["Outmaneuver " + $NPCList[0].pronouns.him|Wolf Cave Spar 2]]>><<set $phase to 2>><</link>><<dancedifficulty 200 1000>>
+	<br>
+<</if>>
+
+:: Wolf Cave Spar 2
+<<effects>>
+
+<<switch $phase>>
+	<<case 0>>
+		You try to overpower the <<beasttype>> with a few powerful hits, to end the fight quickly and decisively. The <<beasttype>> ducks under your first two swings, but
+		<<if $physiqueSuccess>>
+			<<set _victory to 1>>
+			the third staggers <<bhim>> and the fourth <span class="green">sends <<bhim>> to the ground.</span>
+		<<else>>
+			you catch <<bhim>> with the third. <span class="red"><<bHe>> barely flinches.</span> <<bHe>> <<if $monster is 1>>kicks<<else>>charges into<</if>> your knees with force, and you crumple.
+		<</if>>
+		<<physique 4>>
+	<<case 1>>
+		You try to waste the <<beasttypes>> energy, while expanding as little of your own as possible. The <<beasttype>> lunges forward to attack, and you backpedal. <<bHe>> follows up with a charge, and you step to the side.
+		<<if $athleticsSuccess>>
+			<<set _victory to 1>>
+			<span class="green"><<bHe>> pants, and you strike. <<bHes>> not able to dodge in time.</span>
+		<<else>>
+			<span class="red">Your foot catches a root.</span> You collapse to the ground, and <<bhes>> on you in an instant. With <<bhis>> <<if $monster is 1>>hand<<else>>jaws<</if>> wrapped around your throat, it's clear who the victor is.
+		<</if>>
+		<<physique 2>><<athletics 2>>
+	<<case 2>>
+		You try to dance around <<bhim>>, getting in hits while avoiding all of <<bhers>>.
+		<<if $danceSuccess>>
+			<<set _victory to 1>>
+			<span class="green">You find it easy to stave off your opponent's attacks.</span> You evade the <<beasttype>>'s pounce and deliver a decisive blow to <<bhis>> <<if $monster is 1>>face<<else>>muzzle<</if>>.
+		<<else>>
+			You're agile. <span class="red">But not as agile as <<bhim>>.</span> No matter how you try, you can't even land a single blow on <<bhim>>. It's clear <<bhes>> toying with you, and you drop to your knees in exhaustion and defeat.
+		<</if>>
+		<<physique 2>><<danceskill 2>>
+<</switch>>
+<<gtiredness>><<tiredness 12>>
+<<if !_victory>>
+	<<pain 6>><<gpain>>
+<</if>>
+<br><br>
+
+<<if _victory>>
+	<<if $wolfpackharmony gte 10>>
+		Yelping from pain, the <<beasttype>> takes a few steps back before turning and presenting <<bhis>> backside to you.
+		<<if $monster is 1>>
+			"<<pPackbrother>> may take <<pher>> reward."
+		<</if>>
+		<br><br>
+		<<if $deviancy gte 35>>
+			<<link [[Accept the invitation|Wolf Cave Spar Sex]]>><<set $sexstart to 1>><<set $phase to 0>><</link>><<deviant3>>
+		<<else>>
+			<span class="blue">You are not deviant enough to accept such a thing.</span>
+		<</if>>
+		<br>
+		<<link [[Refuse|Wolf Cave Clearing]]>><<endevent>><</link>>
+	<<elseif $wolfpackferocity gte 10>>
+		Yelping from pain, the <<beasttype>> takes a few steps back and growls. <<bHe>> bares <<bhis>> fangs when you try to approach to make sure <<bhe>> isn't hurt.
+		<<if $monster is 1>>
+			"What else <<ppackbrother>> want? You won."
+		<</if>>
+		<br><br>
+		<<link [[Next|Wolf Cave Clearing]]>><<endevent>><</link>>
+	<<else>>
+		Yelping from pain, the <<beasttype>> takes a few steps back before bowing <<bhis>> head and returning to <<bhis>> resting spot.
+		<br><br>
+		<<link [[Next|Wolf Cave Clearing]]>><<endevent>><</link>>
+	<</if>>
+<<else>>
+	<<if $wolfpackferocity gte 10>>
+		The <<beasttype>> bares <<bhis>> fangs and pins you to the ground. <<bHes>> not satisfied with just beating you in a fight.
+		<br><br>
+		<<if $deviancy gte 35>>
+			<<link [[Submit|Wolf Cave Spar Sex]]>><<set $sexstart to 1>><<set $phase to 1>><<sub 1>><</link>><<deviant3>>
+			<br>
+		<</if>>
+		<<link [[Struggle|Wolf Cave Spar Sex]]>><<set $molestationstart to 1>><<def 1>><</link>>
+	<<elseif $wolfpackharmony gte 10>>
+		The <<beasttype>> lets out a satisfied chuff and nudges you with <<bhis>> <<if $monster is 1>>hand<<else>>nose<</if>>. <<bHis>> tail wags affectionately.
+		<br><br>
+		<<if $deviancy gte 35>>
+			<<link [[Reward|Wolf Cave Spar Sex]]>><<set $sexstart to 1>><<set $phase to 2>><<sub 1>><</link>><<deviant3>>
+			<br>
+		<</if>>
+		<<link [[Take a breather (0:05)|Wolf Cave Clearing]]>><<endevent>><<pass 5>><</link>>
+	<<else>>
+		The <<beasttype>> lets out a satisfied chuff and returns to <<bhis>> resting spot.
+		<br><br>
+		<<link [[Take a breather (0:05)|Wolf Cave Clearing]]>><<endevent>><<pass 5>><</link>>
+	<</if>>
+<</if>>
+
+:: Wolf Cave Spar Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+
+	<<if $wolfpackharmony gte 1>>
+		<<enable_rescue>>
+	<</if>>
+	<<if $phase is 1>>
+		You decide that struggling will only lead to you getting hurt, so you show the <<beasttype>> that you're willing to cooperate.
+		<<set $enemytrust -= 20>><<set $enemyanger += 20>>
+	<<elseif $phase is 2>>
+		You adopt a mating posture and present yourself to the <<beasttype>>.
+	<<else>>
+		You accept the <<beasttype>>'s invitation.
+	<</if>>
+	<<deviancy3>>
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+
+	<<set $enemytrust -= 40>>
+	<<if $wolfpackharmony gte 1>>
+		<<enable_rescue>>
+	<</if>>
+	Not keen on letting the <<beasttype>> use you in this manner, you try to tackle <<bhim>> aside. <<bHe>> growls.
+	<<if $monster is 1>>
+		"<<pPackbrother>> lost! Now <<ppackbrother>> submits!"
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate "<span class='red'>The <<beastsplural>> are too busy thinking about themselves to help you.</span>">>
+<<beast $enemyno>>
+<br><br>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Wolf Cave Spar Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Wolf Cave Spar Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Wolf Cave Spar Sex Finish
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>><<wolfpacktrust>>
+	<br>
+	The <<beasttype>> yawns and lies down.
+<<elseif $enemyhealth lte 0>>
+	The <<beasttype>> limps away from you. <<if $monster is 1>>"<<pPackbrother>> won... in the end..."<</if>>
+<<elseif $rescue is 1 and $alarm is 1>><<set $rescued += 1>>
+	The other <<beastsplural>> growl at the <<beasttype>> assaulting you. <<bHe>> growls back at first, but then backs down and leaves you alone.
+	<<lharmony>>
+<<else>>
+	The <<beasttype>> yawns and returns to where <<bhe>> was resting.
+<</if>>
+<br><br>
+
+<<tearful>> you climb to your feet.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Wolf Cave Clearing]]>><</link>>
+
+
+:: Wolf Cave Dog Meet
+<<effects>>
+
+You clamber atop the Black Wolf's rock, high enough that it can hear you speak.	"Why don't you say hello?" you say.
+<br><br>
+<<if $monster is 1>>
+	The wolf doesn't react at first. You drop from the rock. Only then does the Black Wolf move, jumping to the grass in a single bound. <<He>> walks into the forest. "You frightened the pups," you hear. "It's funny-"
+<<else>>
+	The wolf doesn't react at first. You drop from the rock. Only then does the Black Wolf move, jumping to the grass in a single bound. <<He>> walks into the forest.
+<</if>>
+<<gharmony>>
+<br><br>
+
+<<destinationwolfcave>>
+
+:: Wolf Cave Dog Stare
+<<effects>>
+
+You leave them to their staring contest.
+<<gferocity>>
+<br><br>
+
+<<destinationwolfcave>>

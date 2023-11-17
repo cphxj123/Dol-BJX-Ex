@@ -1,0 +1,650 @@
+:: Forest Mansion Explore
+
+<<set $outside to 1>><<set $location to "kylar_manor">><<set $forestmansionstage to 0>><<effects>>
+
+<<if $foresthunt gte 1 and $edenforesthunt is 1>>
+	<<set $rng to random(1, 60)>>
+	<<if $rng lte 20>>
+	    <span class="red">你正在被追猎，你看到地上落着猎枪弹壳。</span>
+	    <br><br>
+	<<elseif $rng lte 40>>
+    	<span class="red">你正在被追猎，你看到地上有靴子的踪迹。</span>
+    	<br><br>
+	<<else>>
+    	<span class="red">你正在被追捕，你听到远处传来枪鸣声。</span>
+    	<br><br>
+	<</if>>
+<<elseif $foresthunt gte 1 and $blackwolfhunt is 1>>
+	<<set $rng to random(1, 60)>>
+	<<if $rng lte 20>>
+    	<span class="red">你正在被追猎，你看到树上缠绕着狼毛。</span>
+    	<br><br>
+	<<elseif $rng lte 40>>
+    	<span class="red">你正在被追杀，你看到地面上有着狼的足迹。</span>
+    	<br><br>
+	<<else>>
+    	<span class="red">你正在被追猎，你听到附近传来狼吼声。</span>
+    	<br><br>
+	<</if>>
+<</if>>
+
+<<if $arousal gte 10000>>
+	<<orgasmforest>>
+<</if>>
+
+<<if $stress gte 10000 and $TaylorWith is 0>>
+	<<passoutforest>>
+<<elseif $foresthunt gte 10 and $TaylorWith is 0>>
+	<<foresthunt>>
+<<elseif $exorcism is 1>>
+	<<npc Jordan>><<person1>>
+	一进门，你就看见约旦穿着件宽大的衣袍，拿着一本小册子等待着你。
+	<br><br>
+	"啊，你终于来了。准备好找回你的身体了吗？"<<He>>一脸严肃。
+	<br><br>
+	<<link [[说你准备好了|Forest Mansion Cellar Exorcism]]>><<pass 5>><</link>>
+	<<link [[说你后悔了|Forest Mansion Cellar Exorcism Return]]>><<pass 5>><</link>>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<set $lock to 1000>>
+	<<if $TaylorWith is 1>>
+		<<npc "泰勒">><<person1>>
+		你和泰勒穿过树林，来到一座破败的老宅跟前。
+	<<else>>
+		你蹑手蹑脚地穿过树林，来到一座破败的老宅面前。 
+	<</if>>
+	<<if $forestmansionpicked is 0>>
+		一把模样古怪的锁拴住了前门，是你从未见过的样式。
+		<br><br>
+
+		<<if $skulduggery gte $lock>>
+			<span class="green">这锁看起来很好撬开。</span>
+			<br><br>
+			<<link [[撬锁 (0:05)|Forest Mansion Pick Lock]]>><<pass 5>><</link>>
+			<br>
+		<<else>>
+			<span class="blue">这锁看起来超出了你的能力范围。</span> <<skulduggeryrequired>>
+			<br><br>
+		<</if>>
+		<<set $ghostIn to false>>
+		<<if $options.bjx_eventTF and $ghost gte 1>>
+			<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+			<br>
+			<<link [[穿越 (0:01)|Forest Mansion Entrance]]>><<pass 1>><<set $ghostIn to true>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		前门没有上锁，略微虚掩着。
+		<br><br>
+
+		<<link [[进入 (0:05)|Forest Mansion Entrance]]>><<pass 5>><</link>>
+		<br>
+	<</if>>
+	<<if $TaylorWith is 1>>
+		<<link [[询问泰勒 (0:20)|Forest Mansion Look Around]]>><<pass 20>><</link>>
+	<<else>>
+		<<link [[看看周围 (0:30)|Forest Mansion Look Around]]>><</link>>
+	<</if>>
+	<br>
+	<<link [[返回 (0:10)|Forest]]>><<pass 10>><</link>>
+<</if>>
+
+:: Forest Mansion Pick Lock
+
+<<effects>><<skulduggeryskilluse>>
+<<set $forestmansionpicked to 1>>
+你花了一些时间摆弄门锁，门锁随后便弹开了，门顺势敞开。
+<br><br>
+
+<<if $forestmansionstage is 0>>
+	<<link [[进入|Forest Mansion Entrance]]>><</link>>
+	<br>
+	<<link [[返回|Forest Mansion Explore]]>><</link>>
+<<else>>
+	<<link [[离开|Forest Mansion Explore]]>><</link>>
+	<br>
+	<<link [[返回|Forest Mansion Entrance]]>><</link>>
+<</if>>
+
+:: Forest Mansion Look Around
+
+<<effects>>
+<<if $forestmansionkitchen is 0>>
+	<<set $forestmansionkitchen to 1>>
+	<<if $TaylorWith is 1>>
+		<<pass 20>>
+		"对，这锁我对付不了。肯定有人手里是有钥匙的，但我根本不知道该从何找起。"<<He>>开始四处踱步，"目前我们只能四处看看，顺带检查一下窗户。"
+		<br><br>
+	<<else>>
+		<<pass 30>>
+	<</if>>
+<<else>>
+	<<pass 10>>
+<</if>>
+<<if $TaylorWith is 1>>
+	你们两人四处探寻着，花了好一会才找到了一扇开着的窗户，看起来可以由此进入厨房。
+<<else>>
+	你在建筑物周围寻找了一会，终于找到了一扇开着的窗户，看起来可以由此进到厨房里。
+<</if>>
+<br><br>
+
+<<link [[进入|Forest Mansion Kitchen]]>><</link>>
+<br>
+<<link [[返回|Forest Mansion Explore]]>><</link>>
+
+:: Forest Mansion Entrance
+
+<<if $foresthunt gte 1>>
+	<span class="lblue">你在这座废弃的宅邸里算是安全了。不管是什么在追捕你，都已经放弃了。</span>
+	<br><br>
+	<<set $foresthunt to 0>>
+<</if>>
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 1>><<effects>>
+你发现自己在一个有着落满灰尘大门的房间里。旁边有个衣架，上面放着件看起来很旧的外套和帽子，上面积满了多年的灰尘和污垢。
+<br><br>
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<if $TaylorWith is 1>>
+		"这个地方虽然历史悠久，但仍然保持着相当不错的状态。"泰勒评价道。
+	<</if>>
+
+	左右都有一排门，前方还有一段向上的楼梯。
+	<br><br>
+
+	<<link [[向左走 (0:05)|Forest Mansion Left Hallway]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<link [[向右走 (0:05)|Forest Mansion Right Hallway]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<link [[上楼 (0:05)|Forest Mansion Landing]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<if $forestmansionpicked is 0>>
+		<<if $skulduggery gte $lock>>
+			<span class="green">这锁看起来很好撬开。</span>
+			<br><br>
+			<<link [[撬锁 (0:05)|Forest Mansion Pick Lock]]>><<pass 5>><</link>>
+			<br>
+		<<else>>
+			<span class="blue">这锁看起来超出了你的能力范围。</span> <<skulduggeryrequired>>
+			<br>
+		<</if>>
+		<<if $options.bjx_eventTF and $ghost gte 1>>
+			<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+			<br><br>
+			<<link [[穿越 (0:01)|Forest Mansion Explore]]>><<pass 1>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<link [[离开 (0:05)|Forest Mansion Explore]]>><<pass 5>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Forest Mansion Left Hallway
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 2>><<effects>>
+你发现自己身处一条两边都有门的长走廊里。
+<br><br>
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<link [[第一扇门 (0:05)|Forest Mansion Kitchen]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<link [[第二扇门 (0:05)|Forest Mansion Dining Room]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<link [[走向入口 (0:05)|Forest Mansion Entrance]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+<</if>>
+
+:: Forest Mansion Kitchen
+
+<<if $foresthunt gte 1>>
+	<span class="lblue">在这里你是相对安全的。不论是什么在追捕你，现在都已经放弃了。</span>
+	<br><br>
+	<<set $foresthunt to 0>>
+<</if>>
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 3>><<effects>>
+你走进小房间，里面摆满了很久以前的烹饪用具和器皿。靠墙摆放着一个古旧的木制烤箱和冰柜，柜台上摆放着银器。角落里有一扇满是灰尘的活板门，通往下方。
+<br><br>
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<if $TaylorWith is 1>>
+		"这一定是那个酒窖。我们镇过去以出口优质葡萄酒而自豪，我不敢相信这些东西依然存在 。"
+		<br>
+	<</if>>
+
+	<<link [[下到地窖里 (0:05)|Forest Mansion Cellar]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<link [[去往大厅 (0:05)|Forest Mansion Left Hallway]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<if $TaylorWith is 1>>
+		<<link [[从窗口离开|Forest Mansion Taylor Leave]]>><</link>>
+		<br>
+	<<else>>
+		<<link [[从窗口离开|Forest Mansion Look Around]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Forest Mansion Cellar
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 4>><<effects>>
+你走下一个嘎吱作响的旧梯子，来到一个潮湿漆黑的房间。<<if $TaylorWith is 1>>泰勒打开<<his>>的手电筒，环顾房间。<<else>>你打开手电筒，环顾房间。<</if>>这里有几十个旧的空瓶子，其间有几个装满了红色物质。 
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<if $forestmansionsleep is 1>>
+		你看到有一块之小石头出现在地上，明明之前什么也没有。
+		<br><br>
+	<</if>>
+	
+	<<if $TaylorWith is 1>>
+		"这一定是那个酒窖。我们镇过去以出口优质葡萄酒而自豪，我不敢相信这些东西依然存在。"
+		<br><br>
+	<</if>>
+
+	<<if $museumAntiques.antiques.antiqueliquor is "notFound">>
+	    在摸索中，你无意间不知碰到了什么机关，伴随着一阵咔啦声，一个暗格打开，里面是一瓶被精心收纳的古老且精美的葡萄酒。
+	    <br><br>
+		<<link [[拿走瓶子 (0:02)|Forest Mansion Bottle Take]]>><<pass 2>><<museumAntiqueStatus "antiqueliquor" "found">><<set $antiquemoney += 5000>><</link>>
+		<br>
+		<<link [[喝一口 (0:02)|Forest Mansion Bottle Drink]]>><<pass 2>><<museumAntiqueStatus "antiqueliquor" "found">><<set $antiquemoney += 5000>><</link>>
+		<br>
+	<</if>>
+
+	<<if $forestmansionrunestone is 0 and $forestmansionsleep is 1>>
+		<<link [[捡起石头|Forest Mansion Stone]]>><</link>>
+		<br>
+	<</if>>
+
+	<<link [[回到厨房 (0:05)|Forest Mansion Kitchen]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+<</if>>
+
+:: Forest Mansion Bottle Take
+
+你觉得喝下一瓶不知道年份的酒不是个好主意，于是你抓起酒瓶放进包里。 
+<br><br>
+<<if $TaylorWith is 1>>
+	"喂，你在干什么? 那是我们镇子里历史上无价的一部分。"
+<</if>>
+<br><br>
+
+<<if $TaylorWith is 1>>
+	<<link [[说你打算留到以后再喝|Forest Mansion Save For Later]]>><<npcincr "泰勒" love -1>><</link>>
+	<br>
+	<<link [[说你打算上交给博物馆|Forest Mansion Giving to Museum]]>><<npcincr "泰勒" love 3>><</link>>
+<<else>>
+	<<link [[继续|Forest Mansion Cellar]]>><</link>>
+<</if>>
+
+:: Forest Mansion Save For Later
+
+<<set $TaylorSaveForLater to 1>>
+你告诉泰勒，你想把它留着以后喝。这与<<his>>的意愿相悖，<<He>>看起来很沮丧，摇了摇头，不再提起这个话题。<<llove>>
+<br><br>
+
+<<link [[继续|Forest Mansion Cellar]]>><</link>>
+
+:: Forest Mansion Giving to Museum
+
+你告诉泰勒你会把酒交给博物馆保存，来了看起来很意外，说道："是个好主意，就这样吧。"<<gglove>>
+<br><br>
+
+<<link [[继续|Forest Mansion Cellar]]>><</link>>
+
+:: Forest Mansion Bottle Drink
+
+你打开软木塞，喝了一大口酒。 
+<br>
+神奇的是，瓶子里的酒液一点也没有减少。
+<br>
+哇呜，这酒真劲…<span class="red">+ + + + 醉酒</span> | <span class="red">+ + + 致幻</span>
+<br><br>
+<<set $drunk += 480>>
+<<set $hallucinogen += 80>>
+
+<<if $TaylorWith is 1>>
+	"喂，你在干什么? 那是我们镇子里历史上无价的一部分。"<<llove>>
+	<br><br>
+	你耸耸肩，把木塞塞了回去，然后把酒瓶放回包里。
+	<br><br>
+	<<npcincr "泰勒" love -1>>
+<</if>>
+
+<<if $lastpassage isnot undefined>>
+	<<link [[继续|$lastpassage]]>><</link>>
+<<else>>
+	<<link [[继续|Forest Mansion Cellar]]>><</link>>
+<</if>>
+
+:: Forest Mansion Dining Room
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 5>><<effects>>
+你走进一间宽阔的餐厅。一张长桌占据了大部分的房间，餐桌上摆满了各种各样的菜肴，似乎仍在为一场晚宴做着准备。
+<br><br>
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<if $TaylorWith is 1>>
+		"这很奇怪。如果房主搬出去的话这桌子为什么还在这呢？仆人肯定得在饭后清理它的。这看起来就像房子里的每个人都凭空消失了一样。"
+	<</if>>
+
+	<<link [[回到走廊 (0:05)|Forest Mansion Left Hallway]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+<</if>>
+
+:: Forest Mansion Right Hallway
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 6>><<effects>>
+你发现自己身处一条两边都有门的长走廊里。
+<br><br>
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<link [[第一扇门 (0:05)|Forest Mansion Servant Quarters]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<link [[第二扇门 (0:05)|Forest Mansion Study]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<link [[走向入口 (0:05)|Forest Mansion Entrance]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+<</if>>
+
+:: Forest Mansion Servant Quarters
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 7>><<effects>>
+你进入一个杂乱的房间，里面的床东倒西歪。许多还没铺好，少数已经倒塌。衣柜的门板也掉了下来，里面所有的衣服都不见了。
+<br><br>
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<if $TaylorWith is 1>>
+		"仆人宿舍似乎比之前看过的都要糟糕得多，家具的质量也不行。" 
+		<br><br>
+	<</if>>
+
+	<<link [[回到走廊上 (0:05)|Forest Mansion Right Hallway]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+<</if>>
+
+:: Forest Mansion Study
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 8>><<effects>>
+你走进一个大房间，里面摆满了书架，在中间有一张桌子。这是豪宅主人读书和工作的地方。这些书都比这座豪宅古老得多，而且正在分崩离析。你试着打开其中的一本书，但是它在你手的中散开了，书页上的单词也都褪色了，你看不清楚上面写的什么东西。
+<br><br>
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<if $TaylorWith is 1>>
+		"这些书被损坏得如此之多，真是令人惋惜，这上面可能是一些没有记录的或一些重要的内容。"泰勒看起来很沮丧。"我还是要拿走部分的，也许我能找到复原它们的方法。"
+		<br><br>
+	<</if>>
+
+	<<if $forestmansionrunestone is 1>>
+		<<link [[仔细检查书本上的石头符号(1:00)|Forest Mansion Research Rune]]>><<pass 60>><</link>>
+		<br>
+	<<elseif $forestmansionrunestone is 2>>
+		<<link [[在石头上重新刻画被磨损的符文(0:20)|Forest Mansion Redraw]]>><<pass 20>><</link>>
+		<br>
+	<</if>>
+	<<link [[回到走廊上 (0:05)|Forest Mansion Right Hallway]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+<</if>>
+
+:: Forest Mansion Landing
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 9>><<effects>>
+你爬上了楼梯平台，墙上的巨幅画作似乎正怒视着你，左右两侧是通向其他房间的门廊。
+<br><br>
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<link [[向左 (0:05)|Forest Mansion Guest Suite]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<link [[向右 (0:05)|Forest Mansion Master Suite]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+	<br>
+	<<link [[下楼 (0:05)|Forest Mansion Entrance]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+<</if>>
+
+:: Forest Mansion Guest Suite
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 10>><<effects>>
+你走进了一间建得不错且保存良好的卧室里，房间覆盖着一层薄薄的灰尘，看起来几乎从来没被使用过。床已经铺好了，衣柜里还有完好无损的衣服。
+<br><br>
+
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<link [[睡觉|Forest Mansion Bed]]>><</link>>
+	<br>
+	<<link [[衣柜|Forest Mansion Wardrobe]]>><</link>>
+	<br>
+	<<link [[镜子|Forest Mansion Mirror]]>><</link>>
+	<br>
+	<<link [[返回楼梯 (0:05)|Forest Mansion Landing]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+<</if>>
+
+:: Forest Mansion Master Suite
+
+<<set $outside to 0>><<set $location to "kylar_manor">><<set $forestmansionstage to 11>><<effects>>
+<<if $rng lte 50 and $eventskip is 0>>
+	<<forestmansionrandomevents>>
+<<else>>
+	<<if $forestmansionhaunt is 1>>
+		主卧已经损毁了，门是破的，窗户也裂掉了，床塌掉了，一幅画扣在地上。
+		<br><br>
+    	<<if $TaylorWith is 1>>
+    		"这应该是最近破坏的。看，床和废墟不像之前的一样布满灰尘，这看起来像地震，但其他房间都不像，所以也不可能是地震。不过看这扇门，铰链完全被破坏了，也许那些鬼故事是真实的，尽管看起来更有可能是有人把房间弄乱了。人们这么不爱护古迹让我好难过。"泰勒叹了一声，<<he>>开始在<<his>>的笔记本上记笔记。
+    		<br><br>
+    	<</if>>
+	<<else>>
+		大师的套间看起来更像客房，家具只能看到一张大床和一个衣柜，衣柜还是空的。墙上挂着的一幅大画，画里的年轻人恶狠狠地盯着你。
+		<br><br>
+
+		<<if $TaylorWith is 1>>
+			"哼～我原本对大师的套间有更多的期待的。你觉得那副画是他的吗？他肯定挺自我主义的。"
+			<br><br>
+		<</if>>
+
+		<<link [[睡觉|Forest Mansion Bed]]>><</link>>
+		<br>
+		<<link [[衣柜|Forest Mansion Wardrobe]]>><</link>>
+		<br>
+		<<link [[镜子|Forest Mansion Mirror]]>><</link>>
+		<br>
+	<</if>>
+	<<link [[返回楼梯 (0:05)|Forest Mansion Landing]]>><<pass 5>><<set $eventskip to 0>><<set $rng to random(1,100)>><</link>>
+<</if>>
+
+:: Forest Mansion Bed
+
+<<effects>>
+你依偎在被子里。
+<br><br>
+<<if $sleeptrouble is 1 and $controlled is 0>>
+	<<link [[睡10个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 10>><<incrementautosave>><</link>> (<<timeAfterXHours 10>>)<<ltiredness>>
+	<br>
+	<<link [[睡9个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 9>><<incrementautosave>><</link>> (<<timeAfterXHours 9>>)<<ltiredness>>
+	<br>
+<</if>>
+<<link [[睡8个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 8>><<incrementautosave>><</link>> (<<timeAfterXHours 8>>)<<ltiredness>>
+<br>
+<<link [[睡7个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 7>><<incrementautosave>><</link>> (<<timeAfterXHours 7>>)<<ltiredness>>
+<br>
+<<link [[睡6个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 6>><<incrementautosave>><</link>> (<<timeAfterXHours 6>>)<<ltiredness>>
+<br>
+<<link [[睡5个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 5>><<incrementautosave>><</link>> (<<timeAfterXHours 5>>)<<ltiredness>>
+<br>
+<<link [[睡4个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 4>><<incrementautosave>><</link>> (<<timeAfterXHours 4>>)<<ltiredness>>
+<br>
+<<link [[睡3个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 3>><<incrementautosave>><</link>> (<<timeAfterXHours 3>>)<<ltiredness>>
+<br>
+<<link [[睡2个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 2>><<incrementautosave>><</link>> (<<timeAfterXHours 2>>)<<ltiredness>>
+<br>
+<<link [[睡1个小时|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to 1>><<incrementautosave>><</link>> (<<timeAfterXHours 1>>)<<ltiredness>>
+<br>
+<<link [[只管去睡|Forest Mansion Sleep]]>><<set $rng to random(1,100)>><<set $sleephour to -1>><<incrementautosave>><</link>> (??:??)<<ltiredness>>
+<br>
+<<if $forestmansionstage is 11>>
+	<<link [[爬下床|Forest Mansion Master Suite]]>><</link>>
+<<else>>
+	<<link [[爬下床|Forest Mansion Guest Suite]]>><</link>>
+<</if>>
+
+:: Forest Mansion Sleep
+
+<<set _autosavehere to true>>
+<<sleep>><<effects>>
+<<sleepeffects>>
+<<if $TaylorWith is 1>>
+	"等等，你打算睡在这地方？天已经黑了，我们还在森林中。"<<He>>唉声叹气。"我该怎么跟我妈妈解释啊，特别是经历完之前那次失踪后。"你俩躺在床上尝试着入睡，然而在大半夜，太阳不见丝毫踪迹的时候，你俩被阵阵冷意折腾地实在无法入眠。 
+<<elseif $options.bjx_eventTF and $ghost is 0 and $slime is 0 and $mushroom is 0 and $exorcised is 0 and $rng lte 10>>
+	你将你的头放在古老别墅的某件枕物上。然后睡着了。你睡得不咋安稳，寒意使你在睡醒前的睡眠断断续续。在起床之前，你坐起身来伸了个懒腰。
+	<br><br>
+	你突然…感觉有些…不对劲。你去揉自己的太阳穴，但什么也没摸到。你惊慌失措，赶忙掀开镜子上的盖子，发现自己变得和原来截然不同。
+	<br><br>
+	你的皮肤像幽灵一样的苍白。燃烧的蓝色球火在你周围若隐若现。你去摸你的脸，但令人震惊的是，你的手穿过了你自己的脑袋。你呼吸急促，惊恐万状，因为你原本的手被留在了原地一动不动。
+	<br><br>
+	你用力拉扯，最终将它撕裂成半固态的块状物，蓝色的液体从你的脸颊滴下。你的身体不见了。在考虑接下来该做什么之前，你冷静了下来。
+	<<ghosttransform>>
+	<<earnFeat "Ghost">>
+<<elseif $options.bjx_eventTF and $ghost is 0 and $slime is 0 and $mushroom is 0 and $exorcised is 1 and $rng lte 15>>
+	你把脑袋靠在枕头上并迷迷糊糊地入睡了。然而你被寒意惊醒了，没有睡完一个安稳觉。你坐起来伸了伸懒腰，然后离开了床。
+	<br><br>
+	你突然…感觉有些…不对劲。你去揉自己的太阳穴，但什么也没摸到。你意识到了什么，赶忙掀开镜子上的盖子，发现自己变得和原来截然不同。
+	<br><br>
+	你的皮肤像幽灵一样的苍白。燃烧的蓝色球火在你周围若隐若现。你去摸你的脸，不出所料的，你的手穿过了你自己的脑袋。
+	<br><br>
+	看来你的身体不见了，你又一次变成了幽灵，因为有过这样的经历，你很快冷静了下来。
+	<<ghosttransform>>
+<<else>>
+	你把脑袋靠在枕头上并迷迷糊糊地入睡了。然而你被寒意惊醒了，没有睡完一个安稳觉。你坐起来伸了伸懒腰，然后离开了床。
+<</if>>
+<br><br>
+<<if $TaylorWith is 1>>
+	<<link [[同意离开|Forest Mansion Coffee Ending]]>><</link>>
+	<br>
+	<<link [[执意留下|Forest Mansion Goodbye]]>><</link>>
+<<else>>
+	<<if $forestmansionstage is 11>>
+		<<link [[继续|Forest Mansion Master Suite]]>><</link>>
+	<<else>>
+		<<link [[继续|Forest Mansion Guest Suite]]>><</link>>
+	<</if>>
+<</if>>
+
+:: Forest Mansion Coffee Ending
+
+<<set $TaylorWith to 0>>
+"太好了！那我们去海风咖啡馆吧。"你们两个走到咖啡馆坐下，泰勒叹了口气: "这次探险没有我想象的那么令人兴奋。由于闹鬼，那个地方几乎没有什么价值。哦，请给我两杯咖啡。"<<He>>对服务员说。"唯一让这次旅行变得有趣的是你，非常感谢你能和我一起。"<<He>>微笑着。"不管怎样，我最好在妈杀了我之前回家，下次再见了。"
+<br><br>
+<<endevent>>
+
+<<link [[继续|Cliff Street]]>><<pass 90>><</link>>
+
+:: Forest Mansion Goodbye
+
+<<set $TaylorWith to 0>>
+"好吧我明白了。祝你拥有美好的一天，我最好赶紧回家了。"<<He>>挥手说道。
+<br><br>
+<<endevent>>
+
+<<if $forestmansionstage is 11>>
+	<<link [[继续|Forest Mansion Master Suite]]>><</link>>
+<<else>>
+	<<link [[继续|Forest Mansion Guest Suite]]>><</link>>
+<</if>>
+
+:: Forest Mansion Taylor Leave
+
+<<set $TaylorWith to 0>>
+"你想要走了吗？"泰勒遗憾地问道。"行吧，如果你玩得不开心，那我们就走吧。"你们一起走回城镇里。"如果你想去别的地方，你知道在哪里可以找到我。"<<He>>说。<<he>>给了你一个拥抱，然后回家了。
+<br><br>
+<<endevent>>
+
+<<link [[继续|Danube Street]]>><<pass 90>><</link>>
+
+:: Forest Mansion Cellar Exorcism Return
+
+约旦叹了口气，"好吧，既然你不愿意的话，我也不好强迫你。"
+<br><br>
+约旦默默整理好行李，转身朝着神殿的方向回去了。
+<br><br>
+"如果你改变主意了，你知道在哪找我。"约旦说道。
+<br><br>
+<<link [[继续|Forest Mansion Explore]]>><<set $exorcism to 2>><</link>>
+
+:: Forest Mansion Cellar Exorcism
+
+约旦将你领到空荡荡的卧室里，你的身体曾在此处，而今踪影全无。 
+<br><br>
+"看来你的身体里有个搭便车的家伙。"约旦嘟囔着，在空气中撒下白色粉末，使地面上显现出一条黏糊糊的痕迹。
+<br><br>
+你沿着痕迹穿过房子，来到厨房，粘液的痕迹停在活板门的边缘处。
+<br><br>
+"看来入侵者就藏在地窖里，小心点。"约旦望向你，目光中满带着警惕，然后打开活板门爬了下去。
+<br><br>
+你跟在约旦后面，走进黑暗潮湿的地窖。当约旦把手伸进<<his>>的长袍里，取出手电筒照亮房间时，有液体从天花板上滴落。
+<br><br>
+地板上摊这破碎的瓶子，木桶挡住了你的视线。有什么在咆哮的东西让你毛骨悚然。
+<br><br>
+约旦绕过一个木桶，用<<his>>的手电照了一圈。一只老鼠从光下掠过，但这里没有你身体的迹象。
+<br><br>
+突然，有什么东西从阴影中冲了出来，袭击了约旦。<<Hes>>被击倒，手中的火把旋转飞到你的脚下。
+<br><br>
+你赶忙捡起火把，照亮现场。在昏暗的灯光下，你发现约旦趴在你瘦弱的身体下面。你的脸颊凹陷，眼睛几乎是黑色的。
+<br><br>
+约旦喊了一声。<<he>>将玻璃瓶砸在你的前额。你痛苦地尖叫着倒在地上。
+<br><br>
+"快按住它。" 约旦一边喊着，一边从长袍中取出那本古书并打开卡着书签的一页。
+<br><br>
+<<link [[将它按住|Forest Mansion Exorcism]]>><</link>>
+
+:: Forest Mansion Exorcism
+
+你紧紧抓住你的身体，约旦开始咏读古书，你不明白这些语言，但你自己的身体开始踌躇，发出骇人的尖叫。
+<br><br>
+你将它压在身下时，黑色的液体从你身体下喷涌而出，在地面上汇集成一片水洼。
+<br><br>
+"赶紧回到里面去。"约旦喊道。
+<br><br>
+你在失去意识前抓紧时间重新控制了自己的身体。
+<br><br>
+<<link [[醒来 (6:00)|Forest Mansion Awaken]]>>
+    <<pass 360>>
+    <<ghostuntransform>>
+<</link>>
+
+:: Forest Mansion Awaken
+
+你猛地睁开眼睛坐了起来。你发现自己坐在一张毛绒绒的床上，约旦坐在你身边的椅子上睡的很安详。
+<br><br>
+当你起床时，约旦也苏醒了过来，伸了伸懒腰，站了起来。 "早上好。"<<He>>他昏昏沉沉地咕哝着。"看来驱魔让我们俩都受了不少罪。我勉强赶回神殿就晕倒了。"
+<br><br>
+<<He>>微笑着把你扶起来。"很高兴能帮你解决精神问题，下次尽量不要呆在这种受诅咒的地方。"
+<br><br>
+<<He>>送你回到神殿的主厅，向你道别。
+<br><br>
+<<link [[继续|Temple]]>><<set $exorcism to 0>><</link>>
+
+:: Forest Mansion Mirror
+
+<<effects>>
+
+<<if $forestmansionstage is 11>>
+	<<link [[继续|Forest Mansion Master Suite]]>><<unset $mirrorMenu>><<unset $bodywritingSet>><</link>>
+<<else>>
+	<<link [[继续|Forest Mansion Guest Suite]]>><<unset $mirrorMenu>><<unset $bodywritingSet>><</link>>
+<</if>>
+<br>
+
+<<mirror>>
+<br><br>

@@ -1,0 +1,283 @@
+:: Bus Station
+
+<<set $outside to 0>><<set $location to "town">><<effects>>
+You are in the bus station.
+<<if Time.dayState is "day">>
+	The main building is mostly empty, with the majority of vehicles in use.
+<<elseif Time.dayState is "night">>
+	The building is packed with parked vehicles.
+<<else>>
+	The main building is mostly empty, with the majority of vehicles in use.
+<</if>>
+<br><br>
+<<if $smuggler_location is "bus" and $smuggler_timer is 0 and Time.dayState is "night" and Time.hour gte 18>>
+	<<smugglerdifficultytext>>
+<</if>>
+<<if $stress gte $stressmax>>
+	<<passoutstreet>>
+<<else>>
+	<<if $exposed gte 1>>
+		<<exhibitionismbuilding>>
+		<<if Time.dayState is "night">>
+			<<set $danger to random(1, 10000)>><<set $dangerindustrial to 0>>
+			<<if $danger gte (9900 - ($allure)) and $eventskip is 0>>
+				<<set $dangerindustrial to random(1, 100)>>
+				<<if $dangerindustrial gte 1>>
+					<<busstationex1>>
+				<</if>>
+			<<else>>
+				<<if $smuggler_location is "bus" and $smuggler_timer is 0 and Time.hour gte 18>>
+					<<smugglerdifficultyactions>>
+				<</if>>
+				<br>
+				<<harvesticon>><<link [[Harvest Street (0:02)->Bus Station Front Door]]>><<pass 2>><</link>>
+				<br>
+				<<exiticon>><<link [[Leave via back door (0:02)|Industrial alleyways]]>><<pass 2>><</link>>
+				<br><br>
+			<</if>>
+		<<else>>
+			<<set $danger to random(1, 10000)>><<set $dangerindustrial to 0>>
+			<<if $danger gte (9900 - ($allure * 2)) and $eventskip is 0>>
+				<<set $dangerindustrial to random(1, 100)>>
+				<<if $dangerindustrial gte 1>>
+					<<busstationex1>>
+				<</if>>
+			<<else>>
+				<<exiticon>><<link [[Leave via back door (0:02)|Bus Station Back Door]]>><<pass 2>><</link>>
+				<br><br>
+			<</if>>
+		<</if>>
+	<<else>>
+		<<if Time.dayState is "night">>
+			<<if $smuggler_location is "bus" and $smuggler_timer is 0>>
+				<<smugglerdifficultyactions>>
+			<</if>>
+			<br>
+
+			<<harvesticon>><<link [[Harvest Street (0:02)->Bus Station Front Door]]>><<pass 2>><</link>>
+			<br>
+			<<exiticon>><<link [[Leave via back door (0:02)|Bus Station Back Door]]>><<pass 2>><</link>>
+			<br><br>
+		<<else>>
+			<<harvesticon>><<link [[Harvest Street (0:02)->Harvest Street]]>><<pass 2>><</link>>
+			<br>
+			<<exiticon>><<link [[Leave via back door (0:02)|Bus Station Back Door]]>><<pass 2>><</link>>
+			<br><br>
+		<</if>>
+		<<if $cheatdisable is "f">>
+			A van is parked in the corner. Its back doors are open and the engine is on, but there's no one around.
+			<br><br>
+			<<investigateicon>><<link [[Investigate the van|Bus Station Livestock]]>><</link>><<dangerousText>> | <i>Cheat option. Triggers livestock bad end.</i> <!-- Appears even with blind stats enabled. Intentional -->
+			<br><br>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>
+
+:: Bus Station Livestock
+<<effects>>
+
+<<generate1>><<person1>>
+You approach the van, and peer inside. A rush of footsteps is all the warning you're given. A pair of arms shove you forward.
+<br><br>
+
+You tumble onto the van floor. You turn just in time to see a <<person>> slam the doors shut.
+<br><br>
+
+You try to open the doors, but they're locked. You look around, but see no other way out. The van rumbles into motion.
+<br><br>
+/* 北极星模组 */
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Ghost Van Escape]]>><<endevent>><<pass 1>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+
+<<link [[Next|Street Van Journey]]>><</link>>
+<br>
+/*
+You approach the van. A girl in a white dress tinkers at the engine. She looks up as you approach, and pulls her long brown hair away from her eyes.
+<br><br>
+"Hi there," she says. "No need to take this old thing to cow jail anymore. There are lots of other ways there now, so it's being repurposed. Come back when there's another new area, and it might take you there instead."
+<br><br>
+A tall blonde girl in a crisp black outfit walks around the bonnet, and slashes one of the tires. The other girl looks bemused.
+<br><br>
+
+<<link [[Leave|Bus Station]]>><<endevent>><</link>>
+<br>
+*/
+
+:: Bus Station Front Door
+
+<<set $outside to 0>><<effects>><<set $lock to 100>>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>><<link [[Pick it (0:10)|Harvest Street]]>><<pass 10>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Harvest Street]]>><<pass 1>><<set $ghostIn to true>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Bus Station]]>><</link>>
+<br>
+
+:: Bus Station Back Door
+
+<<set $outside to 0>><<effects>><<set $lock to 0>>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>><<link [[Pick it (0:10)|Industrial alleyways]]>><<pass 10>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Industrial alleyways]]>><<pass 1>><<set $ghostIn to true>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Bus Station]]>><</link>>
+<br>
+
+:: Bus Station Entrance
+
+<<set $outside to 0>><<effects>><<set $lock to 100>>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>><<link [[Pick it (0:10)|Bus Station]]>><<pass 10>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Bus Station]]>><<pass 1>><<set $ghostIn to true>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Harvest Street]]>><</link>>
+<br>
+
+:: Bus Station Back Entrance
+
+<<set $outside to 0>><<effects>><<set $lock to 0>>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>><<link [[Pick it (0:10)|Bus Station]]>><<pass 10>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Bus Station]]>><<pass 1>><<set $ghostIn to true>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Industrial alleyways]]>><</link>>
+<br>
+
+:: Widgets Bus Station Ex [widget]
+
+<<widget "busstationex1">>
+	<<generate1>><<generate2>>
+	<<person1>>You are crouching behind a parked bus when you are accosted from behind!
+	<br><br>
+	<<link [[Next|Molestation Bus Station]]>><<set $molestationstart to 1>><</link>>
+<</widget>>
+
+:: Molestation Bus Station
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $alarm is 1 and $rescue is 0>>
+	<<set $alarm to 0>>
+	<br><br>
+	<<if $enemyarousal gte $enemyarousalmax>>
+		<span id="next"><<link [[Next->Bus Station Ejaculation]]>><</link>></span><<nexttext>>
+	<<elseif $enemyhealth lte 0>>
+		<span id="next"><<link [[Next->Bus Station Escape]]>><</link>></span><<nexttext>>
+	<<else>>
+		<span id="next"><<link [[Next->Molestation Bus Station]]>><</link>></span><<nexttext>>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[Next->Bus Station Ejaculation]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[Next->Bus Station Escape]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next->Molestation Bus Station]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bus Station Ejaculation
+
+<<ejaculation>>
+<<if $enemyanger gte ($enemyangermax / 5) * 3>>
+	They give you one last smack to the face, then leave you lying broken on the ground.
+	<<violence 3>>
+	<br><br>
+<<elseif $enemyanger gte 1>>
+	Without a word, they leave you lying broken on the ground.
+	<br><br>
+<<else>>
+	Smiling, <<person>> kisses you on the cheek. "This is for you." They get up and leave you lying broken on the ground.
+	<br>
+	You've gained <<moneyGain 5>>.
+	<br><br>
+<</if>>
+<<underlowersteal>>
+<<tearful>> you rise to your feet.
+<<clotheson>>
+<<endcombat>>
+<<set $eventskip to 1>>
+<<link [[Next|Bus Station]]>><</link>>
+
+:: Bus Station Escape
+
+<<effects>>
+<<He>> recoils in pain, giving you the chance you need to escape. <<tearful>> you escape through the back door, which is fortunately open.
+<br><br>
+<<clotheson>>
+<<endcombat>>
+<<industrialeventend>>

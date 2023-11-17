@@ -1,0 +1,775 @@
+:: Ambient Weather And Seasonal Event Widgets [widget]
+/* Bite-sized events based on the current season and weather. Made to be easily expandable, and using the new event pool system.
+ * These are all treated as their own event passages, except for the lake, where they happen in addition to any other event. Other locations can be made to follow this behaviour in the future.
+ * Exit passage depends on location. Town uses destinationeventend, forest uses the normal forest passage, etc. Called separately from the eventAmbient widget. Further control may be needed in the future, should any of these scenes expand into player choices.
+ * Winter events and Snow events are not mutually exclusive. Rain, however, overrides other seasonal event pools. In the future, every season and weather combination could have a unique pool.
+ * Future-proofed for snow outside of the Winter season.
+ * -Puri
+ */
+
+<<widget "eventAmbient">>
+	<<cleareventpool>>
+	<<switch (Time.season + $weather)>>
+		<<case "wintersnow" "winterrain" "winterovercast" "winterclear" "autumnsnow" "summersnow" "springsnow">>
+			<<if Time.season is "winter">>
+				<<addinlineevent "winter_anywhere_1">>
+					A brutally cold wind surges. You hug yourself for warmth until it dies down. <<stress 3>><<gstress>>
+				<</addinlineevent>>
+				<<addinlineevent "winter_anywhere_2" 0.5>>
+					<<dancedifficulty 1 1000 true>>
+					You step into some snow that was deeper than you first thought,
+					<<if $danceSuccess>>
+						<span class="green">but you manage to keep your footing.</span>
+					<<else>>
+						<span class="red">and you lose your footing.</span>
+						<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+							The soft, cold snow absorbs the shock of your fall as you land on your butt. You climb to your feet, grateful that the snow cushioned your <<bellyDescription "pc">> from harm.
+						<<else>>
+							You land on your butt in the cold snow before climbing to your feet.
+						<</if>>
+						<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+						<br><br>
+						<<covered>>
+					<</if>>
+				<</addinlineevent>>
+				<<if Time.hour gte 6 and Time.hour lt 21>>
+					<<addinlineevent "winter_anywhere_3">>
+						You catch a brief ray of sunshine and warmth. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+				<</if>>
+				<<if ["town", "park"].includes($location) and Time.hour gte 7 and Time.hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+					<<addinlineevent "winter_pregnant_watch">>
+						You see a group of kids playing. They're making a fort out of snow and pelting snowballs at one another.
+						You rub your <<bellyDescription "pc">> and wonder if your <<pregnancyBabyText "pc">> will be as boisterous as they are. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+				<</if>>
+				<<switch $location>>
+					<<case "town">>
+						<<addinlineevent "winter_anystreet_1" 0.5>>
+							<<athleticsdifficulty 0 800 true>>
+							A car rushes by, sending a spray of slush onto the pavement.
+							<<if $athleticsSuccess>>
+								<span class="green">You manage to jump out of the way just in time.</span>
+							<<else>>
+								<span class="red">It completely drenches you before you can react, leaving you freezing.</span>
+								<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
+									<<set $upperwet to 200>>
+								<</if>>
+								<<if !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked") and !$worn.under_upper.type.includes("chastity")>>
+									<<set $underupperwet to 200>>
+								<</if>>
+								<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
+									<<set $lowerwet to 200>>
+								<</if>>
+								<<if !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>>
+									<<set $underlowerwet to 200>>
+								<</if>>
+								<<effectswater>>
+								<<covered>>
+							<</if>>
+						<</addinlineevent>>
+						<<addinlineevent "winter_anystreet_2">>
+							<<beastNEWinit 1 dog>>
+							A <<beasttype>> jumps excitedly back and forth in the snow, trying to wrestle it into submission. <<stress -3>><<lstress>>
+							<<endevent>>
+						<</addinlineevent>>
+						<<if Time.hour gte 6 and Time.hour lt 21>>
+							<<addinlineevent "winter_anystreet_3">>
+								A snowplow rumbles past and the driver honks and waves at you. <<stress -3>><<lstress>>
+							<</addinlineevent>>
+						<</if>>
+					<<case "alley">>
+						<<addinlineevent "winter_anyalley_1">>
+							You find an abandoned trash can fire, still lit. You take a moment to warm yourself. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+						<<addinlineevent "winter_anyalley_2">>
+							<<beastNEWinit 3 cat>>
+							You pass by some stray <<beastsplural>> playing in the snow. <<stress -3>><<lstress>>
+							<<endevent>>
+						<</addinlineevent>>
+						<<addinlineevent "winter_anyalley_3" 0.5>>
+							<<athleticsdifficulty 0 1000 true>>
+							As you pass through the alleyway, you hear a sharp crack from above. Some snow falls loose from a window ledge above,
+							<<if $athleticsSuccess>>
+								<span class="green">but you manage to jump out of the way just in time.</span>
+							<<else>>
+								<span class="red">crashing down on top of you.</span> <<upperwet 75>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+								<br><br>
+								<<covered>>
+							<</if>>
+						<</addinlineevent>>
+					<<case "park">>
+						<<addinlineevent "winter_park_1">>
+							<<if Time.hour gte 6 and Time.hour lt 21>>
+								You pass by people making angels in the snow. They look carefree. <<stress -3>><<lstress>>
+							<<else>>
+								You pass by a snow angel.
+								<<if $angel gte 6>>
+									You rub your wings and smile.
+								<<elseif $fallenangel gte 2>>
+									You angrily kick snow over it, suppressing a painful memory.
+								/* 北极星模组 */
+								<<elseif $demonhunter gte 2>>
+									你的心中只有复仇的烈火，对这种幼稚的行为不屑一顾。
+								/* 北极星 */
+								<<elseif $demon gte 6>>
+									You use your foot to give it horns and a tail, giggling to yourself.
+								<</if>>
+								<<stress -3>><<lstress>>
+							<</if>>
+						<</addinlineevent>>
+						<<if Time.hour gte 6 and Time.hour lt 21>>
+							<<addinlineevent "winter_park_2">>
+								You see some orphans laughing as they collaborate to build a snowman. <<stress -3>><<lstress>>
+							<</addinlineevent>>
+							<<addinlineevent "winter_park_3" 0.33>>
+								You're suddenly pelted with a slushy snowball. You turn to see
+								<<if isInPark("whitney")>>
+									Whitney, quickly wiping snow from <<nnpc_his "Whitney">> hands. <<if isLoveInterest("Whitney")>><<stress -3>><<lstress>><<else>><<stress 12>><<ggstress>><</if>>
+								<<else>>
+									several delinquents laughing at you. <<stress 12>><<ggstress>>
+								<</if>>
+							<</addinlineevent>>
+						<</if>>
+					<<case "forest">>
+						<<addinlineevent "winter_forest_1" 0.33>>
+							You hear a thunderous crack nearby. You turn around just in time to see the remains of a tree fall to the ground, surrounded by a great circle of splinters. <<stress 12>><<ggstress>>
+						<</addinlineevent>>
+						<<addinlineevent "winter_forest_2">>
+							You find wolf tracks in the snow. <<if $wolfgirl gte 3>><<garousal>><<arousal 600>><<else>><<gstress>><<stress 1>><</if>>
+						<</addinlineevent>>
+						<<addinlineevent "winter_forest_3">>
+							You find a well-built snowman leaning against a tree. The pose work is impressive. Someone spent a lot of time on this. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+						<<if $plantdisable is "f" and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+							<<addinlineevent "winter_forest_4" 0.5>>
+								<<generatePlant1>><<person1>>
+								You see a <<personsimple>> walking through the snow. <<He>> turns and waves at you, before bumping into a tree <<he>> didn't notice. <<Plant_details>> get dislodged from <<his>> hair, and <<he>> pouts. <<stress -3>><<lstress>>
+								<<endevent>>
+							<</addinlineevent>>
+						<</if>>
+					<<case "moor">>
+						<<addinlineevent "winter_moor_1" 0.33>>
+							You find a hideous snowman standing in a circle of pillars made of ice. <<if $hallucinations gte 2>>You turn away, only to hear a loud snap behind you. You look back, and it's gone. <<stress 24>><<gggstress>><<else>><<stress 6>><<gstress>><</if>>
+						<</addinlineevent>>
+						<<addinlineevent "winter_moor_2" 0.5>>
+							You come across a frozen pond, and look down at your reflection.
+							<<if $hallucinations gte 2>>
+								<span class="red">Something inhuman scrapes at the ice from below.</span> You scramble away, nearly slipping. <<stress 24>><<gggstress>>
+							<<elseif $hallucinations gte 1>>
+								The surface churns and warps as if it weren't frozen, and you're almost certain that the reflection isn't yours. <<stress 12>><<ggstress>>
+							<<elseif $hallucinogen gt 0>>
+								The surface ripples at your presence, and a vaguely familiar <<girl>> stares back through the ice. Your breath catches in your throat for a moment, before you decide to look away. <<stress 12>><<ggstress>>
+							<<elseif $trauma gte $traumamax>>
+								A <<girl>> with glazed eyes stares back.
+							<<elseif $pain gte 100>>
+								A crying <<girl>> stares back.
+							<<elseif $pain gte 40>>
+								A tearful <<girl>> stares back.
+							<<elseif $pain gte 1>>
+								A frowning <<girl>> stares back.
+							<<else>>
+								A cheerful <<girl>> stares back. <<stress -3>><<lstress>>
+							<</if>>
+						<</addinlineevent>>
+						<<if Time.hour gte 6 and Time.hour lt 21>>
+							<<addinlineevent "winter_moor_3">>
+								You see some late birds flying south for the winter. <<stress -3>><<lstress>>
+							<</addinlineevent>>
+						<</if>>
+					<<default>>
+				<</switch>>
+			<</if>>
+			<<if $weather is "snow">>
+				<<addinlineevent "snow_anywhere_1">>
+					A single snowflake lands softly on the tip of your nose. You stop to regard it with wonder for a few moments. <<stress -1>><<lstress>>
+				<</addinlineevent>>
+				<<addinlineevent "snow_anywhere_2">>
+					A burst of wind sends a flurry of snow right into your face. <<stress 3>><<gstress>>
+				<</addinlineevent>>
+				<<addinlineevent "snow_anywhere_3">>
+					A surge of wind sends snow swirling in a circle around you. You feel a sense of calm as you stand in the eye of the storm before the wind dies down again. <<stress -6>><<lstress>>
+				<</addinlineevent>>
+				<<switch $location>>
+					<<case "town">>
+						<<addinlineevent "snow_anystreet_1">>
+							<<beastNEWinit 1 dog>>
+							A <<beasttype>> barks at the falling snow. <<bHe>> sneezes as a snowflake lands on <<bhis>> nose. <<stress -3>><<lstress>>
+							<<endevent>>
+						<</addinlineevent>>
+						<<addinlineevent "snow_anystreet_2">>
+							<<generate1>><<person1>>A <<person>> with an umbrella lets you walk alongside <<him>> for a while. <<He>> chats with you as you walk together. <<stress -3>><<lstress>>
+							<<endevent>>
+						<</addinlineevent>>
+						<<if ($bus is "domus" or $bus is "danube" or $bus is "barb") and Time.hour gte 6 and Time.hour lt 21>>
+							<<addinlineevent "snow_residentialstreet_1">>
+								You spot someone from the orphanage playing joyfully amidst the falling snow. <<stress -3>><<lstress>>
+							<</addinlineevent>>
+						<</if>>
+					<<case "alley">>
+						<<addinlineevent "snow_anyalley_1">>
+							<<beastNEWinit 1 cat>>
+							A stray <<beasttype>> pursues the descending flakes of snow throughout the alleyway. <<stress -3>><<lstress>>
+							<<endevent>>
+						<</addinlineevent>>
+						<<addinlineevent "snow_anyalley_2">>
+							<<beastNEWinit 1 dog>>
+							<<generate2>><<person2>>
+							A homeless <<personsimple>> huddles together with a mangy <<person1>><<beasttype>> inside of a cardboard box, seeking shelter from the snow. <<person2>><<He>> gives you a warm smile as you pass. <<stress -3>><<lstress>>
+							<<endevent>>
+						<</addinlineevent>>
+						<<addinlineevent "snow_anyalley_3">>
+							As you pass through the alley, the wind suddenly picks up and funnels a huge swathe of falling snow in your direction. You shield yourself as you're assailed by wet and cold snowflakes. When the wind finally dies down, you're left freezing with damp clothes.
+							<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
+								<<upperwet 75>>
+							<</if>>
+							<<if !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked") and !$worn.under_upper.type.includes("chastity")>>
+								<<underupperwet 75>>
+							<</if>>
+							<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
+								<<lowerwet 75>>
+							<</if>>
+							<<if !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>>
+								<<underlowerwet 75>>
+							<</if>>
+						<</addinlineevent>>
+					<<case "park">>
+						<<addinlineevent "snow_park_1" 0.5>>
+							<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+								You slip on a patch of black ice. Your hands instinctively curl around your <<bellyDescription "pc">> to protect it from harm as you fall flat on your ass. You use a nearby bench to safely haul yourself to your feet, careful not to slip again. Your bottom is left damp and chilly.
+							<<else>>
+								You slip on a patch of black ice, tripping and falling. You slide across the ground, dampening your clothes and leaving your bottom chilly.
+							<</if>>
+							<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+						<</addinlineevent>>
+						<<if Time.hour gte 6 and Time.hour lt 21>>
+							<<addinlineevent "snow_park_2">>
+								Youths cheer and celebrate the falling snow as they play in the park. <<stress -3>><<lstress>>
+							<</addinlineevent>>
+							<<addinlineevent "snow_park_3">>
+								Some people playing nearby are cobbling what snow they can to form snowballs and lob them at one another. <<stress -3>><<lstress>>
+							<</addinlineevent>>
+						<</if>>
+					<<case "forest">>
+						<<addinlineevent "snow_forest_1">>
+						    /* 北极星模组 */
+							你注意到前方一段距离有一头鹿正紧紧地挤在它的幼崽身边，为了在雪中让幼崽也能保持温暖。为了不打扰他们，你决定绕道走。<<stress -3>><<lstress>><<transform deer 1>>
+							/* 北极星 */
+						<</addinlineevent>>
+						<<addinlineevent "snow_forest_2">>
+							The branches of the trees offer some protection from the falling snow. <<stress -1>><<lstress>>
+						<</addinlineevent>>
+						<<addinlineevent "snow_forest_wolfmeet">>
+							<<beastNEWinit 1 wolf>>
+							<<if $syndromewolves is 1>>
+								You're caught off guard as a <<beasttype>> bounds out from a snow bank in front of you. You relax once you see it's a member of your pack.
+								<<if $monster is 1>>
+									"Always keep guard up, <<ppackbrother>>," <<bhe>> says as <<bhe>> shakes off the snow. "Home soon. Cold days are warmer with pack." <<bHe>> bounds off towards the wolf cave.
+								<<else>>
+									<<bHe>> approaches and nuzzles you before shaking the snow from <<bhis>> furry coat and bounding off towards the wolf cave.
+								<</if>>
+							<<stress -6>><<llstress>>
+							<<else>>
+								You freeze when you see a <<beasttype>> in front of you, peering from a snow bank.
+								<<if $monster is 1>>
+									<<bHe>> slowly emerges, regarding you with serious eyes.
+									<br><br>
+									"Cold days, not for humans. Run home," <<bhe>> says as <<bhe>> shakes off the snow. <<bHe>> bares <<bhis>> fangs at you playfully, before bounding off into the trees.
+								<<else>>
+									<<bHe>> stops and regards you before shaking the snow from <<bhis>> furry coat and bounding off into the trees.
+								<</if>>
+							<<stress -3>><<lstress>>
+							<</if>>
+							<<endevent>>
+						<</addinlineevent>>
+					<<case "moor">>
+						<<addinlineevent "snow_moor_1">>
+							The falling snowflakes obscure your vision, as you hear strange sounds all about. <<stress 3>><<gstress>>
+						<</addinlineevent>>
+						<<addinlineevent "snow_moor_2">>
+							For the briefest of moments, the snow subsides and you catch a warming ray of sunshine. It doesn't last long, but you feel a little better. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+						<<addinlineevent "snow_moor_3">>
+							<<if Time.hour gte 6 and Time.hour lt 21>>
+								The snow makes the normally treacherous terrain of the moor even more dangerous. You struggle to find stable footing and occasionally slip as you go.
+							<<else>>
+								The snowfall makes the dark night of the moor even darker. You can barely see where you're going. <<stress 6>><<gstress>>
+							<</if>>
+						<</addinlineevent>>
+					<<default>>
+				<</switch>>
+			<</if>>
+		<<case "autumnrain" "summerrain" "springrain">>
+			<<addinlineevent "rain_anywhere_1">>
+				Thunder rumbles in the distance. <<stress 1>><<gstress>>
+			<</addinlineevent>>
+			<<addinlineevent "rain_anywhere_2">>
+				<<if $trauma gte ($traumamax / 5) * 4>>
+					The unyielding onslaught of the rain torments and mocks you. <<stress 6>><<gstress>>
+				<<else>>
+					The gentle sound of the rain soothes you. <<stress -3>><<lstress>>
+				<</if>>
+			<</addinlineevent>>
+			<<addinlineevent "rain_anywhere_3" 0.33>>
+				The rain briefly gives way to hail. You're relentlessly pelted for a few moments. <<pain 4>><<stress 6>><<gpain>><<gstress>>
+			<</addinlineevent>>
+			<<switch $location>>
+				<<case "town">>
+					<<addinlineevent "rain_anystreet_1" 0.33>>
+						<<athleticsdifficulty 0 500 true>>
+						A vehicle races by, sending water spraying across the pavement.
+						<<if $athleticsSuccess>>
+							<span class="green">You manage to step out of the way just in time.</span>
+						<<else>>
+							<span class="red">It completely drenches you before you can react.</span>
+							<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
+								<<set $upperwet to 200>>
+							<</if>>
+							<<if !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked") and !$worn.under_upper.type.includes("chastity")>>
+								<<set $underupperwet to 200>>
+							<</if>>
+							<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
+								<<set $lowerwet to 200>>
+							<</if>>
+							<<if !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>>
+								<<set $underlowerwet to 200>>
+							<</if>>
+							<<effectswater>>
+							<<covered>>
+						<</if>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_anystreet_2" 0.33>>
+					<<dancedifficulty 1 500 true>>
+						The rain-slicked pavement causes you to slip,
+						<<if $danceSuccess>>
+							<span class="green">but you manage to right yourself and keep your footing.</span>
+						<<else>>
+							<span class="red">and you lose your footing.</span> You land on your butt, right in a large puddle. <<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<set $lowerwet to 200>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<set $underlowerwet to 200>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+							<br><br>
+							<<covered>>
+						<</if>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_anystreet_3">>
+						<<generate1>><<person1>>A <<person>> with an umbrella lets you walk alongside <<him>> for a while. <<He>> chats with you as you walk together. <<stress -3>><<lstress>>
+						<<endevent>>
+					<</addinlineevent>>
+					<<if Time.hour gte 7 and Time.hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+						<<addinlineevent "rain_pregnant_talk" 0.8>>
+							<<generate1>><<person1>>
+							The rain gives way to hail, and you take shelter under a nearby awning. A <<personsimple>> with a pram is already there, murmuring reassurances to <<his>> fussy newborn. <<He>> smiles and nods at your <<bellyDescription "pc">>. "When are you due?" <<he>> asks. The two of you make idle chit-chat as you wait for the hail to let up.
+							<br><br>
+
+							As it finally dies down, the <<father>> mentions that <<he>> lives on <<print either("Domus Street", "Danube Street")>> and suggests that you have a playdate once you give birth. When <<he>> asks where you live, you confess that you're a resident of the orphanage. The <<persons>> face twists in a mixture of pity and distaste, and <<he>> mumbles a hasty goodbye before stepping out into the rain once more. You watch as the pram disappears into the distance, feeling oddly bereft. <<trauma 6>><<gtrauma>>
+							<<endevent>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "alley">>
+					<<addinlineevent "rain_anyalley_1">>
+						<<beastNEWinit 1 dog>>
+						A <<beasttype>> huddles by some trash cans to escape the downpour. You can sympathise. <<stress -3>><<lstress>>
+						<<endevent>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_anyalley_2" 0.33>>
+						You walk beneath a gutter drain just as it comes unclogged. A torrent of rain water drenches you.
+						<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
+							<<upperwet 75>>
+						<</if>>
+						<<if !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked") and !$worn.under_upper.type.includes("chastity")>>
+							<<underupperwet 75>>
+						<</if>>
+						<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
+							<<lowerwet 75>>
+						<</if>>
+						<<if !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>>
+							<<underlowerwet 75>>
+						<</if>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_anyalley_3">>
+						A group of youths are playing in the alley. They jump about, splashing in puddles and giggling. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+				<<case "park">>
+					<<addinlineevent "rain_park_1">>
+						<<beastNEWinit 1 dog>>
+						<<generate2>><<person2>>A <<person>> chases an escaped <<beasttype>> across the park, cursing all the while as the rain soaks <<him>>. You hold back a giggle. <<stress -3>><<lstress>>
+						<<endevent>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_park_2">>
+						You catch sight of a couple kissing in the rain. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_park_3" 0.5>>
+							You slip and fall onto a patch of wet grass.
+							<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+								Your hands instinctively curl around your <<bellyDescription "pc">> to protect it from harm as you fall flat on your ass. You use a nearby bench to safely haul yourself to your feet, careful not to slip again.
+							<</if>>
+							Your bottom is left sore and damp. <<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+					<</addinlineevent>>
+				<<case "forest">>
+					<<addinlineevent "rain_forest_1">>
+						Rain pours down through the trees, filling the forest with calming scents and sounds. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_forest_2" 0.33>>
+						Lightning strikes a tree nearby, sending splinters flying in all directions. The tree hurtles to the ground. The smoldering wood is doused quickly by the rain, but the event still leaves you on edge. <<stress 24>><<gggstress>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_forest_3">>
+					    /* 北极星模组 */
+						你看到一只鹿正庇护它的孩子躲避雨水。<<stress -3>><<lstress>><<transform deer 1>>
+						/* 北极星 */
+					<</addinlineevent>>
+				<<case "moor">>
+					<<addinlineevent "rain_moor_1">>
+						The rain obscures your vision as you hear strange sounds all about. <<stress 3>><<gstress>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_moor_2">>
+						A flash of lightning illuminates dark shapes moving in the distance. <<stress 3>><<gstress>>
+					<</addinlineevent>>
+					<<addinlineevent "rain_moor_3">>
+						You freeze as you hear a noise in the nearby grass. You sigh in relief as a wet rabbit hops from the brush, seeking better shelter from the rain. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<if $plantdisable is "f" and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+						<<addinlineevent "rain_moor_4" 0.5>>
+							<<generatePlant1>><<person1>>
+							You see a <<personsimple>> spinning in the rain, holding <<his>> arms out. <<He>> almost slips and loses <<his>> balance a few times, but <<he>> doesn't stop smiling. <<stress -3>><<lstress>>
+							<<endevent>>
+						<</addinlineevent>>
+					<</if>>
+				<<default>>
+			<</switch>>
+		<<case "autumnclear" "autumnovercast">>
+			<<addinlineevent "autumn_anywhere_1">>
+				A surge of wind sends leaves swirling in a circle around you. You feel a sense of calm as you stand in the eye of the storm, before the wind dies down again. <<stress -3>><<lstress>>
+			<</addinlineevent>>
+			<<addinlineevent "autumn_anywhere_2">>
+				The wind kicks up some leaves in your face<<if !$worn.face.type.includes("covered")>>, leaving you sputtering<</if>>. <<stress 1>><<gstress>>
+			<</addinlineevent>>
+			<<addinlineevent "autumn_anywhere_3" 0.33>>
+				<<dancedifficulty 1 500 true>>
+				You trip up on a fallen branch,
+				<<if $danceSuccess>>
+					<span class="green">but you manage to keep your footing.</span>
+					<br><br>
+					<<covered>>
+				<<else>>
+					<span class="red">and land in a pile of damp leaves.</span>
+					<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+						Your hand automatically flies to your <<bellyDescription "pc">>. You're grateful that the leaves broke your fall. You quickly stand, brushing off leaves and rubbing your now sore and wet bottom.
+					<<else>>
+						You quickly stand, brushing off leaves and rubbing your now sore and wet bottom.
+					<</if>>
+					<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>><<lowerwet 75>><<elseif $worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>><<underlowerwet 75>><</if>><<stress 6>><<pain 4>><<gstress>><<gpain>>
+					<br><br>
+					<<covered>>
+				<</if>>
+			<</addinlineevent>>
+			<<if ["town", "park"].includes($location) and Time.hour gte 7 and Time.hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+				<<addinlineevent "autumn_pregnant_watch">>
+					<<generatey1>><<person1>>
+					You see a group of kids playing. A young <<personsimple>> hides in a pile of leaves before bursting out to scare <<his>> friend. The other child immediately bursts into tears.
+					You rub your <<bellyDescription "pc">> and wonder if your <<pregnancyBabyText "pc">> will be as troublesome as they are. <<stress -3>><<lstress>>
+					<<endevent>>
+				<</addinlineevent>>
+			<</if>>
+			<<switch $location>>
+				<<case "town">>
+					<<addinlineevent "autumn_anystreet_1">>
+						<<beastNEWinit 1 dog>>
+						A <<beasttype>> snaps at leaves as the wind sweeps them this way and that. <<stress -3>><<lstress>>
+						<<endevent>>
+					<</addinlineevent>>
+					<<if Time.hour gte 6 and Time.hour lte 21>>
+						<<addinlineevent "autumn_anystreet_2">>
+							<<generate1>><<person1>>A <<person>> rakes leaves off the pavement and into a pile. Just as <<he>> finishes, the wind scatters them across the sidewalk yet again, causing <<him>> to curse loudly. <<stress -3>><<lstress>>
+							<<endevent>>
+						<</addinlineevent>>
+						<<addinlineevent "autumn_anystreet_3">>
+							<<generate1>><<person1>>A <<person>> stands on the sidewalk using a leaf blower to clear the sidewalks. As you near <<him>>, <<he>> turns suddenly, and the powerful blast of air from the blower sends your clothes into various states of disarray, giving anyone nearby a show. The <<person>> laughs as you walk past, wrangling your clothes back in order. <<stress 3>><<arousal 10>><<gstress>><<garousal>>
+							<<endevent>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "alley">>
+					<<addinlineevent "autumn_anyalley_1">>
+						<<beastNEWinit 1 cat>>
+							A stray <<beasttype>> chases a leaf across the alley. You stop to watch for a little while.<<stress -3>><<lstress>>
+						<<endevent>>
+					<</addinlineevent>>
+					<<addinlineevent "autumn_anyalley_2">>
+						As you pass through the alley, the wind picks up and funnels nearby leaves nearby in your direction. You shield yourself as best you can, and the wet and dirty leaves pass after a moment. <<stress 1>><<gstress>>
+					<</addinlineevent>>
+					<<if Time.hour gte 21 or Time.hour lt 6>>
+						<<addinlineevent "autumn_anyalley_3" 0.33>>
+							Several large piles of leaves litter the alley. Raccoons run and play between the piles. <<if currentSkillValue('science') gte 500>>You wonder why there are raccoons here, they certainly aren't native.<</if>> <<stress -3>><<lstress>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "park">>
+					<<addinlineevent "autumn_park_1">>
+						You look out over the park and marvel at the various colours of autumn. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<if Time.hour gte 6 and Time.hour lt 21>>
+						<<addinlineevent "autumn_park_2">>
+							You watch as a couple takes turns leaping into a pile of leaves. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+						<<addinlineevent "autumn_park_3">>
+							<<generate1>><<person1>>
+							You accidentally walk through a pile of leaves. A nearby <<person>> raking leaves looks over and yells at you. You hurry on. <<stress 3>><<gstress>>
+							<<endevent>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "forest">>
+					<<addinlineevent "autumn_forest_1">>
+						A squirrel runs past, carrying nuts it intends to store for winter. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<addinlineevent "autumn_forest_2">>
+						You walk through the forest and can't help but admire the various oranges, browns and yellows breaking through the canopy. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<addinlineevent "autumn_forest_3" 0.33>>
+						You stop in your tracks as you hear a feral growl. Looking down, you see a badger at the foot of a nearby tree. It's surrounded by scattered dirt. You seem have interrupted it digging its winter den. You back away slowly until it returns to its digging. <<stress 3>><<gstress>>
+					<</addinlineevent>>
+					<<if $plantdisable is "f" and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+						<<addinlineevent "autumn_forest_4" 0.5>>
+							<<generatePlant1>><<person1>>
+							A <<personsimple>> runs <<his>> fingers through <<his>> hair. <<He>> picks dead leaves out, crunching them in <<his>> hands before dropping them.
+							<<endevent>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "moor">>
+					<<addinlineevent "autumn_moor_1">>
+						The scent of decaying plant life fills the moor with an acrid stench. <<stress 3>><<gstress>>
+					<</addinlineevent>>
+					<<addinlineevent "autumn_moor_2">>
+						You see flocks of birds pass overhead as they migrate south for the winter. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<addinlineevent "autumn_moor_3" 0.33>>
+						You stop at a strange clearing. You notice what looks like some kind of effigy made of twigs. As you stare, you notice more and more wrong with the scene. Its eyes are filled with burnt out candles. The rock formations around it aren't natural, and are clearly some kind of cairn. Dark roots stretch up from the ground to grasp the effigy. You snap out of what feels like an unnatural haze, and make an effort to leave as quickly as you can. <<stress 12>><<ggstress>>
+					<</addinlineevent>>
+				<<default>>
+			<</switch>>
+		<<case "summerclear" "summerovercast">>
+			<<addinlineevent "summer_anywhere_1">>
+				<<if Time.hour gte 6 and Time.hour lt 21>>
+					The brutal summer heat weighs down on you. <<stress 3>><<gstress>>
+				<<else>>
+					The cool night air makes for a nice reprieve from the blistering days. <<stress -3>><<lstress>>
+				<</if>>
+			<</addinlineevent>>
+			<<addinlineevent "summer_anywhere_2">>
+				A cool breeze blows by and revitalises you. <<stress -1>><<lstress>>
+			<</addinlineevent>>
+			<<addinlineevent "summer_anywhere_3" 0.5>>
+				A brutal wave of heat washes over you. You take a moment to wipe the sweat from your head. <<stress 1>><<gstress>>
+			<</addinlineevent>>
+			<<if ["town", "park"].includes($location) and Time.hour gte 7 and Time.hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+				<<addinlineevent "summer_pregnant_watch">>
+					You see a group of kids playing. Most are running and squealing as they spray each other with water guns, but a few are lazing on the grass. Occasionally, their friends cool them off with a blast of water, causing them to giggle.
+					You rub your <<bellyDescription "pc">> and wonder if your <<pregnancyBabyText "pc">> will be as easygoing as they are. <<stress -3>><<lstress>>
+				<</addinlineevent>>
+			<</if>>
+			<<switch $location>>
+				<<case "town">>
+					<<if Time.hour gte 6 and Time.hour lt 21>>
+						<<addinlineevent "summer_anystreet_1" 0.5>>
+							<<generate1>><<person1>>
+							You see a <<person>> fanning <<himself>> with <<his>> top to cope with the heat. <<He>> suddenly flashes you by lifting it up completely. <<arousal 5>><<garousal>>
+							<<endevent>>
+						<</addinlineevent>>
+						<<addinlineevent "summer_anystreet_2" 0.5>>
+							An ice cream truck drives by, with a group of orphans chasing after it. The tune it plays is upbeat and catchy. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+							<<if ($bus is "domus" or $bus is "danube" or $bus is "barb")>>
+								<<addinlineevent "summer_residentialstreet_1" 0.5>>
+									<<generate1>><<person1>>
+									As you pass by a <<person>> watering <<his>> lawn, <<he>> accidentally sprays you with the hose. The cold water is refreshing, but dampens your clothes.
+									<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
+										<<upperwet 75>>
+									<</if>>
+									<<if !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked") and !$worn.under_upper.type.includes("chastity")>>
+										<<underupperwet 75>>
+									<</if>>
+									<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
+										<<lowerwet 75>>
+									<</if>>
+									<<if !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked") and !playerChastity()>>
+										<<underlowerwet 75>>
+									<</if>>
+									<<stress -6>><<arousal 5>><<lstress>><<garousal>>
+									<<endevent>>
+								<</addinlineevent>>
+							<</if>>
+						<</if>>
+				<<case "alley">>
+					<<if Time.hour gte 6 and Time.hour lt 21>>
+						<<addinlineevent "summer_anyalley_1">>
+							Two students with water guns race through the alley firing at each other. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+						<<addinlineevent "summer_anyalley_2">>
+							<<beastNEWinit 1 dog>>
+								As you pass through the alley, you see a <<beasttype>> sprawled out inside a cardboard box in an attempt to escape the heat. You can't help but sympathise. <<stress -3>><<lstress>>
+							<<endevent>>
+						<</addinlineevent>>
+					<<else>>
+						<<addinlineevent "summer_anyalley_3">>
+							<<generate1>><<person1>>
+							A <<person>> sits on their back porch, smoking a cigarette and enjoying the coolness of the summer night air. <<He>> waves as <<he>> notices you. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "park">>
+					<<addinlineevent "summer_park_1">>
+						You notice several youths nearby tossing water balloons at one another. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<addinlineevent "summer_park_2">>
+						Despite the heat, you notice many people playing and relaxing here. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<addinlineevent "summer_park_3">>
+						As you walk through the park, you're narrowly missed by several water balloons. Hearing laughter, you turn to see several delinquents running away. <<stress 3>><<gstress>>
+					<</addinlineevent>>
+					<<if $plantdisable is "f" and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+						<<addinlineevent "summer_park_4" 0.5>>
+							<<generatePlant1>><<person1>>
+							A <<personsimple "normal">> with <<plant_details "forest">> in <<his>> hair peeks out of a bush. <<He>> looks nervous. When <<he>> spots you, <<he>> dives back into the bush.
+							<<endevent>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "forest">>
+					<<addinlineevent "summer_forest_1">>
+						The heat of the forest is sweltering, the breeze blocked by the trees. <<stress 3>><<gstress>>
+					<</addinlineevent>>
+					<<addinlineevent "summer_forest_2">>
+						As you move through the forest, you notice a family unpacking camping supplies. They notice you and wave. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<if Time.hour lt 6 or Time.hour gte 21>>
+						<<addinlineevent "summer_forest_3">>
+							You begin to hear crickets chirping nearby, and soon enough a whole orchestra of insects fill the night air around you. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+					<</if>>
+					<<if $plantdisable is "f" and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+						<<addinlineevent "summer_forest_4" 0.5>>
+							<<generatePlant1>><<person1>>
+							A <<personsimple>> stands completely still, holding branches. <<Hes>> pretending to be a tree, but <<he>> can't keep <<his>> balance enough to fool anyone.
+							<<endevent>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "moor">>
+					<<if Time.hour gte 6 and Time.hour lt 21>>
+						<<addinlineevent "summer_moor_1">>
+							The sweltering heat creates undefinable shapes on the horizon. <<stress 3>><<gstress>>
+						<</addinlineevent>>
+					<<else>>
+						<<addinlineevent "summer_moor_2">>
+							You feel something scurry across your foot. Who knows what manner of creatures wander the moor with the heat of the sun gone? You quicken your pace. <<stress 3>><<gstress>>
+						<</addinlineevent>>
+						<<addinlineevent "summer_moor_3" 0.33>>
+							You stop suddenly as you see a light flicker into being ahead. An effigy constructed of twigs, candles burning in its eye sockets, stands amidst a circle of stone cairns. Disturbed, you begin to walk away.
+							<br><br>
+							Until you notice the effigy turns to watch you as you go past. You break into a sprint without another thought. <<stress 24>><<awareness 10>><<gggstress>><<gawareness>>
+						<</addinlineevent>>
+					<</if>>
+				<<default>>
+			<</switch>>
+		<<case "springclear" "springovercast">>
+			<<addinlineevent "spring_anywhere_1">>
+				A gentle spring breeze caresses your face. <<stress -3>><<lstress>>
+			<</addinlineevent>>
+			<<addinlineevent "spring_anywhere_2">>
+				A <<if Time.dayState is "day" or Time.dayState is "dawn">>butterfly<<else>>moth<</if>> lands on your nose and pauses to rub its antennae before taking flight again. <<stress -3>><<lstress>>
+			<</addinlineevent>>
+			<<if Time.hour gte 6 and Time.hour lt 21>>
+				<<addinlineevent "spring_anywhere_3">>
+					Birds chirp overhead as they return from their winter migration. <<stress -3>><<lstress>>
+				<</addinlineevent>>
+			<</if>>
+			<<if ["town", "park"].includes($location) and Time.hour gte 7 and Time.hour lt 21 and playerIsPregnant() and playerAwareTheyArePregnant()>>
+				<<addinlineevent "spring_pregnant_watch">>
+					<<generatey1>><<person1>>
+					You see a group of kids playing. One <<personsimple>> is sitting apart from the others, making a chain of daisies. The other children ask <<him>> to help them make cakes out of mud, but <<he>> silently shakes <<his>> head.
+					You rub your <<bellyDescription "pc">> and wonder if your <<pregnancyBabyText "pc">> will be as timid as <<he>> is. <<stress -3>><<lstress>>
+					<<endevent>>
+				<</addinlineevent>>
+			<</if>>
+			<<switch $location>>
+				<<case "town">>
+					<<addinlineevent "spring_anystreet_1">>
+						A street peddler selling flowers hands you a free flower as you pass by. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<if ($bus is "domus" or $bus is "danube" or $bus is "barb") and Time.hour gte 6 and Time.hour lt 21>>
+						<<addinlineevent "spring_residentialstreet_1">>
+							<<generate1>><<person1>>
+							You see a <<person>> on <<his>> knees tending to <<his>> garden. As you walk past, <<he>> backs into you, grinding <<his>> rear into your leg before glancing over <<his>> shoulder. "Sorry," <<he>> calls out as you walk away flustered. <<stress 1>><<arousal 5>><<gstress>><<garousal>>
+							<<endevent>>
+						<</addinlineevent>>
+					<</if>>
+					<<if ($bus is "connudatus" or $bus is "cliff" or $bus is "wolf" or $bus is "high")>>
+						<<addinlineevent "spring_commercialstreet_1">>
+							There's a small flower market set up here. You stop to smell the flowers before continuing. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "alley">>
+					<<addinlineevent "spring_anyalley_1">>
+						You notice that someone has built a garden beneath one of the windows here, where flowers have begun to sprout despite the filth. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<if Time.hour lt 6 or Time.hour gte 21>>
+						<<addinlineevent "spring_anyalley_2">>
+							<<beastNEWinit 3 cat>>
+								You hear <<beastsplural>> yowling and hissing as they contend for a mate. <<if $cat gte 6>><<arousal 10>><<garousal>><</if>>
+							<<endevent>>
+						<</addinlineevent>>
+						<<if $hallucinogen gt 0>>
+							<<addinlineevent "spring_anyalley_3" 0.1>>
+							<<beastNEWinit 2 dog>>
+							You see a pair of <<if $monster is 1>>dogpeople<<else>>dogs<</if>> eating a pile of spaghetti together next to a trash can. Romantic Italian music plays from a nearby building. You shake your head and leave. <<stress -24>><<lllstress>>
+							<<endevent>>
+							<</addinlineevent>>
+						<</if>>
+					<</if>>
+				<<case "park">>
+					<<addinlineevent "spring_park_1">>
+						You notice the flowers in the park have started to bloom once more. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<if Time.hour gte 6 and Time.hour lt 21>>
+						<<addinlineevent "spring_park_2">>
+							A hummingbird zips by and lands on a flower to drink nectar before flying off. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+						<<addinlineevent "spring_park_3" 0.5>>
+							<<generate1>><<generatep2>><<person1>>
+							You see a <<person>> snatch a freshly bloomed flower and give it to a <<person2>><<person>> before they embrace and kiss. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "forest">>
+					<<addinlineevent "spring_forest_1" 0.5>>
+						You hear a thunderous crack above. A large branch tumbles from a large tree, landing only inches away. <<stress 12>><<ggstress>>
+					<</addinlineevent>>
+					<<addinlineevent "spring_forest_2">>
+						You see a pair of rabbits chasing and tumbling over each other. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<if Time.hour gte 6 and Time.hour lt 21>>
+						<<addinlineevent "spring_forest_3">>
+							Birds sing to one another as they build nests and seek mates. <<if $syndromebird is 1>>You find yourself longing for your own mate, back in the moor.<</if>> <<stress -6>><<lstress>>
+						<</addinlineevent>>
+					<</if>>
+				<<case "moor">>
+					<<addinlineevent "spring_moor_1">>
+						You stop to take a look around. Even the moor looks vibrant this time of year. <<stress -3>><<lstress>>
+					<</addinlineevent>>
+					<<addinlineevent "spring_moor_2">>
+						You come across a pond where dark water conceals darker shapes swimming within. <<stress 6>><<gstress>>
+					<</addinlineevent>>
+					<<addinlineevent "spring_moor_3">>
+						You come to a strangely clear patch of ground that contains a circle of stone and a scorch mark in its centre. You suddenly feel watched, and leave without hesitation. <<stress 12>><<ggstress>>
+					<</addinlineevent>>
+					<<if $plantdisable is "f" and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+						<<addinlineevent "spring_moor_4" 0.5>>
+							<<generatePlant1>><<person1>>
+							A <<personsimple>> holds a vine still for a hummingbird to land on.
+							<<if $rng gte 51>>
+								It flits onto <<his>> vine and lands, sitting down. The <<personsimple>> lets out a happy gasp. <<stress -3>><<lstress>>
+							<<else>>
+								It hovers near <<his>> vine for a second, before zipping away. The <<personsimple>> sighs.
+							<</if>>
+							<<endevent>>
+						<</addinlineevent>>
+					<</if>>
+				<<default>>
+			<</switch>>
+		<<default>>
+			<span class="red">ERROR: You have somehow managed to pass beyond the concepts of time and weather. Please inform Vrelnir unless you just used a cheat.</span>
+	<</switch>>
+	<<runeventpool>>
+	<br><br>
+<</widget>>

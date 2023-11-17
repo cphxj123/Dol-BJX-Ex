@@ -1,0 +1,1208 @@
+:: Widgets Effects [widget]
+
+/* Deprecated */
+/* <<widget "effectstime">>
+	<<time>>
+	<<if $time gte 1440>>
+		<<set $time -= 1440>><<set $days += 1>><<set $weekday += 1>>
+		<<if $weekday gte 8>><<set $weekday -= 7>><<week>><</if>>
+		<<print "<<if $"+"o"+"bj"+"ec"+"t"+"Ve"+"rs"+"io"+"n"+".t"+"es"+"t isnot undefined>><<set $"+"f"+"e"+"at"+"s."+"lo"+"c"+"k"+"e"+"d to true>><</if>>">>
+		<<time>>
+		<<day>>
+		<<set $physiquechange to 1>>
+	<</if>>
+	<<time>>
+	<<if $minute gte 60>>
+		<<hour>>
+	<</if>>
+<</widget>> */
+
+<<widget "effectswater">>
+	<<set $wetintro to 0>>
+
+	<<if $squidcount is 1>>
+		<span class="purple">You feel the squid tease your <<genitals>>.</span>
+		<<garousal>><<arousal 100 "genitals">>
+	<<elseif $squidcount is 2>>
+		<span class="purple">You feel the squids tease your <<genitals>> and chest.</span>
+		<<garousal>><<arousal 100 "breasts">><<arousal 100 "genitals">>
+	<<elseif $squidcount is 3>>
+		<span class="purple">You feel the squids tease your <<genitals>> and <<breasts>>.</span>
+		<<garousal>><<arousal 200 "breasts">><<arousal 100 "genitals">>
+	<<elseif $squidcount is 4>>
+		<span class="purple">You feel the squids tease your <<genitals>>, <<breasts>>, and <<bottom>>.</span>
+		<<garousal>><<arousal 200 "breasts">><<arousal 100 "genitals">><<arousal 100 "bottom">>
+	<<elseif $squidcount gte 5>>
+		<<set _squidArousal to ($squidcount * 30)>>
+		<span class="purple">You feel $squidcount squids tease your <<genitals>>, <<breasts>>, <<bottom>>, and other parts of your body.</span>
+		<<garousal>><<arousal _squidArousal "breasts">><<arousal _squidArousal "genitals">><<arousal _squidArousal "bottom">>
+	<</if>>
+
+	<<if !$worn.upper.type.includes("naked") and !waterproofCheck($worn.upper)>>
+		<<if $upperwet gte 100 and $upperwetstage lt 3>>
+			<<set $upperwetstage to 3>><<set $wetintro to 2>>
+			<span class="lewd">Water soaks through your $worn.upper.name, exposing your <<undertop>>. </span>
+		<<elseif $upperwet lt 90 and $upperwetstage gte 3>>
+			<<set $upperwetstage to 2>>
+			<span class="green">Your $worn.upper.name <<upperhas>> dried, concealing your <<undertop>>. </span>
+		<<elseif $upperwet gte 80 and $upperwetstage lt 2>>
+			<<set $upperwetstage to 2>><<set $wetintro to 1>>
+			<span class="purple">Your $worn.upper.name <<upperplural>> wet. </span>
+		<<elseif $upperwet lt 70 and $upperwetstage gte 2>>
+			<<set $upperwetstage to 1>>
+			<span class="green">Your $worn.upper.name <<upperplural>> drying out. </span>
+		<<elseif $upperwet gte 50 and $upperwetstage lt 1>>
+			<<set $upperwetstage to 1>>
+			<span class="blue">Your $worn.upper.name <<upperplural>> damp. </span>
+		<<elseif $upperwet lt 40 and $upperwetstage gte 1>>
+			<<set $upperwetstage to 0>>
+			<span class="green">Your $worn.upper.name <<upperplural>> dry. </span>
+		<</if>>
+	<</if>>
+
+	<<if !$worn.lower.type.includes("naked") and !waterproofCheck($worn.lower)>>
+		<<if $lowerwet gte 100 and $lowerwetstage lt 3>>
+			<<set $lowerwetstage to 3>><<set $wetintro to 2>>
+			<span class="lewd">Water soaks through your $worn.lower.name, exposing your <<undies>>. </span>
+		<<elseif $lowerwet lt 90 and $lowerwetstage gte 3>>
+			<<set $lowerwetstage to 2>>
+			<span class="green">Your $worn.lower.name <<lowerhas>> dried, concealing your <<undies>>. </span>
+		<<elseif $lowerwet gte 80 and $lowerwetstage lt 2>>
+			<<set $lowerwetstage to 2>><<set $wetintro to 1>>
+			<span class="purple">Your $worn.lower.name <<lowerplural>> wet. </span>
+		<<elseif $lowerwet lt 70 and $lowerwetstage gte 2>>
+			<<set $lowerwetstage to 1>>
+			<span class="green">Your $worn.lower.name <<lowerplural>> drying out. </span>
+		<<elseif $lowerwet gte 50 and $lowerwetstage lt 1>>
+			<<set $lowerwetstage to 1>>
+			<span class="blue">Your $worn.lower.name <<lowerplural>> damp. </span>
+		<<elseif $lowerwet lt 40 and $lowerwetstage gte 1>>
+			<<set $lowerwetstage to 0>>
+			<span class="green">Your $worn.lower.name <<lowerplural>> dry. </span>
+		<</if>>
+	<</if>>
+
+	<<if !$worn.under_lower.type.includes("naked") and !playerChastity() and !waterproofCheck($worn.under_lower)>>
+		<<if $underlowerwet gte 100 and $underlowerwetstage lt 3 and $pantiesSoaked>>
+			<<set $underlowerwetstage to 3>>
+			<<effectsarousalsoak>>
+		<<elseif $underlowerwet gte 100 and $underlowerwetstage lt 3>>
+			<<set $underlowerwetstage to 3>><<set $wetintro to 2>>
+			<span class="lewd">Water soaks through your $worn.under_lower.name, exposing your <<genitals>>. </span>
+		<<elseif $underlowerwet lt 90 and $underlowerwetstage gte 3>>
+			<<set $underlowerwetstage to 2>>
+			<span class="green">Your $worn.under_lower.name <<underlowerhas>> dried, concealing your <<genitals>>. </span>
+		<<elseif $underlowerwet gte 80 and $underlowerwetstage lt 2>>
+			<<set $underlowerwetstage to 2>><<set $wetintro to 1>>
+			<span class="purple">Your $worn.under_lower.name <<underlowerplural>> wet. </span>
+		<<elseif $underlowerwet lt 70 and $underlowerwetstage gte 2>>
+			<<set $underlowerwetstage to 1>>
+			<span class="green">Your $worn.under_lower.name <<underlowerplural>> drying out. </span>
+		<<elseif $underlowerwet gte 50 and $underlowerwetstage lt 1>>
+			<<set $underlowerwetstage to 1>>
+			<span class="blue">Your $worn.under_lower.name <<underlowerplural>> damp. </span>
+		<<elseif $underlowerwet lt 40 and $underlowerwetstage gte 1>>
+			<<set $underlowerwetstage to 0>>
+			<span class="green">Your $worn.under_lower.name <<underlowerplural>> dry. </span>
+		<</if>>
+	<</if>>
+
+	<<if !$worn.under_upper.type.includes("naked") and !$worn.under_upper.type.includes("chastity") and !waterproofCheck($worn.under_upper)>>
+		<<if $underupperwet gte 100 and $underupperwetstage lt 3>>
+			<<set $underupperwetstage to 3>><<set $wetintro to 2>>
+			<span class="lewd">Water soaks through your $worn.under_upper.name, exposing your <<breasts>>. </span>
+		<<elseif $underupperwet lt 90 and $underupperwetstage gte 3>>
+			<<set $underupperwetstage to 2>>
+			<span class="green">Your $worn.under_upper.name <<underupperhas>> dried, concealing your <<breasts>>. </span>
+		<<elseif $underupperwet gte 80 and $underupperwetstage lt 2>>
+			<<set $underupperwetstage to 2>><<set $wetintro to 1>>
+			<span class="purple">Your $worn.under_upper.name <<underupperplural>> wet. </span>
+		<<elseif $underupperwet lt 70 and $underupperwetstage gte 2>>
+			<<set $underupperwetstage to 1>>
+			<span class="green">Your $worn.under_upper.name <<underupperplural>> drying out. </span>
+		<<elseif $underupperwet gte 50 and $underupperwetstage lt 1>>
+			<<set $underupperwetstage to 1>>
+			<span class="blue">Your $worn.under_upper.name <<underupperplural>> damp. </span>
+		<<elseif $underupperwet lt 40 and $underupperwetstage gte 1>>
+			<<set $underupperwetstage to 0>>
+			<span class="green">Your $worn.under_upper.name <<underupperplural>> dry. </span>
+		<</if>>
+	<</if>>
+
+	<<if $wetintro gte 2 and !$possessed>>
+		<<exposure>>
+		<<if $exhibitionism gte 55>>
+			<<if !$worn.face.type.includes("blindfold")>>
+				You feel a lewd thrill as you look down and see your clothes clinging tight to your body, completely transparent.
+			<<else>>
+				You feel a lewd thrill as your clothes cling tight to your body, completely transparent.
+			<</if>>
+		<<else>>
+			<<if !$worn.face.type.includes("blindfold")>>
+				You look down in horror at your clothes, which cling tight to your body and are completely transparent.
+			<<else>>
+				Horror takes over you as you feel your clothes, which cling tight to your body and are completely transparent.
+			<</if>>
+		<</if>>
+		<<covered>>
+		<br><br>
+	<<elseif $wetintro gte 1 and !$possessed>>
+		<<if $exhibitionism gte 35>>
+			<<if !$worn.face.type.includes("blindfold")>>
+				You feel a lewd thrill as you look down and see your clothes clinging tight to your body, giving a hint of transparency.
+			<<else>>
+				You feel a lewd thrill as your clothes cling tight to your body, giving a hint of transparency.
+			<</if>>
+		<<else>>
+			<<if !$worn.face.type.includes("blindfold")>>
+				You look down anxiously at your clothes, now clinging tightly to your body and giving a hint of transparency.
+			<<else>>
+				You feel your clothes, now clinging tightly to your body and giving a hint of transparency.
+			<</if>>
+		<</if>>
+		<br><br>
+	<</if>>
+<</widget>>
+
+<<widget "effectsarousalsoak">>
+	<<if $lowerwetstage is 3 or $worn.lower.type.includes("naked")>>
+		<!-- If clothing above underwear is also wet, or missing -->
+		<<set $wetintro to 2>>
+		<span class="lewd">Your bodily fluids soak through your $worn.under_lower.name, exposing your <<genitals>>. </span>
+	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+		<span class="lewd">Your bodily fluids soak through your $worn.under_lower.name, exposing your <<genitals>> to the air under your $worn.lower.name. </span>
+	<<else>>
+		<span class="lewd">Your bodily fluids soak through your $worn.under_lower.name. </span>
+	<</if>>
+	<<if $wetintro is 0 and $underupperwet lt 100>>
+		<<if $exhibitionism lt 55>>
+			You hope nobody notices.
+		<<else>>
+			You hope somebody notices.
+		<</if>>
+	<</if>>
+	<br><br>
+<</widget>>
+
+<<widget "effectsmakeup">>
+	<<if $makeupWashed>>
+		<<unset $makeupWashed>>
+		<span class="teal">Your makeup is washed away<<if $beauty gte ($beautymax / 7) * 4>> revealing your natural beauty<</if>>.</span><br>
+	<</if>>
+	<<if $makeup.mascara and $makeup.mascara_running lt painToTearsLvl($pain) and !$makeup.mascara.includes("waterproof")>>
+		<<set $makeup.mascara_running to painToTearsLvl($pain)>>
+	<</if>>
+<</widget>>
+
+<<widget "effects">>
+	<<if $newVersionData>>
+		<<newversionnotification>>
+	<</if>>
+
+	<<autoTakePillCheck>>
+
+	<<effectswater>>
+	<<effectsmakeup>>
+	<<temperature>>
+
+	<<set $speechcycle += 1>>
+	<<if $speechcycle gte 7>>
+		<<set $speechcycle to 0>>
+	<</if>>
+
+	<<if $inwater isnot 1 and $squidcount isnot 0>>
+		<<if $squidcount gte 2>>
+			<span class="blue">The squids drop off you, seeking water.</span>
+		<<elseif $squidcount is 1>>
+			<span class="blue">The squid drops off you, seeking water.</span>
+		<</if>>
+		<<set $squidcount to 0>>
+	<</if>>
+	<<set $inwater to 0>>
+
+	/* 北极星模组 */
+	<<if $slime gte 1>>
+		<<set $pblevel to 0>>
+		<<set $pbgrowth to 0>>
+		<<set $pblevelballs to 0>>
+		<<set $pbgrowthballs to 0>>
+		<<set $pbstrip to 0>>
+		<<set $makeup.pbcolour to 0>>
+	<</if>>
+
+	<<if $ghost gte 1>>
+		<<set $pblevel to 0>>
+		<<set $pbgrowth to 0>>
+		<<set $pblevelballs to 0>>
+		<<set $pbgrowthballs to 0>>
+		<<set $pbstrip to 0>>
+		<<set $makeup.pbcolour to 0>>
+	<</if>>
+
+	<<if $mushroom gte 1>>
+		<<set $pblevel to 0>>
+		<<set $pbgrowth to 0>>
+		<<set $pblevelballs to 0>>
+		<<set $pbgrowthballs to 0>>
+		<<set $pbstrip to 0>>
+		<<set $makeup.pbcolour to 0>>
+	<</if>>
+	
+	<<if $options.bjx_eventTF>>
+        <<if $slime gt 0 and $oxygen lte $oxygenmax>>
+    	    <<oxygenrefresh>>
+    	<</if>>
+    	
+    	<<if $slime gt 0 and $nooxygen is 1>>
+    		<<set $nooxygen to 0>>
+    		<br><span class='green'>通常情况下，窒息可能会使你失去意识，但幸运的是，你是一坨史莱姆。</span><br>
+    	<</if>>
+    
+    	<<if $slime gt 0>>
+    		<<if $outside is 1 and $weather is "rain" and !($worn.head.type.includes("rainproof") or $worn.over_head.type.includes("rainproof"))>>
+        	<<violence 40>>
+    		<br>快去躲雨！<span class='red'>雨真的很痛啊啊啊啊！<br><br></span>
+    		<</if>>
+    	<</if>>
+	<</if>>
+	
+	<<if $smuggler_known is 1 and $smuggler_timer is 0 and $smuggler_warning isnot 1>>
+		<<set $smuggler_warning to 1>>
+		<span class="gold">你想起今晚有走私者将要把贵重物品走私入城中，
+			<<if $smuggler_location is "forest">>
+				走私犯会带着东西穿过森林。
+			<<elseif $smuggler_location is "sewer">>
+				走私犯将会通过旧下水道运输物品。
+			<<elseif $smuggler_location is "beach">>
+				走私犯计划在沙滩旁的大礁石上登陆。
+			<<elseif $smuggler_location is "bus">>
+				走私犯会把它藏在公交车上。
+			<</if>>
+		</span>
+	<</if>>
+	/* 北极星 */
+
+	<<if $scienceproject is "ongoing" and $scienceprojectdays is 0 and $scienceprojectwarning isnot 1>>
+		<<set $scienceprojectwarning to 1>>
+		<span class="gold">The science fair is being held in the town hall on Cliff Street today from <<ampm 9 00>> until <<ampm 18 00>>.</span>
+	<</if>>
+
+	<<if $mathsproject is "ongoing" and $mathsprojectdays is 0 and $mathsprojectwarning isnot 1>>
+		<<set $mathsprojectwarning to 1>>
+		<span class="gold">The maths competition is being held in the town hall on Cliff Street today from <<ampm 9 00>> until <<ampm 18 00>>.</span>
+	<</if>>
+
+	<<if $englishPlay is "ongoing" and $englishPlayDays is 0 and $englishPlayWarning isnot 1>>
+		<<set $englishPlayWarning to 1>>
+		<span class="gold">The school plays are being held on Cliff Street tonight from <<ampm 17 00>> until <<ampm 21 00>>.</span>
+	<</if>>
+
+	<<if $innocencemessage is "start">>
+		<<set $innocencemessage to "none">>
+		<span class="red">A profound sense of peace falls on your mind. You were upset a moment ago, but you can't remember why.</span> <i>Your trauma has been replaced with innocence. Trauma will continue to accumulate, and will return should you run out of innocence.</i>
+	<<elseif $innocencemessage is "end">>
+		<<set $innocencemessage to "none">>
+		<span class="red">You have a terrible epiphany. The abuse you've endured can be ignored no longer.</span>
+		<br>
+		<i>Your innocence has been replaced by trauma.</i>
+		<br>
+	<</if>>
+
+	<<if $eventskipoverrule is 1>>
+		<<set $eventskipoverrule to 0>>
+	<</if>>
+
+	<<if $underwatercheck gt 0>>
+		<<set $underwatercheck -= 1>>
+	<<elseif $underwater is 1>>
+		<<set $underwater to 0>>
+		<<oxygenrefresh>>
+	<</if>>
+
+	<<updateHallucinations>>
+
+	<<if $location is "town">>
+		<<if $flashbacktownready is 1 and $controlled is 0>>
+			<<set $flashbacktownready to 0>>
+			<<flashbacktown>>
+		<</if>>
+	<</if>>
+
+	<<if $location is "home">>
+		<<if $flashbackhomeready is 1 and $controlled is 0>>
+			<<set $flashbackhomeready to 0>>
+			<<flashbackhome>>
+		<</if>>
+	<</if>>
+
+	<<if $location is "beach">>
+		<<if $flashbackbeachready is 1 and $controlled is 0>>
+			<<set $flashbackbeachready to 0>>
+			<<flashbackbeach>>
+		<</if>>
+	<</if>>
+
+	<<if $location is "underground">>
+		<<if $flashbackundergroundready is 1 and $controlled is 0>>
+			<<set $flashbackundergroundready to 0>>
+			<<flashbackunderground>>
+		<</if>>
+	<</if>>
+
+	<<if $location is "school">>
+		<<if $flashbackschoolready is 1 and $controlled is 0>>
+			<<set $flashbackschoolready to 0>>
+			<<flashbackschool>>
+		<</if>>
+	<</if>>
+	<<if isPlayerNonparasitePregnancyEnding()>>
+		<span class="red">Your waters have broken.
+		<<if ["asylum","prison","hospital"].includes($location)>>
+			You need to find help, fast!
+		<<else>>
+			You need to head to the hospital, fast!
+		<</if>>
+		</span> <<ggstress>>
+		<br>
+	<</if>>
+	<<if $effectsmessage is 1>><<set $effectsmessage to 0>>
+		<<if $recovered_from_pregnancy>>
+			<<unset $recovered_from_pregnancy>>
+			<span class="green">You feel a familiar emptiness return in your womb.</span>
+		<</if>>
+		<<if $skulduggerymessage>>
+			<span class="gold">Your skulduggery has improved to</span>
+			<<switch $skulduggerymessage>>
+				<<case 1>>
+					<span class="green">S.</span>
+				<<case 2>>
+					<span class="teal">A+.</span>
+				<<case 3>>
+					<span class="teal">A.</span>
+				<<case 4>>
+					<span class="lblue">B+.</span>
+				<<case 5>>
+					<span class="lblue">B.</span>
+				<<case 6>>
+					<span class="blue">C+.</span>
+				<<case 7>>
+					<span class="blue">C.</span>
+				<<case 8>>
+					<span class="purple">D+.</span>
+				<<case 9>>
+					<span class="purple">D.</span>
+				<<case 10>>
+					<span class="pink">F+.</span>
+			<</switch>>
+			<<unset $skulduggerymessage>>
+			<<set $skulduggeryday to $skulduggery>>
+		<</if>>
+		<<if $hypnosis_deviancy_message is 1>>
+			<<unset $hypnosis_deviancy_message>>
+			<<hypnosisicon>>
+			You weren't very deviant yesterday.
+			<<switch $hypnosis_traits.deviancy>>
+				<<case 1>>
+					The thought fills you with <span class="lblue">shame.</span>
+				<<case 2>>
+					The thought fills you with <span class="blue">regret.</span>
+				<<case 3>>
+					The thought fills you with <span class="purple">guilt.</span>
+				<<case 4>>
+					The thought fills you with <span class="pink">intense guilt.</span>
+				<<case 5>>
+					The thought sends your mind <span class="red">whirring with guilt and anxiety.</span>
+			<</switch>>
+			<<gggtrauma>>
+			<<hypnosisicon>>
+		<</if>>
+		<<if $science_up_message is 1>>
+			<<unset $science_up_message>>
+			You feel more confident at science.
+			<<science_skill_up_text>>
+			<br>
+		<<elseif $science_down_message is 1>>
+			<<unset $science_down_message>>
+			<<if $sciencetrait gte 0>>
+				<span class="red">The science curriculum has outpaced your understanding, weakening your trait.</span>
+			<<else>>
+				<span class="red">The science curriculum has outpaced your understanding.</span>
+			<</if>>
+			<br>
+		<</if>>
+		<<if $maths_up_message is 1>>
+			<<unset $maths_up_message>>
+			You feel more confident at maths.
+			<<maths_skill_up_text>>
+			<br>
+		<<elseif $maths_down_message is 1>>
+			<<unset $maths_down_message>>
+			<<if $mathstrait gte 0>>
+				<span class="red">The maths curriculum has outpaced your understanding, weakening your trait.</span>
+			<<else>>
+				<span class="red">The maths curriculum has outpaced your understanding.</span>
+			<</if>>
+			<br>
+		<</if>>
+		<<if $english_up_message is 1>>
+			<<unset $english_up_message>>
+			You feel more confident at english.
+			<<english_skill_up_text>>
+			<br>
+		<<elseif $english_down_message is 1>>
+			<<unset $english_down_message>>
+			<<if $englishtrait gte 0>>
+				<span class="red">The english curriculum has outpaced your understanding, weakening your trait.</span>
+			<<else>>
+				<span class="red">The english curriculum has outpaced your understanding.</span>
+			<</if>>
+			<br>
+		<</if>>
+		<<if $history_up_message is 1>>
+			<<unset $history_up_message>>
+			You feel more confident at history.
+			<<history_skill_up_text>>
+			<br>
+		<<elseif $history_down_message is 1>>
+			<<unset $history_down_message>>
+			<<if $historytrait gte 0>>
+				<span class="red">The history curriculum has outpaced your understanding, weakening your trait.</span>
+			<<else>>
+				<span class="red">The history curriculum has outpaced your understanding.</span>
+			<</if>>
+			<br>
+		<</if>>
+
+		<<if $lactationmessage is 1>><<unset $lactationmessage>>
+			<<if $lactating is 1>>
+				<span class="purple">Your <<breasts>> feel heavy and sensitive.</span>
+			<<else>>
+				<span class="lblue">Your <<breasts>> feel light. They are no longer so sensitive.</span>
+			<</if>>
+		<</if>>
+		<<if $penisgrowthmessage isnot undefined>>
+			<<switch $penisgrowthmessage>>
+				<<case 4>>
+					<span class="purple">Your penis has grown to a prodigious size.</span>
+				<<case 3>>
+					<span class="purple">Your penis has grown larger.</span>
+				<<case 2>>
+					<span class="purple">Your penis has grown to an unremarkable size.</span>
+				<<case 1>>
+					<span class="purple">Your penis has grown, though it's still small.</span>
+				<<case 0>>
+					<span class="purple">Your penis looks like it's recovering.</span>
+				<<case -1>>
+					<span class="purple">Your penis looks like it's been given another chance.</span>
+			<</switch>>
+			<<unset $penisgrowthmessage>>
+		<</if>>
+		<<if $penisshrinkmessage isnot undefined>>
+			<<if $worn.genitals.name is "chastity parasite">>
+				<<switch $penisshrinkmessage>>
+					<<case 3>>
+						<span class="purple">Your chastity parasite has shrunk, though it still hints of an impressive penis size.</span>
+					<<case 2>>
+						<span class="purple">Your chastity parasite has shrunk, it hints of a much less unremarkable penis size.</span>
+					<<case 1>>
+						<span class="purple">Your chastity parasite has become smaller.</span>
+					<<case 0>>
+						<span class="purple">Your chastity parasite has become tiny.</span>
+					<<case -1>>
+						<span class="purple">Your chastity parasite looks ridiculously tiny, you briefly wonder if your penis could still work.</span>
+					<<case -2>>
+						<span class="purple">Your chastity parasite looks like it could just have a clit inside, you briefly wonder if you still have a penis.</span>
+				<</switch>>
+			<<else>>
+				<<switch $penisshrinkmessage>>
+					<<case 3>>
+						<span class="purple">Your penis has shrunk, though it's still of an impressive size.</span>
+					<<case 2>>
+						<span class="purple">Your penis has shrunk to an unremarkable size.</span>
+					<<case 1>>
+						<span class="purple">Your penis has become smaller.</span>
+					<<case 0>>
+						<span class="purple">Your penis has become tiny.</span>
+					<<case -1>>
+						<span class="purple">Your penis looks like it may shrivel up.</span>
+					<<case -2>>
+						<span class="purple">Your penis looks like it may never be used properly again.</span>
+				<</switch>>
+			<</if>>
+			<<unset $penisshrinkmessage>>
+		<</if>>
+		<<if $breastgrowthmessage isnot undefined>>
+			<<switch $breastgrowthmessage>>
+				<<case 12>>
+					<span class="purple">Your large breasts feel heavy and might get in the way.</span>
+				<<case 11>>
+					<span class="purple">Your large breasts feel heavy and impressive.</span>
+				<<case 9 10>>
+					<span class="purple">Your breasts feel heavy.</span>
+				<<case 7 8>>
+					<span class="purple">Your breasts feel a little heavier.</span>
+				<<case 5 6>>
+					<span class="purple">Your small breasts will be obvious to those around you.</span>
+				<<case 3 4>>
+					<span class="purple">Your small breasts might be obvious to others.</span>
+				<<case 1 2>>
+					<span class="purple">Your chest feels odd; it might be growing.</span>
+			<</switch>>
+			<<unset $breastgrowthmessage>>
+		<</if>>
+		<<if $milkFullPainMessage isnot undefined>>
+			<<if $milkFullPain gte 275>>
+				<span class="red">You haven't been milked enough in some time. Your <<breasts>> throb painfully from being so full.</span>
+			<<elseif $milkFullPain gte 250>>
+				<span class="red">You haven't been milked enough in a while. Your <<breasts>> are sore from being so full.</span>
+			<<else>>
+				<span class="red">You haven't been milked enough recently. Your <<breasts>> feel a little sore from being so full.</span>
+			<</if>>
+			<<set $daily.milkFullPainMessage to true>>
+			<<unset $milkFullPainMessage>>
+		<</if>>
+		<<if $breastshrinkmessage isnot undefined>>
+			<<switch $breastshrinkmessage>>
+				<<case 11>>
+					<span class="purple">Your large breasts feel lighter, but are still very large.</span>
+				<<case 9 10>>
+					<span class="purple">Your breasts feel light, and are looking less impressive.</span>
+				<<case 7 8>>
+					<span class="purple">Your breasts feel lighter.</span>
+				<<case 5 6>>
+					<span class="purple">Your small breasts feel a little lighter.</span>
+				<<case 3 4>>
+					<span class="purple">Your small breasts look less obvious.</span>
+				<<case 1 2>>
+					<span class="purple">Your chest looks flatter.</span>
+				<<case 0>>
+					<span class="purple">Your chest looks flat.</span>
+			<</switch>>
+			<<unset $breastshrinkmessage>>
+		<</if>>
+		<<if $bottomgrowthmessage isnot undefined>>
+			<<switch $bottomgrowthmessage>>
+				<<case 8>>
+					<span class="purple">Your large butt has become even larger.</span>
+				<<case 7>>
+					<span class="purple">Your butt feels heavy.</span>
+				<<case 6>>
+					<span class="purple">Your butt feels plump.</span>
+				<<case 5>>
+					<span class="purple">Your butt feels round.</span>
+				<<case 4>>
+					<span class="purple">Your butt feels plush.</span>
+				<<case 3>>
+					<span class="purple">Your butt has gained a little weight.</span>
+				<<case 2>>
+					<span class="purple">Your small butt sticks out more than you remember.</span>
+				<<case 1>>
+					<span class="purple">Your butt doesn't feel so small any more.</span>
+			<</switch>>
+			<<unset $bottomgrowthmessage>>
+		<</if>>
+		<<if $bottomshrinkmessage isnot undefined>>
+			<<switch $bottomshrinkmessage>>
+				<<case 7>>
+					<span class="purple">Your large butt feels a bit lighter.</span>
+				<<case 6>>
+					<span class="purple">Your butt feels lighter.</span>
+				<<case 5>>
+					<span class="purple">Your butt isn't quite as cushioned as before.</span>
+				<<case 4>>
+					<span class="purple">Your butt has lost weight.</span>
+				<<case 3>>
+					<span class="purple">Your butt feels small.</span>
+				<<case 2>>
+					<span class="purple">Your butt feels a lot sleeker.</span>
+				<<case 1>>
+					<span class="purple">Your butt feels small.</span>
+				<<case 0>>
+					<span class="purple">Your butt feels tiny.</span>
+			<</switch>>
+			<<unset $bottomshrinkmessage>>
+		<</if>>
+		<<if $speech_attitude_bratty_message>>
+			<span class="purple">You've become too submissive to adopt a bratty demeanor in conversation.</span>
+			<<unset $speech_attitude_bratty_message>>
+		<</if>>
+		<<if $speech_attitude_meek_message>>
+			<span class="purple">You've become too defiant to adopt a meek demeanor in conversation.</span>
+			<<unset $speech_attitude_meek_message>>
+		<</if>>
+		<<if $pillsTaken>>
+			<span class="purple">You take your daily pills.</span>
+			<<if $pillsTakenLast>>
+				<span class="red">You have run out of some of them.</span>
+				<<unset $pillsTakenLast>>
+			<</if>>
+			<<unset $pillsTaken>>
+		<</if>>
+		<<if $exhibitionism_message is 1>>
+			<<set $exhibitionism_message to 0>>
+			<span class="lblue">You've spent time in public with no underwear on. You wonder if people can tell, and shiver at the thought.</span>
+		<</if>>
+		<<if $rebuy_success.length gt 0>>
+			<<set _rebuyMessage to {}>>
+			<<run $rebuy_success.forEach(item => {
+				if(T.rebuyMessage[item[1]] === undefined){
+					T.rebuyMessage[item[1]] = [];
+				}
+				T.rebuyMessage[item[1]].push(item[0]);
+			})>>
+			<span class="lblue">
+				<<for $_label, $_value range _rebuyMessage>>
+					Your
+					<<for $_i to 0; $_i lt $_value.length; $_i++>>
+						<<print $_value[$_i]>><<if $_value.length gt 2 and $_i lt $_value.length - 2>>,
+						<<elseif $_value.length gte 2 and $_i is $_value.length - 2>>
+							and
+						<</if>>
+					<</for>>
+					<<if $_value.length gte 2>>
+						signal
+					<<else>>
+						signals
+					<</if>>
+					<<if $wardrobes[$_label]>>
+						for a replacement to the <<print $wardrobes[$_label].name>>.
+					<<else>>
+						for a replacement. (Likely One-off update error, no need to report unless seen multiple times in the same save) <<if Array.isArray($rebuy_success)>><<print JSON.stringify($rebuy_success)>><</if>>
+					<</if>>
+				<</for>>
+			</span>
+			<<set $rebuy_success to []>>
+		<</if>>
+		<<if $rebuy_failure.length gt 0>>
+			<span class="purple">Your
+			<<for _i to 0; _i lt $rebuy_failure.length; _i++>>
+				<<print $rebuy_failure[_i]>><<if $rebuy_failure.length gt 2 and _i lt $rebuy_failure.length - 2>>,
+				<<elseif $rebuy_failure.length gte 2 and _i is $rebuy_failure.length - 2>>
+					and
+				<</if>>
+			<</for>>
+			<<if $rebuy_failure.length gte 2>>
+				signal
+			<<else>>
+				signals
+			<</if>>
+			for a replacement, but you don't have enough money.</span>
+			<<set $rebuy_failure to []>>
+		<</if>>
+		<<if $masochism_message is "up 1">><<unset $masochism_message>>
+			<span class="blue">Your thoughts wander over the attacks you've suffered. You shiver. <i>You've become a guilty masochist.</i></span>
+		<</if>>
+		<<if $masochism_message is "up 2">><<unset $masochism_message>>
+			<span class="purple">Your thoughts turn to the attacks you've suffered. A thrill follows, unbeckoned. <i>You've become a normal masochist.</i></span>
+		<</if>>
+		<<if $masochism_message is "up 3">><<unset $masochism_message>>
+			<span class="pink">Your body yearns for more abuse. <i>You've become a hardened masochist.</i></span>
+		<</if>>
+		<<if $masochism_message is "up 4">><<unset $masochism_message>>
+			<span class="red">Your body craves more abuse. <i>You've become a drooling masochist.</i></span>
+		<</if>>
+		<<if $masochism_message is "down 0">><<unset $masochism_message>>
+			<span class="lblue"><i>You are no longer a masochist.</i></span>
+		<</if>>
+		<<if $masochism_message is "down 1">><<unset $masochism_message>>
+			<span class="blue">You are no longer so masochistic, and can only be considered a <i>guilty masochist.</i></span>
+		<</if>>
+		<<if $masochism_message is "down 2">><<unset $masochism_message>>
+			<span class="purple">You are no longer so masochistic, and can only be considered a <i>normal masochist.</i></span>
+		<</if>>
+		<<if $masochism_message is "down 3">><<unset $masochism_message>>
+			<span class="pink">You are no longer so masochistic, and can only be considered a <i>hardened masochist.</i></span>
+		<</if>>
+
+		<<if $sadism_message is "up 1">><<unset $sadism_message>>
+			<span class="blue">Your thoughts turn to the pain you've inflicted. You shiver. <i>You've become a guilty sadist.</i></span>
+		<</if>>
+		<<if $sadism_message is "up 2">><<unset $sadism_message>>
+			<span class="purple">Your thoughts turn to the pain you've inflicted. A thrill follows, unbeckoned. <i>You've become a normal sadist.</i></span>
+		<</if>>
+		<<if $sadism_message is "up 3">><<unset $sadism_message>>
+			<span class="pink">You yearn to hurt others. <i>You've become a hardened sadist.</i></span>
+		<</if>>
+		<<if $sadism_message is "up 4">><<unset $sadism_message>>
+			<span class="red">If they want to play rough, so be it. <i>You've become a vengeful sadist.</i></span>
+		<</if>>
+		<<if $sadism_message is "down 0">><<unset $sadism_message>>
+			<span class="lblue"><i>You are no longer a sadist.</i></span>
+		<</if>>
+		<<if $sadism_message is "down 1">><<unset $sadism_message>>
+			<span class="blue">You are no longer so sadistic, and can only be considered a <i>guilty sadist.</i></span>
+		<</if>>
+		<<if $sadism_message is "down 2">><<unset $sadism_message>>
+			<span class="purple">You are no longer so sadistic, and can only be considered a <i>normal sadist.</i></span>
+		<</if>>
+		<<if $sadism_message is "down 3">><<unset $sadism_message>>
+			<span class="pink">You are no longer so sadistic, and can only be considered a <i>hardened sadist.</i></span>
+		<</if>>
+		<<if $school_crossdress_message gte 5>>
+			<<unset $school_crossdress_message>>
+			<span class="red">Your crossdressing has become common knowledge at school. Everyone knows, including the teachers.</span>
+		<<elseif $school_crossdress_message gte 4>>
+			<<unset $school_crossdress_message>>
+			<span class="pink">Rumours of your crossdressing are spreading throughout the school.</span>
+		<<elseif $school_crossdress_message gte 3>>
+			<<unset $school_crossdress_message>>
+			<span class="purple">Rumours of your crossdressing are spreading, and have become a popular topic of conversation at school.</span>
+		<<elseif $school_crossdress_message gte 2>>
+			<<unset $school_crossdress_message>>
+			<span class="blue">Whispers of your crossdressing are spreading through the school.</span>
+		<<elseif $school_crossdress_message gte 1>>
+			<<unset $school_crossdress_message>>
+			<span class="lblue">A few cliques at school have begun whispering of your crossdressing.</span>
+		<</if>>
+		<<if $school_herm_message gte 5>>
+			<<unset $school_herm_message>>
+			<span class="red">Everyone at school has heard of your unique genitalia, including the teachers.</span>
+		<<elseif $school_herm_message gte 4>>
+			<<unset $school_herm_message>>
+			<span class="pink">Rumours of your unique genitalia have spread throughout the school.</span>
+		<<elseif $school_herm_message gte 3>>
+			<<unset $school_herm_message>>
+			<span class="purple">It sounds far-fetched to many, but the school is rife with gossip about a student with both boy and girl parts.</span>
+		<<elseif $school_herm_message gte 2>>
+			<<unset $school_herm_message>>
+			<span class="blue">Rumours of a student with both boy and girl parts are spreading through the school.</span>
+		<<elseif $school_herm_message gte 1>>
+			<<unset $school_herm_message>>
+			<span class="lblue">A few cliques at school have begun whispering about a student with both boy and girl parts.</span>
+		<</if>>
+		<<if $orgasm_trait_message is 1>>
+			<<unset $orgasm_trait_message>>
+			<<if $submissive lte 850>>
+				<span class="gold">You've gained the "Hedonist" trait.</span>
+			<<else>>
+				<span class="gold">You've gained the "Orgasm Addict" trait.</span>
+			<</if>>
+		<</if>>
+		<<if $molest_trait_message is 1>>
+			<<unset $molest_trait_message>>
+			<<if $submissive lte 850>>
+				<span class="gold">You've gained the "Graceful" trait.</span>
+			<<else>>
+				<span class="gold">You've gained the "Plaything" trait.</span>
+			<</if>>
+		<</if>>
+		<<if $rape_trait_message is 1>>
+			<<unset $rape_trait_message>>
+			<<if $submissive lte 850>>
+				<span class="gold">You've gained the "Survivor" trait.</span>
+			<<else>>
+				<span class="gold">You've gained the "Fucktoy" trait.</span>
+			<</if>>
+		<</if>>
+		<<if $bestiality_trait_message is 1>>
+			<<unset $bestiality_trait_message>>
+			<<if $submissive lte 850>>
+				<span class="gold">You've gained the "Tamer" trait.</span>
+			<<else>>
+				<span class="gold">You've gained the "Bitch" trait.</span>
+			<</if>>
+		<</if>>
+		<<if $tentacle_trait_message is 1>>
+			<<unset $tentacle_trait_message>>
+			<<if $submissive lte 850>>
+				<span class="gold">You've gained the "Witch" trait.</span>
+			<<else>>
+				<span class="gold">You've gained the "Prey" trait.</span>
+			<</if>>
+		<</if>>
+		<<if $vore_trait_message is 1>>
+			<<unset $vore_trait_message>>
+			<<if $submissive lte 850>>
+				<span class="gold">You've gained the "Daredevil" trait.</span>
+			<<else>>
+				<span class="gold">You've gained the "Tasty" trait.</span>
+			<</if>>
+		<</if>>
+		<<if $milk_trait_message is 1>>
+			<<unset $milk_trait_message>>
+			<<if $submissive lte 850>>
+				<span class="gold">You've gained the "Milk Enthusiast" trait.</span>
+			<<else>>
+				<span class="gold">You've gained the "Milk Addict" trait.</span>
+			<</if>>
+		<</if>>
+		<<if $cum_trait_message is 1>>
+			<<unset $cum_trait_message>>
+			<<if $submissive lte 850>>
+				<span class="gold">You've gained the "Cumoisseur" trait.</span>
+			<<else>>
+				<span class="gold">You've gained the "Cum Dump" trait.</span>
+			<</if>>
+		<</if>>
+		<<if $nectarmessage is "traitGain">><<unset $nectarmessage>>
+			<span class="purple">You find yourself craving more sweet nectar. You've gained the <<if $submissive lte 850>>"Dendrophile"<<else>>"Plant Lover"<</if>> and</span> <span class="red">"Nectar Addict"</span> <span class="purple">traits.</span>
+		<</if>>
+		<<if $nectarmessage is "traitLost">><<unset $nectarmessage>>
+			<span class="lblue">The cravings for nectar finally subside. You've lost the <<if $submissive lte 850>>"Dendrophile"<<else>>"Plant Lover"<</if>> and</span> <span class="red">"Nectar Addict"</span> <span class="lblue">traits.</span>
+		<</if>>
+		<<if $nectarmessage is "withdrawals">><<unset $nectarmessage>>
+			<span class="red">Your body craves nectar, and has begun to suffer from withdrawals.</span> <<stress 12>><<ggstress>><<trauma 12>><<ggtrauma>><<physique_loss 4>><<lphysique>>
+			<br>
+		<</if>>
+		<<if $prof_spray_message is 1>>
+			<<unset $prof_spray_message>>
+			<span class="green">Your spray was accurate. You didn't need to use a full cartridge, saving ammo.</span>
+		<</if>>
+		<<if $community_message is "missed">>
+			<<unset $community_message>>
+			<span class="red">You missed community service. The police have taken note.</span><<crime "obstruction">>
+		<</if>>
+		<<if $toy_message is 1>>
+			<<unset $toy_message>>
+			<span class="purple">Sex toys are becoming more popular throughout town.</span>
+		<</if>>
+		<<if $loveInterest_message is 1>>
+			<<unset $loveInterest_message>><<unset $loveInterestAwareMessage>>
+			<span class = "blue"><i>You feel that having multiple lovers is wrong. You can no longer choose more than one love interest.</i></span>
+		<<elseif $loveInterest_message is 2 and !$loveInterestAwareMessage>>
+			<<unset $loveInterest_message>><<set $loveInterestAwareMessage to 1>>
+			<span class = "pink"><i>Your mind is open to the possibility of multiple lovers. You may now choose a second love interest.</i></span>
+		<</if>>
+		/* 北极星模组 */
+		<<if $options.bjx_animal and $raccoon gte 6 and $raccoonrequiredText and $raccoonrequired>>
+		    <br>
+		    <span class="gold">你今天特别想实施犯罪行为：<<crimeType $raccoonrequired>></span>
+		    <<set $raccoonrequiredText to false>>
+		<</if>>
+		<<if $fallenangelmessage is 1>>
+			<<unset $fallenangelmessage>>
+			<br>
+			<span class="red">你感觉在黑暗之中有什么东西正在抓挠你的皮肤。</span>
+			<br>
+			<span class="red">它们仿佛在吞噬你的灵魂，你感到一阵虚弱。</span>
+			<<set $fallenangel -= 1>>
+			<<gstress>><<set $stress += $stressmax>>
+		<</if>>
+		<<if $fallenangelmessage is 2>>
+        	<<unset $fallenangelmessage>>
+        	<br>
+        	<span class="green">你感觉下体一阵酥痒，片刻之后你的童贞恢复了。</span>
+        <</if>>
+		<<if $fallenangelmessage is 3>>
+        	<<unset $fallenangelmessage>>
+        	<br>
+        	<span class="green">你的下体一阵酥痒，恢复童贞的感觉让你浑身舒畅。</span>
+        	<<gpurity>><<ltrauma>><<lstress>>
+        	<<trauma -200>>
+        	<<set $stress -= $stressmax * ($purity/1000)>>
+        	<<if $innocencestate is 1>>
+        	    <<awareness -100>>
+        	    <<lawareness>>
+        	<</if>>
+        <</if>>
+        <<if $fallenangelmessage is 4>>
+        	<<unset $fallenangelmessage>>
+        	<br>
+        	<span class="red">你试图恢复童贞，但你的身体太过污浊所以失败了。</span>
+        	<<gstress>><<set $stress += 2000>>
+        <</if>>
+		<<if $demonmessage is 1>>
+			<<unset $demonmessage>>
+			<br>
+			<span class="red">你感觉到一束可怕的光线灼伤了你。</span>
+			<<gstress>><<set $stress += $stressmax>>
+			<<set $demonbuild -= 5>>
+		<</if>>
+		<<if $huntermessage is 1>>
+		    <<unset $huntermessage>>
+		    <br>
+			<span class="lustful">你的体液沸腾着，仿佛清理垃圾一般，消灭了身体里的残留纯洁。</span>
+		<</if>>
+		<<if $huntermessage is 2>>
+		    <<unset $huntermessage>>
+		    <br>
+		    <span class="lustful">你的体液不停地沸腾翻滚，试图消灭身体里的过量纯洁。</span>
+		    <br>
+		    <span class="red">但似乎力量不足，你的体内乱做一团，剧痛席卷了你。</span>
+		    <<set $demonhunter -= 1>>
+			<<gstress>><<set $stress += $stressmax>>
+		<</if>>
+		/* 北极星 */
+		<<if $bookoverduemessage is 1>>
+			<<unset $bookoverduemessage>>
+			<<crimeUp 5 "thievery">>
+			<<delinquency `5 / 4`>>
+			<span class="red">You have a book severely overdue, and the police have been informed.</span>
+		<<elseif $bookoverduemessage is 2>>
+			<<unset $bookoverduemessage>>
+			<<delinquency `3 / 4`>>
+			<span class="red">You have a book overdue, and have incurred delinquency.</span>
+		<</if>>
+		<<if $wraithcompoundmessage is 1>>
+			<<unset $wraithcompoundmessage>>
+			<span class="red">A fell mist hangs over Elk Street.</span>
+		<</if>>
+		<<if $earSlimebreastsParasite or $earSlimePenisParasite or $earSlimeClitParasite>>
+			<<set $_count to ($earSlimebreastsParasite ? 1 : 0) + ($earSlimePenisParasite ? 1 : 0) + ($earSlimeClitParasite ? 1 : 0)>>
+			<<if $earSlimebreastsParasite is 1>>
+				<<set $_parasiteMessage to `A new parasite forms around your ${$player.breastsize gte 1 ? "breasts" : "chest"}`>>
+			<</if>>
+			<<if $earSlimePenisParasite is 1>>
+				<<if $_parasiteMessage>>
+					<<set $_parasiteMessage += ' and the base of your penis'>>
+				<<else>>
+					<<set $_parasiteMessage to 'A new parasite forms around the base of your penis'>>
+				<</if>>
+			<</if>>
+			<<if $earSlimeClitParasite is 1>>
+				<<set $_looks to playerChastity("vagina") ? "feels" : "looks">>
+				<<if $_parasiteMessage>>
+					<<set $_parasiteMessage += ` and clit. It ${$_looks} like you have your own penis now`>>
+				<<else>>
+					<<set $_parasiteMessage to `A new parasite forms around the base of your clit, it ${$_looks} similar to a penis`>>
+				<</if>>
+			<</if>>
+			<span class="blue">
+				A satisfied warmth fills you.
+				<<print $_parasiteMessage>>.
+				You can tell that <<if $_count gt 1>>they are<<else>>it's<</if>> from the slimes in your ears.
+			</span>
+			<<if $earSlimePenisParasite and $earSlimePenisParasite isnot 1>>
+				<span class="red">The previous $earSlimePenisParasite falls off shortly after it finishes growing.</span>
+			<</if>>
+			<<if $earSlimeClitParasite and $earSlimeClitParasite isnot 1>>
+				<span class="red">The $earSlimeClitParasite on that was on your clit falls off as the new one grows larger.</span>
+			<</if>>	
+			<<unset $earSlimebreastsParasite>>
+			<<unset $earSlimePenisParasite>>
+			<<unset $earSlimeClitParasite>>
+		<</if>>
+		<<if $penisslimebrokenchastitymessage>>
+			<span class="purple">The parasite at the base of your genitals frees you from the
+			<<print $penisslimebrokenchastitymessage>><<if $penisslimecagemessage is 1>>, and almost just as quickly, a new chastity parasite forms around your penis<<unset $penisslimecagemessage>><</if>>.
+			</span>
+			<<unset $penisslimecagemessage>>
+			<<unset $penisslimebrokenchastitymessage>>
+		<</if>>
+		<<if $penisslimecagemessage is 1>>
+			<span class="purple">A new chastity parasite forms around your penis.</span>
+			<<unset $penisslimecagemessage>>
+		<<elseif $penisslimecagemessage is 2>>
+			<span class="purple">Your chastity parasite looks brand new again.</span>
+			<<unset $penisslimecagemessage>>
+		<</if>>
+	<</if>>
+
+	<<if $foxCrimeMessage>>
+		<<if $blackmoney gte 100>>
+			<span class="gold">You feel an animalistic satisfaction towards your growing collection of stolen goods.</span>
+		<<else>>
+			<span class="gold">You feel an animalistic satisfaction as you commit such crimes.</span>
+		<</if>>
+		<<unset $foxCrimeMessage>>
+	<</if>>
+
+	<<if $pregnancyDailyEvent>>
+		<<pregnancyDailyEvent>>
+		<<unset $pregnancyDailyEvent>>
+	<</if>>
+	<<if $daily.parasiteEvent>>
+		<<if $sexStats.vagina.pregnancy.type is "parasite">>
+			<<set $_minDaysLeft to $sexStats.vagina.pregnancy.fetus.reduce((prev,curr) => prev.daysLeft < curr.daysLeft ? prev.daysLeft : curr.daysLeft, 30)>>
+		<</if>>
+		<<if $sexStats.anus.pregnancy.type is "parasite">>
+			<<set $_minDaysLeft to $sexStats.anus.pregnancy.fetus.reduce((prev,curr) => prev.daysLeft < curr.daysLeft ? prev.daysLeft : curr.daysLeft, $_minDaysLeft || 30)>>
+		<</if>>
+		<<set _stressMulti to Math.clamp(2 - $sexStats.anus.pregnancy.motherStatus + $sexStats.vagina.pregnancy.motherStatus, 0, 2)>>
+		<<set _arousalMulti to Math.clamp(1 + $sexStats.anus.pregnancy.motherStatus + $sexStats.vagina.pregnancy.motherStatus, 1, 3)>>
+		<<set $_arousalGain to 0>>
+		<<if $daily.parasiteEvent.includes("anus3") && $daily.parasiteEvent.includes("vagina3")>><<run $daily.parasiteEvent.delete("vagina3")>><</if>>
+		<<for _i to 0; _i lt $daily.parasiteEvent.length; _i++>>
+			<<switch $daily.parasiteEvent[_i]>>
+				<<case "anus0" "vagina0">>
+					<<if $pregnancyStats.parasiteDoctorEvents gte 4>>
+						You feel <<if $pregnancyStats.namesParasitesChild is true>>your grown child<<else>>the grown parasite<</if>> in your <<print $daily.parasiteEvent[_i] === "anus0" ? "stomach" : "uterus">>.
+						<<ggarousal>>
+					<<else>>
+						You feel something large move around in your <<print $daily.parasiteEvent[_i] === "anus0" ? "stomach" : "uterus">>. Might be best to go to the hospital again.
+						<<ggarousal>>
+					<</if>>
+					<<set $_arousalGain += 2000>>
+				<<case "anus1" "vagina1">>
+					<<if $pregnancyStats.parasiteDoctorEvents gte 2>>
+						You feel one of <<if $pregnancyStats.namesParasitesChild is true>>your children<<else>>the parasites<</if>> move around in your <<print $daily.parasiteEvent[_i] === "anus1" ? "stomach" : "uterus">>.
+						<<ggarousal>><<if _stressMulti gt 0>><<gstress>><</if>>
+					<<else>>
+						You feel something move around in your <<print $daily.parasiteEvent[_i] === "anus1" ? "stomach" : "uterus">>. Might be best to go to the hospital.
+						<<ggarousal>><<if _stressMulti gt 0>><<gstress>><</if>>
+					<</if>>
+					<<set _arousal to _arousalMulti * 500 / ($_minDaysLeft + 1)>><<set $stress += 300 * _stressMulti>>
+					<<set $_arousalGain += _arousal>>
+				<<case "anus2" "vagina2">>
+					Your <<print $daily.parasiteEvent[_i] === "anus2" ? "stomach" : "uterus">> rumbles a little. You hope the noise hasn't attracted any attention.
+					<<if _stressMulti gt 0>><<gstress>><</if>>
+					<<set _arousal to _arousalMulti * 250 / ($_minDaysLeft + 1)>><<set $stress += 200 * _stressMulti>>
+					<<set $_arousalGain += _arousal>>
+				<<case "anus3" "vagina3">>
+					You feel a little lightheaded for a moment.
+					<<if _stressMulti gt 0>><<gstress>><</if>>
+					<<set $stress += 100 * _stressMulti>>
+			<</switch>>
+		<</for>>
+		<<if $_arousalGain>><<arousal `Math.clamp($_arousalGain, 0, 10000)`>><</if>>
+		<br>
+		<<run delete $daily.parasiteEvent>>
+	<</if>>
+
+	<<if $earSlime.event is "go commando" and $earSlime.eventTimer lte 1>>
+		<<set $earSlime.event to "">>
+		<span class="green">The slime in you ear is pleased that you completed it's task and stops commanding you to go commando.</span>
+		<<pain -4>><<stress -6>><<trauma -12>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+	<<elseif $earSlime.event.includes("get sperm into your") and $earSlime.event.includes("completed") and $earSlime.eventTimer lte 2>>
+		<<set $earSlime.event to "">>
+		<span class="green">The slime in you ear is pleased that you completed it's task of getting sperm into your <<print $player.vaginaExist ? "vagina" : "anus">>.</span>
+		<<pain -4>><<stress -6>><<trauma -12>><<lpain>><<lltrauma>><<lstress>>
+		<br>
+	<<elseif $earSlime.event.includes("get your own sperm into your") and $earSlime.event.includes("completed") and $earSlime.eventTimer lte 2>>
+		<<set $earSlime.event to "">>
+		<span class="green">The slime in you ear is pleased that you completed it's task of getting your own sperm into your <<print $player.vaginaExist ? "vagina" : "anus">>.</span>
+		<<pain -4>><<stress -6>><<trauma -12>><<lpain>><<lltrauma>><<lstress>>
+		<<if $earSlime.growth gte 100 and $worn.genitals.name is "naked">>
+			<span class="purple">A new chastity parasite forms around your penis.</span>
+			<<genitalswear 8>>
+			<<set $worn.genitals.origin to "ear slime">>
+		<</if>>
+		<br>
+	<<elseif $earSlime.event and ($earSlime.eventTimer lte 2 or ($earSlime.noSleep and Time.dayState isnot "night"))>>
+		<span class="red">The slime in you ear punishes you for failing to complete your task.</span>
+		<<ggpain>><<ggtrauma>><<ggstress>><<pain 16>><<stress 12>><<trauma 12>><<set $earSlime.event to "">><<set $earSlime.noSleep to false>>
+		<<set $earSlime.defyCooldown += 4>>
+		<br>
+	<</if>>
+
+	<<integritycheck>>
+	<<exposure>>
+
+	<<set $orgasmdown -= 1>>
+
+	<<if $exposed gte 1 and $exposedcheck is 1>>
+		<<set $exposedcheck to 0>>
+		You feel self-conscious about your <<nudity>>.
+		<br>
+	<</if>>
+
+	<<if $timer gte 1>>
+		<<set $timer -= 1>>
+	<</if>>
+	<!-- <<set $turnCount++>> -->
+
+	<<bindings>>
+
+	<<if $worn.genitals.cursed is 1 and $worn.genitals.integrity lte 0>>
+		<<set $worn.genitals.type.push("broken")>>
+	<</if>>
+
+	<<heelsUpdate>>
+
+	<<if $combat is 1>>
+		<<pass 10 seconds>>
+	<</if>>
+	<br>
+	<<set $menu to 0>>
+	<<if $combat is 0 and $ironmanmode is true>>
+		<<run IronMan.scheduledSaves()>>
+	<</if>>
+<</widget>>
+
+<<widget "newversionnotification">>
+	<div id="new-version-notification" class="no-numberify">
+		New version is available! Degrees of Lewdity $newVersionData.version was released
+		<<print $newVersionData.hours >= 24 ? $newVersionData.days + " days" : $newVersionData.hours + " hours">> ago.
+
+		<div class="new-version-notification-buttons">
+			<a class="btn-update" href="https://vrelnir.blogspot.com" target="_blank">UPDATE!</a>
+
+			<div class="div-link btn-update">
+				<<link "Remind later">>
+					<<unset $newVersionData>>
+					<<run $('#new-version-notification').hide()>>
+				<</link>>
+			</div>
+			<div class="div-link btn-update">
+				<<link "Skip update">>
+					<<set $newVersionDismissed = true>>
+					<<unset $newVersionData>>
+					<<run $('#new-version-notification').hide()>>
+				<</link>>
+			</div>
+		</div>
+	</div>
+	<<run $(() => { linkifyDivs('#new-version-notification'); })>>
+<</widget>>
+
+<<widget "temperature">>
+	<<set $warmth to 0>>
+	<<for _active_clothes range Object.keys($worn)>>
+		<<if $inwater is 1>>
+			<<if $worn[_active_clothes].warmth isnot undefined and $worn[_active_clothes].type.includes("diving")>>
+				<<set $warmth += $worn[_active_clothes].warmth>>
+			<</if>>
+		<<else>>
+			<<if $worn[_active_clothes].warmth isnot undefined>>
+				<<if _active_clothes is "upper" and $worn.upper.warmth lte $upperwet or _active_clothes is "lower" and $worn.lower.warmth lte $lowerwet or _active_clothes is "under_upper" and $worn.under_upper.warmth lte $underupperwet or _active_clothes is "under_lower" and $worn.under_lower.warmth lte $underlowerwet>>
+					/*Do nothing*/
+				<<else>>
+					<<set $warmth += $worn[_active_clothes].warmth>>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</for>>
+
+	<<if $inwater is 1>>
+	    /* 北极星模组 */
+	    <<if $fish gte 6 and $options.bjx_animal>>
+            <<set $stress -= 500>>
+            <span class="green"><br><br>浸泡于水中让你感到安心。<br><br></span>
+        <</if>>
+		<<if $slime gt 0 and $options.bjx_eventTF>>
+			<<violence 60>>
+			<span class="red"><br><br>你的身体在慢慢溶解，快点离开水源！<br><br></span>
+		<</if>>
+		/* 北极星 */
+		<<if Time.season is "winter" and !["sea", "beach", "school", "underground", "pool"].includes($location)>>
+			<<if $warmth gte 80>>
+				<<set $body_temperature_outside to "comfy">>
+			<<elseif $warmth gte 40>>
+				<<set $body_temperature_outside to "chilly">>
+			<<else>>
+				<<set $body_temperature_outside to "cold">>
+			<</if>>
+		<<else>>
+			<<set $body_temperature_outside to "comfy">>
+		<</if>>
+	<<else>>
+		<<if $warmth gte (($chill * 1.3) + 150)>>
+			<<set $body_temperature_outside to "hot">>
+		<<elseif $warmth gte (($chill * 1.3) + 70)>>
+			<<set $body_temperature_outside to "warm">>
+		<<elseif $warmth lte ($chill - 90)>>
+			<<set $body_temperature_outside to "cold">>
+		<<elseif $warmth lte $chill>>
+			<<set $body_temperature_outside to "chilly">>
+		<<else>>
+			<<set $body_temperature_outside to "comfy">>
+		<</if>>
+	<</if>>
+
+	<<if $outside is 1 or _water_warmth isnot undefined>>
+		<<set $body_temperature to $body_temperature_outside>>
+	<<else>>
+		<<set $body_temperature to "comfy">>
+	<</if>>
+	
+	/* 北极星模组 */
+    <<if $options.bjx_eventTF>>
+    	<<if $fungalgrowth gte 30 and $mushroom gte 1 and $fungalstagelimiter is 0>>
+    		<<set $fungalgrowth -= 30>>
+    		<<set $fungalpoint += 1>>
+    		<span class='yellow'>你积攒了足够的营养物质，已获得进化点，可在浴室中进行进化！</span>
+    	<</if>>
+    <</if>>
+    /* 北极星 */
+<</widget>>

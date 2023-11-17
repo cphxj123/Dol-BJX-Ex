@@ -1,0 +1,1063 @@
+:: StoryInit
+/* This passage runs EVERY time the page is opened or refreshed, not just when a new game is started */
+/* This passage ALWAYS runs BEFORE story variables are loaded, meaning EVERY variable is undefined. Checking if they are undefined WILL NOT WORK. */
+/* You should ONLY use this passage to define setup variables, NOT $variables. */
+
+<<variablesStatic>>
+
+:: gameStartOnly [widget]
+/* The following is only run when the widget is called, which is only on new game start. Add to this if you want something to be run when you start a new game. */
+<<widget "gameStartOnly">>
+	<<set $options to {
+			neverNudeMenus: false,
+			autosaveDisabled: false,
+			showCaptionText: true,
+			sidebarRenderer: "canvas",
+			sidebarStats: "disabled",
+			sidebarTime: "disabled",
+			combatControls: "radio",
+			targetYourself: false,
+			scrollRemember: false,
+			mapMovement: true,
+			mapLegacy: false,
+			mapMarkers: false,
+			mapTop: false,
+			images: 1,
+			combatImages: 1,
+			bodywritingImages: true,
+			silhouetteEnabled: true,
+			tanImgEnabled: true,
+			tanningEnabled: true,
+			sidebarAnimations: true,
+			blinkingEnabled: true,
+			combatAnimations: true,
+			halfClosedEnabled: false,
+			characterLightEnabled: true,
+			lightSpotlight: 0.2,
+			lightGradient: 0.1,
+			lightGlow: 0.1,
+			lightFlat: 0,
+			lightCombat: 0.2,
+			lightTFColor: 0.2,
+			maxStates: 1,
+			numpad: false,
+			newWardrobeStyle: true,
+			useNarrowMarket: false,
+			skipStatisticsConfirmation: false,
+			showDebugRenderer: false,
+			pepperSprayDisplay: "sprays",
+			condomsDisplay: "standard",
+			closeButtonMobile: false,
+			zoom: 100,
+			numberify_enabled: 1,
+			timestyle: "military",
+			oldclock: false,
+			tipdisable: "f",
+			passageCount: "disabled",
+			playtime: false,
+			traitOverlayFormat: "table",
+			debugdisable: "t"
+		}>>
+	/* 北极星模组 */
+	<<run $.extend($options, {
+	        bjx_divine: true,
+	        bjx_animal: true,
+	        bjx_eventTF: true,
+	        bjx_antiques: true,
+	    })>>
+	/* 北极星 */
+
+	<<set Time.startDate to new DateTime()>>
+	<<set $timeStamp to 0>>
+
+	<<if StartConfig.enableImages is false>>
+		<<set $options.images to 0>>
+		<<set $options.combatImages to 0>>
+	<</if>>
+
+	<!-- ToDo: Canvas, remove block when combat is updated to canvas renderer -->
+	<<if Browser.isMobile.any()>>
+		<<set $options.combatAnimations to false>>
+	<</if>>
+
+	<<if StartConfig.debug is true>>
+		<<set $debug to 1>>
+	<<else>>
+		<<set $debug to 0>>
+	<</if>>
+
+	<<if $objectVersion is undefined>>
+		<<set $objectVersion to {
+			"updateClothes": 29,
+			"feats": 1,
+			"wardrobes": 2,
+			"customColors": 4,
+			"uncomfortable": 2,
+			"special_clothes": 5,
+			"chastity": 3,
+			"skinColor": 1,
+			"prenancyObjectRepair": 2,
+			"museumAntiques": 9,
+			"npcClothes": 1,
+			"animations": 1,
+		}>>
+	<</if>>
+
+	<<set $saveVersions to [StartConfig.version]>>
+
+	<<set $numberify_enabled to 1>>
+	<<set $options.showDebugRenderer to !!StartConfig.debug>>
+	<<set $lastWardrobeSlot to "head">>
+
+	<<set $gamemode to "normal">>
+
+	<<set $intro to 1>>
+	<<set $tutorial to 0>>
+	<<set $initnpccompatibility to 1>>
+	<<set $clothing_update to 1>>
+	<<set $parasite_update to 1>>
+	<<set $npcNamedVersion to 2>>
+	<<set $clothing_number to 13>>
+
+	<<set $player = {gender: 0, sex: 0, appearance: 0, penis: 0, vagina: 0, penissize: 0, breastsize: 0, bottomsize: 0, ballssize: 0, pronoun: 0, pronouns: {he: 0, his: 0}, gender_body: 0, condom: false, virginity: {anal: true, oral: true, penile: true, vaginal: true, temple: false, handholding: true, kiss: true}}>>
+	<<npcList>>
+	<<npcNamed>>
+	<<set $controlmax to 1000>>
+	<<set $control to 1000>>
+
+	<<clothinginit>>
+	<<parasiteinit>>
+	<<skinColorInit>>
+	<<init_names>>
+
+	<<set $money to 500>>
+	<<set $awareness to 0>>
+	<<set $awarelevel to 0>>
+	<<set $purity to 1000>>
+	<<set $hairlength to 200>>
+	<<set $fringelength to 200>>
+	<<set $hairtype to "default">>
+	<<set $fringetype to "default">>
+	<<set $trauma to 0>>
+	<<set $traumamax to 5000>>
+	<<set $stressmax to 10000>>
+	<<set $arousalmax to 10000>>
+	<<set $physique to 3500>>
+	<<set $physiquemax to 20000>>
+	<<set $willpower to 200>>
+	<<set $willpowermax to 1000>>
+	<<set $beauty to 100>>
+	<<set $beautymax to 10000>>
+	<<set $birthmonth to "september">>
+	<<set $birthday to 3>>
+	<<set $npc to []>>
+	<<set $npcnum to []>>
+	<<set $npcrow to []>>
+	<<set $dancestudioanger to 0>>
+	<<set $dancelocation to 0>>
+	<<set $alarm to 0>>
+	<<set $finish to 0>>
+	<<set $id to 0>>
+	<<set $forest to 0>>
+	<<set $forestmod to 1>>
+	<<set $tipmod to 1>>
+	/*<<set $worn.genitals.anal_shield to 0>>*/
+	<<set $blackmoney to 0>>
+	<<set $crime to {}>>
+	<<for _cr range Object.keys(setup.crimeNames)>>
+		/* look in variables-static for the list of crime categories */
+		<<set $crime[_cr] to {current: 0, history: 0, daily: 0, count: 0, countHistory: 0}>>
+	<</for>>
+	<<set $crime.events to {}>>
+	<<set $ironmanmode to false>>
+	<<set $worn.neck.collaredpolice to 0>>
+	<<set $bullytimer to 50>>
+	<<set $bullytimeroutside to 0>>
+	<<set $bullyevent to 0>>
+	<<set $bullyeventoutside to 0>>
+	/* 北极星模组 */
+	<<set $caseyagain to 0>>
+	<<set $caseymet to 0>>
+	<<set $caseyridefirst to 0>>
+	<<set $caseyromance to 0>>
+	<<set $motorupgrade to 0>>
+	/* 北极星 */
+	<<set $masturbationorgasm to 0>>
+	<<set $masturbationRuinedOrgasm to 0>>
+	<<set $ruinedOrgasmStat to 0>>
+	<<set $malechance to 50>>
+	<<set $maleChanceMale to 50>>
+	<<set $maleChanceFemale to 50>>
+	<<set $maleChanceSplit to "f">>
+	<<set $malevictimchance to 50>>
+	<<set $homochance to 4>>
+	<<set $beastmalechance to 80>>
+	<<set $beastMaleChanceMale to 80>>
+	<<set $beastMaleChanceFemale to 80>>
+	<<set $beastMaleChanceSplit to "f">>
+	<<set $monsterhallucinations to "t">>
+	<<set $monsterchance to 50>>
+	<<set $deviancy to 0>>
+	<<set $baileydefeated to 0>>
+	<<set $baileydefeatedlewd to 0>>
+	<<set $baileydefeatedchain to 0>>
+	<<set $soldCount to 0>>
+	<<set $robinmoney to 300>>
+	<<set $alluremod to 1>>
+	<<set $speechcycle to 0>>
+	<<set $npcspeechcycle to 0>>
+	<<set $museuminterest to 0>>
+	<<set $orphan_hope to 0>>
+	<<set $orphan_reb to 0>>
+	<<set $masochism to 0>>
+	<<set $masochism_level to 0>>
+	<<set $sadism to 0>>
+	<<set $sadism_level to 0>>
+	<<set $lessonmissedtext to 0>>
+	<<set $lessonmissed to 0>>
+	<<set $home_event_timer to 3>>
+	<<set $home_event_count to 0>>
+	<<set $home_event_ward_timer to 3>>
+	<<set $home_event_ward_count to 0>>
+	<<set $home_gone to 0>>
+	<<resetEarSlime>>
+	<<set $lactating to 0>>
+	<<set $lactation_pressure to 0>>
+	<<set $milk_amount to 30>>
+	<<set $milk_volume to 30>>
+	<<set $milk_max to 3000>>
+	<<set $milk_produced_stat to 0>>
+	<<set $semen_max to 3000>>
+	<<set $semen_produced_stat to 0>>
+	<<set $lube_produced_stat to 0>>
+	<<set $masturbation_semen to 0>>
+	<<set $masturbation_milk to 0>>
+	<<set $bunstat to 0>>
+	<<set $creamstat to 0>>
+	<<set $chef_sus to 0>>
+	<<set $fluid_forced_stat to 0>>
+	<<set $smuggler_location to "sewer">>
+	<<set $smuggler_timer to 0>>
+	<<set $smuggler_stolen_stat to 0>>
+	<<set $pub_task_stat to 0>>
+	<<set $player.gender_body to "a">>
+	<<set $closinghour to 21>>
+	<<set $openinghours to 1>>
+	<<set $dontHide to false>>
+	<<set $swimnudecounter to 0>>
+	<<set $swimall to 0>>
+	<<set $garden_flowers_intro to 1>>
+	<<set $eden_plot_intro to 1>>
+	<<set $wolf_plot_intro to 1>>
+	<<set $asylum_plot_intro to 1>>
+	<<set $plots to {}>>
+	<<set $tendingvars to {}>>
+	<<set $tending_yield_factor to 5>>
+	<<set $plants_known to []>>
+	<<set $plants to {}>>
+	<<set $stall_rejected to 0>>
+	<<set $produce_sold to 0>>
+	<<set $stat_shoot to 0>>
+	<<set $stat_lurkers_captured to 0>>
+	<<set $stat_aphrodisiacs_sold to 0>>
+	<<set $stat_panties_stolen to 0>>
+	<<set $farm_shift to 0>>
+	<<set $cattle_milked to 0>>
+	<<set $masseur_stat to 0>>
+	<<set $machine_stat to 0>>
+	<<set $wild_plant_stat to 0>>
+	<<set $bird to {}>>
+	<<set $moonstate to 0>>
+	<<set $blackjack_played to 0>>
+	<<set $blackjack_won to 0>>
+	<<set $blackjack_streak to 0>>
+	<<set $blackjack_streak_high to 0>>
+	<<set $cardcover = { style: 0, colour: 'red' }>>
+	<<set $hoodDown to 0>>
+	<<set $prof to {}>>
+	<<set $prof.spray to 0>>
+	<<set $stat_police to {}>>
+	<<set $stat_police.pillory to 0>>
+	<<set $stat_police.community to 0>>
+	<<set $stat_police.prison to 0>>
+	<<set $child_played to []>>
+	<<set $speech_attitude to "neutral">>
+
+	<<set $orgasmtrait to 0>>
+	<<set $ejactrait to 0>>
+	<<set $molesttrait to 0>>
+	<<set $rapetrait to 0>>
+	<<set $bestialitytrait to 0>>
+	<<set $tentacletrait to 0>>
+	<<set $voretrait to 0>>
+	<<set $milkdranktrait to 0>>
+	<<set $choketrait to 0>>
+	<<if $debug>>
+		<<set $options.maxStates to 5>>
+	<</if>>
+
+	<<set $physicalTransform to 0>>
+	<<set $specialTransform to 0>>
+	<<set $angelbuild to 0>>
+	<<set $angel to 0>>
+	<<set $angelforgive to 0>>
+	<<set $angelBanish to 0>>
+	<<set $angelBanishMax to 0>>
+	<<set $demonbuild to 0>>
+	<<set $demon to 0>>
+	<<set $demonabsorb to 0>>
+	/* 北极星模组 */
+	<<set $demonseduce to 0>>
+	<<set $demonejac to 0>>
+	<<set $daynoabsorb to 0>>
+	<<set $demonhunterhypnosis to 0>>
+	<<set $hunterbuild to 0>>
+	<<set $demonhunter to 0>>
+	<<set $fallenangelretribution to 0>>
+	<<set $fallenangelvirginitylost to 0>>
+	/* 北极星 */
+	<<set $fallenangel to 0>>
+	<<set $fallenbuild to 0>>
+	<<set $catbuild to 0>>
+	<<set $cat to 0>>
+	<<set $heterochromia to 0>>
+	<<set $cowbuild to 0>>
+	<<set $cow to 0>>
+	<<set $birdbuild to 0>>
+	<<set $harpy to 0>>
+	<<set $foxbuild to 0>>
+	<<set $fox to 0>>
+	/* 北极星模组 */
+	<<set $sheepbuild to 0>>
+	<<set $sheep to 0>>
+	<<set $beebuild to 0>>
+	<<set $bee to 0>>
+	<<set $deerbuild to 0>>
+	<<set $deer to 0>>
+	<<set $bearbuild to 0>>
+	<<set $bear to 0>>
+	<<set $dragonbuild to 0>>
+	<<set $dragon to 0>>
+	<<set $lizardbuild to 0>>
+	<<set $lizard to 0>>
+	<<set $dolphinbuild to 0>>
+	<<set $dolphin to 0>>
+	<<set $dogbuild to 0>>
+	<<set $dog to 0>>
+	<<set $raccoonbuild to 0>>
+	<<set $raccoon to 0>>
+	<<set $fishbuild to 0>>
+	<<set $fish to 0>>
+	<<set $horsebuild to 0>>
+	<<set $horse to 0>>
+	<<set $pigbuild to 0>>
+	<<set $pig to 0>>
+	<<set $spiderbuild to 0>>
+	<<set $spider to 0>>
+	<<set $frogbuild to 0>>
+	<<set $frog to 0>>
+	<<set $slime to 0>>
+	<<set $ghost to 0>>
+	<<set $mushroom to 0>>
+	<<set $fungalgrowth to 0>>
+	<<set $fungalpoint to 0>>
+	<<set $exorcism to 0>>
+	<<set $exorcised to 0>>
+	<<set $onemoreslime to 0>>
+	<<set $mushroomtf to {}>>
+	<<set $dencounter to 0>>
+	<<set $prutimonster to 2>>
+	<<set $enemyhealthmult to 1>>
+	<<set $enemyarousalmult to 1>>
+	/* 北极星 */
+	
+	<<set $stray_happiness to 50>>
+
+	<<set $seductionskill to 0>>
+	<<set $oralskill to 0>>
+	<<set $vaginalskill to 0>>
+	<<set $analskill to 0>>
+	<<set $handskill to 0>>
+	<<set $feetskill to 0>>
+	<<set $bottomskill to 0>>
+	<<set $thighskill to 0>>
+	<<set $chestskill to 0>>
+	<<set $penileskill to 0>>
+
+	<<set $skulduggery to 0>>
+	<<set $skulduggeryday to 0>>
+	/* 北极星模组 */
+	<<set $skulduggeryhands to 0>>
+	/* 北极星 */
+	<<set $danceskill to 0>>
+	<<set $swimmingskill to 0>>
+	<<set $athletics to 0>>
+	<<set $tending to 0>>
+	<<set $housekeeping to 0>>
+
+	<<set $hygiene to 0>>
+	<<set $hunger to 0>>
+	<<set $thirst to 0>>
+	<<set $tiredness to 0>>
+	<<set $arousal to 0>>
+	<<set $arousalmasochism to 0>>
+	<<set $stress to 0>>
+
+	<<set $pain to 0>>
+	<<set $combat to 0>>
+	<<set $location to 0>>
+	<<set $breastsizeold to 0>>
+	<<set $breastsizemax to 12>>
+	<<set $breastsizemin to 0>>
+	<<set $mouthsensitivity to 1>>
+	<<set $breastsensitivity to 1>>
+	<<set $bottomsensitivity to 1>>
+	<<set $genitalsensitivity to 1>>
+	<<set $bottomsizeold to 0>>
+	<<set $bottomsizemax to 8>>
+	<<set $bottomsizemin to 0>>
+	<<set $bottomgrowthtimer to 350>>
+	<<set $workouts to 0>>
+	<<set $player.penissize to 2>>
+	<<set $penissizemax to 4>>
+	<<set $penissizemin to -2>>
+	<<set $penisgrowthtimer to 700>>
+	<<set $ballssize to 2>>
+	<<set $ballssizemax to 4>>
+	<<set $ballssizemin to 0>>
+	<<set $ballsgrowthtimer to 700>>
+	<<set $physiqueuse to 0>>
+	<<set $rapeavoid to 1>>
+	<<set $sexavoid to 1>>
+	<<set $molestavoid to 1>>
+	<<set $rescued to 0>>
+	<<set $baileyhospital to 0>>
+	<<set $squidcount to 0>>
+	<<set $no_underwear to 0>>
+
+	<<set $upperwet to 0>>
+	<<set $upperwetstage to 0>>
+	<<set $lowerwet to 0>>
+	<<set $lowerwetstage to 0>>
+	<<set $underlowerwet to 0>>
+	<<set $underlowerwetstage to 0>>
+	<<set $underupperwet to 0>>
+	<<set $underupperwetstage to 0>>
+	<<set $overlowerwet to 0>>
+	<<set $overlowerwetstage to 0>>
+	<<set $overupperwet to 0>>
+	<<set $overupperwetstage to 0>>
+
+	<<set $genderknown to ["Robin", "Bailey"]>>
+    
+    /* 北极星模组 */
+    <<set $tail to 0>>
+	<<set $tailuse to 0>>
+	/* 北极星 */
+	<<set $vaginause to 0>>
+	<<set $anususe to 0>>
+	<<set $mouthuse to 0>>
+	<<set $leftarm to 0>>
+	<<set $rightarm to 0>>
+	<<set $chestuse to 0>>
+	<<set $penisuse to 0>>
+	<<set $thighuse to 0>>
+	<<set $bottomuse to 0>>
+	<<set $feetuse to 0>>
+	<<set $vaginastate to 0>>
+	<<set $anusstate to 0>>
+	<<set $mouthstate to 0>>
+	<<set $penisstate to 0>>
+	<<set $cheststate to 0>>
+	<<set $head to 0>>
+	<<set $front to 0>>
+	<<set $back to 0>>
+	<<set $chest to 0>>
+
+	<<set $carryblock to 0>>
+
+	<<set $beastgenderoverride to 0>>
+
+	<<set $dgchance to 0>>
+	<<set $cbchance to 0>>
+	<<set $straponchance to 0>>
+	<<set $breast_mod to 0>>
+	<<set $penis_mod to 0>>
+
+	<<set $facebruise to 0>>
+	<<set $chestbruise to 0>>
+	<<set $tummybruise to 0>>
+	<<set $vaginabruise to 0>>
+	<<set $penisbruise to 0>>
+	<<set $anusbruise to 0>>
+	<<set $bottombruise to 0>>
+	<<set $thighbruise to 0>>
+	<<set $leftarmbruise to 0>>
+	<<set $rightarmbruise to 0>>
+	<<set $neckbruise to 0>>
+
+	<<set $rapestat to 0>>
+	<<set $beastrapestat to 0>>
+	<<set $tentaclerapestat to 0>>
+	<<set $moleststat to 0>>
+	<<set $vaginalstat to 0>>
+	<<set $vaginalejacstat to 0>>
+	<<set $analstat to 0>>
+	<<set $analejacstat to 0>>
+	<<set $oralstat to 0>>
+	<<set $oralejacstat to 0>>
+	<<set $semenswallowedstat to 0>>
+	<<set $animalsemenswallowedstat to 0>>
+	<<set $handstat to 0>>
+	<<set $handejacstat to 0>>
+	<<set $feetstat to 0>>
+	<<set $feetejacstat to 0>>
+	<<set $thighstat to 0>>
+	<<set $thighejacstat to 0>>
+	<<set $bottomstat to 0>>
+	<<set $bottomejacstat to 0>>
+	<<set $penilestat to 0>>
+	<<set $penileejacstat to 0>>
+	<<set $straponstat to 0>>
+	<<set $clothesstripstat to 0>>
+	<<set $clothesruinstat to 0>>
+	<<set $orgasmstat to 0>>
+	<<set $vaginalentranceejacstat to 0>>
+	<<set $faceejacstat to 0>>
+	<<set $cheststat to 0>>
+	<<set $chestejacstat to 0>>
+	<<set $hairejacstat to 0>>
+	<<set $tummyejacstat to 0>>
+	<<set $neckejacstat to 0>>
+	<<set $ejacstat to 0>>
+	<<set $hitstat to 0>>
+	<<set $attackstat to 0>>
+	<<set $prostitutionstat to 0>>
+	<<set $forcedprostitutionstat to 0>>
+	<<set $tablesservedstat to 0>>
+	<<set $parasitestat to 0>>
+	<<set $passoutstat to 0>>
+	<<set $masturbationstat to 0>>
+	<<set $masturbationorgasmstat to 0>>
+	<<set $secondsSpentMasturbating to 0>>
+	<<set $milk_drank_stat to 0>>
+	<<set $nectar_drank_stat to 0>>
+	<<set $nectar_addiction to 0>>
+	<<set $nectar_timer to 0>>
+	<<set $gloryholestat to 0>>
+	<<set $parasite_known to []>>
+	<<set $chokeorgasm to 0>>
+	<<set $analdoublestat to 0>>
+	<<set $vaginaldoublestat to 0>>
+	<<set $sextoystat to 0>>
+	<<set $urinestat to 0>>
+	<<set $hypnosis_traits to {}>>
+	<<set $town_projects to {}>>
+
+	<<set $danceaction to 0>>
+	<<set $danceactiondefault to 0>>
+	<<set $dancestat to 0>>
+	<<set $dancing to 0>>
+	<<set $pullaway to 0>>
+	<<set $novaginal to 0>>
+	<<set $noanal to 0>>
+	<<set $nopenile to 0>>
+	<<set $nochoke to 0>>
+	<<set $vaginalchastity to 0>>
+	<<set $analchastity to 0>>
+	<<set $penilechastity to 0>>
+	<<set $drinksservedstat to 0>>
+	<<set $dockhours to 0>>
+
+	<<if $rng gte 95>>
+		<<set $brothel_basement_price to 3000>>
+	<<elseif $rng gte 85>>
+		<<set $brothel_basement_price to 2000>>
+	<<elseif $rng gte 45>>
+		<<set $brothel_basement_price to 1000>>
+	<<else>>
+		<<set $brothel_basement_price to 500>>
+	<</if>>
+
+	<<set $brothelshowdata to { counts:{ agreed:0, done:0 }, type:"none", intro:0, done:false, missed:false }>>
+
+	<<set $speechorgasmweakcumcount to 0>>
+	<<set $speechorgasmnocumcount to 0>>
+	<<set $speechorgasmcount to 0>>
+	<<set $speechorgasmrepeat to 0>>
+	<<set $underwatertime to 0>>
+	<<set $underwater to 0>>
+	<<set $walltype to "wall">>
+	<<set $position to 0>>
+	<<set $prop to []>>
+
+	<<set $submissive to 1000>>
+	<<set $assertive to 0>>
+	<<set $assertiveaction to "trauma">>
+	<<set $uncomfortable to {
+		underwear: true,
+		nude: true,
+		prostituting: true,
+		lewd: true,
+		hypnosis: true
+	}>>
+	<<set $rescue to 0>>
+	<<set $drugged to 0>>
+	<<set $drunk to 0>>
+	<<set $exposed to 0>>
+	<<set $traumagain to 0>>
+	<<set $stressgain to 0>>
+	<<set $traumasaved to 0>>
+	/* 北极星模组 */
+	<<set $awarenesssaved to 0>>
+	<<set $awarenessgain to 0>>
+	/* 北极星 */
+	<<set $stresssaved to 0>>
+	<<set $phase to 0>>
+	<<set $phase2 to 0>>
+	<<set $orgasmdown to 0>>
+	<<set $noise to 0>>
+	<<set $enemywounded to 0>>
+	<<set $enemyejaculated to 0>>
+	<<set $enemyno to 0>>
+	<<set $enemynomax to 0>>
+	<<set $enemyanger to 0>>
+	<<set $enemytrust to 0>>
+	<<set $semenpuddle to 0>>
+	<<set $eventskip to 0>>
+	<<set $menu to 0>>
+	<<set $consensual to 0>>
+	<<set $attention to 0>>
+	<<set $orgasmcount to 0>>
+	<<set $leftboundcarry to 0>>
+	<<set $rightboundcarry to 0>>
+	<<set $orgasmcurrent to 0>>
+	<<set $hospitalintro to 0>>
+	<<set $traumafocus to 0>>
+	<<set $pubwhore to 0>>
+	<<set $policemolestation to 0>>
+
+	<<set $npclovehigh to 10>>
+	<<set $npclovehighsu to 30>> /* unused */
+	<<set $npclovelow to -10>>
+	<<set $npclovelowsu to -30>> /* unused */
+	<<set $npcdomhigh to 10>>
+	<<set $npcdomlow to -10>>
+
+	<<set $schoolevent to 0>>
+	<<set $schooleventtimer to 10>>
+	<<set $schoolrep to {}>>
+	<<set $schoolrep.crossdress to 0>>
+	<<set $schoolrep.herm to 0>>
+
+	<<set $flashbackhome to 0>>
+	<<set $flashbacktown to 0>>
+	<<set $flashbackbeach to 0>>
+	<<set $flashbackunderground to 0>>
+	<<set $flashbackschool to 0>>
+	<<set $panicviolence to 0>>
+	<<set $panicparalysis to 0>>
+
+	<<set $colouraction to 0>>
+	<<set $hungerenabled to 0>> /* unused */
+	<<set $thirstenabled to 0>> /* unused */
+	<<set $hygieneenabled to 0>> /* unused */
+
+	<<set $exhibitionism to 0>>
+	<<set $promiscuity to 0>>
+	<<set $diagnosis to 0>>
+	<<set $psych to 0>>
+	<<set $asylum to 0>>
+	<<set $audience to 0>>
+	<<set $audienceexcitement to 0>>
+	<<set $audiencearousal to 0>>
+	<<set $audiencemod to 1>>
+	<<set $venuemod to 1>>
+	<<set $danceevent to 0>>
+	<<set $dancephysique to 0>>
+	<<set $hypnosis to 0>>
+	<<set $hypnotised to 0>>
+	<<set $pillsconsumed to 0>>
+	<<set $medicated to 0>>
+	<<set $trance to 0>>
+	<<set $harperexam to 0>>
+	<<set $schoolLessonsMissed = { science: 0, maths: 0, english: 0, history: 0, swimming: 0 }>>
+
+	<<set $science_star to 0>>
+	<<set $maths_star to 0>>
+	<<set $english_star to 0>>
+	<<set $history_star to 0>>
+
+	<<set $fame to {
+		exhibitionism: 0,
+		prostitution: 0,
+		bestiality: 0,
+		sex: 0,
+		rape: 0,
+		good: 0,
+		business: 0,
+		scrap: 0,
+		pimp: 0,
+		social: 0,
+		model: 0,
+		pregnancy: 0,
+		impreg: 0
+	}>>
+
+	<<set $park_fame to 0>>
+	<<set $park_run_seen_by to []>>
+
+	<<set $spray to 0>>
+	<<set $spraymax to 0>>
+	<<set $spraystat to 0>>
+	<<set $infinitespray to 0>>
+
+	<<set $mathstrait to 0>>
+	<<set $englishtrait to 0>>
+	<<set $sciencetrait to 0>>
+	<<set $historytrait to 0>>
+
+	<<set $wolfgirl to 0>>
+	<<set $wolfbuild to 0>>
+
+	<<set $swarm to {
+		"type":0,
+		"name":0,
+		"move":0,
+		"spill":0,
+		"steady":0,
+		"amount":{},
+		"data":{}
+	}>>
+
+	<!-- <<set $claws to 1>> -->
+	<<set $water to 0>>
+	<<set $foresthunt to 0>>
+	<<set $edenforesthunt to 0>>
+	<<set $blackwolfhunt to 0>>
+	<<set $wolfpacktrust to 0>>
+	<<set $wolfpackfear to 0>>
+	<<set $sea to 0>>
+    
+    /* 北极星模组 */
+    <<set $beeprisoner to 0>>
+	<<set $hivemember to 0>>
+	<<set $bjob to 0>>
+	<<set $TaylorArrested to 0>>
+	<<set $TaylorChase to 0>>
+	<<set $TaylorFreed to 0>>
+	<<set $TaylorMissing to 0>>
+	<<set $TaylorSeen to 0>>
+	<<set $forestmansionstage to 0>>
+	<<set $forestmansionpicked to 0>>
+	<<set $forestmansionkitchen to 0>>
+	<<set $forestmansionhaunt to 0>>
+	<<set $TaylorReadMansion to 0>>
+	<<set $TaylorWith to 0>>
+	<<set $TaylorSaveForLater to 0>>
+	/* 北极星 */
+	
+	<<set $penilechastityparasite to 0>>
+	<<set $vaginalchastityparasite to 0>>
+	<<set $analchastityparasite to 0>>
+	<<removeparasite penis>>
+	<<removeparasite clit>>
+	<<removeparasite nipples>>
+
+	<<set $vorestrength to 0>>
+	<<set $vorestruggle to 0>>
+	<<set $voretentacles to 0>>
+	<<set $vorestage to 0>>
+	<<set $vorecreature to 0>>
+	<<set $swallowed to 0>>
+	<<set $swallowedstat to 0>>
+
+	<<set $tentacles to {
+		0: null,
+		1: null,
+		2: null,
+		3: null,
+		4: null,
+		5: null,
+		6: null,
+		7: null,
+		8: null,
+		9: null,
+		10: null,
+		11: null,
+		12: null,
+		13: null,
+		14: null,
+		15: null,
+		16: null,
+		17: null,
+		18: null,
+		19: null,
+		20: null,
+		"active": 0,
+		"max": 0
+	}>>
+
+	<<set $leftleg to 0>>
+	<<set $rightleg to 0>>
+	<<set $leftnipple to 0>>
+	<<set $rightnipple to 0>>
+	<<set $leftarmstate to 0>>
+	<<set $rightarmstate to 0>>
+	<<set $feetstate to 0>>
+
+	<<set $player.bodyliquid to {}>>
+	<<for _bodypart range setup.bodyliquid.bodyparts>>
+		/* look in variables-static for the list of body parts */
+		<<set $player.bodyliquid[_bodypart] to {}>>
+		<<set $player.bodyliquid[_bodypart]["goo"] to 0>>
+		<<set $player.bodyliquid[_bodypart]["semen"] to 0>>
+		<<set $player.bodyliquid[_bodypart]["nectar"] to 0>>
+	<</for>>
+
+	<<exam_difficulty>>
+
+	<<set $detention to 0>>
+	<<set $delinquency to 10>>
+	<<set $cool to 120>>
+	<<set $coolmax to 400>>
+	<<set $school to 400>>
+	<<set $maths to 100>>
+	<<set $science to 100>>
+	<<set $english to 100>>
+	<<set $history to 100>>
+	<<set $science_exam to 0>>
+	<<set $maths_exam to 0>>
+	<<set $english_exam to 0>>
+	<<set $history_exam to 0>>
+	<<set $sciencetrait to 0>>
+	<<set $mathstrait to 0>>
+	<<set $englishtrait to 0>>
+	<<set $historytrait to 0>>
+	<<set $scienceprogression to 0>>
+	<<set $distinction_stat to 0>>
+
+	<<set $audienceselector to 0>>
+	<<set $audiencecamera to 0>>
+	<<set $audiencecamera1 to 0>>
+	<<set $audiencecamera2 to 0>>
+	<<set $audiencecamera3 to 0>>
+	<<set $audiencecamera4 to 0>>
+	<<set $audiencecamera5 to 0>>
+	<<set $audiencecamera6 to 0>>
+
+	<<set $audiencemember to 0>>
+
+	<<set $leftactioncarry to "leftcoverface">>
+	<<set $rightactioncarry to "rightcoverface">>
+	<<set $feetactioncarry to "rest">>
+	<<set $mouthactioncarry to "plead">>
+
+	<<set $leftactioncarrypain to "leftprotect">>
+	<<set $rightactioncarrypain to "rightprotect">>
+	<<set $mouthactioncarrypain to "letout">>
+	<<set $leftactioncarryorgasm to "leftgrip">>
+	<<set $rightactioncarryorgasm to "rightgrip">>
+	<<set $mouthactioncarryorgasm to "letoutorgasm">>
+	<<set $leftactioncarrydissociation to "leftcurl">>
+	<<set $rightactioncarrydissociation to "rightcurl">>
+	<<set $mouthactioncarrydissociation to "noises">>
+
+	<<set $sleeptrouble to 0>>
+	<<set $nightmares to 0>>
+	<<set $anxiety to 0>>
+	<<set $flashbacks to 0>>
+	<<set $panicattacks to 0>>
+	<<set $hallucinations to 0>>
+	<<set $dissociation to 0>>
+
+	<<set $scienceproject to "none">>
+	<<set $mathsproject to "none">>
+	<<set $englishPlay to "none">>
+
+	<<set $oxygenmax to 1200>>
+	<<set $oxygen to 1200>>
+	<<set $suffocating to 0>>
+	<<set $hallucinogen to 0>>
+	<<set $antiquemoney to 0>>
+	<<set $antiquemoneyhistory to 0>>
+	<<set $alluretest to 0>>
+
+	<<set $whitneypantiescheck to 0>>
+
+	<<set $insecurity_penis_tiny to 0>>
+	<<set $insecurity_penis_small to 0>>
+	<<set $insecurity_penis_big to 0>>
+	<<set $insecurity_breasts_tiny to 0>>
+	<<set $insecurity_breasts_small to 0>>
+	<<set $insecurity_breasts_big to 0>>
+	<<set $insecurity_pregnancy to 0>>
+
+	<<set $acceptance_penis_tiny to 0>>
+	<<set $acceptance_penis_small to 0>>
+	<<set $acceptance_penis_big to 0>>
+	<<set $acceptance_breasts_tiny to 0>>
+	<<set $acceptance_breasts_small to 0>>
+	<<set $acceptance_breasts_big to 0>>
+	<<set $acceptance_pregnancy to 0>>
+
+	<<set $anus_climax to 0>>
+	<<set $penis_climax to 0>>
+	<<set $mouth_climax to 0>>
+
+	<<set $active_enemy to 0>>
+
+	<<set $sewingKit to 0>>
+
+	<<bodywriting_init>>
+
+	/*pillory related*/
+	<<if ndef $pillory_tenant>><<setup_pillory>><</if>>
+	<<set $police_access_card to 0>>
+	<<set $police_intro to 0>>
+	<<set $police_hack to 0>>
+	<<set $pub_hack_job to 0>>
+	<<set $hacker_tasks to []>>
+	<<set $framed to 0>>
+
+	/*raid related*/
+	<<set $brothel_raid to 0>>
+	<<set $brothel_raid_day to 0>>
+	<<set $brothel_thief to 0>>
+
+	/*pharmacy contact lenses related */
+	<<set $lenses_ordered to []>>
+	<<set $custom_lenses_already_ordered to 0>>
+	<<set $custom_eyecolours to []>>
+
+	/*long hair related*/
+	<<set $o_long_and_beautiful to 0>>
+	<<set $hy_sibling to 0>>
+	<<set $hy_parent to 0>>
+	<<set $long_hair_meet_day to 99999>>
+	<<set $misbehaviour_day to 99999>>
+
+	/*steal related*/
+	<<set $stealtarget to "">>
+	<<set $stealdifficulty to 1>>
+
+	<<set $compressSave to true>>
+	<<set $confirmSave to false>>
+	<<set $confirmLoad to false>>
+	<<set $confirmDelete to true>>
+
+	<<mapLocations>>
+	<<wetness_init>>
+	<<updateMuseumAntiques>>
+
+	<<set $feats to {
+		"locked":false,
+		"soft":false,
+		"allSaves":{},
+		"currentSave":{},
+		"filter":"All"
+	}>>
+	<<set _passageCheck to "Start">>
+	<<updateFeats>>
+	<<unset _passageCheck>>
+
+	<<setupFeats>>
+
+	<<setupTransformationPiecesObject>>
+
+	<<if $facestyle is undefined>>
+		<<set $facestyle to "default">>
+	<</if>>
+
+	<<if $makeup is undefined>>
+		<<set $makeup = {}>>
+		<<set $makeup.owned = {}>>
+		<<set $makeup.owned.lipstick = []>>
+		<<set $makeup.owned.eyeshadow = []>>
+		<<set $makeup.owned.eyelenses = []>>
+		<<set $makeup.owned.hairdye = []>>
+		<<set $makeup.owned.mascara = []>>
+		<<set $makeup.lipstick = 0>>
+		<<set $makeup.eyeshadow = 0>>
+		<<set $makeup.eyelenses = {"left":0, "right":0}>>
+		<<set $makeup.mascara = 0>>
+		<<set $makeup.mascara_running = 0>>
+		<<set $makeup.pbcolour = 0>>
+		<<set $makeup.browscolour = 0>>
+		<<set $makeup.concealer = 0>>
+	<</if>>
+
+	<<if $makeup.owned.custom_eyelenses is undefined>>
+		<<set $makeup.owned.custom_eyelenses to []>> /* pharmacy custom eye lenses */
+	<</if>>
+
+	<<set $leftEyeColour to "purple">>
+	<<set $rightEyeColour to "purple">>
+
+	<<set $prepareSaveDetails to true>>
+
+	<<if $saveDetails is undefined>>
+		<<set $saveDetails to {
+			exported:{
+				days: 0,
+				frequency: 15,
+				count: 0,
+				dayCount: 0,
+			},
+			auto:{
+				count: 0
+			},
+			slot:{
+				count: 0,
+				dayCount: 0,
+			},
+			playTime: 0,
+			loadTime: new Date(),
+			loadCount: 0,
+		}>>
+		<<unset $lastExported>>
+	<</if>>
+	<<if $saveDetails.exported.dayCount is undefined>>
+		<<set $saveDetails.exported.dayCount to 0>>
+		<<set $saveDetails.slot.dayCount to 0>>
+	<</if>>
+
+	<<set $shopDefaults to {
+		"color":"black",
+		"colorSet":null,
+		"secColor":"black",
+		"secColorSet":null,
+		"disableReturn": false,
+		"alwaysBackToShopButton": false,
+		"noHelp": false,
+		"noTraits": false,
+		"highContrast": false,
+		"mannequinGender": "same",
+		"mannequinGenderFromClothes": false,
+		"colourItems": "random",
+		"compactMode": false,
+	}>>
+
+	<<initAllNNPCVirginities>>
+
+	<<set $templePromised to "">>
+
+	<<if $sleepStat is undefined>>
+		<<set $sleepStat to 0>>
+	<</if>>
+	<<run window.createInventoryObject()>>
+
+	<<initEstatePersistent>>
+	
+	/* 北极星模组 */
+	<<variablesBJXModUpdate>>
+	/* 北极星 */
+
+	<<set $modeloptionsOverride to {}>>
+	<<set $wraith to {"state": "", "init": 0}>>
+	<<set $necklaceThief to "">>
+
+	<<set $world_corruption_soft to 0>>
+	<<set $world_corruption_hard to 2>>
+	<<set $world_corruption_reduced to 0>>
+<</widget>>

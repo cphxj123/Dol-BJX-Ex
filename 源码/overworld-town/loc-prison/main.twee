@@ -1,0 +1,2382 @@
+:: Prison Cell
+<<set $outside to 0>><<location "prison">><<effects>><<effects_prison>><<set $bus to "cell">>
+
+You are in your cell. There's a bed in one corner, and a cupboard in another. A barred gate separates you from the walkway outside. There's no privacy.
+<<if $prison.poster is "man">>
+	A poster depicting a sexy gentleman hangs on one wall.
+<<elseif $prison.poster is "woman">>
+	A poster depicting a sexy lady hangs on one wall.
+<<elseif $prison.poster is "puppy">>
+	A poster depicting a cute puppy hangs on one wall.
+<</if>>
+<br><br>
+<<if Time.hour is 20 and $prison.evening isnot 1>>
+	Thuds echo down the hall as cells lock shut.
+	<br><br>
+	<<set $prison.evening to 1>>
+<<elseif $prison.schedule is "lockdown">>
+	The door is locked.
+	<br><br>
+<</if>>
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "prisonCell">>
+<<elseif $prison.schedule is "hunt" and $prison.morning isnot 1>>
+	<<set $prison.schedule to "wake">>
+	<<generate_methodical_guard 0>><<person1>>
+	The lights buzz into life, and a rattle echoes as the cell doors slide open. A <<personsimple "normal">>'s voice rings through the hall. "Roll call." You see other prisoners lining up.
+	<br><br>
+
+	<<link [[Line up|Prison Cell Role]]>><<cell_trouble -1>><</link>>
+	<br>
+	<<link [[Refuse|Prison Cell Refuse]]>><<prison_guards 1>><<prison_inmates 1>><<pain 4>><<cell_trouble 1>><</link>><<gpain>><<gsuspicion>><<grespect>>
+	<br>
+	<<set $prison.morning to 1>>
+<<else>>
+
+	<<if $leftarm is "bound" or $rightarm is "bound">>
+		<<undobindingsicon>><<link [[Undo your bindings (0:10)|Prison Cell]]>><<set $unbind to 1>><<pass 10>><<arm_unbind>><</link>>
+		<br><br>
+	<</if>>
+	<<if $prison.poster and !$prison.tunnel>>
+		<<furnitureicon "poster.png">><<link [[Examine your poster|Prison Poster]]>><<set $prison.tunnel to 1>><</link>>
+		<br>
+	<<elseif $prison.tunnel is 1 and $prison.hammer is 1>>
+		<<furnitureicon "poster.png">><<link [[Test the wall behind the poster|Prison Poster 2]]>><<set $prison.tunnel to 2>><</link>>
+		<br>
+	<<elseif $prison.tunnel gte 120 and $prison.schedule is "lockdown">>
+		<<investigateicon>><<link [[Examine tunnel|Prison Tunnel]]>><</link>>
+		<br>
+	<<elseif $prison.tunnel gte 2 and $prison.schedule is "lockdown">>
+		<<getouticon "dig">><<link [[Dig tunnel|Prison Tunnel]]>><</link>>
+		<br>
+	<</if>>
+	<<if $prison.schedule is "revolt">>
+		<span class="blue">It's too noisy to sleep.</span>
+		<br>
+	<<else>>
+		<<listsleepoutfits "prison bed">>
+		<<bedicon>><<link [[Strip and get in bed|Prison Bed]]>><<undressSleep "prison bed">><</link>>
+		<br>
+	<</if>>
+	<<roomoptions>>
+	<<if $prison.schedule isnot "lockdown" and !$worn.face.type.includes("blindfold")>>
+		<<prisonicon "plaque">><<link [[Plaque|Prison Plaque]]>><</link>>
+		<br>
+	<</if>>
+	<<wardrobeicon>><<link [[Cupboard|Prison Wardrobe]]>><</link>>
+	<br>
+	<<if $prison.mirror gte 1>>
+		<<mirroricon>><<link [[Mirror|Prison Mirror]]>><<preMirror>><</link>>
+		<br>
+	<</if>>
+	<br>
+	<<if $prison.schedule isnot "lockdown">>
+		<<getouticon>><<link [[Leave|Prison Walkway]]>><</link>>
+		<br>
+	<</if>>
+	<br>
+	<<link [[Settings|Prison Settings]]>><</link>>
+	<br>
+
+	<<attitudesControlCheck>>
+	<<if $attitudesControl.showGoldLink is true>>
+		<span class="goldLink"><<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>> </span><span class="red">!!</span>
+	<<else>>
+		<<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+	<</if>>
+	<br>
+<</if>>
+
+<<set $eventskip to 0>>
+
+:: Prison Mirror
+<<effects>>
+
+<<link [[Step away|Prison Cell]]>><<unset $mirrorMenu>><<unset $bodywritingSet>><<postMirror>><</link>>
+<br>
+
+<<mirror>>
+<br><br>
+
+:: Prison Poster
+<<effects>>
+
+You examine your poster.
+<<if $prison.poster is "man">>
+	He wears a seductive expression, but there's something in his eyes. Like he's keeping a secret.
+<<elseif $prison.poster is "lady">>
+	She wears a seductive expression, but there's something in her eyes. Like she's keeping a secret.
+<<elseif $prison.poster is "puppy">>
+	The puppy looks spirited and mischievous. Almost like it's hiding something.
+<</if>>
+<br><br>
+
+You remember the crack in the wall. You pull the poster back, and run your finger down the schism. Some of the stone crumbles away.
+<br><br>
+<i>If you had something to dig with, you could do more.</i>
+<br><br>
+<<link [[Next|Prison Cell]]>><</link>>
+<br>
+
+
+:: Prison Poster 2
+<<effects>>
+
+Hammer in hand, and careful not to make too much noise, you tap the wall behind the poster. More stone crumbles away. <span class="purple">It would take a very long time,</span> but with the hammer to dig, and poster to conceal your work, you could tunnel to the edge of the island.
+<br><br>
+
+You could only dig during lockdown. Too risky otherwise.
+<br><br>
+
+<<link [[Next|Prison Cell]]>><</link>>
+<br>
+
+:: Prison Tunnel
+<<effects>>
+
+<<if $prison.tunnel gte 120>>
+	You peer down the tunnel. The sky peers back.
+	<br><br>
+
+	<<link [[Crawl to the edge (0:03)|Prison Tunnel Edge]]>><<pass 3>><</link>>
+	<br>
+<<else>>
+	<<if $prison.tunnel gte 80>>
+		The tunnel stretches into darkness.
+	<<elseif $prison.tunnel gte 40>>
+		The tunnel passes through the prison wall, into the natural rock of the island.
+	<<elseif $prison.tunnel gte 20>>
+		The short tunnel bores through the prison wall.
+	<<elseif $prison.tunnel gte 10>>
+		The hole in the wall is wide enough to fit your body.
+	<<else>>
+		The wall is cracked.
+	<</if>>
+	<br><br>
+	<<for _i to 1; _i lt 9; _i++>>
+		<<if _i is 1>>
+			<<getouticon "dig">><<link [[Dig for 1 hour|Prison Tunnel Dig]]>><<set $prison_dig to 1>><</link>><<gtiredness>>
+			<br>
+		<<else>>
+			<<capture _i>>
+				<<getouticon "dig">><<link [["Dig for " + _i + " hours"|Prison Tunnel Dig]]>><<set $prison_dig to _i>><</link>><<gtiredness>>
+				<br>
+			<</capture>>
+		<</if>>
+	<</for>>
+
+<</if>>
+
+
+<<getouticon>><<link [[Leave|Prison Cell]]>><</link>>
+<br>
+
+
+:: Prison Tunnel Dig
+<<effects>>
+
+<<for _dig to 0; _dig lt $prison_dig; _dig++>>
+	<<set $prison.tunnel += 1>>
+	<<tiredness 6>>
+	<<advancetohour>>
+	<<if Time.hour is 6>>
+		<<set $prison.schedule to "wake">>
+		<<break>>
+	<</if>>
+<</for>>
+<<unset $prison_dig>>
+
+<<if $prison.tunnel gte 120>>
+	You crawl deep into the dark, and continue digging.
+	<br><br>
+	<span class="green">You're struck by a sudden, exhilarating breeze.</span> The smell of salt. You dig away the last of the rock, widening the hole large enough to fit your body.
+	<br><br>
+	<<earnFeat "Time and Pressure">>
+	You're at the edge of the island, above the sea.
+	<br><br>
+
+<<elseif $prison.tunnel gte 100>>
+	You crawl deep into the dark, and continue digging.
+	<<set _rng to random(1, 3)>>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		Shells melt into the surrounding stone.
+	<<case 2>>
+		You think you hear a seagull, but you might be imagining it.
+	<<case 3>>
+		You hear a rumble.
+	<</switch>>
+<<elseif $prison.tunnel gte 80>>
+	You crawl into the dark, and continue digging.
+	<<set _rng to random(1, 3)>>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		You hear rushing water.
+	<<case 2>>
+		The tunnel trembles. Dust falls from the ceiling.
+	<<case 3>>
+		You breathe in some dust, and cough.<<gstress>><<stress 6>>
+	<</switch>>
+<<elseif $prison.tunnel gte 60>>
+	You crawl through the hole and continue digging.
+	<<set _rng to random(1, 3)>>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		The soft rock breaks apart with ease.<<lstress>><<stress -6>>
+	<<case 2>>
+		You graze your arm against the coarse rock.<<gpain>><<pain 4>>
+	<<case 3>>
+		The rock is uniform in consistency.
+	<</switch>>
+<<elseif $prison.tunnel gte 40>>
+	You crawl down the hole and continue digging.
+	<<set _rng to random(1, 3)>>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		You strike something hard. It feels like a pebble. You're able to dig around it, and prise it from the rock.
+	<<case 2>>
+		The natural rock crumbles away, almost like sand.
+	<<case 3>>
+		The stonework bleeds into natural rock. The latter is softer.
+	<</switch>>
+<<elseif $prison.tunnel gte 20>>
+	You crawl into the hole and continue digging.
+	<<set _rng to random(1, 3)>>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		One of the bricks is already loose, which is nice.<<lstress>><<stress -6>>
+	<<case 2>>
+		The stonework is ancient. Some of the bricks have warped together.
+	<<case 3>>
+		One of the bricks above falls, landing on your back.<<gpain>><<gstress>><<pain 4>><<stress 6>>
+	<</switch>>
+<<elseif $prison.tunnel gte 10>>
+	You reach into the hole and continue digging.
+	<<set _rng to random(1, 3)>>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		The poster flaps in a sudden breeze. You pause a moment before continuing.
+	<<case 2>>
+		It's too dark to see, but you find yourself glancing at the cell door to make sure no one's watching.
+	<<case 3>>
+		The next layer of stone is firmer than the last, and darker in colour.
+	<</switch>>
+<<else>>
+	You chip away the wall, piece by piece.
+	<<set _rng to random(1, 3)>>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		The crack widens.
+	<<case 2>>
+		You hear a cough, and freeze for a moment before continuing.<<gstress>><<stress 6>>
+	<<case 3>>
+		It crumbles with little effort.
+	<</switch>>
+<</if>>
+<br><br>
+
+<<if $prison.schedule is "wake" and $prison.morning isnot 1>>
+	<<generate_methodical_guard 0>><<person1>>
+	You hear a rattle as the cell doors open behind you.
+	<<if $prison.tunnel gte 20>>
+		You rush down the tunnel, and cover the entrance with the poster.
+	<<else>>
+		You cover the entrance with the poster.
+	<</if>>
+
+	A <<personsimple "normal">>'s voice rings through the hall. "Roll call." You see other prisoners lining up.
+	<br><br>
+
+	<<link [[Line up|Prison Cell Role]]>><<cell_trouble -1>><</link>>
+	<br>
+	<<link [[Refuse|Prison Cell Refuse]]>><<prison_guards 1>><<prison_inmates 1>><<pain 4>><<cell_trouble 1>><</link>><<gpain>><<gsuspicion>><<grespect>>
+	<br>
+	<<set $prison.morning to 1>>
+<<else>>
+	<<link [[Next|Prison Cell]]>><</link>>
+	<br>
+<</if>>
+
+
+:: Prison Tunnel Edge
+<<effects>>
+
+<<if $phase is 1>>
+	You climb the rocks, and squeeze into your tunnel.
+	<<set $phase to 0>>
+<<else>>
+	You crawl to the precipice, and peer off the edge. There's a sandy beach, trailing out of sight. It's not far down, but the waves are violent.
+	<<if $weather is "clear">>
+		You can see the surrounding mist in the moonlight.
+	<<else>>
+		You can't see far.
+	<</if>>
+<</if>>
+<br><br>
+
+<<link [[Crawl to cell|Prison Cell]]>><</link>>
+<br>
+<<link [[Climb to beach (0:05)|Prison Beach]]>><<pass 5>><</link>>
+<br>
+
+:: Prison Bed
+<<effects>>
+<<wearoutfit>>
+
+<<set $bus to "prison_bedroom">><<effects>>
+You lie on your mattress. It's hard to get comfortable<<if ($worn.neck.name is "free use collar" or $worn.neck.name is "free use collar with leash")>>, especially with the jagged metal around your neck poking into your skin<</if>>.
+<br><br>
+<<prison_sleep_options>>
+
+:: Prison Sleep
+<<set _autosavehere to true>>
+<<sleep>>
+<<if _dreaming>>
+	/* <<earSlimeFocusChoice>> or similar widgets are running */
+<<else>>
+	<<effects>>
+
+	<<wakingEffects $sleepHoursTotal>>
+	<<if $nightmares gte 1 and $controlled is 0>>
+		<<if _wakingEffect isnot undefined>>
+			You dreamt of
+		<<else>>
+			You dream you are
+		<</if>>
+		being hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
+	<<else>>
+		<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
+			You slept soundly, but now feel a little rough.
+			<br><br>
+		<<elseif $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
+			Your sleep is plagued by dirty dreams.
+			<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+			<<arousal `100 * $sleepHoursTotal`>>
+			<<if $arousal gte $arousalmax>>
+				They push you over the edge.
+				<<orgasm>>
+			<<else>>
+				<br><br>
+			<</if>>
+		<<elseif !_wakingEffect>>
+			You sleep soundly.
+			<br><br>
+		<<else>>
+			<br><br>
+		<</if>>
+	<</if>>
+	<<sleepeffects>>
+	<<if $daily.prison.wake>>
+		A bell rings, waking you from your slumber.
+		<br><br>
+		<<set $wardrobe_location to "prison">>
+		<<wardrobeSelection true>>
+		<<radiooutfits>>
+		<br><br>
+		<<link [[Next|Prison Cell]]>><<bedclotheson "prison bed">><<endevent>><</link>>
+		<br>
+
+	<<else>>
+		<br><br>
+		<<set $wardrobe_location to "prison">>
+		<<wardrobeSelection true>>
+		<<radiooutfits>>
+		<br><br>
+		<<link [[Get up|Prison Cell]]>><<bedclotheson "prison bed">><</link>>
+	<</if>>
+<</if>>
+
+:: Prison Wardrobe [exitCheckBypass]
+<<effects>>
+
+You open the cupboard.
+<br><br>
+<<set $wardrobe_location to "prison">>
+<<wardrobeSelection>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
+<<wardrobe>>
+
+
+:: Prison Settings [exitCheckBypass]
+<<set $settingsExitPassage to "Prison Cell">>
+<<settings>>
+
+:: Prison Plaque
+<<effects>>
+
+<span class="red">God is watching.</span><br>
+Obey the guards<br>
+The guards obey the warden<br>
+You owe nine hours of work each day<br>
+<br>
+
+<<if $prison.active_punishments.includes("free use")>>
+	<span class="red">Do not remove your "free use" collar</span>
+	<br>
+<</if>>
+<<if $prison.active_punishments.includes("nude")>>
+	<span class="pink">Wear no clothes</span>
+	<br>
+<<elseif $prison.active_punishments.includes("topless")>>
+	<span class="blue">Wear nothing above the waist</span>
+	<br>
+<<elseif $prison.active_punishments.includes("bottomless")>>
+	<span class="blue">Wear nothing below the waist</span>
+	<br>
+<</if>>
+<<if $prison.active_punishments.includes("underwear") and $prison.active_punishments.includes("free use")>>
+	<span class="teal">Underwear only</span>
+	<br>
+<</if>>
+<<if $prison.active_punishments.includes("blindfold")>>
+	<span class="purple">Do not remove your blindfold</span>
+	<br>
+<</if>>
+<<if $prison.active_punishments.includes("leash")>>
+	<span class="lblue">Do not remove your leash</span>
+	<br>
+<</if>>
+<<if $prison.active_punishments.includes("cuffs")>>
+	<span class="lblue">Do not remove your shackles</span>
+	<br>
+<</if>>
+<<if $prison.active_punishments.includes("gag")>>
+	<span class="purple">Do not remove your gag</span>
+	<br>
+<</if>>
+<<if $prison.active_punishments.includes("bindings")>>
+	<span class="pink">Do not remove your bindings</span>
+	<br>
+<</if>>
+<br>
+
+Schedule:
+<br>
+<<ampm 6 00>>: Shower and breakfast
+<br>
+<<ampm 7 00>>: Work
+<br>
+<<ampm 12 00>>: Lunch
+<br>
+<<ampm 13 00>>: Yard
+<br>
+<<ampm 14 00>>: Work
+<br>
+<<ampm 18 00>>: Dinner
+<br>
+<<ampm 19 00>>: Free Time
+<br>
+<<ampm 20 00>>: Lights out
+<br><br>
+
+You have <span class="red">$prison.time</span> days left until release.
+<br><br>
+
+<<link [[Step away|Prison Cell]]>><</link>>
+<br>
+
+:: Prison Cell Role
+<<set $bus to "walkway">><<effects>><<effects_prison>>
+
+
+<<if $prison_kylar_timer gte 1>>
+	<<set $prison_kylar_timer -= 1>>
+<</if>>
+
+You stand outside your cell, and wait as <<methodical_guard 0>> reads out each number.
+<br><br>
+"...prisoner 144."
+<br>
+<<if $worn.face.type.includes("gag")>>
+	"Mmmhr!" you say. The inmates laugh.<<lrespect>><<prison_inmates -1>>
+<<else>>
+	"Here," you say.
+<</if>>
+<br><br>
+
+<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "prison" and $prison.kylar is 0 and $prison_kylar_timer lte 0>>
+	<<set $prison.kylar to "active">>
+	<<unset $prison_kylar_timer>>
+	<<endevent>>
+	<<addNNPCOutfit "Kylar" "prisonJumpsuit">>
+	<<npc Kylar>><<person1>>
+	<<generate_methodical_guard 1>>
+	<<generate_veteran_guard 2>>
+	<<person2>><<He>> opens <<his>> mouth again, but is interrupted by a banging door somewhere below. You see <<veteran_guard 2>> through the walkway beneath your feet, pushing a small figure ahead of <<person3>><<him>>.
+	<br><br>
+	A final shove knocks the newcomer off <<person1>><<his>> feet, and <<he>> falls on <<his>> face. <<He>> scrambles to <<his>> feet, and pulls <<his>> hair away from <<his>> face. <span class="gold">It's Kylar.</span>
+	<br><br>
+
+	<<link [[Next|Prison Kylar Intro]]>><</link>>
+	<br>
+<<elseif $prison.active_punishments.includes("free use") and $worn.neck.name isnot "free use collar" and $worn.neck.name isnot "free use collar with leash">>
+	"Where's your collar?" <<he>> asks. "Best come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.active_punishments.includes("nude") and ($worn.upper.name isnot "naked" or $worn.lower.name isnot "naked" or $worn.under_upper.name isnot "naked" or $worn.under_lower.name isnot "naked")>>
+	"Aren't you supposed to be naked?" <<he>> asks. "Come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.active_punishments.includes("blindfold") and !$worn.face.type.includes("blindfold")>>
+	"Where's your blindfold?" <<he>> asks. "Best come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.active_punishments.includes("topless") and ($worn.upper.name isnot "naked" or $worn.under_upper.name isnot "naked")>>
+	"You're supposed to be topless," <<he>> says. "Come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.active_punishments.includes("bottomless") and ($worn.lower.name isnot "naked" or $worn.under_lower.name isnot "naked")>>
+	"You're supposed to be bottomless," <<he>> says. "Come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.active_punishments.includes("leash") and $worn.neck.collared isnot 1>>
+	"Where's your leash?" <<he>> asks. "Come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.active_punishments.includes("underwear") and ($worn.upper.name isnot "naked" or $worn.lower.name isnot "naked")>>
+	"That doesn't look like underwear," <<he>> says. "Come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.active_punishments.includes("cuffs") and !$worn.feet.type.includes("shackle")>>
+	"Where are your shackles?" <<he>> asks. "Come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.active_punishments.includes("gag") and !$worn.face.type.includes("gag")>>
+	"Where's your gag?" <<he>> asks. "Come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.active_punishments.includes("bindings") and ($leftarm isnot "bound" or $rightarm isnot "bound")>>
+	"Your arms aren't supposed to be free," <<he>> says. "Come with me."
+	<br><br>
+	<<prison_repunishment_options>>
+<<elseif $prison.time lte 0>>
+	There's a pause. <span class="green">"Your release is due,"</span> <<he>> says. <<He>> snaps the ledger shut. "Come with me."
+	<br><br>
+
+	<<link [[Next|Prison End]]>><<set $prison.hours_worked to 0>><</link>>
+	<br>
+<<elseif $prison.hours_worked lt 9>>
+	There's a pause. <span class="red">"You didn't meet your work quota,"</span> <<he>> says. <<He>> snaps the ledger shut. "Come with me."
+	<br><br>
+
+	<<link [[Go quietly|Prison Punishment]]>><<endevent>><<set $prison.hours_worked to 0>><</link>>
+	<br>
+	<<link [[Refuse|Prison Cell Punishment Refuse]]>><</link>>
+	<br>
+<<elseif $prison_punished_days lte 0 and $prison.active_punishments.length gte 1>>
+	<<set $prison.hours_worked to 0>>
+	There's a pause.
+	<<if $prison.active_punishments.length gte 2>>
+		<span class="teal">"I think we can remove one of your punishments,"</span> <<he>> says. <<He>> snaps the ledger shut.
+	<<else>>
+		<span class="teal">"I think we can remove your punishment,"</span> <<he>> says. <<He>> snaps the ledger shut.
+	<</if>>
+	<<set $prison_punished_days to 2>>
+	<<set _rng to random(0, ($prison.active_punishments.length - 1))>>
+	<<set _punishment to $prison.active_punishments[_rng]>>
+	<<switch _punishment>>
+		<<case "free use">>
+			<<set $prison.active_punishments.delete("free use")>>
+			<<He>> walks along the walkway, and fishes a key from <<his>> pocket.
+			<br><br>
+
+			<<link [[Next|Prison Remove Free Use]]>><</link>>
+			<br>
+		<<case "nude">>
+			<<set $prison.active_punishments.delete("nude")>>
+			<<if random(1, 2) is 2>>
+				<<set $prison.active_punishments.delete("topless")>>
+				"You can wear clothes again. <span class="pink">Underwear only however, and you must remain bottomless, for now."</span>
+				<br><br>
+			<<else>>
+				<<set $prison.active_punishments.delete("bottomless")>>
+				"You can wear clothes again. <span class="pink">Underwear only however, and you must remain topless, for now."</span>
+				<br><br>
+			<</if>>
+			<<link [[Next|Prison Walkway]]>><<endevent>><</link>>
+			<br>
+		<<case "blindfold">>
+			<<set $prison.active_punishments.delete("blindfold")>>
+			The walkway moves as steps approach.
+			<br><br>
+
+			<<link [[Next|Prison Remove Blindfold]]>><</link>>
+			<br>
+		<<case "topless">>
+			<<set $prison.active_punishments.delete("topless")>>
+			<<if $prison.active_punishments.includes("nude")>>
+				<<set $prison.active_punishments.delete("nude")>>
+				<<if $prison.active_punishments.includes("underwear")>>
+					"You can wear a bra or vest, but nothing more. <span class="pink">Remain naked from the waist down."</span>
+					<br><br>
+				<<else>>
+					"You can wear a shirt again, <span class="pink">but must remain naked from the waist down.</span>
+					<br><br>
+				<</if>>
+			<<else>>
+				<<if $prison.active_punishments.includes("underwear")>>
+					"You can cover your chest with a bra or vest, <span class="pink">but no shirts or such, for now."</span>
+				<<else>>
+					<span class="green">"You can clothe yourself properly again."</span> This prompts the other inmates to take another gawk at you.
+				<</if>>
+				<br><br>
+			<</if>>
+			<<link [[Next|Prison Walkway]]>><<endevent>><</link>>
+			<br>
+		<<case "leash">>
+			<<set $prison.active_punishments.delete("leash")>>
+			<<He>> pulls a pair of pliers from <<his>> pocket as <<he>> walks towards you.
+			<br><br>
+			<<link [[Next|Prison Remove Leash]]>><</link>>
+			<br>
+		<<case "underwear">>
+			<<if $prison.active_punishments.includes("nude")>>
+				<<set $prison.active_punishments.delete("nude")>>
+				<<if random(1, 2) is 2>>
+					<<set $prison.active_punishments.delete("topless")>>
+					"You can wear clothes again. <span class="pink">Underwear only however, and you must remain bottomless, for now."</span>
+					<br><br>
+				<<else>>
+					<<set $prison.active_punishments.delete("bottomless")>>
+					"You can wear clothes again. <span class="pink">Underwear only however, and you must remain topless, for now."</span>
+					<br><br>
+				<</if>>
+			<<else>>
+				<<set $prison.active_punishments.delete("underwear")>>
+				<<if $prison.active_punishments.includes("topless")>>
+					"You can wear trousers again. <span class="pink">But keep your chest bare, for now."</span>
+					<br><br>
+				<<elseif $prison.active_punishments.includes("bottomless")>>
+					"You can wear a shirt again. <span class="pink">You must remain naked from the waist down however, for now."</span>
+					<br><br>
+				<<else>>
+					<span class="green">"You can clothe yourself properly again."</span> This prompts the other inmates to take another gawk at you.
+					<br><br>
+				<</if>>
+			<</if>>
+			<<link [[Next|Prison Walkway]]>><<endevent>><</link>>
+			<br>
+		<<case "cuffs">>
+			<<set $prison.active_punishments.delete("cuffs")>>
+			<<He>> pulls a key from <<his>> pocket as <<he>> walks towards you.
+			<br><br>
+
+			<<link [[Next|Prison Remove Cuffs]]>><</link>>
+			<br>
+		<<case "bottomless">>
+			<<set $prison.active_punishments.delete("bottomless")>>
+			<<if $prison.active_punishments.includes("nude")>>
+				<<set $prison.active_punishments.delete("nude")>>
+				<<if $prison.active_punishments.includes("underwear")>>
+					"You can wear underwear again, <span class="pink">but must remain topless."</span>
+				<<else>>
+					"You can wear trousers again," <span class="pink">but must remain topless."</span>
+				<</if>>
+				<br><br>
+			<<else>>
+				<<if $prison.active_punishments.includes("underwear")>>
+					"You can wear underwear again, <span class="pink">but no shirts or such, for now."</span>
+				<<else>>
+					<span class="green">"You can clothe yourself properly again."</span> This prompts the other inmates to take another gawk at you.
+				<</if>>
+				<br><br>
+			<</if>>
+			<<link [[Next|Prison Walkway]]>><<endevent>><</link>>
+			<br>
+		<<case "gag">>
+			<<set $prison.active_punishments.delete("gag")>>
+			<<He>> walks closer. "My job's easier when you can speak anyway."
+			<br><br>
+
+			<<link [[Next|Prison Remove Gag]]>><</link>>
+			<br>
+		<<default>>
+			<<set $prison.active_punishments.delete("bindings")>>
+			The walkway moves underfoot as <<he>> walks towards you. "You're more useful with your arms free."
+			<br><br>
+
+			<<link [[Next|Prison Remove Bindings]]>><</link>>
+			<br>
+	<</switch>>
+<<else>>
+	<<methodical_guard 0 cap>> snaps the ledger shut, and a tall gate opens at the far end of the hall. The prisoners shuffle towards it.
+	<br><br>
+
+	<<link [[Next|Prison Walkway]]>><<endevent>><<set $prison.hours_worked to 0>><</link>>
+	<br>
+
+<</if>>
+
+:: Prison Cell Refuse
+<<effects>><<effects_prison>>
+
+<<if $prison.shock is 1>>
+	<<methodical_guard 0 cap>> sighs, and reaches into <<his>> shirt pocket. <span class="red">A terrible jolt runs through you,</span> emanating from your neck. It only lasts a moment, but it's enough to make you fall to the ground, and twitch.<<gtrauma>><<ggstress>><<gggpain>><<trauma 4>><<stress 4>><<pain 4>>
+	<br><br>
+
+	You're too hurt to resist as <<methodical_guard 0>> cuffs you, and drags you from your cell. The other inmates tease you as you pass, but it doesn't sound malicious.<<grespect>><<prison_inmates 1>>
+	<<bind>>
+	<br><br>
+	<<link [[Next|Prison Punishment]]>><<endevent>><<set $prison.hours_worked to 0>><</link>>
+<<else>>
+	<<if $prison.cell_trouble gte 5>>
+		<<generate_veteran_guard 1>><<generate_anxious_guard 2>><<generate_relaxed_guard 3>>
+		The walkway rattles beneath <<methodical_guard 0 apo>> feet. <<Hes>> not alone. "Must we make an example of you?" <<he>> says. "Because we will."
+		<br><br>
+
+		<<He>> arrives at your cell, with <<veteran_guard 1>>, <<anxious_guard 2>>, and <<relaxed_guard 3>> close behind. They unstrap their batons.
+		<br><br>
+
+		<<link [[Next|Prison Cell Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+	<<elseif $prison.cell_trouble gte 4>>
+		<<generate_veteran_guard 1>><<generate_anxious_guard 2>>
+		The walkway rattles beneath <<methodical_guard 0 apo>> feet. <<Hes>> not alone. "Must we make an example of you?" <<he>> says. "Because we will."
+		<br><br>
+
+		<<He>> arrives at your cell, with <<veteran_guard 1>> and <<anxious_guard 2>> close behind. They unstrap their batons.
+		<br><br>
+
+		<<link [[Next|Prison Cell Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+	<<elseif $prison.cell_trouble gte 3>>
+		<<generate_veteran_guard 1>>
+		The walkway rattles beneath <<methodical_guard 0 apo>> feet. <<Hes>> not alone. "Must we make an example of you?" <<he>> says. "Because we will."
+		<br><br>
+
+		<<He>> arrives at your cell, with <<veteran_guard 1>> close behind. They unstrap their batons.
+		<br><br>
+
+		<<link [[Next|Prison Cell Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+	<<elseif $prison.cell_trouble gte 2>>
+		The walkway rattles beneath <<methodical_guard 0 apo>> feet. "You'd better be sick in there," <<he>> says. "Or you'll be sorry."
+		<br><br>
+
+		<<He>> finds you lazing on your bed, and unstraps the baton from <<his>> side.
+		<br><br>
+
+		<<link [[Next|Prison Cell Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+	<<else>>
+		You remain in your cell. "Number 144," <<methodical_guard 0>> says. "Leave your cell at once."
+		<br><br>
+		<<link [[Leave your cell|Prison Cell Role]]>><</link>>
+		<br>
+		<<link [[Refuse|Prison Cell Refuse]]>><<cell_trouble 1>><<prison_guards 1>><<prison_inmates 1>><</link>><<gsuspicion>><<grespect>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Prison Cell Punishment Refuse
+<<effects>><<effects_prison>>
+
+<<if $prison.shock is 1>>
+	<<methodical_guard 0 cap>> sighs, and reaches into <<his>> shirt pocket. <span class="red">A terrible jolt runs through you,</span> emanating from your neck. It only lasts a moment, but it's enough to make you fall to the ground, and twitch.<<gtrauma>><<ggstress>><<gggpain>><<trauma 4>><<stress 4>><<pain 4>>
+	<br><br>
+
+	You're too hurt to resist as <<methodical_guard 0>> cuffs you, and drags you from your cell. The other inmates tease you as you pass, but it doesn't sound malicious.<<grespect>><<prison_inmates 1>>
+	<<bind>>
+	<br><br>
+	<<link [[Next|Prison Punishment]]>><<endevent>><<set $prison.hours_worked to 0>><</link>>
+<<else>>
+	<<if $prison.cell_trouble gte 5>>
+		<<generate_veteran_guard 1>><<generate_anxious_guard 2>><<generate_relaxed_guard 3>>
+		The walkway rattles beneath <<methodical_guard 0 apo>> feet. <<Hes>> not alone. "Must we make an example of you?" <<he>> says. "Because we will."
+		<br><br>
+
+		<<He>> arrives at your cell, with <<veteran_guard 1>>, <<anxious_guard 2>>, and <<relaxed_guard 3>> close behind. They unstrap their batons.
+		<br><br>
+
+		<<link [[Next|Prison Cell Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+	<<elseif $prison.cell_trouble gte 4>>
+		<<generate_veteran_guard 1>><<generate_anxious_guard 2>>
+		The walkway rattles beneath <<methodical_guard 0 apo>> feet. <<Hes>> not alone. "Must we make an example of you?" <<he>> says. "Because we will."
+		<br><br>
+
+		<<He>> arrives at your cell, with <<veteran_guard 1>> and <<anxious_guard 2>> close behind. They unstrap their batons.
+		<br><br>
+
+		<<link [[Next|Prison Cell Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+	<<elseif $prison.cell_trouble gte 3>>
+		<<generate_veteran_guard 1>>
+		The walkway rattles beneath <<methodical_guard 0 apo>> feet. <<Hes>> not alone. "Must we make an example of you?" <<he>> says. "Because we will."
+		<br><br>
+
+		<<He>> arrives at your cell, with <<veteran_guard 1>> close behind. They unstrap their batons.
+		<br><br>
+
+		<<link [[Next|Prison Cell Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+	<<else>>
+		The walkway rattles beneath <<methodical_guard 0 apo>> feet. "You're holding up the whole system." <<He>> unstraps the baton from <<his>> side before <<he>> arrives at the cell.
+		<br><br>
+
+		<<link [[Next|Prison Cell Fight]]>><<set $fightstart to 1>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Prison Cell Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Prison Cell Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Prison Cell Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Prison Cell Fight Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation "short">>
+
+	<<if $enemynomax gte 2>>
+		The inmates cheer as the guards stagger from your cell. <<veteran_guard 1>> eyes you cautiously, but <<methodical_guard 0>> shakes <<person1>><<his>> head. "No time for this," <<he>> says, groping for <<his>> glasses. "We'll be watching you."<<ggsuspicion>><<prison_guards -3>><<ggrespect>><<prison_inmates 3>>
+	<<else>>
+		The inmates cheer as <<methodical_guard 0>> staggers from your cell, and would fall from the walkway if not for the railing. "No time for this," <<he>> says, groping for <<his>> glasses. "I'll be watching you."<<ggsuspicion>><<prison_guards -3>><<ggrespect>><<prison_inmates 3>>
+	<</if>>
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<prison_revolt_options>>
+
+<<elseif $enemyhealth lte 0>>
+	<<if $enemynomax gte 2>>
+		The inmates cheer as the guards stagger from your cell. <<veteran_guard 1>> eyes you cautiously, but <<methodical_guard 0>> shakes <<person1>><<his>> head. "No time for this," <<he>> says, groping for <<his>> glasses. "We'll be watching you."<<ggsuspicion>><<prison_guards -3>><<ggrespect>><<prison_inmates 3>>
+	<<else>>
+		The inmates cheer as <<methodical_guard 0>> staggers from your cell, and would fall from the walkway if not for the railing. "No time for this," <<he>> says, groping for <<his>> glasses. "I'll be watching you."<<ggsuspicion>><<prison_guards -3>><<ggrespect>><<prison_inmates 3>>
+	<</if>>
+	<<switch $enemynomax>>
+		<<case 1>>
+			<<greb>><<prison_reb 1>>
+		<<case 2>>
+			<<greb>><<prison_reb 2>>
+		<<case 3>>
+			<<ggreb>><<prison_reb 3>>
+		<<default>>
+			<<ggreb>><<prison_reb 4>>
+	<</switch>>
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<prison_revolt_options>>
+<<else>>
+	You're too hurt to resist as <<methodical_guard 0>> cuffs you, and drags you from your cell. The other inmates tease you as you pass, but it doesn't sound malicious.<<grespect>><<prison_inmates 1>>
+	<<bind>>
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Prison Punishment]]>><</link>>
+	<<cell_trouble -5>>
+<</if>>
+
+<<set $prison.hours_worked to 0>>
+
+:: Prison Shower
+<<effects>><<effects_prison>><<set $bus to "shower">>
+
+You are in the prison showers.
+<<if $prison.schedule is "wake">>
+	Prisoners undress, leaving their clothes on wood benches, before entering the shower. You hear running water.
+	<<if $prison.kylar is "active">>
+		Kylar stands in the corner, watching you.
+	<</if>>
+	<br><br>
+	<<generate_veteran_guard 0>><<person1>><<veteran_guard 0 cap>> paces through the room.
+	<br><br>
+	<<endevent>>
+	<<if !$daily.prison.veteranGreet and $prison.veteran gte 15>>
+		<<prison_guard_greet veteran>>
+	<<elseif random(1, 5) is 5 and $eventskip isnot 1>>
+		<<prison_guard_watch veteran>>
+	<<elseif $worn.upper.name is "naked" and $worn.lower.name is "naked" and $worn.under_upper.name is "naked" and $worn.under_lower.name is "naked">>
+		<<link [[Have a shower (0:10)|Prison Shower Take]]>><<pass 10>><</link>>
+		<br>
+		<<link [[Leave|Prison Block]]>><</link>>
+		<br>
+	<<else>>
+		<<if $exhibitionism gte 15>>
+			<<link [[Undress in the open (0:10)|Prison Shower Open]]>><</link>>
+			<br>
+		<<else>>
+			<span class="blue">You can't bear to undress in front of everyone.</span>
+			<br>
+		<</if>>
+		<<link [[Find somewhere private to undress (0:10)|Prison Shower Private]]>><</link>>
+		<br>
+		<<link [[Leave|Prison Block]]>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	There's no one around. The guards only leave the plumbing on for an hour.
+	<br><br>
+
+	<<link [[Leave|Prison Block]]>><</link>>
+	<br>
+
+	<<set $eventskip to 0>>
+<</if>>
+
+
+:: Prison Walkway
+<<set $outside to 0>><<effects>><<effects_prison>><<set $bus to "walkway">>
+
+You are on the metal walkway outside your cell, at the top of the cell block. There's a staircase leading to the floor.
+<br><br>
+<<if Time.hour is 20>>
+	You hear a bell ring. "Lockdown," <<generate_veteran_guard 0>><<veteran_guard 0>> shouts. "Back to your cells."
+	<br><br>
+	You're shuffled along with the other prisoners.
+	<br><br>
+	<<link [[Next|Prison Cell]]>><<endevent>><</link>>
+	<br>
+<<elseif $stress gte $stressmax>>
+	<<passout_prison>>
+<<else>>
+	<<if $prison.schedule is "wake">>
+		Other prisoners shuffle towards the showers.
+		<br><br>
+	<<elseif $prison.schedule is "free time">>
+		Many prisoners lounge on their beds.
+		<br><br>
+	<<elseif $prison.schedule is "lockdown">>
+		You hear snoring.
+		<br><br>
+	<<else>>
+
+	<</if>>
+
+	<<if $prison.schedule isnot "lockdown" and $prison.attention gte 100>>
+		<<events_prison_attention>>
+	<<else>>
+		<<if $prison.schedule isnot "lockdown" and $eventskip isnot 1>>
+			<<events_prison>>
+		<</if>>
+		<<if $prison_event_trigger>>
+			<<events_prison_triggered>>
+		<<else>>
+			Your cell is in the corner.
+			<br>
+
+			<<prisonicon "cell">><<link [[Your cell|Prison Cell]]>><</link>>
+			<br><br>
+
+			<<if $prison.attention_level gte 1 and !$prison.protection and $prison.schedule is "free time">>
+				<<if !$prison.protection>>
+					<<if !$daily.prison.scarredDone>>
+						<<generate_scarred_inmate 0>><<person1>>
+						<<scarred_inmate 0 capo>> cell is more spartan than most. Almost as if it were unoccupied.
+						<<endevent>>
+						<br>
+						<<prisonicon "cell">><<link [[Spartan cell|Prison Scarred]]>><</link>>
+						<br><br>
+					<</if>>
+					/*
+					<<generate_tattooed_inmate 0>><<person1>>
+					The walls of <<tattooed_inmate 0 apo>> cell, as well as parts of the ceiling, are decorated with pornography.
+					<<endevent>>
+					<br>
+					<<prisonicon "cell">><<link [[Porn-decorated cell|Prison Tattooed]]>><</link>>
+					<br><br>
+					*/
+				<</if>>
+			<</if>>
+			A heavy wood door sits across from the tower. A faded green cross embellishes it, painted over a silver crucifix.
+			<br>
+			<<if $prison.schedule is "lockdown">>
+				<span class="blue">The door to medical is locked.</span>
+				<br><br>
+			<<else>>
+				<<prisonicon "medical">><<link [[Medical|Prison Medical]]>><</link>>
+				<br><br>
+			<</if>>
+			The stairs snake around the central tower.
+			<br>
+			<<link [[Downstairs|Prison Block]]>><</link>>
+			<br><br>
+			<<prison_map walkway>>
+		<</if>>
+		<<set $eventskip to 0>>
+	<</if>>
+<</if>>
+
+
+
+:: Prison Block
+<<set $outside to 0>><<effects>><<effects_prison>><<set $bus to "cell_block">>
+
+You are at the bottom of the cell block. There are stairs leading to a walkway above, and halls leading to other parts of the prison.
+<br><br>
+
+<<if Time.hour is 20>>
+	You hear a bell ring. "Lockdown," <<generate_veteran_guard 0>><<veteran_guard 0>> shouts. "Back to your cells."
+	<br><br>
+	You're shuffled along with the other prisoners.
+	<br><br>
+	<<link [[Next|Prison Cell]]>><<endevent>><</link>>
+	<br>
+<<elseif $stress gte $stressmax>>
+	<<passout_prison>>
+<<else>>
+	<<if $prison.schedule is "wake">>
+		Other prisoners shuffle towards the showers.
+		<br><br>
+	<<elseif $prison.schedule is "free time">>
+		Many prisoners lounge on their beds.
+		<br><br>
+	<<elseif $prison.schedule is "lockdown">>
+		You hear snoring.
+		<br><br>
+	<<else>>
+
+	<</if>>
+
+	<<if $prison.schedule isnot "lockdown" and $prison.attention gte 100>>
+		<<events_prison_attention>>
+	<<else>>
+		<<if $prison.schedule isnot "lockdown" and $eventskip isnot 1>>
+			<<events_prison>>
+		<</if>>
+		<<if $prison_event_trigger>>
+			<<events_prison_triggered>>
+		<<else>>
+			There's a set of double doors on one end of the block, crowned by a couple of signs. "Showers" says one. "Sex is forbidden" warns another.
+			<<if $prison.schedule is "wake">>
+				<span class="lblue">Steam flows out.</span>
+			<</if>>
+			<br>
+			<<bathroomicon "shower">><<link [[Showers|Prison Shower]]>><</link>>
+			<br><br>
+			A faint chemical smell surrounds another door. The closest cells are vacant, the metal warped and corroded.
+			<br>
+			<<prisonicon "laundry">><<link [[Laundry|Prison Laundry]]>><</link>>
+			<br><br>
+
+			<<if $prison.kylar is "active" and !$prison_kylar_cell and ($prison.schedule is "free time" or $prison.schedule is "yard")>>
+				<<npc Kylar>><<person1>>
+				Kylar sits on the bed in <<his>> cell, fussing over something in <<his>> lap.
+				<<endevent>>
+				<br>
+				<<prisonicon "cell">><<link [[Kylar's cell|Prison Kylar]]>><</link>>
+				<br><br>
+			<</if>>
+
+			A corridor leads away, towards daylight.
+			<br>
+			<<getouticon>><<link [[Outside|Prison Yard]]>><</link>>
+			<br><br>
+			The stairs circle a central tower. You entered here.
+			<br>
+			<<stairsicon "up">><<link [[Climb the stairs towards your cell|Prison Walkway]]>><</link>>
+			<br><br>
+
+			<<prison_map block>>
+		<</if>>
+		<<set $eventskip to 0>>
+	<</if>>
+<</if>>
+
+:: Prison Laundry
+<<set $bus to "laundry">><<set $outside to 0>><<effects>><<effects_prison>>
+
+You are in the laundry room. The walls give way to raw rock part way in. Thick pipes extend from the rough surface in an irregular pattern.
+<<if $prison.schedule is "work">>
+	Inmates sort through clothes, and large machines rumble.
+	<br><br>
+	<<generate_relaxed_guard 0>><<relaxed_guard 0 cap>> sits on a stool beside a short table, staring across the room and absentmindedly rolling a pair of dice.
+	<<endevent>>
+	<br><br>
+<<else>>
+	The machines are still.
+	<br><br>
+<</if>>
+
+
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "prisonLaundry">>
+<<elseif Time.hour is 20>>
+	You hear a bell ring. "Lockdown," <<generate_relaxed_guard 0>><<relaxed_guard 0>> shouts. "Back to your cells."
+	<br><br>
+	You're shuffled along with the other prisoners.
+	<br><br>
+	<<link [[Next|Prison Cell]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<if !$daily.prison.prisonRelaxedGreet and $prison.relaxed gte 15 and $prison.schedule is "work">>
+		<<prison_guard_greet relaxed>>
+	<<elseif random(1, 5) is 5 and $eventskip isnot 1 and $prison.schedule is "work">>
+		<<prison_guard_watch relaxed>>
+	<<else>>
+		<<if $prison.schedule is "work">>
+			<<if $prison.job is "laundry">>
+				<<link [[Work|Prison Laundry Work]]>><<endevent>><</link>>
+				<br>
+			<<else>>
+				<span class="blue">Your labours are expected elsewhere.</span>
+				<br>
+			<</if>>
+		<</if>>
+		<<link [[Leave|Prison Block]]>><</link>>
+		<br>
+
+		<<prison_map laundry>>
+	<</if>>
+<</if>>
+
+
+:: Prison Medical
+<<set $bus to "medical">><<set $outside to 0>><<effects>><<effects_prison>>
+
+You are in the medical room. Rows of beds stretch down its length, many occupied. There's a cupboard, locked by a modern mechanism at odds with the surroundings.
+<br><br>
+
+<<if $prison.schedule is "work">>
+	<<generate_methodical_guard 0>><<person1>> <<methodical_guard 0 cap>> stands over one, writing on a clipboard.
+	<br><br>
+	<<endevent>>
+<<else>>
+
+<</if>>
+<<if Time.hour is 20>>
+	You hear a bell ring. "Lockdown," <<generate_methodical_guard 0>><<methodical_guard 0>> says. "Go back to your cell."
+	<br><br>
+	<<methodical_guard 0 cap>> leaves as well, and locks the door behind <<him>>.
+	<br><br>
+	<<link [[Next|Prison Cell]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<if random(1, 5) is 5 and $eventskip isnot 1 and $prison.schedule is "work">>
+		<<prison_guard_watch methodical>>
+	<<else>>
+		<<if $prison.schedule is "work">>
+			<<if $prison.job is "medical">>
+				<<link [[Work|Prison Medical Work]]>><</link>>
+				<br>
+			<<else>>
+				<span class="blue">Your labours are expected elsewhere.</span>
+				<br>
+			<</if>>
+		<</if>>
+		<<if $prison.shock is 1>>
+			<br>
+			There's a black and yellow door in one corner.
+			<br>
+			<<link [[Approach|Prison Medical Door]]>><</link>>
+			<br><br>
+		<</if>>
+		<<link [[Leave|Prison Walkway]]>><</link>>
+		<br>
+		<<prison_map medical>>
+	<</if>>
+<</if>>
+
+:: Prison Medical Door
+<<effects>>
+
+You approach the black and yellow door. There's no visible lock, but there is a keypad next to it.
+
+<<if $prison.code is 1>>
+	Wren claims the code <<nnpc_he Wren>> sold you will work.
+	<<if $prison.schedule is "work">>
+		<<generate_methodical_guard 0>><<person1>>
+		You'll need to wait for <<methodical_guard 0>> to leave before trying.
+		<br><br>
+	<<else>>
+		<br><br>
+		<<link [[Enter|Prison Medical Shock]]>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	You'll need to find the code.
+	<br><br>
+<</if>>
+
+<<link [[Leave|Prison Medical]]>><<endevent>><</link>>
+<br>
+
+:: Prison Medical Shock
+<<effects>>
+
+You input the code, a green light flickers on above the door, and it slides open.
+<br><br>
+
+The interior is dark, even compared to the rest of the prison. There's a rack of hammers, screwdrivers, and other tools near the entrance. As your eyes adjust, you see a machine the size of a small bus, also black and yellow. An array of metal coils spring from the top. There's a plaque. You get a static shock when you wipe away the grime.
+<br><br>
+
+"Experimental shock generator. Requires specialised collars to function."
+<br><br>
+
+This machine doesn't look or sound stable. You could probably inflict irreparable damage with one of the tools lying around, but you wouldn't get away with it.
+<br><br>
+
+<<link [[Sabotage|Prison Medical Sabotage]]>><<prison_hope 20>><<prison_reb 20>><<set $prison.shock to 0>><<prison_guards -20>><<prison_inmates 20>><</link>><<gggsuspicion>><<gggreb>><<ggghope>><<gggrespect>>
+<br>
+<<link [[Leave|Prison Medical]]>><</link>>
+<br>
+
+:: Prison Medical Sabotage
+<<effects>>
+
+<<earnFeat "Breaker">>
+You lift the largest hammer, one with a wooden handle, and get to work. You smash pipes, shatter glass, and dent plates.
+
+<<if currentSkillValue('physique') gte 10000>>
+	With your strength, you're able to inflict considerable damage before the guards arrive.<<ggrespect>><<prison_inmates 10>>
+<<else>>
+	Even with your limited strength, you're able to inflict a lot of damage before the guards arrive.
+<</if>>
+<br><br>
+
+<<generate_methodical_guard 0>>
+<<generate_veteran_guard 1>>
+
+<<methodical_guard 0 cap>><<person1>> arrives with <<veteran_guard 1>> in tow. "What have you done," <<he>> asks, reaching into <<his>> shirt pocket. <<He>> pulls out a remote, points at you, and presses the button. <span class="green">Nothing happens.</span> <<He>> tries again and again, to no avail.
+<br><br>
+
+"Back to basics," <<veteran_guard 1>><<person2>> says, stepping forward with <<his>> baton at the ready. "Good. Best come quietly."
+<br><br>
+
+<<link [[Go quietly|Prison Punishment]]>><<endevent>><</link>>
+<br>
+<<link [[Fight|Prison Medical Fight]]>><<set $fightstart to 1>><</link>>
+<br>
+
+
+:: Prison Medical Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+	Inmates crowd around the door to watch, some wearing bandages.
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Prison Medical Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Prison Medical Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Prison Medical Fight Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation "short">>
+	They stagger and fall against the broken machine, drained of energy. The inmates taunt them, until <<veteran_guard 1>> turns and raises <<his>> baton.<<ggsuspicion>><<prison_guards -3>><<ggrespect>><<prison_inmates 3>>
+	<br><br>
+	"Enough of this," <<methodical_guard 0>> says. "I need to make some calls."
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<prison_revolt_options>>
+<<elseif $enemyhealth lte 0>>
+	They back away from you, towards the door. The inmates taunt them, until <<veteran_guard 1>> turns and raises <<his>> baton. <<ggsuspicion>><<prison_guards -3>><<ggrespect>><<prison_inmates 3>><<greb>><<prison_reb 1>>
+	<br><br>
+	"Enough of this," <<methodical_guard 0>> says. "I need to make some calls."
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<prison_revolt_options>>
+<<else>>
+	You fall to the ground, too hurt to continue. <<He>> cuffs you, and pulls to you to your feet. The other inmates tease you as you pass, but it doesn't sound malicious.<<grespect>><<prison_inmates 1>>
+	<<bind>>
+	<br><br>
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Prison Punishment]]>><</link>>
+	<br>
+<</if>>
+
+:: Prison Yard
+<<set $location to "prison">><<set $bus to "yard">><<set $outside to 1>><<effects>><<effects_prison>>
+
+You are in the prison yard. It's spacious, but the surrounding walls are unreasonably tall, and seem to curve inward.
+<br><br>
+
+<<if $prison.schedule is "yard">>
+	Inmates lift weights and socialise. <<generate_veteran_guard 0>><<veteran_guard 0 cap>> watches with a sternful gaze.<<endevent>>
+	<br><br>
+<<elseif $prison.schedule is "revolt">>
+	<<beastNEWinit 6 hawk>>
+	Shadows roam the grass as <<beastsplural>> fly overhead. Inmates dart across the yard in groups, or stick to the shadows. Some are caught and carried into the sky. You're not sure where they're taken.
+	<<endevent>>
+	<br><br>
+<</if>>
+<<if Time.hour is 20>>
+	You hear a bell ring. "Lockdown," <<generate_veteran_guard 0>><<veteran_guard 0>> shouts. "Back to your cells."
+	<br><br>
+	You're shuffled along with the other prisoners.
+	<br><br>
+	<<link [[Next|Prison Cell]]>><<endevent>><</link>>
+	<br>
+<<elseif $stress gte $stressmax>>
+	<<passout_prison>>
+<<elseif $prison_wren_intro is 1 and $prison.schedule is "yard">>
+	<<if $wren_seen is "cards">>
+		<<npc "Wren">><<person1>>
+		"I've mixed feelings about meeting you here," says a young <<if $pronoun is "m">>man with short<<else>>woman with shoulder-length<</if>> hair. <span class="gold">It's Wren.</span>
+		<br><br>
+
+		"I'm sorry your sneaking didn't work out. Maybe we can be useful to each other."
+		<br><br>
+		<<link [[Next|Prison Wren Intro Met]]>><<unset $prison_wren_intro>><<set $wren_seen to "prison">><</link>>
+		<br>
+	<<elseif $wren_seen is "catsuit">>
+		<<npc "Wren">><<person1>>
+		"I've mixed feelings about meeting you here," says a young <<if $pronoun is "m">>man with short<<else>>woman with shoulder-length<</if>> hair. <span class="gold">It's Wren.</span>
+		<br><br>
+
+		"I'm sorry your skulking didn't work out. Maybe we can be useful to each other."
+		<br><br>
+
+		<<link [[Next|Prison Wren Intro Met]]>><<unset $prison_wren_intro>><<set $wren_seen to "prison">><</link>>
+		<br>
+	<<else>>
+		<<npc "Wren">><<person1>>
+		"Newcomer?" asks a young <<if $pronoun is "m">>man with short<<else>>woman with shoulder-length<</if>> hair. "Just my type." <<He>> wears a prison uniform, but seems apart from the other inmates, freer.
+		<br><br>
+
+		<<link [[Next|Prison Wren Intro]]>><<unset $prison_wren_intro>><<set $wren_seen to "prison">><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<<if $prison.schedule isnot "lockdown" and $prison.attention gte 100>>
+		<<events_prison_attention>>
+	<<else>>
+		<<if $prison.schedule isnot "lockdown" and $eventskip isnot 1>>
+			<<events_prison>>
+		<</if>>
+		<<if $prison_event_trigger>>
+			<<events_prison_triggered>>
+		<<else>>
+			<<if $prison.schedule is "yard" and !$daily.prison.veteranGreet and $prison.veteran gte 15>>
+				<<prison_guard_greet veteran>>
+			<<elseif $prison.schedule is "yard" and random(1, 5) is 5 and $eventskip isnot 1>>
+				<<prison_guard_watch veteran>>
+			<<else>>
+				<<if $prison.schedule isnot "revolt">>
+					<<if $worn.feet.type.includes("shackle")>>
+						<span class="blue">You can't run with your legs bound.</span>
+						<br>
+					<<else>>
+						<<prisonicon "run">><<link [[Run (0:30)|Prison Yard Run]]>><<endevent>><<tiredness 6>><<athletics 6>><<pass 30>><</link>><<gathletics>><<gphysique>>
+						<br>
+					<</if>>
+					<<if $leftarm is "bound" or $rightarm is "bound">>
+						<span class="blue">You can't lift with your arms bound.</span>
+						<br>
+					<<else>>
+						<<prisonicon "lift">><<link [[Lift weights (0:30)|Prison Yard Exercise]]>><<endevent>><<pass 30>><<tiredness 6>><</link>><<gtiredness>><<ggphysique>>
+						<br>
+					<</if>>
+				<</if>>
+				<<if $prison.schedule is "yard">>
+					<<if $worn.face.type.includes("gag")>>
+						<span class="blue">You can't speak to the guard or inmates with this gag in the way.</span>
+						<br>
+					<<else>>
+						<<link [[Speak with the guard (0:30)|Prison Yard Speak]]>><<pass 30>><<prison_rep veteran 1>><<endevent>><</link>><<glove>>
+						<br>
+						<<link [[Cutely flirt with inmates (0:30)|Prison Yard Flirt]]>><<set $phase to 0>><<pass 30>><<prison_hope 1>><<endevent>><</link>><<promiscuous1>><<ghope>>
+						<br>
+						<<if $promiscuity gte 15>>
+							<<link [[Salaciously flirt with inmates (0:30)|Prison Yard Flirt]]>><<set $phase to 1>><<pass 30>><<prison_reb 1>><<endevent>><</link>><<promiscuous2>><<greb>>
+							<br>
+						<</if>>
+					<</if>>
+				<</if>>
+				<<if $prison.schedule is "yard" and Time.weekDay is 6>>
+					<br>
+					<<npc Wren>><<person1>>
+					<span class="teal">Wren leans against a wall.</span> If the guards notice <<him>>, they pretend not to.
+					<br>
+
+					<<link [[Speak with Wren|Prison Wren]]>><<endevent>><</link>>
+					<br>
+				<</if>>
+				<br>
+				The ground slopes gently, leading to a pair of wide doors. The smell of stale food lingers in the air.
+				<br>
+				<<prisonicon "canteen">><<link [[Canteen|Prison Canteen]]>><<endevent>><</link>>
+				<br><br>
+
+				The wall protrudes, giving rise to a tower far taller than the rest of the prison. There's a metal door at the bottom.
+				<br>
+				<<if $prison.job is "spire">>
+					<<link [[Climb the spire (0:05)|Prison Spire]]>><<tiredness 6>><<pass 5>><</link>><<gtiredness>>
+					<br>
+					<<if $prison.schedule isnot "revolt">>
+						<<if $prison.rope is 1>>
+							<br>
+							You could let your rope down the hole at the bottom of the spire.
+							<br>
+							<<link [[Use rope|Prison Spire Rope]]>><<set $prison.rope to 2>><</link>>
+							<br>
+						<<elseif $prison.rope is 2>>
+							<<link [[Descend the spire (0:05)|Prison Spire Descend]]>><<tiredness 6>><<pass 5>><</link>><<gtiredness>>
+							<br>
+						<<else>>
+							<br>
+							There's a deep hole at the bottom of the spire.
+							<br>
+							<<link [[Look in the hole|Prison Spire Hole]]>><</link>>
+							<br>
+						<</if>>
+					<</if>>
+				<<else>>
+					<span class="blue">You're not trusted in the spire.</span>
+					<br>
+				<</if>>
+				<br>
+				There's a small area sheltered from view. A large locked door blends into the surrounding stone.
+				<br>
+				<<if $prison.yard_door is 1>>
+					<<prisonicon "door">><<link [[Sneak to beach (0:01)|Prison Beach]]>><<endevent>><<pass 1>><</link>>
+					<br>
+				<<else>>
+					<<prisonicon "door">><<link [[Large door|Prison Yard Door]]>><<endevent>><</link>>
+					<br>
+				<</if>>
+				<br>
+				<<link [[Prison block|Prison Block]]>><<endevent>><</link>>
+				<br>
+				<<prison_map yard>>
+			<</if>>
+		<</if>>
+		<<set $eventskip to 0>>
+	<</if>>
+<</if>>
+
+:: Prison Spire Hole
+<<set $outside to 1>><<effects>>
+
+You cautiously approach the hole and peer over the edge. Shoddy stonework lines a shaft leading down an abyss. It's too deep to see the bottom. You hear strange, squelching sounds and the occasional rush of water, but you can't make out anything beyond the darkness. The thought of what might lie below fills you with unease.<<stress 2>><<gstress>>
+<br><br>
+
+You wonder what could be down there, <span class="blue">but without something to help you descend the spire, there's no way of telling.</span>
+<br><br>
+
+You return to the yard.
+<br><br>
+
+<<link [[Next|Prison Yard]]>><</link>>
+<br>
+
+:: Prison Spire Rope
+<<location "underground">><<set $outside to 0>><<effects>>
+
+You tie the rope firm, and toss the other end down the hole. You hear a thud below after a few seconds. You test the rope. It seems safe. You can descend whenever you want.
+<br><br>
+
+<<link [[Next|Prison Yard]]>><<location "prison">><</link>>
+<br>
+
+:: Prison Spire Descend
+<<location "underground">><<set $outside to 0>><<effects>>
+
+
+You climb down the spire, into the darkness beneath the prison.
+
+<<if $prison_egg is 1 or $prison.watchers_friend is 2>>
+	Your feet almost slip on the slick rock at the bottom. This is the cavern where you found the egg. You feel uneasy, and don't want to explore again without reason, so you climb back to the surface.
+	<br><br>
+<<else>>
+	Your feet almost slip on the slick rock at the bottom. There's something down here, hidden in the shadows. If you continue, however, it might be hard to find your way back.
+	<br><br>
+
+	<<link [[Explore the rut|Prison Rut]]>><<set $rut to 0>><<set $rut_entry to "rope">><</link>>
+	<br>
+<</if>>
+
+<<link [[Climb back up|Prison Yard]]>><<location "prison">><</link>>
+<br>
+
+:: Prison Yard Door
+<<effects>>
+
+You approach the large door. It's locked.
+<br><br>
+
+<<if $prison.yard_key is 1>>
+	<<link [[Use the key|Prison Yard Door Key]]>><<set $prison.yard_door to 1>><</link>>
+	<br>
+<<else>>
+	<<set $lock to 1000>>
+
+	The door is locked tight.
+	<br><br>
+
+	<<if currentSkillValue('skulduggery') gte $lock>>
+		<span class="green">The lock looks easy to pick.</span>
+		<br><br>
+
+		<<link [[Break in (0:05)|Prison Yard Door Pick]]>><<set $prison.yard_door to 1>><<pass 5>><</link>>
+		<br>
+	<<else>>
+		<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+		<br><br>
+	<</if>>
+	/* 北极星模组 */
+    <<set $ghostIn to false>>
+    <<if $options.bjx_eventTF and $ghost gte 1>>
+    	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+    	<br>
+    	<<link [[穿越 (0:01)|Prison Beach]]>><<pass 1>><<set $ghostIn to true>><</link>>
+    	<br>
+    <</if>>
+    /* 北极星 */
+<</if>>
+
+<<link [[Leave|Prison Yard]]>><</link>>
+<br>
+
+:: Prison Yard Door Key
+<<effects>>
+
+The key fits, but needs a lot of force to turn. The door creaks open. A straight stone tunnel slopes downwards. There's light at the bottom.
+<br><br>
+
+You close the door behind you, and walk towards the light, emerging on a beach.
+<br><br>
+
+<<link [[Next|Prison Beach]]>><</link>>
+<br>
+
+
+:: Prison Yard Door Pick
+<<effects>>
+
+The lock is sophisticated. It'd have to be, here. But it's still no match for you. The door creaks open. A straight stone tunnel slopes downwards. There's light at the bottom.
+<br><br>
+
+You close the door behind you, and walk towards the light, emerging on a beach.
+<br><br>
+
+<<link [[Next|Prison Beach]]>><</link>>
+<br>
+
+
+:: Prison Yard Speak
+<<effects>>
+
+<<generate_veteran_guard 0>><<person1>>
+<<generate2>>
+<<if $prison.veteran gte 60 and !$NPCList[0].name_known>>
+	<<generatep3 0>>
+	You find <<veteran_guard 0>> examining something in <<his>> palm. <<He>> closes <<his>> fist around it when <<he>> sees you approach. <<He>> was so absorbed <<he>> didn't notice you at first. Nor does <<he>> notice the <<person2>><<person>> backing into <<person1>><<him>>.
+	<br><br>
+	The collision is accidental, but <<veteran_guard 0>> reaches for their baton, and delivers a punishing blow to the <<person2>><<persons>> stomach. The object slips from <<person1>><<his>> hand, landing in the grass.
+	<br><br>
+
+	<<link [[Pick it up|Prison Yard Locket]]>><</link>>
+	<br>
+<<else>>
+	<<generate3>>
+	You approach <<veteran_guard 0>>.
+
+	<<He>> seems happy to chat, despite <<his>> gruff demeanor.
+	<br><br>
+
+	<<if $rng gte 81>>
+		A <<person2>><<person>> tries to climb the wall. <<veteran_guard 0 cap>><<person1>> doesn't seem concerned. "You'll get it this time," <<he>> laughs. "Just keep trying."
+	<<elseif $rng gte 61>>
+		You follow as <<he>> marches up and down the yard, stopping only to spank a <<person2>><<person>> with <<person1>><<his>> baton.
+	<<elseif $rng gte 41>>
+		<<He>> leers at a <<person2>><<person>> doing squats.
+	<<elseif $rng gte 21>>
+		"They think we'll let them leave if they manage to climb the wall," <<he>> chuckles, looking up at the spire. "But it's not up to us."
+	<<else>>
+		<<He>> stops to break up a fight between a <<person2>><<person>> and <<person3>><<person>>.
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Prison Yard]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Prison Yard Locket
+<<effects>>
+
+<<set $NPCList[0].name_known to 1>>
+<<save_veteran_guard>>
+
+It's an open locket. There's a picture of a young <<person3>><<personsimple>> inside. A drawing rather than a photograph, but rich in detail. "To my <<veteran_guard 0>>," it reads. "Yours forever."
+<br><br>
+
+Panting, <<veteran_guard 0>> steps away from the curled <<person2>><<person>>. You hold out the locket. <<person1>><<He>> snatches it from your grasp, and gives you an evil look.
+<br><br>
+
+<<link [[Next|Prison Yard]]>><<endevent>><</link>>
+<br>
+
+:: Prison Spire
+<<set $bus to "spire">><<set $outside to 1>><<effects>><<effects_prison>>
+
+<<if $prison.spire_intro isnot 1>>
+	The metal door clangs as you knock. A camera perched atop swivels to face you. You hear a mechanical whir, then a click. The door opens, and a rush of air blows by.
+	<br><br>
+
+	There's nothing inside except a staircase, spiralling up, and down, though the downward steps soon open onto a gaping pit. You decide to climb up.
+	<br><br>
+
+	<<link [[Next|Prison Spire Intro]]>><<set $prison.spire_intro to 1>><<set $prison.birds to 0>><</link>>
+	<br>
+<<else>>
+	<<beastNEWinit 5 "hawk">><<generate_anxious_guard 5>><<person1>>
+	You are in the small cabin atop the spire.
+	<<if $prison.schedule is "work">>
+		<<anxious_guard 5 cap>> sits in front of several security monitors, but <<person6>><<his>> eyes follow the <<person1>><<beastsplural 0>> outside.
+	<<else>>
+		You watch the <<person1>><<beastsplural 0>> through a window.
+	<</if>>
+	<<endevent>>
+	<br><br>
+	<<if Time.hour is 20>>
+		<<generate_anxious_guard 0>>
+		You hear a bell ring. "Lockdown," <<anxious_guard 0>><<person1>> sighs. "At last. Off to your cell."
+		<br><br>
+		You run for the stairs with <<anxious_guard 0>> before the creatures react. <<He>> leads you down the stairs, through the yard and prison block, and into your cell.
+		<br><br>
+		<<link [[Next|Prison Cell]]>><<endevent>><</link>>
+		<br>
+	<<elseif $prison.birds gte 30 and !$prison.watchers_friend>>
+		<<beastNEWinit 6 hawk>><<person1>>
+		The <<beastsplural>> watch you in silence. Then one launches through the air, talons outstretched. You trip in fright, but <<bhe>> catches you, lifting you into the air.
+		<br><br>
+		<<bHe>> flies in a circle around the beacon as the others sing, before landing on top.
+		<br><br>
+
+		<<link [[Next|Prison Spire Beacon]]>><<set $prison.watchers_friend to 1>><</link>>
+		<br>
+	<<else>>
+		<<if $prison.schedule is "work">>
+			<<if !$daily.prison.anxiousGreet and $prison.anxious gte 15>>
+				<<prison_guard_greet anxious>>
+			<<elseif random(1, 5) is 5 and $eventskip isnot 1>>
+				<<prison_guard_watch anxious>>
+			<<else>>
+				<<if $prison.birds gte 30>>
+					<span class="green">The watchers are fond of you.</span>
+				<<elseif $prison.birds gte 20>>
+					<span class="teal">The watchers think you're useful.</span>
+				<<elseif $prison.birds gte 10>>
+					<span class="lblue">The watchers recognise you.</span>
+				<<else>>
+					<span class="blue">The watchers see you as meat.</span>
+				<</if>>
+				<br><br>
+				<<if $prison.job is "spire">>
+					<<link [[Work|Prison Spire Work]]>><</link>>
+					<br>
+				<<else>>
+					<span class="blue">Your labours are expected elsewhere.</span>
+					<br>
+				<</if>>
+				<<if $prison.watchers_friend is 1 and $prison_egg is 1>>
+					<<link [[Hold up the egg|Prison Spire Egg]]>><</link>>
+					<br>
+				<</if>>
+				/* 北极星模组 */
+				<<if !$options.bjx_animal and ($harpy gte 6 and $birdFly gte 1) or $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+				/* 北极星 */
+					<br>
+					Your wings, and the wind, are strong. You think you could fly all the way to the mainland from here.
+					<br>
+					<<link [[Soar to the mainland|Prison Soar]]>><</link>>
+					<br><br>
+				<</if>>
+				<<link [[Leave (0:05)|Prison Yard]]>><<pass 5>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			/* 北极星模组 */
+			<<if !$options.bjx_animal and ($harpy gte 6 and $birdFly gte 1) or $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+			/* 北极星 */
+				Your wings, and the wind, are strong. You think you could fly all the way to the mainland from here.
+				<br>
+				<<link [[Soar to the mainland|Prison Soar]]>><</link>>
+				<br><br>
+			<</if>>
+			<<link [[Leave (0:05)|Prison Yard]]>><<pass 5>><</link>>
+			<br>
+		<</if>>
+		<<prison_map spire>>
+	<</if>>
+<</if>>
+
+
+:: Prison Soar
+<<effects>>
+
+<<beastNEWinit 2 hawk>><<person1>>
+You run and jump, letting the wind catch your wings. You soar.
+
+
+<<if $prison.schedule is "revolt">>
+	The <<beastsplural>> are too busy dealing with the revolt to stop, or even notice you. <span class="green">There's nothing stopping you from escaping.</span>
+	<br><br>
+
+	<<link [[Escape (0:30)|Prison Soar Escape]]>><<tiredness 12>><<prison_end>><<prisoncrimeUp>><<pass 30>><<prison_guards -40>><</link>><<gggcrime>><<gggsuspicion>><<ggtiredness>>
+	<br>
+	<<link [[Land|Prison Spire]]>><<endevent>><</link>>
+	<br>
+<<elseif $prison.watchers_friend gte 2>>
+	Two <<beastsplural>> fly alongside you for a moment.
+	<<if $monster is 1>>
+		"Safe journey," one shouts over the wind.
+	<<else>>
+
+	<</if>>
+	Then they both turn, and return to the spire.
+	<span class="green">There's nothing stopping you from escaping.</span>
+	<br><br>
+
+	<<link [[Escape (0:30)|Prison Soar Escape]]>><<tiredness 12>><<prison_end>><<prisoncrimeUp>><<pass 30>><<prison_guards -40>><</link>><<gggcrime>><<gggsuspicion>><<ggtiredness>>
+	<br>
+	<<link [[Land|Prison Spire]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<span class="red">Two <<beastsplural>> fly after you.</span> You evade one, but the other grasps your shoulders in <<his>> talons. <<He>> carries you back to the spire.<<gpain>><<gtrauma>><<gstress>><<pain 4>><<trauma 6>><<stress 6>>
+	<br><br>
+	<<if $monster is 1>>
+		"We're watching," <<bhe>> warns. "Don't forget." <<bHe>> returns to the beacon.
+	<<else>>
+		<<bHe>> chirps a warning, then returns to the beacon.
+	<</if>>
+	You won't be able to fly away without distracting the <<beastsplural>>, or befriending them somehow.
+	<br><br>
+
+	<<link [[Next|Prison Spire]]>><</link>>
+	<br>
+<</if>>
+
+:: Prison Soar Escape
+<<effects>>
+<<earnFeat "Not Meant to be Caged">>
+You soar away from the island, over the mist, and towards the mainland.
+
+<<if Time.dayState is "night">>
+	<<if $weather is "clear">>
+		You see the lights of town light up the horizon ahead.
+	<<else>>
+		You can't make out the coast in the dark, but you know it's there.
+	<</if>>
+<<else>>
+	You see the town on the horizon ahead.
+<</if>>
+<br><br>
+
+<<prison_bondage_removal>>
+<<if _punishments_removed is true>>
+	You feel the air tear away your bondage, piece by piece.
+<</if>>
+
+It's a tiring journey, but the wind is on your side. Free as a bird, you swoop onto the beach.
+<br><br>
+
+<<link [[Next|Beach]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+
+:: Prison Spire Beacon
+<<effects>>
+
+The beacon is covered with nests, made mostly of driftwood. The other <<beastsplural>> land, surrounding you. You sense no malice. The one that carried you bows <<his>> head, and scrapes the middle of one of the nests. There's an indentation, as if something once sat there.
+<br><br>
+
+<<if $monster is 1>>
+	"Egg stolen," <<bhe>> says. "Eggs rare. Please, find below. Far below! Too far below." The others sing a melancholy tune.
+<<else>>
+	Are they missing an egg? It would have to be hidden somewhere they couldn't reach.
+<</if>>
+
+<<if $prison_egg is 1>>
+	You already found an egg far below. You hold it out. <span class="green">The <<beastsplural>> hop in surprise, then chirp in excitement and relief.</span>
+	<br><br>
+
+	<<link [[Next|Prison Spire Egg 2]]>><<set $spraymax += 1>><<spray 5>><<set $prison.watchers_friend to 2>><</link>>
+	<br>
+<<else>>
+	<br><br>
+	Another <<beasttype>> grasps your shoulders, and carries you back to the platform.
+	<br><br>
+
+	<<link [[Next|Prison Spire]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Prison Spire Egg
+<<effects>>
+
+<<beastNEWinit 6 hawk>><<person1>>
+You stand in front of the beacon, and hold up the egg. One <<beasttype>> notices, hops in excitement, and sings. This gets the others' attention. They rise from their nests and join the chorus. One swoops down and lifts you from your feet.
+<br><br>
+
+<<bHe>> carries you up to the beacon, and gently places you beside the empty nest. Others land, forming a circle around you.
+<br><br>
+
+<<link [[Next|Prison Spire Egg 2]]>><<set $spraymax += 1>><<spray 5>><<set $prison.watchers_friend to 2>><</link>>
+<br>
+
+:: Prison Spire Egg 2
+<<effects>>
+<<unset $prison_egg>>
+You place the egg in the nest. The <<beasttype>> ruffles <<bhis>> features, then sits atop it.
+<<earnFeat "Friends in the Sky">>
+<<if $monster is 1>>
+	"Thank you," <<he>> says. "We are friends. Here." <<He>> shifts a heavy piece of driftwood.
+<<else>>
+	<<bHe>> bows <<his>> head and shifts a heavy piece of driftwood.
+<</if>>
+There's a strange cylinder beneath, with an exposed computer chip at the base. It looks like a charge for your pepper spray. The <<beasttype>> rolls it over to you, and you plug it in.
+<<gspraymax>>
+<br><br>
+
+<span class="green">You have befriended the watchers,</span> and <span class="gold">gained an additional pepper spray charge.</span>
+<br><br>
+
+Another <<beasttype>> grasps your shoulders, and carries you back to the platform.
+<br><br>
+
+<<link [[Next|Prison Spire]]>><<endevent>><</link>>
+<br>
+
+:: Prison Spire Intro
+<<set $outside to 1>><<effects>>
+
+The climb takes your breath. You pass through another metal door, and onto a wide-open platform. There's another, smaller tower some distance away. Atop it perches a light, now dim. It's the beacon.
+<br><br>
+
+A great wind howls. You're far above the prison block.
+<br><br>
+
+<<link [[Next|Prison Spire Intro 2]]>><</link>>
+<br>
+
+:: Prison Spire Intro 2
+<<set $outside to 1>><<effects>>
+<!-- fuckity fuck. <<generate_x_guard N>> expects $NPCList[N] slot. <<beastNEWinit N>> expects the number of beasts to generate, NOT slot number. <<generateBEAST N>> expects npc number ($NPCList[N+1]), NOT $NPCList[N] slot. <<beastsplural N>> - expects $NPCList[N] slot. and <<personN>> expects npc number. <<bHe>> and <<beastsplural>> expect npclist slot and do not respect <<personN>>. WHY -->
+<<generate_anxious_guard 0>><<generateBEAST 2 "hawk">>
+<<person1>>"Over here," says a voice to your left. It's <<anxious_guard 0>>. <<Hes>> stood outside a small concrete cabin, one foot still inside. <<He>> looks up at the sky. "Hurry."
+<br><br>
+
+You hasten towards <<him>> as you hear a whoosh, as if the wind were picking up. "Fuck," <<anxious_guard 0>> says as <<he>> recoils into the building. "Run!"
+<br><br>
+Animated by a terrible fear, you run for the door, sparing a glance behind. A <<beasttype 1>> swoops through the air, talons outstretched.<<ggstress>><<stress 12>>
+<br><br>
+You manage to clear the cabin entrance just moments before the <<beasttype 1>> lands, <<anxious_guard 0>> shutting the door behind you. The <<beasttype 1>> takes off again, leaving talon marks in the stone. You watch through the window as other <<beastsplural 1>> descend, landing on and around the beacon.
+<br><br>
+
+<<link [[Next|Prison Spire Intro 3]]>><</link>>
+<br>
+
+
+:: Prison Spire Intro 3
+<<set $outside to 1>><<effects>><<effects_prison>>
+
+<<person1>>"They're always agitated when they come back from hunting," <<anxious_guard 0>> says. "Not that it's ever safe up here. Hope you last longer than the last." <<He>> points at the ground some distance away. "Stay away from the edge. The wall is long gone."
+<br><br>
+
+"Tried to put collars on them once." <<He>> shakes <<his>> head. "Anyway, main job is keeping them fed, collecting shark's teeth, and confiscating contraband. Dunno where they get it out here, but it'll end up in inmate hands if we do nothing."
+<br><br>
+
+<<link [[Next|Prison Spire]]>><<endevent>><</link>>
+<br>
+
+
+
+:: Prison Tattooed
+<<effects>>
+
+<<link [[Next|Prison Walkway]]>><</link>>
+<br>
+
+
+:: Prison Spire Precipice
+<<effects>>
+
+<<anxious_guard 0 cap>> shouts, but <<his>> words are incoherent. <<He>> isn't carried high, or far, before release, but the force sends <<him>> rolling <span class="red">off the edge.</span>
+<br><br>
+
+Only <<his>> fingers can be seen, grasping the ledge in desperation.
+<br><br>
+
+<<link [[Help|Prison Spire Precipice Help]]>><<famegood 20>><<prison_rep anxious 1>><</link>><<ggglove>>
+<br>
+<<link [[Make demands|Prison Spire Precipice Demand]]>><<def 3>><</link>>
+<br>
+
+:: Prison Spire Precipice Help
+<<effects>>
+
+You rush over to the edge and grasp <<anxious_guard 0 apo>> hand. Together, you're able to pull <<him>> up and over the top.
+<br><br>
+
+<<He>> staggers towards the cabin, but collapses to <<his>> shaking knees after a couple of steps. You help <<him>> up again, and hold <<his>> until you make it to safety.
+<br><br>
+<<set $NPCList[0].name_known to 1>>
+<<save_anxious_guard>>
+<<pass 10>>
+<<He>> sits for several minutes before managing to speak. "Thank you," <<he>> says. "I'm <<anxious_guard 0>> by the way. Not meant to share our names, but fuck it. I thought that was it for me."
+<br><br>
+
+<<prison_spire_options>>
+
+:: Prison Spire Precipice Demand
+<<effects>>
+
+"I-I don't have anything," <<anxious_guard 0>> says. "Please, just... Wait. I have a key! The key to the beach. I'll give it to you if you save me, and I won't tell anyone you have it."
+<br><br>
+
+<<if $skulduggery gte 1000>>
+	That key is of little use to one with your talents, but it might be to someone else.
+<</if>>
+<br><br>
+
+You grasp <<anxious_guard 0 apo>> hand. Together, you're able to pull <<him>> up and over the top.
+<br><br>
+
+<<He>> staggers towards the cabin, but collapses to <<his>> shaking knees after a couple of steps. You help <<him>> up again, and hold <<his>> until you make it to safety.
+<br><br>
+<<set $NPCList[0].name_known to 1>>
+<<save_anxious_guard>>
+<<pass 10>>
+<<He>> sits for several minutes before managing to speak. "Thank you," <<he>> says. "I'm <<anxious_guard 0>> by the way. Not meant to share our names, but fuck it. I thought that was it for me."
+<br><br>
+
+You hold out your hand. "Y-yes," <<he>> says. "I gave my word." <<He>> pulls a heavy iron key from <<his>> pocket. "If you're caught, don't tell them where you got it."
+<br><br>
+
+<<set $prison.yard_key to 1>>
+<br><br>
+
+<<prison_spire_options>>
+
+:: Passout Prison
+<<effects>>
+You've pushed yourself too much.
+<br><br>
+<<passout>>
+<<link [[Wake up|Passout Prison 2]]>><</link>>
+<br>
+<<pass 1 hour>>
+<<trauma 6>><<set $stress -= 2000>>
+
+:: Passout Prison 2
+<<location "prison">><<effects>>
+
+<<generate_veteran_guard 0>><<person1>>
+"Wake up you shit," says a <<personsimple "normal">>'s voice. It's <<veteran_guard 0>>. "Sleeping ain't allowed anywhere but your cell. Up you get." <<He>> grasps your collar and helps haul you to your feet.
+<br><br>
+
+<<He>> has you marching before you can properly recover.
+<br><br>
+
+<<link [[Next|Prison Punishment]]>><<endevent>><</link>>
+<br>
+
+:: Prison Revolt Refuse
+<<effects>>
+
+It's enough to bask in your victory, for now.
+<br><br>
+
+<<destination_prison>>
+
+:: Prison Revolt
+<<effects>>
+<<set $prison.schedule to "revolt">>
+<<if $worn.face.type.includes("gag")>>
+	You mumble insistently at a pair of nearby inmates. They tug at your gag. It takes a bit of effort, but they manage to snap it enough that you can pull it out.
+	<<set $worn.face.type.push("broken")>>
+	<<faceruined>>
+	<br><br>
+<</if>>
+<<if $speech_attitude is "meek">>
+	"It's time to end their bullying," you shout. "Let's show them we won't be pushed around!"
+<<elseif $speech_attitude is "bratty">>
+	"I'm fed up with these fuckers telling us what to do!" you shout. "Let's fuck them up!"
+<<else>>
+	"It's time for some changes around here," you should. "We're in charge now!"
+<</if>>
+<br><br>
+<<generate1>><<person1>><<generate2>>
+The inmates cheer. A <<person>> grasps the bars of a nearby window, and pulls them apart with <<his>> bare hands. Another throws a rock, shattering one of the lights. Anarchy breaks out.
+<br><br>
+<<set $prison.attention to 0>>
+<<destination_prison>>
+
+:: Pregnancy Birth Prison
+<<set $outside to 0>><<effects>>
+<<set $first_birth to !$pregnancyStats.humanToysUnlocked>>
+<<generate_methodical_guard 0>><<person1>>
+<<generate_relaxed_guard 1>>
+<<generate_anxious_guard 2>>
+<<generate_veteran_guard 3>>
+You awaken on a medical bed. Several blurry figures move around. One leans closer, <<his>> features coalescing into those of <<methodical_guard 0>>. "Relax. In case you've forgotten, you're in medical. You're in labour."
+<br><br>
+
+You feel a light prick on your arm, and you start to feel fuzzy. "You'll be feeling the effects of the sedative shortly..." <<his>> voice fades again. The pain starts to blissfully trickle away.
+<br><br>
+
+<<person3>>
+Another voice cuts through the haze. It sounds like <<anxious_guard 2>> "I-I can't believe this. Are you sure you know what you're doing? Maybe we should take <<phim>> to the mainland-"
+<br>
+"Shut it. <<pShe>>'ll never make that trip. Look at <<phim>>, <<pshes>> ready to pop!" That sounded like <<veteran_guard 2>>.
+<br>
+"<<He>> has it under control. This is the best we can do until help from the mainland comes," says the voice of <<relaxed_guard 1>>.
+<br><br>
+
+"Quiet, please. I'm going to need to undress you."
+<<if playerChastity("hidden")>>
+	<<He>> notices your <<print $worn.genitals.name>>, and opens a chest-high cupboard. <<He>> retrieves a tool shaped like a pair of prongs, but bulkier. "We need to remove that device. This won't hurt."
+	<br><br>
+	<<He>> grasps your <<print $worn.genitals.name>> with the prongs, and presses a button on the handle. You hear a whirring noise within the tool, <span class="pink">and they snap the metal.</span>
+	<<set $worn.genitals.type.push("broken")>>
+<</if>>
+<br><br>
+<<wash>><<undress "prison_birth">>
+
+<<link [[Next|Pregnancy Birth Prison 2]]>><</link>>
+<br>
+
+:: Pregnancy Birth Prison 2
+<<effects>>
+
+<<methodical_guard 0 cap>> places a mask over your face. You feel your consciousness fade again.
+<br><br>
+
+<<set _pregnancy to getPregnancyObject()>>
+<<if _pregnancy.totalBirthEvents gte 5>>
+	<<set _min to 15>>
+	<<set _max to 60>>
+<<elseif _pregnancy.totalBirthEvents gte 3>>
+	<<set _min to 30>>
+	<<set _max to 120>>
+<<else>>
+	<<set _min to 60>>
+	<<set _max to 180>>
+<</if>>
+
+<<set _max to Math.floor(_max * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
+<<set _min to Math.floor(_min * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
+
+<<set _timeCalc to random(_min, _max)>>
+<<set _hours to Math.floor(_timeCalc / 60)>>
+<<set _minutes to _timeCalc % 60>>
+
+<<switch playerNormalPregnancyType()>>
+	<<case "human">>
+		<<methodical_guard 0 capo>> voice floats through the fog. "It's head is down. We're lucky. I'm going to need you to..."
+		<br><br>
+
+		The pain grows as time seems to rapidly speed up and slow down. You hear the words "breathe" and "push" many times, and you do your best to comply.
+		<br><br>
+
+		<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Prison 3]]>><<endevent>><<pass _timeCalc>><<playerPrebirth>><</link>>
+	<<case "wolf">>
+		<<methodical_guard 0 capo>> voice floats through the fog. "This is... unexpected. Non-human pegnancy. Focus..."
+		<br><br>
+
+		The pain grows as time seems to rapidly speed up and slow down. You hear the words "breathe" and "push" many times, and you do your best to comply.
+		<br><br>
+
+		<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Prison Wolf]]>><<endevent>><<pass _timeCalc>><<playerPrebirth>><</link>>
+<</switch>>
+
+:: Pregnancy Birth Prison 3
+<<effects>>
+<<generate5>><<person5>>
+<<set $litter_size to getPregnancyObject().fetus.length>>
+You awaken in the medical room. A smiling midwife stands beside your bed,
+<<if $litter_size is 1>>
+	holding a bundled baby in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you the baby. They sit in your arms, eyes shut, chest rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your baby. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of a name?"
+	<br><br>
+
+<<elseif $litter_size is 2>>
+	holding two bundled babies in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you one, and then the other. One sits in each of your arms, eyes shut, chests rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your babies. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+
+<<else>>
+
+	holding a trio of bundled babies in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you one, and then another. One sits in each of your arms. The midwife holds the third right in front of your chest. Their eyes are shut, their chests rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your babies. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+<</if>>
+
+<<set $bornChildrenIds to []>>
+<<run getPregnancyObject().fetus.forEach(child => $bornChildrenIds.push(child.childId))>>
+
+<<setBabyIntro "pc" "Bailey">>
+<<birthUi "pc" "prison" "home" "Pregnancy Birth Prison 4" 120>>
+
+:: Pregnancy Birth Prison 4
+<<effects>>
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+<<set _pregFame to ($litter_size * 5)>>
+<<famepregnancy _pregFame>>
+<<if $litter_size is 1>>
+
+	You cradle your baby for a while longer, enjoying <<childhis>> tiny breaths and movements. <<childHe>> spends most of the time sleeping, but opens <<childhis>> eyes occasionally, and gazes into yours.
+	<br><br>
+	The midwife returns.
+	<<if $first_birth>>
+		<<He>> teaches you how to change <<childname>>'s nappy, and how to bathe <<childhim>>.
+	<<else>>
+		<<He>> assists you with changing <<childname>>'s nappy, and bathing <<childhim>>.
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your baby in the meantime. You've been exempted from your duties for the day."
+	<br><br>
+	You want nothing more than to hold <<childname>>, but you find yourself dozing all the same.
+	<br><br>
+<<elseif $litter_size is 2>>
+	You cradle your babies for a while longer, enjoying their tiny breaths and movements. They spend most of the time sleeping, but open their eyes occasionally, and gaze into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth>>
+		<<He>> teaches you how to change their nappies and how to bathe them.
+	<<else>>
+		<<He>> assists you with changing their nappies, and with bathing them.
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your babies in the meantime. You've been exempted from your duties for the day."
+	<br><br>
+	You want nothing more than to hold the twins, but you find yourself dozing all the same.
+	<br><br>
+<<elseif $litter_size is 3>>
+	You cradle your babies for a while longer, enjoying their tiny breaths and movements. They spend most of the time sleeping, but open their eyes occasionally, and gaze into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth>>
+		<<He>> teaches you how to change their nappies, and how to bathe them.
+	<<else>>
+		<<He>> assists you with changing their nappies, and with bathing them.
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your babies in the meantime. You've been exempted from your duties for the day."
+	<br><br>
+	You want nothing more than to hold the triplets, but you find yourself dozing all the same.
+	<br><br>
+<</if>>
+
+<<link [[Next|Pregnancy Birth Prison 5]]>><<storeon "prison_birth">><<pass 24 hour>><<stress -40>><</link>>
+<br><br>
+
+:: Pregnancy Birth Prison 5
+<<effects>>
+
+<<if $litter_size gte 2>><<childrenNames $bornChildrenIds>> lie<<else>><<childname>> lies<</if>> in a cradle while the midwife helps you stand.
+
+<<if $first_birth or playerNormalPregnancyTotal() is 0>>
+	You feel your insides drop as you stand, but <<he>> assures you that's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 1, 2)>>
+	You feel your insides drop as you stand. You remember this feeling from your last birth, and know it's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 3, 7)>>
+	You feel your insides drop as you stand. You're still not used to the feeling.
+	<br><br>
+
+	You get walking again quite easily. It's a little awkward, but the transition isn't as bad as it used to be. It's still easier to move around when there isn't another human inside you.
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif between(playerNormalPregnancyTotal(), 8, 49)>>
+	You stand up without a hitch. There's hardly any difference in feeling anymore, although you do feel much more nimble.
+	<br><br>
+
+	<<He>> looks impressed at your mobility, only keeping an arm around you for stability. "I don't see many people get back up that quickly. You must be hardy!"
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif playerNormalPregnancyTotal() gte 50>>
+	You stand up without assistace, feeling empty inside. You already miss the feeling of being pregnant.
+	<br><br>
+
+	<<He>> stares at you, mouth agape, as you walk without any assistance. You throw your clothes back on quickly.
+	<br><br>
+
+	"Y-you should be good to go," <<he>> says.
+<</if>>
+"Your children will be sent to the orphanage for temporary care until your release, at which point they will be returned to your custody."
+<br><br>
+
+<<link [[Next|Pregnancy Birth Prison 6]]>><<endevent>><</link>>
+
+:: Pregnancy Birth Prison 6
+<<effects>>
+
+You're returned to your cell. You alreasy miss the embrace of <<childrenNames $bornChildrenIds>>. You feel a renewed sense of determination to leave this place. <<stress -10>><<llstress>><<trauma -10>><<lltrauma>>
+<br><br>
+
+<<link [[Next|Prison Cell]]>><<unset $litter_size>><<unset $first_birth>><<endevent>><<unset $bornChildrenIds>><</link>>
+<br>
+
+:: Pregnancy Birth Prison Wolf
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<endevent>>
+<<generate1>><<person1>>
+<<set $litter_size to getPregnancyObject().fetus.length>>
+<<set _baby_type to getPregnancyObject().fetus[0].type>>
+You awaken in another room. You hear faint whimpering. A smiling midwife stands beside your bed,
+<<if $litter_size is 1>>
+	holding a bundled _baby_type pup in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you the pup. They sit in your arms, eyes shut, chest rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your babies. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of a name?"
+	<br><br>
+
+<<else>>
+	pushing a cot with <<number $litter_size>> _baby_type pups inside.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, pushing the cot into your reach. You hold them one by one, their eyes shut, chests rising and falling with gentle breaths.
+	<br><br>
+
+	"I got here as fast as I could. That guard did a wonderful job delivering your babies. I've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+
+<</if>>
+
+<<set $bornChildrenIds to []>>
+<<run getPregnancyObject().fetus.forEach(child => $bornChildrenIds.push(child.childId))>>
+
+<<birthUi "pc" "prison" "wolf_cave" "Pregnancy Birth Prison Wolf 2" 180>>
+
+:: Pregnancy Birth Prison Wolf 2
+<<effects>>
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+<<famebestiality $litter_size>>
+<<if $litter_size is 1>>
+	You cradle your <<childtype>> for a while longer, enjoying <<childhis>> tiny breaths and movements. <<childHe>> spends most of the time sleeping, but opens <<childhis>> eyes occasionally, and gazes into yours.
+	<br><br>
+	The midwife returns.
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your pup in the meantime."
+	<br><br>
+	You want nothing more than to hold <<childname>>, but you find yourself dozing all the same.
+	<br><br>
+<<else>>
+	You cradle your pups for a while longer, enjoying their tiny breaths and movements. They spend most of the time sleeping, but open their eyes occasionally, and gaze into yours.
+	<br><br>
+	The midwife returns.
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your pups in the meantime."
+	<br><br>
+	You want nothing more than to hold them, but you find yourself dozing all the same.
+	<br><br>
+<</if>>
+
+<<link [[Next|Pregnancy Birth Prison Wolf 3]]>><<storeon "prison_birth">><<pass 24 hour>><<stress -40>><</link>>
+<br>
+
+:: Pregnancy Birth Prison Wolf 3
+<<effects>>
+
+<<if $litter_size gte 2>><<childrenNames $bornChildrenIds>> lie<<else>><<childname>> lies<</if>> in a cradle while the midwife helps you stand.
+
+<<if $first_birth or playerNormalPregnancyTotal() is 0>>
+	You feel your insides drop as you stand, but <<he>> assures you that's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without wolves inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 1, 2)>>
+	You feel your insides drop as you stand. You remember this feeling from your last birth, and know it's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without wolves inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 3, 7)>>
+	You feel your insides drop as you stand. You're still not used to the feeling.
+	<br><br>
+
+	You get walking again quite easily. It's a little awkward, but the transition isn't as bad as it used to be. It's still easier to move around when there isn't a litter of wolves inside you.
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif between(playerNormalPregnancyTotal(), 8, 49)>>
+	You stand up without a hitch. There's hardly any difference in feeling anymore, although you do feel much more nimble.
+	<br><br>
+
+	<<He>> looks impressed at your mobility, only keeping an arm around you for stability. "I don't see many people get back up that quickly. You must be hardy!"
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif playerNormalPregnancyTotal() gte 50>>
+	You stand up without assistace, feeling empty inside. You already miss the feeling of being pregnant.
+	<br><br>
+
+	<<He>> stares at you, mouth agape, as you walk without any assistance. You throw your clothes back on quickly.
+	<br><br>
+
+	"Y-you should be good to go," <<he>> says.
+<</if>>
+"The pups will be released into the forest once they can fend for themselves."
+<br><br>
+
+<<link [[Next|Pregnancy Birth Asylum 6]]>><<endevent>><</link>>
+<br>

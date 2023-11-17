@@ -1,0 +1,899 @@
+<!-- Version 2.0.3 - REV 190715 -->
+
+:: Dance Studio
+<<set $outside to 0>><<set $location to "dance_studio">><<effects>>
+You are in the dance studio. Here you can pay for lessons to improve your dancing skill. They also offer lessons on how to walk in high heels, as well as yoga lessons. The instructor is said to be well-connected in the professional scene. Lessons cost £12.
+<br><br>
+<<set _store_location to "dance_studio">>
+<<if $stress gte $stressmax>>
+	<<passoutshop>>
+<<else>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "danceStudio">>
+	<</if>>
+	<<if Time.hour is $closinghour>>
+		It's closing time. The receptionist is herding everyone outside.<<if $exposed gte 1>>Panic swells within you as you realise how exposed you'll be should you be found in this state of dress.<</if>>
+		<br>
+		<<storeon _store_location "check">>
+		<<if _store_check is 1>>
+			<br>
+			You remember you left your clothes in the changing room.
+			<br>
+			<<link [[Dress before leaving|Barb Street]]>><<storeload _store_location>><</link>>
+			<br>
+		<</if>>
+	<<elseif $openinghours is 0>>
+		You are alone in the darkness.
+		<br><br>
+	<<elseif $exposed gte 1>>
+		<<if $uncomfortable.nude is false>>
+			You are hiding in a cupboard, you wouldn't mind others seeing you exposed, but this time you stay put.
+		<<else>>
+			You are hiding in a cupboard to protect your dignity.
+		<</if>>
+		<br><br>
+	<</if>>
+	<<if $openinghours is 1 and $exposed lt 1>>
+		<<if $dance_job_intro>>
+			<<if $weekly.danceJob is "done">>
+				<span class="blue">Charlie will have another job for you next week.</span>
+				<br>
+			<<else>>
+				<<askicon>><<link [[Ask for work|Dance Job Ask]]>><</link>>
+				<br>
+			<</if>>
+		<</if>>
+		<<if $exposed lt 1>>
+			<<if $money gte 1200>>
+				<<if $danceskill gte 800 and $dance_job_intro is undefined and $dancestudiointro gte 1>>
+					<<ind>><<link [[Take a dance lesson (£12 1:00)|Dancing Lesson Job Intro]]>><</link>><<gtiredness>><<note "+ + Dancing Skill" "green">>
+					<br>
+				<<else>>
+					<<ind>><<link [[Take a dance lesson (£12 1:00)|Dancing Lesson]]>><<set $phase to 0>><<set $money -= 1200>><<set $dancestage to 0>><</link>><<gtiredness>><<note "+ + Dancing Skill" "green">>
+					<br>
+				<</if>>
+			<<else>>
+				<span class="blue">You can't afford a dance lesson.</span>
+				<br>
+			<</if>>
+		<</if>>
+		<<if (Time.weekDay is 3 or Time.weekDay is 5) and $worn.feet.type.includes("heels")>>
+			<<if $money gte 1200 and $exposed lt 1>>
+				<<heelsicon>><<link [[Take high heel lesson (£12 0:30)|Heel Lesson]]>><<set $phase to 0>><<set $money -= 1200>><<pass 30>><</link>><<gtiredness>><<gfeetskill>>
+				<br>
+			<</if>>
+		<<else>>
+			<<askicon>><<link [[Inquire about high heel lessons|Heel Lesson Inquiry]]>><</link>>
+			<br>
+		<</if>>
+		<<if (Time.weekDay is 2 or Time.weekDay is 4 or Time.weekDay is 6)>>
+			<<if $money gte 2200>>
+				<<ind>><<link [[Take a yoga lesson (£22 1:00)|Yoga Classes Change Room]]>><</link>><<gtiredness>><<gwillpower>><<llstress>>
+			<</if>>
+			<br>
+		<<else>>
+			<<askicon>><<link [[Inquire about yoga lessons|Yoga Classes Inquire]]>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if Time.hour isnot $closinghour>>
+		<<shopicon "clothing">><<link [[Changing room|Dance Studio Changing Room]]>><</link>>
+		<br>
+	<</if>>
+	<<if $openinghours is 0 and Time.hour isnot $closinghour and !$weekly.theft.danceStudio>>
+		<<shopicon "register">><<link [[Examine the cash register|Dance Studio Register]]>><</link>>
+		<br>
+	<</if>>
+	<br>
+	<<storeon _store_location "check">>
+	<<if _store_check is 1 and ($worn.upper.name is "naked" or $worn.lower.name is "naked") and $exposed is 1>>
+		You left clothes in the changing room. Your <span class="lewd"><<lewdness>></span> is fine in here, but would be considered lewd outside.
+		<br><br>
+		<<if $exhibitionism gte 15>>
+			<<getouticon>><<link [[Go outside anyway|Dance Studio Outside Exhibitionism]]>><</link>><<if $daily.ex.studio isnot 1>><<exhibitionist2>><</if>>
+			<br>
+		<</if>>
+	<<else>>
+		<<barbicon>><<link [[Leave|Barb Street]]>><</link>>
+		<br><br>
+	<</if>>
+<</if>>
+
+:: Dance Studio Changing Room
+<<effects>>
+You are in the dance studio's changing room. Benches line the walls, with hooks for clothing hanging above.
+<br><br>
+<<dancingclothes>>
+<<link [[Leave|Dance Studio]]>><</link>>
+
+:: Dance Studio Outside Exhibitionism
+<<effects>>
+<<flaunting>> you step outside. You're not wearing normal outdoor attire. A few people glance over and look you up and down, examining your contours.
+<<if $daily.ex.studio isnot 1>>
+	<<set $daily.ex.studio to 1>><<exhibitionism3>>
+<<else>>
+	<br><br>
+<</if>>
+Your heart beats faster as you walk away from the dance studio, and away from relative safety.
+<br><br>
+<<link [[Next|Barb Street]]>><</link>>
+<br>
+
+:: Dance Studio Lock
+<<set $outside to 0>><<effects>><<set $lock to 200>>
+<<openinghours>>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>><<link [[Pick it (0:10)|Dance Studio]]>><<pass 10>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Dance Studio]]>><<pass 1>><<set $ghostIn to true>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Barb Street]]>><</link>>
+<br>
+
+:: Dance Studio Introduction
+<<effects>>
+
+<<if $phase is 1>>
+	"H-hello..." you mumble, eyes transfixed on your feet.
+	<br><br>
+	Without saying anything, the instructor walks over to you and puts a protective arm around your shoulders. <<He>> whispers, "Don't worry, I don't bite. My name's Charlie. I'll help you out of your shell." <<He>> gently escorts you over to the rest of the class before commencing the lesson.
+<<elseif $phase is 2>>
+	"Pleased to meet you! I can't wait to get started!"
+	<br><br>
+	The instructor responds, "Woah there, eagerness is all well and good, but too much will get your muscles strained." Despite <<his>> caution, <<he>> seems happy. "Come on over. I'm Charlie by the way. I'll be your teacher. Right then, where was I?" You head over as the lesson commences.
+<<elseif $phase is 3>>
+	<<promiscuity1>>"Nice outfit. Really shows off your assets." You let your eyes probe <<his>> body, letting <<him>> know exactly which assets you mean.
+	<br><br>
+	<<He>> shifts uncomfortably on the spot, as if suddenly self-conscious. <<He>> looks annoyed, "Would you like to take your place over here? My name's Charlie." <<He>> turns back to the rest of the class as you head over. The lesson soon commences.
+<</if>>
+<br><br>
+<<link [[Next|$danceStudioIntroExit]]>><<unset $danceStudioIntroExit>><<endevent>><</link>>
+<br>
+
+:: Dancing Lesson
+
+<<if $dancestudiointro is 1 and $phase is 0>><<pass 20>><</if>>
+<<set $outside to 0>><<set $location to "dance_studio">><<effects>>
+
+<<if $dancestudiointro isnot 1>>
+	<<danceStudioIntro "Dancing Lesson">>
+<<elseif $dancestage gte 2>>
+	<<tiredness 4>><<danceskill 14>><<danceskilluse>><<wearandtear "dance">><<physique 2>>
+	The rest of the lesson passes uneventfully.
+	<br><br>
+	<<link [[Next|Dance Studio]]>><<endevent>><</link>>
+<<else>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "danceStudioLesson">>
+	<</if>>
+	<<if $exposed gte 1>>
+		You seem to be distracting the class somehow. Looking down, you immediately discover why.
+		<<if $uncomfortable.nude is false>>
+			You feel a thrill at your exposure, and let the others take a quick peek of your body.
+			<br>
+			You cover yourself, trying to feign decency as Charlie rushes over to you with some towels.
+			<<towelup>><<garousal>><<gstress>><<gtrauma>><<arousal 100>><<npcincr Charlie love 1>><<glove>>
+			<br><br>
+		<<else>>
+			Yelping, you cover yourself as Charlie rushes over to you with some towels.
+			<<towelup>><<garousal>><<gstress>><<gtrauma>><<arousal 100>><<stress 1>><<trauma 1>><<npcincr Charlie love 1>><<glove>>
+			<br><br>
+		<</if>>
+	<</if>>
+	<<tiredness 4>><<set $dancestage += 1>><<danceskill 14>><<danceskilluse>><<wearandtear "dance">><<physique 2>><<npc Charlie>><<person1>>
+	<<if $rng lte 20>>
+		<<set $dancelesson to "barre">>
+		You stretch and work your muscles using a barre.
+		<<if currentSkillValue('danceskill') lte 200>>
+			It's hard work to stay balanced. You can see in the mirror that you look a bit silly, especially compared to the more experienced students.
+		<<elseif currentSkillValue('danceskill') lte 800>>
+			You're pretty good at staying balanced. You are able to practise more advanced techniques.
+		<<else>>
+			You are able to use it as a surrogate partner, supporting your weight as you practise airborne techniques. Some of the other students look on with envy.
+		<</if>>
+		<br><br>
+	<<elseif $rng lte 40>>
+		<<set $dancelesson to "duo">><<generate2>><<person2>>
+		You partner up with a <<person>>.
+		<<if currentSkillValue('danceskill') lte 200>>
+			<<He>> has more experience than you, so you let <<him>> take the lead.
+		<<elseif currentSkillValue('danceskill') lte 800>>
+			You practise techniques requiring a partner, taking turns supporting one another.
+		<<elseif currentSkillValue('danceskill') lte 1000>>
+			Being so experienced, you take the lead, careful not to push <<him>> too hard.
+		<</if>>
+		<br><br>
+	<<elseif $rng lte 60>>
+		<<set $dancelesson to "airbarre">>
+		You stretch and work your muscles using an air barre.
+		<<if currentSkillValue('danceskill') lte 200>>
+			More experienced students use it to develop strength and poise. You just have fun swinging around.
+		<<elseif currentSkillValue('danceskill') lte 800>>
+			You work on developing your poise.
+		<<elseif currentSkillValue('danceskill') lte 1000>>
+			Held aloft, you are able to fully demonstrate your grace and skill.
+		<</if>>
+		<br><br>
+		<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+			You realise it may have been a mistake to wear a skirt. Performing airborne exercises without displaying your <<undies>> for the whole class to see proves to be virtually impossible.
+			<<set _uncomVar to ($worn.under_lower.type.includes("naked") ? "nude" : "underwear")>>
+			<<if $uncomfortable[_uncomVar] is false>>
+				<span class="lewd">You don't mind people looking.</span>
+				<<garousal>><<arousal 600>>
+				<br><br>
+			<<else>>
+				<<garousal>><<gstress>><<gtrauma>><<arousal 600>><<stress 6>><<trauma 6>>
+				<br><br>
+			<</if>>
+		<</if>>
+	<<elseif $rng lte 80>>
+		<<set $dancelesson to "instructor">>
+		Charlie gives you some personal attention.
+		<<if currentSkillValue('danceskill') lte 200>>
+			<<He>> helps you with the basics.
+		<<elseif currentSkillValue('danceskill') lte 800>>
+			<<He>> demonstrates some new steps for you to try.
+		<<elseif currentSkillValue('danceskill') lte 1000>>
+			<<He>> helps you iron out some flaws in your posture.
+		<</if>>
+		<br><br>
+	<<elseif $rng lte 100>>
+		<<set $dancelesson to "noinstructor">>
+		Charlie demonstrates some moves in front of the class, who do their best to emulate <<him>>.
+		<br><br>
+	<</if>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (9900 - $allure) and $eventskip is 0>>
+		<<eventsdance>>
+	<<else>>
+		<<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
+	<</if>>
+<</if>>
+
+:: Widgets Events Dance [widget]
+<<widget "eventsdance">>
+	<<set $dangerevent to random(1, 100)>>
+	<<if $dancelesson is "barre">>
+		<<endevent>><<generate1>><<person1>>Charlie announces that they need to clear some room and asks you and a <<person>> to put away the portable barre. You manage to carry it out of the studio and into a room filled with other equipment. As you put it down however, you hear the door shut behind you. <span class="red">You turn to find the <<person>> advancing on you, lust in <<his>> eyes.</span>
+		<br><br>
+		<<link [[Next|Dance Studio Molestation]]>><<set $molestationstart to 1>><</link>>
+	<<elseif $dancelesson is "duo">>
+		You don't think <<he>> has to keep <<his>> hand that close to your butt. Or pull your body that close against <<his>> for that matter. <span class="blue">You can feel <<his>> hardened <<if $NPCList[1].penis is "clothed">>penis<<else>>nipples<</if>> pressing against you.</span>
+		<br><br>
+		<<link [[Endure|Dance Studio Duo]]>><<set $phase to 0>><</link>><<garousal>>
+		<br>
+		<<link [[Push away|Dance Studio Duo]]>><<set $phase to 1>><</link>>
+		<br>
+		<<if $promiscuity gte 15>>
+			<<link [[Reciprocate|Dance Studio Duo]]>><<set $phase to 2>><</link>><<promiscuous2>>
+			<br>
+		<</if>>
+	<<elseif $dancelesson is "airbarre">>
+		The barre gives way slightly, enough to disrupt your delicate balance. Instinct causes you to twist in an attempt to save yourself from falling. You succeed, but the barre becomes wrapped around your waist.
+		<br><br>
+		<<if $worn.lower.type.includes("naked")>>
+			<<if !$worn.under_lower.type.includes("naked")>>
+				You try to struggle back upright, but with no success. Worse, you start to slip despite the barre coiled tightly around your body. You fall onto your back with a thud.
+				<<if $uncomfortable.nude is false>>
+					As you regain your bearings, you see your $worn.under_lower.name suspended in the air above you. You take your time and wear a confident smile as you retrieve them, despite the whispers and giggling all around you.
+					<<garousal>>
+				<<else>>
+					As you regain your bearings, you see your $worn.under_lower.name suspended in the air above you. Flustered at your <<genitals>> being exposed in the middle of class like this, you hasten to recover your $worn.under_lower.name as quickly as you can, conscious of the whispers and giggling all around you.
+					<<gtrauma>><<gstress>><<garousal>>
+				<</if>>
+			<<else>>
+				<<if $uncomfortable.nude is false>>
+					You try to struggle back upright, but with no success. Worse, you start to slip despite the barre coiled tightly around your body. You fall onto your back with a thud. Your legs spread apart, giving the whole room a clear view of your <<genitals>>. You feign horror, unbothered by the whispers and giggling all around you.
+					<<garousal>>
+				<<else>>
+					You try to struggle back upright, but with no success. Worse, you start to slip despite the barre coiled tightly around your body. You fall onto your back with a thud. Your legs spread apart, giving the whole room a clear view of your <<undies>> and causing your face to flush red with embarrassment. You hasten to cover up as quickly as you can, conscious of the whispers and giggling all around you.
+					<<gtrauma>><<gstress>><<garousal>>
+				<</if>>
+			<</if>>
+		<<elseif currentSkillValue('danceskill') gte 600>>
+			You skilfully shift your weight and ride the momentum back into an upright position. That was close!
+		<<else>>
+			<<if $uncomfortable.underwear is false>>
+				You try to struggle back upright, but with no success. Worse, you start to slip despite the barre coiled tightly around your body. You fall onto your back with a thud. As you regain your bearings, you see your <<bottoms>> suspended in the air above you. You take your time and wear a confident smile as you retrieve them, despite the whispers and giggling all around you. You wouldn't mind showing off even more.
+			<<else>>
+				You try to struggle back upright, but with no success. Worse, you start to slip despite the barre coiled tightly around your body. You fall onto your back with a thud. As you regain your bearings, you see your <<bottoms>> suspended in the air above you. Flustered at your <<undies>> being exposed in the middle of class like this, you hasten to recover your <<bottoms>> as soon as you can, conscious of the whispers and giggling all around you.
+				<<gtrauma>><<gstress>><<garousal>>
+			<</if>>
+		<</if>>
+		<br><br>
+		<<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
+	<<elseif $dancelesson is "instructor">>
+		<<He>> presses <<his>> body against your back and holds your hands in <<his>> own so that <<he>> can more directly demonstrate to you. <<takeHandholdingVirginity "Charlie">>Despite <<him>> making no overtly sexual moves, you can't help but feel a little turned on with <<his>> toned body so intimately close to yours.
+		<<garousal>><<arousal 300>>
+		<br><br>
+		<<link [[Meek compliment|Dance Studio Instructor]]>><</link>>
+		<br>
+		<<link [[Confident brag|Dance Studio Instructor]]>><<set $phase to 1>><</link>>
+		<br>
+		<<if $promiscuity gte 15>>
+			<<link [[Flirt|Dance Studio Instructor]]>><<set $phase to 2>><</link>><<promiscuous2>>
+			<br>
+		<</if>>
+	<<else>>
+		The receptionist peeks her head through the door and looks at Charlie, who seems to understand her meaning. "I need to take five." <<he>> announces. "Keep practising, I won't be long."
+		<br><br>
+		<<endevent>>
+		<<if $dancestudioanger gte 10>>
+			<<set $dancestudioanger -= 10>>
+			<<generate1>><<generate2>><<generate3>><<generate4>><<generate5>><<generate6>><<person1>>The sound of the door shutting is more ominous than usual. You soon realise why, the rest of the room is all but silent. Everyone else is looking at you. A <<person>> speaks. <span class="red">"We've had enough of your shit. Time for a real lesson."</span> They rush toward you.
+			<br><br>
+			<<link [[Next|Dance Studio Strip]]>><<set $molestationstart to 1>><<set $timer to 10>><</link>>
+			<br>
+		<<else>>
+			How do you want to conduct yourself while Charlie is away?
+			<br><br>
+			<<link [[Focus on practising|Dancing Lesson No Instructor]]>><</link>>
+			<br>
+			<<link [[Help other students|Dancing Lesson No Instructor]]>><<set $phase to 1>><</link>>
+			<br>
+			<<if $trauma gte 1 and currentSkillValue('danceskill') gte 200>>
+				<<link [[Showboat your skills in front of less experienced students|Dancing Lesson No Instructor]]>><<set $phase to 2>><</link>><<lstress>>
+				<br>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+:: Dance Studio Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+<<effects>>
+<<effectsman>><<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if $alarm is 1>>
+	<<if $rescue is 1>>
+	<<else>>
+		No one comes to your aid.
+		<<set $alarm to 0>>
+		<<if $drugged gte 1>>The drugs inhibit you, you couldn't cry very convincingly.<</if>>
+		<br><br>
+		<<if $enemyarousal gte $enemyarousalmax>>
+			<span id="next"><<link [[Next->Dance Studio Molestation Ejaculation]]>><</link>></span><<nexttext>>
+		<<elseif $enemyhealth lte 0>>
+			<span id="next"><<link [[Next->Dance Studio Molestation Escape]]>><</link>></span><<nexttext>>
+		<<else>>
+			<span id="next"><<link [[Next->Dance Studio Molestation]]>><</link>></span><<nexttext>>
+		<</if>>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[Next->Dance Studio Molestation Ejaculation]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[Next->Dance Studio Molestation Escape]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next->Dance Studio Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Dance Studio Molestation Ejaculation
+<<effects>>
+<<ejaculation>>
+<<if $enemyanger gte ($enemyangermax / 5) * 3>>
+	"Don't you DARE tell anyone about this." Before leaving, <<he>> spits on you for good measure.
+	<br><br>
+	<<faceejacstat>><<ejacstat>><<set $hygiene += 500>><<bodyliquid "face" "goo">>
+<<elseif $enemyanger gte 1>>
+	"Don't you dare tell anyone about this." With that, <<he>> leaves.
+	<br><br>
+<<else>>
+	<<He>> smiles at you, "Let this be our little secret, okay?" <<He>> leaves you sprawled on the floor.
+	<br><br>
+<</if>>
+<<clotheson>>
+<<tearful>> you struggle to your feet and make your way back to the studio. You hope you can put on a brave face.
+<br><br>
+<<endcombat>>
+<<link [[Next|Dancing Lesson]]>><</link>>
+
+:: Dance Studio Molestation Escape
+<<effects>>
+<<He>> yells out and falls to the ground. <span class="green"><<tearful>> you use the opportunity to flee the room and escape back to the studio.</span>
+<br><br>
+<<endcombat>>
+<<npc Charlie>><<person1>><<npcincr Charlie love 2>><<glove>>
+Charlie immediately recognises that something is wrong. <<He>> pulls you aside and gently inquires. Wanting to put your ordeal behind you, you tell <<him>> that everything is fine. Charlie continues the lesson, but still looks concerned.
+<br><br>
+<<clothesontowel>>
+<<endevent>>
+<<link [[Next|Dancing Lesson]]>><</link>>
+
+:: Dance Studio Duo
+<<set $outside to 0>><<set $location to "dance_studio">><<effects>>
+<<if $phase is 0>>
+	Your reticence encourages <<him>> to be more bold. <<He>> takes every opportunity to grope and fondle you as you try your best to ignore <<him>> and focus. You breathe a sigh of relief when Charlie announces that it's time for something different.
+	<<arousal 300 "breasts">><<arousal 300 "bottom">>
+	<br><br>
+<<elseif $phase is 1>>
+	You push <<him>> away from you, causing <<him>> to trip over <<his>> feet and falls loudly to the floor. Cursing, <<he>> stands up as Charlie announces that it's time to change partners. The <<person2>><<person>> gives you one last angry look before being matched up with an elderly <<personsimple>>; <span class="pink">the entire class seems irritated with your behaviour.</span>
+	<<set $dancestudioanger += 1>>
+	<br><br>
+<<elseif $phase is 2>>
+	<<promiscuity2>>Not wanting to be outdone, you return <<his>> fondling with your own. Hiding the lewd touching under the veneer of dance practise, you grope each other right in the middle of the room, the rest of the class ignorant of the lechery occurring right in front of them. By the time Charlie calls for a stop, both you and the <<person>> are breathing far more heavily than anyone else.
+	<br><br>
+<</if>>
+<<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
+
+:: Dance Studio Instructor
+<<set $outside to 0>><<set $location to "dance_studio">><<effects>>
+<<if $phase is 0>>
+	You turn your head to look at <<him>>. "I hope to be as good as you someday." You avert your eyes meekly when <<he>> tries to meet your gaze.
+	<br>
+	<<He>> squeezes your hands slightly, "You will be, and sooner than you think." You swear <<he>> gives you more attention than the other students for the rest of the lesson.
+	<<npcincr Charlie love 2>><<glove>> <<danceskilluse>>
+	<br><br>
+	<span class="pink">The other students notice too, many give you jealous looks.</span>
+	<<set $dancestudioanger += 1>>
+<<elseif $phase is 1>>
+	"You'd better watch out," you announce, "I'll be bettering you soon!"
+	<br>
+	<<He>> laughs, "I hope so, means I've done my job right. Now, shut your yap a moment and watch closely..."
+<<elseif $phase is 2>>
+	You rub your butt against <<his>> crotch. "You're so fit and well formed, I don't know how you do it."
+	<br>
+	<<He>> moves <<his>> pelvis away from you, blood rushing to <<his>> face. "Y-yes. I mean, no, I mean... you're doing OK, I need to go check on someone else." <<He>> avoids looking in your direction for the rest of the lesson.
+	<<npcincr Charlie love -2>><<promiscuity2>><<llove>>
+<</if>>
+<br><br>
+<<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
+<br>
+
+:: Dance Studio Strip
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>><<npcstrip>>
+	<<set $timer to 5>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if _combatend or $timer lte 0>>
+	<span id="next"><<link [[Next|Dance Studio Strip Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Dance Studio Strip]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Dancing Lesson No Instructor
+<<set $outside to 0>><<set $location to "dance_studio">><<effects>>
+<<if $phase is 0>>
+	<<endevent>>
+	<<npc Charlie>><<person1>>
+	You practise as Charlie demonstrated. It's not long before <<he>> returns.
+	<<danceskilluse>>
+<<elseif $phase is 1>>
+	<<endevent>>
+	<<npc Charlie>><<person1>>
+	A <<generate2>><<person2>><<person>> near you loses their balance and would have fallen to the floor had you not intervened. You spend some time teaching <<him>> how to remain composed. You don't learn much yourself, but <<he>> is clearly grateful, <span class="green">and the class seems pleased with your generosity.</span> Charlie soon returns.
+	<<set $dancestudioanger -= 1>>
+<<elseif $phase is 2>>
+	<<endevent>>
+	<<npc Charlie>><<person1>>
+	You flaunt your skill in front of the other students. It feels good to act superior, <span class="pink">but the looks you receive suggest that the other students dislike being shown up like this.</span> Charlie soon returns.
+	<<stress -12>><<set $dancestudioanger += 1>>
+<</if>>
+<br><br>
+<<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
+
+:: Dance Studio Strip Finish
+
+<<if $enemyhealth lte 0>>
+	<span class="green">You hear Charlie's voice growing louder above the jeers of the <<group>>.</span> "There's more where this came from," the <<person2>><<person>> says as they cease their attack.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Dancing Lesson]]>><</link>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<span class="green">You hear Charlie's voice growing louder above the jeers of the <<group>>.</span> "There's more where this came from," the <<person2>><<person>> says as they cease their attack.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Dancing Lesson]]>><</link>>
+<<else>>
+	<span class="green">You hear Charlie's voice growing louder above the jeers of the <<group>>.</span> "There's more where this came from," the <<person2>><<person>> says as they cease their attack.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Dancing Lesson]]>><</link>>
+<</if>>
+
+:: Widgets Events Yoga Lesson [widget]
+
+<<widget "yogalessons">>
+	<<if $worn.under_upper.type.includes("dance")>>
+		<<switch random(1,4)>>
+			<<case 1>>
+				<<if ["lightheaded","dizzy"].includes(_pregnancyDailyEvent)>>
+					Charlie nods at your <<bellyDescription>> and asks how you've been feeling.
+					<br><br>
+					<<if $speech_attitude is "meek">>
+						"I'm hanging in there," you say with a timid little smile. "Just a bit light-headed lately. I was worried I'd faint this morning."
+					<<elseif $speech_attitude is "bratty">>
+						"Eh, could be better," you say with a shrug. "Vertigo is kicking my ass today."
+					<<else>>
+						"A little dizzy," you admit. "But otherwise fine."
+					<</if>>
+					<br><br>
+					Charlie nods. "That's to be expected," <<nnpc_he "Charlie">> says. "We'll take it easy in class today with some restorative yoga. There are poses that can help mitigate the dizziness by evening out blood circulation and improving your center of balance." <<nnpc_He "Charlie">> demonstrates some poses, and you feel steadier on your feet after completing the routine.
+				<<else>>
+					The lesson goes on. You are able to follow without much difficulty.
+				<</if>>
+			<<case 2>>
+				<<if ["cramping"].includes(_pregnancyDailyEvent)>>
+					Charlie leads the class in performing side lunges. You feel the stretch in your pelvic floor as you follow <<nnpc_his "Charlie">> instructions, and it eases your cramps. You sigh with relief. <<lpain>><<pain -12>>
+				<<else>>
+					Charlie demonstrates a couple of the easier positions. They are a good warm up, and you can feel your body getting a good stretch.
+				<</if>>
+			<<case 3>>
+				<<if ["crying"].includes(_pregnancyDailyEvent)>>
+					Charlie leads the class in performing a move called child's pose. You smile at the name, placing a hand over your <<bellyDescription>>. You kneel and bow your forehead to the mat, stretching your arms in front of you as you sit back on your heels. Charlie instructs you to hold the pose for several long, steady breaths to release the tension you're carrying in your body. You don't know why, but you soon find yourself crying.
+					<br><br>
+					When you come out of the pose, your yoga mat is wet with tears. Charlie gives you a concerned look as you wipe your face. <<nnpc_He "Charlie">> discreetly approaches you. "Yoga is cathartic, isn't it?" <<nnpc_he "Charlie">> murmurs. "Don't be afraid to release those emotions." <<nnpc_He "Charlie">> gives your hand a quick squeeze before returning to the front of the classroom. <<ltrauma>><<glove>><<trauma -6>><<npcincr Charlie love 1>>
+				<<else>>
+					<<if ["angry"].includes(_pregnancyDailyEvent)>>
+						With Charlie's guidance, you and your classmates practice breathing exercises designed to help expel pent-up emotions. All the little irritants that had been building up throughout the day dissipate as you breathe through each stretch. <<lstress>><<stress -12>>
+					<<else>>
+						Charlie demonstrates a couple of the more difficult positions. They are much harder to maintain and you soon start to feel your body getting tired.
+					<</if>>
+				<</if>>
+			<<case 4>>
+				As the lesson progresses, Charlie chooses a position that is particularly hard to maintain. Noticing your struggle, <<nnpc_he "Charlie">> approaches you. <<nnpc_He "Charlie">> points out your errors and helps you to correct them. You soon feel a lot more stable, and are able to stay in position with much more ease.
+		<</switch>>
+	<<else>>
+		<<switch random(1,4)>>
+			<<case 1>>
+				The lesson goes on. Despite a mix of embarrassment and arousal you are able to follow without much difficulty.
+			<<case 2>>
+				Charlie demonstrates a couple of the easier positions. They are a good warm up, but also makes you feel much more conscious of your lewd state. You swear other students are looking at you from time to time.
+			<<case 3>>
+				Charlie demonstrates a couple of the more difficult positions. They are challenging enough that you almost forget how exposed you are. Most other students also seem too absorbed in the exercise to pay attention to you.
+			<<case 4>>
+				As the lesson progresses, Charlie chooses a position that is particularly hard to maintain. Noticing your struggle, <<nnpc_he "Charlie">> approaches you. Despite <<nnpc_his "Charlie">> clear embarrassment <<nnpc_he "Charlie">> points out your errors and helps you to correct them. You soon feel a lot more stable, and are able to stay in position with much more ease.
+		<</switch>>
+	<</if>>
+	<br><br>
+	<<link [[Next|Yoga Classes Start 2]]>><</link>>
+<</widget>>
+
+<<widget "yogalewd">>
+	<<if $worn.under_upper.type.includes("dance")>>
+		<<endevent>><<generate1>>
+		<<switch random (1,2)>>
+			<<case 1>>
+				Charlie asks you and another student to help put the mats away. You both take a couple and take them to the closet. As soon as you enter, you hear the sound of mats hitting the floor, as well as the door being shut. You look back and see the <<person1>><<person>> approaching you.
+				<br><br>
+				<<link [[Next|Yoga Classes Molestation]]>><<set $molestationstart to 1>><</link>>
+			<<case 2>>
+				As the lesson progresses, Charlie gets called outside the classroom. <<nnpc_He "Charlie">> tells everyone to maintain position, and that <<nnpc_he "Charlie">> should be back in a minute. You try to do as <<nnpc_he "Charlie">> says, but soon feel a hand touching your butt.
+				<br><br>
+				"Better stay quiet," the <<person1>><<person>> says. "We don't want to cause a scene, do we?"
+				<br><br>
+				<<link [[Next|Yoga Classes Molestation]]>><<set $molestationstart to 1>><</link>>
+		<</switch>>
+	<<else>>
+		<<endevent>><<generate1>><<generate2>><<generate3>><<generate4>>
+		As the lesson progresses, Charlie gets called outside the classroom. <<nnpc_He "Charlie">> tells everyone to maintain position, and that <<nnpc_he "Charlie">> would be back in a minute. You try to do as <<nnpc_he "Charlie">> says, but soon feel a hand touching your butt.
+		<br><br>
+		"Coming here dressed like this," the <<person1>><<person>> says. "You're asking for it, right?"
+		<br><br>
+		As you look around, you notice several other people have also gotten closer, gazing at your <<lewdness>> lustfully.
+		<br><br>
+		<<link [[Stay quiet|Yoga Classes Non-Orgy]]>><<set $molestationstart to 1>><</link>>
+		<br>
+		<<if $promiscuity gte 75>>
+			<<link [[Offer yourself|Yoga Classes Orgy]]>><<set $sexstart to 1>><</link>><<promiscuous5>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+:: Yoga Classes Inquire
+<<effects>>
+The receptionist looks at the advertisement. "Oh, that? It's the newest addition to our studio. Lessons happen every Monday, Wednesday and Friday. They can be a little more expensive than our dance lessons, but are great for flexibility."
+<br><br>
+<<if playerBellyVisible()>>
+	The receptionist glances at your <<bellyDescription "pc">>. "Yoga is also a great form of prenatal exercise and has many benefits for you and your baby. Just keep in mind that if you want to participate, you better come with clothes that are easy to move in."
+	<br><br>
+<<else>>
+	The receptionist looks back at you. "Besides, there are great therapeutic benefits to yoga. Just keep in mind that, if you want to participate, you better come with clothes that are easy to move in."
+	<br><br>
+<</if>>
+<<link [[Next|Dance Studio]]>><</link>>
+
+:: Yoga Classes Change Room
+<<effects>>
+You enter the changing room, and think about how you would like to dress for the lesson.
+<br><br>
+<<dancingclothes>>
+<<if _store_check is 1>>
+	<<link [[Enter|Yoga Classes Enter]]>><</link>>
+	<br>
+<</if>>
+<<link [[Leave|Dance Studio]]>><</link>>
+<br>
+<<if $exhibitionism gte 75>>
+	<<link [[Go naked|Yoga Classes Enter]]>><<strip>><</link>><<exhibitionist5>>
+	<br>
+<</if>>
+
+:: Yoga Classes Enter
+<<effects>>
+<<set $dancestage to 0>>
+<<if $dancestudiointro isnot 1>>
+	<<danceStudioIntro "Yoga Classes Start 2">>
+<<elseif $worn.under_upper.type.includes("dance")>>
+	In your yoga clothes, you enter the classroom. Several mats are scattered on the floor, many of them already taken by the other students. No one pays attention to you, and you choose a mat closer to the back of the class to sit down.
+	<br><br>
+	Soon, Charlie enters the classroom. <<nnpc_He "Charlie">> goes to the front, sitting on a mat facing the students. The lesson is about to start.
+	<br><br>
+	<<link [[Next|Yoga Classes Start 2]]>><</link>>
+<<else>>
+	You take off all your clothes. Feeling exposed, you take a deep breath before leaving the changing room and going to the class. Once you enter, you notice several mats scattered around the floor, many of them already taken by other students. At first no one notices you, but as you walk around more and more heads turn into your direction. Some are clearly too embarrassed to keep looking, while others let their discontent show on their faces. Most, however, look at you with clear lust in their eyes.
+	<br><br>
+	Charlie soon enters the room. Seeing you, however, <<nnpc_he "Charlie">> stops for a moment, surprised at your naked display. Still, <<nnpc_he "Charlie">> doesn't say anything. Averting <<nnpc_his "Charlie">> eyes, and with a slight blush on <<nnpc_his "Charlie">> face, <<nnpc_he "Charlie">> goes to the front of the class and sits on a mat facing the students. You also sit down, picking a mat closer to the front.
+	<br><br>
+	<<link [[Next|Yoga Classes Start 2]]>><</link>>
+<</if>>
+
+:: Yoga Classes Start 2
+<<effects>>
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+<<set _pregnancyDailyEvent to dailyPregnancyEvent()>>
+<<if Array.isArray(_pregnancyDailyEvent)>>
+  <<set _pregnancyDailyEvent to _pregnancyDailyEvent[random(0, _pregnancyDailyEvent.length - 1)]>>
+<</if>>
+<<tiredness 4>><<set $dancestage += 1>><<stress -6>><<wearandtear "dance">><<physique 2>><<pass 20>>
+/* 北极星模组 */
+<<willpower 4>>
+/* 北极星 */
+<<if !$daily.yogaWillpower>><<set $daily.yogaWillpower to 1>><<willpower 4>><</if>>
+<<if ["tired"].includes(_event) and $dancestage gte 3>>
+	At the end of the lesson, Charlie tells everyone to recline on their backs. You lay down as instructed, and <<nnpc_he "Charlie">> leads you in guided meditation. "Close your eyes," <<nnpc_he "Charlie">> says, <<nnpc_his "Charlie">> voice barely audible over the soothing music playing in the background. "Allow your body to become soft and heavy. Sink into the floor, and relax..." Whatever else Charlie has to say is lost to you, as you drift off to sleep.
+	<br><br>
+	A gentle hand on your shoulder nudges you back into the realm of consciousness. You groggily look around the room to see students chattering amongst themselves as they roll up their yoga mats and leave the studio.
+	<br><br>
+	"It's not unusual for one to fall asleep in shavasana," Charlie says with a smile. "But I'm afraid it's time to leave now." <<nnpc_He "Charlie">> sounds apologetic as <<nnpc_he "Charlie">> offers you a hand to help you to your feet. "You and your little one should go get some rest." <<nnpc_He "Charlie">> holds the door open for you as you leave.
+	<<ltiredness>><<glove>><<tiredness -12>><<npcincr Charlie love 1>>
+	<br><br>
+	<<link [[Next|Dance Studio Changing Room]]>><<set $money -= 2200>><<if $exposed gte 2>><<clotheson>><</if>><<endevent>><</link>>
+<<elseif $dancestage gte 3>>
+	The rest of the lesson passes uneventfully.
+	<br><br>
+	<<link [[Next|Dance Studio Changing Room]]>><<set $money -= 2200>><<if $exposed gte 2>><<clotheson>><</if>><<endevent>><</link>>
+<<elseif $danger gte (9900 - $allure) and $eventskip is 0>>
+	<<yogalewd>>
+<<else>>
+	<<yogalessons>>
+<</if>>
+
+:: Yoga Classes Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if _combatend>>
+	<span id="next"><<link [[Next|Yoga Classes Molestation End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Yoga Classes Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Yoga Classes Molestation End
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<if $enemyanger gte ($enemyangermax / 5) * 3>>
+		"Don't you DARE tell anyone about this." Before leaving, <<he>> spits on you for good measure.
+		<br><br>
+		<<faceejacstat>><<ejacstat>><<set $hygiene += 500>><<bodyliquid "face" "goo">>
+	<<elseif $enemyanger gte 1>>
+		"Don't you dare tell anyone about this." With that, <<he>> leaves.
+		<br><br>
+	<<else>>
+		<<He>> smiles at you, "Let this be our little secret, okay?" <<He>> leaves you sprawled on the floor.
+		<br><br>
+	<</if>>
+	<<tearful>> you struggle to your feet and make your way back to the studio. You hope you can put on a brave face.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Yoga Classes Start 2]]>><</link>>
+
+<<else>>
+	<<He>> yells out and falls to the ground. <span class="green"><<tearful>> you use the opportunity to flee the room and escape back to the studio.</span>
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	Charlie immediately recognises that something is wrong. <<nnpc_He "Charlie">> pulls you aside and gently inquires. Wanting to put your ordeal behind you, you tell <<nnpc_him "Charlie">> that everything is fine. Charlie continues the lesson, but still looks concerned. <<npcincr Charlie love 2>><<glove>>
+	<br><br>
+	<<link [[Next|Yoga Classes Start 2]]>><</link>>
+<</if>>
+
+:: Yoga Classes Non-Orgy
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<maninit>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if _combatend>>
+	<span id="next"><<link [[Next|Yoga Classes Orgy End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Yoga Classes Non-Orgy]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Yoga Classes Orgy
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<if $speech_attitude is "meek">>
+		You feel the heat growing in your groin. You part your legs wide, giving them a full view of your <<genitals>>. "You... can do what you want..."
+	<<elseif $speech_attitude is "bratty">>
+		You feel the heat growing in your groin. You smile at them. "Well... what if I am asking for it? What're you gonna do about it?"
+	<<else>>
+		You feel the heat growing in your groin. You don't say anything, but part your legs wide, giving them a full view of your <<genitals>>.
+	<</if>>
+	<br><br>
+
+	That's all the incentive they need. The crowd jumps at you.
+	<<promiscuity5>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if _combatend>>
+	<span id="next"><<link [[Next|Yoga Classes Orgy End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Yoga Classes Orgy]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Yoga Classes Orgy End
+<<effects>>
+<<if $enemyhealth lte 0>>
+	You make your assailants practice a much more painful type of yoga as you lay them all low.
+	<<clotheson>>
+	<<endcombat>>
+	The classroom door opens, prompting everyone to quickly return to their mats. Charlie looks at the students, many of whom are bruised and shaky. Still, <<nnpc_he "Charlie">> doesn't say anything, and just sits down on his mat.
+	<br><br>
+	The rest of the lesson passes without further incident.
+	<br><br>
+	<<link [[Next|Yoga Classes Start 2]]>><</link>>
+	<br>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<clotheson>>
+	<<endcombat>>
+	The classroom door opens, prompting your assailants to quickly return to their mats. Charlie looks at the students, many of whom are no longer maintaining position. Still, <<nnpc_he "Charlie">> doesn't say anything, and just sits down on his mat.
+	<br><br>
+	The rest of the lesson passes without further incident.
+	<br><br>
+	<<link [[Next|Yoga Classes Start 2]]>><</link>>
+	<br>
+<<else>>
+	<<clotheson>>
+	<<endcombat>>
+	The classroom door opens, prompting your assailants to quickly return to their mats. Charlie looks at the students, many of whom are no longer maintaining position. Still, <<nnpc_he "Charlie">> doesn't say anything, and just sits down on his mat.
+	<br><br>
+	The rest of the lesson passes without further incident.
+	<br><br>
+	<<link [[Next|Yoga Classes Start 2]]>><</link>>
+	<br>
+<</if>>
+
+:: Heel Lesson Inquiry
+<<set $outside to 0>><<set $location to "dance_studio">><<effects>>
+The receptionist looks you up and down. "We offer high heel classes every Tuesday and Thursday, but students must bring their own shoes to participate.
+<<if $worn.feet.type.includes("heels")>>
+	Those $worn.feet.name look perfect for the curriculum."
+<<else>>
+	If you're interested, the shopping centre sells them."
+<</if>>
+<br><br>
+<<link [[Next|Dance Studio]]>><</link>>
+
+:: Heel Lesson
+<<set $outside to 0>><<set $location to "dance_studio">><<effects>>
+
+<<if $dancestudiointro isnot 1>>
+	<<danceStudioIntro "Heel Lesson">>
+<<else>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "danceStudioHeelLesson">>
+	<</if>>
+	<<rng 5>>
+	<<if $rng is 1>>
+		Charlie hands you and the other class members a stack of books. Instead of telling you to read them, <<npc Charlie>><<person1>><<he>> instructs you to balance them on your head and do laps around the room. It takes all of your concentration to keep them from falling.
+	<<elseif $rng is 2>>
+		You enter the dance room to find an assortment of car tyres resting on the floor. To Charlie's direction, you and your classmates take turns stepping into and out of each tyre. Charlie shouts as you walk, "Faster! Faster! Faster! Faster!"
+	<<elseif $rng is 3>>
+		The dance room is cluttered with discarded leotards, dance equipment, and floor mats. Charlie greets the class and begins, "For this lesson, I want you to clean the room up without using your hands. Use your heels." You do as <<npc Charlie>><<person1>><<he>> says.
+	<<else>>
+		A line of tape is placed on the dance room floor. You and your classmates take turns doing catwalks down the line, moving elegantly to imitate fashion models. As you walk, Charlie grabs you by the waist and guides each step. "That's it! Keep moving!"
+	<</if>>
+	<br><br>
+	<<tiredness 20>>
+	<<feetskill 10>>
+	<span class="gold">You feel more confident in your ability to give pleasure with your feet.</span>
+	<br><br>
+	<<link [[Finish up|Heel Lesson Video]]>><</link>>
+<</if>>
+
+:: Heel Lesson Video
+As the class winds down, you and the other students are led to the corner where a television cart sits. Flipping the television on, Charlie instructs the class to watch a short educational video before leaving.
+<br><br>
+<<rng 8>>
+<<if $rng is 1>>
+	This class's video is on the history of high heels. You watch pictures of 17th century shoes, and how men of royalty used to wear them.
+<<elseif $rng is 2>>
+	A guide to etiquette appears on the screen. The posh narrator explains how to walk and carry oneself when at a fancy restaurant.
+<<elseif $rng is 3>>
+	The video is low-quality and grainy. It shows a woman wearing tall heels, stepping on a banana.
+	<<if $awareness gte 200>>
+		"This must be someone's fetish," you think.
+		<<garousal>><<arousal 100>>
+	<</if>>
+<<elseif $rng is 4>>
+	A woman in a leotard appears on screen. You watch her perform a dance routine, paying attention to how she manages such grace in her heels.
+	<<garousal>><<arousal 300>>
+<<else>>
+	The video is a guide to walking in high heels. It shows you how to stand, how to sit, and how to walk gracefully.
+<</if>>
+<br><br>
+<<endevent>>
+<<link [[Leave|Dance Studio]]>><</link>>

@@ -1,0 +1,102 @@
+:: Bunker Rat
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $finish is 1>>
+	<span id="next"><<link [[继续|Bunker Rat Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[继续|Bunker Rat Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[继续|Bunker Rat Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Bunker Rat]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bunker Rat Finish
+
+<<effects>>
+<<if $enemyhealth lte 0>>
+	你成功地击败了<<beasttype>>，<<bHe>>逃入了地堡深处。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<tearful>>你重新振作了起来。
+	<br><br>
+	<<link [[继续|Bunker]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	在得到满足之后，这只<<beasttype>>离开了你。
+	<br><br>
+	<<link [[继续|Bunker]]>><<set $eventskip to 1>><</link>>
+<<else>>
+	<<clotheson>>
+	<<endcombat>>
+	<<tearful>>你重新振作了起来。
+	<br><br>
+	<<link [[继续|Bunker]]>><<set $eventskip to 1>><</link>>
+<</if>>
+
+:: Bunker Spider
+
+<<effects>>
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<molested>>
+	<<controlloss>>
+	<<set $combat to 1>>
+	<<set $enemytype to "swarm">>
+	<<swarminit "spiders" "蜘囊" "爬行着" "破开" "稳定" 1 9>>
+	<<set $timer to 30>>
+<</if>>
+
+<<if $timer gte 25>>
+    上方那些满是蜘蛛网的老旧铁链正在吱呀作响，这样下去的话，它们一定会断开的。
+<<elseif $timer gte 20>>
+    伴随着轰的一声，天花板骤然碎裂，碎片散落的满地都是。
+<<elseif $timer gte 10>>
+    那些铁制的东西正在被继续腐蚀着。
+<<elseif $timer gte 1>>
+    天花板上正在发出不妙的嘎吱声。
+<<else>>
+    天花板上的一根钢梁骤然断裂，蜘蛛网也随之塌落到了地面上。
+<</if>>
+<br><br>
+
+<<swarmeffects>>
+<<swarm>>
+<<swarmactions>>
+
+<<if $timer lte 0>>
+	<span id="next"><<link [[继续|Bunker Spider Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Bunker Spider]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bunker Spider Finish
+
+<<effects>>
+被这次塌方吓坏的蜘蛛逃回了来时的地方，<<tearful>>你努力站了起来，然后把身上还挂着的蛛网扯了下去。
+<br><br>
+
+<<clotheson>>
+<<pass 1 hour>>
+<<endcombat>>
+
+<<link [[继续|Bunker]]>><<set $eventskip to 1>><</link>>

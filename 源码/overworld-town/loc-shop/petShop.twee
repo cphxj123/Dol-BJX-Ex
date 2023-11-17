@@ -1,0 +1,406 @@
+:: Pet Shop Lock
+
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>><<set $lock to 200>>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>><<link [[Pick it (0:10)|Pet Shop]]>><<pass 10>><<crimeUp 10 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span>
+	<<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Pet Shop]]>><<set $ghostIn to true>><<pass 1>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+
+<<getouticon>><<link [[Leave|Shopping Centre]]>><</link>>
+<br>
+
+:: Pet Shop
+
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+You are in the pet shop. <<if Time.dayState is "night">>Most of the animals are sleeping at the moment<<else>>A handful of the small animals turn to look in your direction<</if>>. They all look cute but you doubt Bailey will let you keep any.
+<br><br>
+<<if $daily.seenPets isnot true and Time.dayState isnot "night" and $fame.bestiality gte 200 and $bestialitydisable is "f" and ($monsterchance lt 100 or $monsterhallucinations is "t")>>
+	<<set $daily.seenPets to true>><<generate1>><<person1>>
+	<<if $fame.bestiality gte 600>>
+		A <<person>> confronts you as you walk into the store. <<Hes>> wearing a nametag and the uniform of the place. <<His>> tone is polite, but firm.
+		"Those animals are under my responsibility, and I don't want you to touch them in any way. If you're not here to buy something, please leave." <<stress 12>><<ggstress>>
+		<br><br>
+	<<elseif $fame.bestiality gte 400>>
+		One of the workers has taken to following your every step. You can't evade <<his>> wary gaze. <<stress 6>><<gstress>>
+		<br><br>
+	<<else>>
+		The shopkeepers keep a close eye on you every time you get close to the animals. You're not sure why.
+		<br><br>
+	<</if>>
+	<<endevent>>
+<<elseif $daily.seenPets isnot true and Time.dayState isnot "night">>
+	<<set $daily.seenPets to true>><<stress -10>>
+	You have a look around the shop, and pet some of the cats and dogs.
+	<<lstress>>
+	<br><br>
+<</if>>
+<<if Time.dayState is "night" and Time.hour isnot $closinghour and !$weekly.theft.petShop>>
+	<<shopicon "register">><<link [[Examine the cash register|Pet Shop Register]]>><</link>>
+	<br>
+<</if>>
+<<if $pregnancyStats.wolfToysUnlocked and Time.dayState isnot "night">>
+	<<if $player.inventory.childrenToys is undefined>>
+		<<set $player.inventory.childrenToys to []>>
+	<</if>>
+	<<if !$storedChildrenToys>><<set $storedChildrenToys to {}>><</if>>
+	<<toySelection>>
+	<<petshopicon "chew">> <<link [[Wolf Chew Toys|Pet Shop Item]]>><<set $selectedToy to clone(_toySelection["chewToy"])>><</link>>
+	<br>
+<</if>>
+<<if $farm_stage gte 7 and Time.dayState isnot "night">>
+	<<petshopicon "treat">><<link [[Dog treats (£1 each)|Pet Shop Treats]]>><</link>>
+	<br>
+<</if>>
+<<if $pregnancyStats.parasiteDoctorEvents gte 2 and Time.dayState isnot "night">>
+	<<set _motherStatus to $sexStats.anus.pregnancy.motherStatus + $sexStats.vagina.pregnancy.motherStatus>>
+	<<set _container to $container.home>>
+	<br>
+	<<if $boughtItem isnot undefined>>
+		<<generate1>><<person1>>You ask the shop owner for the <span class="gold"><<print $boughtItem>>.</span> "Certainly, <<if $player.gender_appearance is "m">>sir<<else>>madam<</if>>," <<he>> says with a smile. "I will have it delivered to your home as soon as I can."<<endevent>>
+		<hr>
+		<<PetShopBoughtItem>>
+	<</if>>
+	__Capacity upgrades:__
+	<br>
+	<<if (_motherStatus is 0 and _container.upgrades.capacity lt 1) or (_motherStatus gt 0 and _container.upgrades.capacity lt 4)>>
+		<<if _motherStatus gte 0 and _container.upgrades.capacity is 0>>
+			<<if $money gte 20000>>
+				<<petshopicon "tank small">><<link [[Buy small fish tank £200|$passage]]>><<set $boughtItem to "Small Fish Tank">><</link>>
+				<br>
+			<<elseif _container.upgrades.capacity lt 1>>
+				You don't have £200 for the Small Fish Tank.
+				<br>
+			<</if>>
+		<</if>>
+		<<if _motherStatus gte 1>>
+			<<if $money gte 50000 and _container.upgrades.capacity lt 2>>
+				<<petshopicon "tank medium">><<link [[Buy fish tank £500|$passage]]>><<set $boughtItem to "Fish Tank">><</link>>
+				<br>
+			<<elseif _container.upgrades.capacity lt 2>>
+				You don't have £500 for the Fish Tank.
+				<br>
+			<</if>>
+			<<if $money gte 100000 and _container.upgrades.capacity lt 3>>
+				<<petshopicon "tank large">><<link [[Buy large fish tank £1,000|$passage]]>><<set $boughtItem to "Large Fish Tank">><</link>>
+				<br>
+			<<elseif _container.upgrades.capacity lt 3>>
+				You don't have £1,000 for the Large Fish Tank.
+				<br>
+			<</if>>
+			<<if $money gte 500000 and _container.upgrades.capacity lt 4>>
+				<<petshopicon "tank huge">><<link [[Buy huge fish tank £5,000|$passage]]>><<set $boughtItem to "Huge Fish Tank">><</link>>
+				<br>
+			<<elseif _container.upgrades.capacity lt 4>>
+				You don't have £5,000 for the Huge Fish Tank.
+				<br>
+			<</if>>
+		<</if>>
+	<<else>>
+		You have the best tank available.
+		<br>
+	<</if>>
+	<<if _motherStatus gte 1 and _container.upgrades.capacity gt 1>>
+		<br>
+		__Food upgrades:__
+		<br>
+		<<if _container.upgrades.foodStorage lt 3>>
+			<<if $money gte 50000 and _container.upgrades.foodStorage lt 1>>
+				<<petshopicon "feeder">><<link [[Buy small automatic feeder £500|$passage]]>><<set $boughtItem to "Small Automatic Feeder">><</link>>
+				<br>
+			<<elseif _container.upgrades.foodStorage lt 1>>
+				You don't have £500 for the Small Automatic Feeder.
+				<br>
+			<</if>>
+			<<if $money gte 150000 and _container.upgrades.foodStorage lt 2>>
+				<<petshopicon "feeder">><<link [[Buy automatic feeder £1,500|$passage]]>><<set $boughtItem to "Automatic Feeder">><</link>>
+				<br>
+			<<elseif _container.upgrades.foodStorage lt 2>>
+				You don't have £1,500 for the Automatic Feeder.
+				<br>
+			<</if>>
+			<<if $money gte 750000 and _container.upgrades.foodStorage lt 3>>
+				<<petshopicon "feeder">><<link [[Buy large automatic feeder £7,500|$passage]]>><<set $boughtItem to "Large Automatic Feeder">><</link>>
+				<br>
+			<<elseif _container.upgrades.foodStorage lt 3>>
+				You don't have £7,500 for the Large Automatic Feeder.
+				<br>
+			<</if>>
+		<<elseif _motherStatus gte 1>>
+			You have the best automatic feeder available.
+			<br>
+		<</if>>
+	<</if>>
+	<<if _container.upgrades.capacity gt 2>>
+		<br>
+		__Decoration upgrades:__
+		<br>
+		<<if _container.upgrades.luxury lt 1 or (_container.upgrades.capacity gt 3 and _container.upgrades.luxury lt 2)>>
+			<<if $money gte 500000 and _container.upgrades.luxury lt 1>>
+				<<petshopicon "decor">><<link [[Buy standard decorations £5,000|$passage]]>><<set $boughtItem to "Standard Decorations">><</link>>
+				<br>
+			<<elseif _container.upgrades.luxury lt 1>>
+				You don't have £5,000 for the Standard Tank Decorations.
+				<br>
+			<</if>>
+			<<if $money gte 1500000 and _container.upgrades.luxury lt 2 and _container.upgrades.capacity gt 3>>
+				<<petshopicon "decor exotic">><<link [[Buy exotic decorations £15,000|$passage]]>><<set $boughtItem to "Exotic Decorations">><</link>>
+				<br>
+			<<elseif _container.upgrades.luxury lt 2 and _container.upgrades.capacity gt 3>>
+				You don't have £15,000 for the Exotic Tank Decorations.
+				<br>
+			<</if>>
+		<<else>>
+			You have the best tank decorations available.
+			<br>
+		<</if>>
+	<</if>>
+	<<if $pregnancyStats.parasiteBook is 2>>
+		<br>
+		<<if $money gte 2000>>
+			<<assignmenticon>><<link [[Buy notebook (£20)|Pet Shop Book]]>><<set $money -= 2000>><</link>>
+		<<else>>
+			You see a notebook available that you could use to collect info on your parasites. It costs £20. You can't afford it.
+		<</if>>
+		<br>
+	<</if>>
+<</if>>
+<br>
+/* 北极星模组 */
+<<if $lakehouseinit is 1 and $lakehouse isnot undefined>>
+	<<if $lakehouse.petbed is undefined or $lakehouse.petbed is 0>>
+		<<if $money gte 200000>>
+			<li><<link [[购买一张宠物床 (£2000)|$passage]]>><<set $money -= 200000>><<set $lakehouse.petbed to 1>><</link>></li>
+		<<else>>
+			<li>你没有 £2,000 购买宠物床。</li>
+		<</if>>
+	<<elseif $lakehouse.petbed is 2>>
+		家里放不下更多宠物床了。
+	<<elseif $lakehouse.petbed gte 1>>
+		<<if $money gte 200000>>
+			<li><<link [[再购买一张宠物床 (£2000)|$passage]]>><<set $money -= 200000>><<set $lakehouse.petbed to 2>><</link>></li>
+		<<else>>
+			<li>你没有 £2,000 再购买宠物床。</li>
+		<</if>>
+	<</if>>
+	<<if $lakehouse.terrarium is undefined or $lakehouse.terrarium is 0>>
+		<<if $money gte 100000>>
+			<li><<link [[购买玻璃缸 (£1000)|$passage]]>><<set $money -= 100000>><<set $lakehouse.terrarium to 1>><</link>></li>
+		<<else>>
+			<li>你没有 £1,000 购买玻璃缸。</li>
+		<</if>>
+	<</if>>
+	<<if $lakehouse.petbed isnot undefined and $lakehouse.pet isnot undefined and $lakehouse.petbed gt $lakehouse.pet.length>>
+		<<if $money gte 50000>>
+			<li><<link [[领养一只狗狗 (£500)|Pet Shop Dog Buy]]>>
+				<<set $money -= 50000>>
+				<<set $pet_now to {}>>
+				<<set $pet_now.type to "dog">>
+				<<set $pet_now.name to "狗子">>
+				<<if random(1, 100) lte $beastmalechance>>
+					<<set $pet_now.gender to "m">>
+				<<else>>
+					<<set $pet_now.gender to "f">>
+				<</if>>
+			<</link>></li>
+		<<else>>
+			<li>你没有 £500 买狗狗。</li>
+		<</if>>
+		<<if $money gte 50000>>
+			<li><<link [[领养一只猫猫 (£500)|Pet Shop Cat Buy]]>>
+				<<set $money -= 50000>>
+				<<set $pet_now to {}>>
+				<<set $pet_now.type to "cat">>
+				<<set $pet_now.name to "小猫咪">>
+				<<if random(1, 100) lte $beastmalechance>>
+					<<set $pet_now.gender to "m">>
+				<<else>>
+					<<set $pet_now.gender to "f">>
+				<</if>>
+			<</link>></li>
+		<<else>>
+			<li>你没有 £500 买猫猫。</li>
+		<</if>>
+	<</if>>
+	<<if $lakehouse.terrarium isnot undefined and $lakehouse.terrarium gte 1>>
+		<<if $lakehouse.smallpet is undefined>>
+			<<set $lakehouse.smallpet to {}>>
+		<</if>>
+		<<set _total to 0>>
+		<<for _type, _num range $lakehouse.smallpet>>
+    		<<set _total += _num>>
+    	<</for>>
+		<<if _total lt 10 * $lakehouse.terrarium>>
+			<<if $money gte 30000>>
+				<li><<link [[领养一只壁虎 (£300)|$passage]]>>
+					<<set $money -= 30000>>
+					<<if $lakehouse.smallpet.geckos is undefined>>
+            			<<set $lakehouse.smallpet.geckos to 0>>
+            		<</if>>
+					<<set $lakehouse.smallpet.geckos += 1>>
+				<</link>></li>
+			<<else>>
+				<li>你没有 £300 买壁虎。</li>
+			<</if>>
+			<<if $money gte 20000>>
+				<li><<link [[领养一只螃蟹 (£200)|$passage]]>>
+					<<set $money -= 20000>>
+					<<if $lakehouse.smallpet.crabs is undefined>>
+            			<<set $lakehouse.smallpet.crabs to 0>>
+            		<</if>>
+					<<set $lakehouse.smallpet.crabs += 1>>
+				<</link>></li>
+			<<else>>
+				<li>你没有 £200 买螃蟹。</li>
+			<</if>>
+			<<if $money gte 40000>>
+				<li><<link [[领养一只乌龟 (£400)|$passage]]>>
+					<<set $money -= 40000>>
+					<<if $lakehouse.smallpet.turtles is undefined>>
+            			<<set $lakehouse.smallpet.turtles to 0>>
+            		<</if>>
+					<<set $lakehouse.smallpet.turtles += 1>>
+				<</link>></li>
+			<<else>>
+				<li>你没有 £400 买乌龟。</li>
+			<</if>>
+		<</if>>
+	<</if>>
+<</if>>
+/* 北极星 */
+
+<<getouticon>><<link [[Leave|Shopping Centre]]>><</link>>
+<br>
+
+:: Pet Shop Treats
+<<effects>>
+
+You examine the range of dog treats on display.
+<br><br>
+
+<<if $kennel_treats is undefined>>
+	<<set $kennel_treats to 0>>
+<</if>>
+
+<<if $money gte 100>>
+	<<petshopicon "treat">><<link [[Buy 1 (£1)|Pet Shop Treats Buy]]>><<set $money -= 100>><<set $kennel_treats += 1>><</link>>
+	<br>
+<<else>>
+	<span class="blue">You can't afford any.</span>
+	<br>
+<</if>>
+<<if $money gte 1000>>
+	<<petshopicon "treat">><<link [[Buy 10 (£10)|Pet Shop Treats Buy]]>><<set $money -= 1000>><<set $kennel_treats += 10>><</link>>
+	<br>
+<</if>>
+<<if $money gte 5000>>
+	<<petshopicon "treat">><<link [[Buy 50 (£50)|Pet Shop Treats Buy]]>><<set $money -= 5000>><<set $kennel_treats += 50>><</link>>
+	<br>
+<</if>>
+<<if $money gte 10000>>
+	<<petshopicon "treat">><<link [[Buy 100 (£100)|Pet Shop Treats Buy]]>><<set $money -= 10000>><<set $kennel_treats += 100>><</link>>
+	<br>
+<</if>>
+<<if $money gte 20000>>
+	<<petshopicon "treat">><<link [[Buy 200 (£200)|Pet Shop Treats Buy]]>><<set $money -= 20000>><<set $kennel_treats += 200>><</link>>
+	<br>
+<</if>>
+<<if $money gte 50000>>
+	<<petshopicon "treat">><<link [[Buy 500 (£500)|Pet Shop Treats Buy]]>><<set $money -= 50000>><<set $kennel_treats += 500>><</link>>
+	<br>
+<</if>>
+<<if $money gte 100000>>
+	<<petshopicon "treat">><<link [[Buy 1000 (£1000)|Pet Shop Treats Buy]]>><<set $money -= 100000>><<set $kennel_treats += 1000>><</link>>
+	<br>
+<</if>>
+
+<br>
+<<getouticon>><<link [[Don't buy any|Pet Shop]]>><</link>>
+
+:: Pet Shop Treats Buy
+<<effects>>
+
+You buy the treats, and have them sent to the farm. You have <span class="gold">$kennel_treats</span> in total.
+<br><br>
+
+<<link [[Next|Pet Shop]]>><</link>>
+<br>
+
+:: Pet Shop Book
+<<effects>>
+<<set $pregnancyStats.parasiteBook to 3>>
+You find a high-quality notebook available that you could use to collect info on your parasites. It has individual pages to fill out for scientific study on animal species in the wild, but it would work just fine for parasites, you think. You purchase it.
+<br><br>
+
+<i>You can now view info about the parasites you've birthed, at any location where you look after them.</i>
+<br><br>
+
+<<link [[Next|Pet Shop]]>><</link>>
+<br>
+
+:: Widgets PetShopBoughtItem [widget]
+
+<<widget "PetShopBoughtItem">>
+	<<if $boughtItem isnot undefined>>
+		<<set _container to $container.home>>
+		<<switch $boughtItem>>
+		<<case "Small Fish Tank">>
+			<<set $money -= 20000>><<set _container.upgrades.capacity to 1>><<set _container.maxCount to 2>><<set _container.name to "Small Fish Tank">>
+		<<case "Fish Tank">>
+			<<set $money -= 50000>><<set _container.upgrades.capacity to 2>><<set _container.maxCount to 3>><<set _container.name to "Fish Tank">>
+		<<case "Large Fish Tank">>
+			<<set $money -= 100000>><<set _container.upgrades.capacity to 3>><<set _container.maxCount to 4>><<set _container.name to "Large Fish Tank">>
+		<<case "Huge Fish Tank">>
+			<<set $money -= 500000>><<set _container.upgrades.capacity to 4>><<set _container.maxCount to 5>><<set _container.name to "Huge Fish Tank">>
+		<<case "Small Automatic Feeder">>
+			<<set $money -= 50000>><<set _container.upgrades.foodStorage to 1>><<set _container.maxDaysWithoutFood to 7>><<set _container.feederName to "Small Automatic Feeder">>
+		<<case "Automatic Feeder">>
+			<<set $money -= 150000>><<set _container.upgrades.foodStorage to 2>><<set _container.maxDaysWithoutFood to 14>><<set _container.feederName to "Automatic Feeder">>
+		<<case "Large Automatic Feeder">>
+			<<set $money -= 750000>><<set _container.upgrades.foodStorage to 3>><<set _container.maxDaysWithoutFood to 30>><<set _container.feederName to "Large Automatic Feeder">>
+		<<case "Standard Decorations">>
+			<<set $money -= 500000>><<set _container.upgrades.luxury to 1>><<set _container.decorations to "Standard Decorations">>
+		<<case "Exotic Decorations">>
+			<<set $money -= 1500000>><<set _container.upgrades.luxury to 2>><<set _container.decorations to "Exotic Decorations">>
+		<</switch>>
+		<<unset $boughtItem>>
+	<</if>>
+<</widget>>
+
+:: Pet Shop Item
+
+You take a look at the collection of <<print $selectedToy.set>>. They cost <span class="gold"><<print $selectedToy.costDisplay>></span> each.
+<br><br>
+<<if $selectedToy.options>>
+	<<for _i to 0; _i lt $selectedToy.options.length; _i++>>
+		<label>
+			<<radiobutton "$selectedToy.selectedOption" _i autocheck>>
+			<span @class="$selectedToy.options[_i].colour"><<print $selectedToy.options[_i].optionsName>></span>
+		</label> |
+	<</for>>
+	<br><br>
+<</if>>
+
+<<if $player.inventory.childrenToys.length gte 5>>
+	You can't have more than 5 toys with you at a time.
+<<elseif $selectedToy.cost lte $money>>
+	<<link [[Buy|Pet Shop]]>><<buyToy>><</link>>
+<<else>>
+	You can't afford this toy.
+<</if>>
+<br><br>
+<<link [[Don't buy|Pet Shop]]>><<unset $selectedToy>><</link>>

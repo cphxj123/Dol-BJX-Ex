@@ -1,0 +1,168 @@
+:: Cosmetics Lock
+
+<<set $outside to 0>><<effects>><<set $lock to 0>>
+
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+
+	<<link [[Pick it (0:10)|Cosmetics Store]]>><<pass 10>><<crimeUp 5>><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span>
+	<<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Cosmetics Store]]>><<set $ghostIn to true>><<pass 1>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+
+<<link [[Leave|Shopping Centre Top]]>><</link>>
+<br>
+
+:: Cosmetics Store
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+
+You are in the cosmetics store. Several shelvings stand before you, filled with all kinds of colourful tubes, jars and boxes.
+<br><br>
+<<cosmeticsicon>><<link [[Look at lipsticks|Cosmetics Lipstick]]>><</link>>
+<br>
+<<cosmeticsicon "eyeshadow">><<link [[Look at eye shadows|Cosmetics Eyeshadow]]>><</link>>
+<br>
+<<cosmeticsicon "mascara">><<link [[Look at mascaras|Cosmetics Mascara]]>><</link>>
+<br>
+<<cosmeticsicon "dyes">><<link [[Look at hair dyes|Cosmetics Dyes]]>><</link>>
+<br><br>
+<<getouticon>><<link [[Leave|Shopping Centre Top]]>><</link>>
+
+:: Cosmetics Lipstick
+<<CosmeticsGenericDepartment "lipstick" "lipstick" "lipsticks" "lipstick" "" "#FF0000" 1000 "Cosmetics Lipstick" "A bunch of colourful lipsticks stand on a shelf." true true 20 `setup.colours.lipstick.map(c=>c.variable)`>>
+
+:: Cosmetics Eyeshadow
+<<CosmeticsGenericDepartment "eyeshadow" "eyeshadow" "eyeshadows" "eyeshadow" "" "#FF0000" 1500 "Cosmetics Eyeshadow" "Small boxes with sparkly eye shadows lie before you." true true 20 `setup.colours.eyeshadow.map(c=>c.variable)`>>
+
+:: Cosmetics Mascara
+<<CosmeticsGenericDepartment "mascara" "mascara" "mascaras" "mascara" "" "#FF0000" 1500 "Cosmetics Mascara" "There's a dozen mascaras lying before you. They're all black though." true true 20 `setup.colours.mascara.map(c=>c.variable)`>>
+
+:: Cosmetics Dyes
+<<CosmeticsGenericDepartment "hairdye" "hair dye" "hair dyes" "hair" "colour-hair" "#FD6064" 4000 "Cosmetics Dyes" "You come to the shelf with hair dyes." false true 1 `setup.colours.hair.filter(c=>c.dye).map(c=>c.variable)`>>
+
+:: Cosmetics Store Widgets [widget]
+<<widget "CosmeticsGenericDepartment">>
+	<<if _args.length < 13>>
+		<div class="red">Error in passage "Cosmetics Generic Department". Missing arguments.<br><<print _args>></div>
+	<</if>>
+
+	<<set _itemType = _args[0]>>
+	<<set _itemSingular = _args[1]>>
+	<<set _itemPlural = _args[2]>>
+	<<set _cssClassOuter = _args[3]>>
+	<<set _cssClassInner = _args[4]>>
+	<<set _baseColour = _args[5]>>
+	<<set _price = _args[6]>>
+	<<set _passageCurrent = _args[7]>>
+	<<set _textIntro = _args[8]>>
+	<<set _canUseNow = _args[9]>>
+	<<set _isConsumable = _args[10]>>
+	<<set _usesPerBuy = _args[11]>>
+	<<set _availableColours = _args.slice(12)>>
+	<<if _availableColours.length === 1 && Array.isArray(_availableColours)>>
+		<<set _availableColours = _availableColours[0]>>
+	<</if>>
+
+	_textIntro
+	<<if _isConsumable isnot true>>
+		<<if $makeup.owned[_itemType].length > 0>>
+			<br>
+			You already own _itemPlural of the following colours:
+			<<for _i, _colour range $makeup.owned[_itemType]>>
+				<span class="grey-shadow"><span @class="_cssClassOuter + '-' + _colour.replace(/ /g, '-')"><span @class="_cssClassInner"><span @style="'color:' + _baseColour + ';'"><<print setup.colourName(_colour)>></span></span></span></span>
+				<<if _i < $makeup.owned[_itemType].length - 1>>, <</if>>
+			<</for>>.
+		<</if>>
+	<<else>>
+		<<set _owned = $makeup.owned[_itemType].filter(x => x.count > 0)>>
+		<<if _owned.length > 0>>
+			<br>
+			You already own _itemPlural of the following colours:
+			<<for _i, _item range _owned>>
+				<<if _item.count > 0>>
+					<span class="grey-shadow"><span @class="_cssClassOuter + '-' + _item.colour.replace(/ /g, '-')"><span @class="_cssClassInner"><span @style="'color:' + _baseColour + ';'"><<print setup.colourName(_item.colour)>></span></span></span></span>
+					&nbsp;×&nbsp;_item.count
+					<<if _i < _owned.length - 1>>, <</if>>
+				<</if>>
+			<</for>>.
+		<</if>>
+	<</if>>
+
+	<br><br>
+
+	<<if _isConsumable == false>>
+		<<set _availableColours = _availableColours.filter(x => !$makeup.owned[_itemType].includes(x))>>
+	<</if>>
+	<<if _availableColours.length == 0>>
+		You have collected all available colours of _itemPlural. There's nothing left for you to buy.
+		<br><br>
+	<<else>>
+		Each _itemSingular costs <<printmoney _price>><<if _usesPerBuy > 1>> and has _usesPerBuy uses<</if>>.
+		<br>
+		<<if $cosmeticsChoice is undefined>>
+			<<set $cosmeticsChoice = _availableColours[0]>>
+		<</if>>
+		<<for _i, _colour range _availableColours>>
+			<label><span class="grey-shadow"><span @class="_cssClassOuter + '-' + _colour.replace(/ /g, '-')"><span @class="_cssClassInner"><span @style="'color:' + _baseColour + ';'"><<print setup.colourName(_colour)>></span></span></span></span>&nbsp;<<print '<<radiobutton "$cosmeticsChoice" "'+_colour+'" ' + ($cosmeticsChoice is _colour ? "checked" : "") + '>>'>></label> |
+		<</for>>
+
+		<br><br>
+		<<if $money gte _price or Time.dayState is "night">>
+			<<set _buy = Time.dayState == "night" ? "Steal" : "Buy">>
+			<<if _isConsumable == true>>
+				<<set _usesText = _usesPerBuy > 1 ? " ("+_usesPerBuy+" uses)" : "">>
+				<<link [[_buy+_usesText|_passageCurrent]]>><<addConsumableCosmetics _itemType $cosmeticsChoice _usesPerBuy>><<if Time.dayState is "night">><<crimeUp `_price / 100` "thievery">><<else>><<set $money -= _price>><</if>><</link>><<if Time.dayState is "night">><<crime "thievery">><</if>>
+				<br>
+				<<if _canUseNow == true>>
+					<<link [[_buy+_usesText+" and apply"+(_usesPerBuy > 1 ? " one" : "")+" right now"|_passageCurrent]]>><<addConsumableCosmetics _itemType $cosmeticsChoice _usesPerBuy-1>><<set $makeup[_itemType] = $cosmeticsChoice>><<if Time.dayState is "night">><<crimeUp `_price / 100` "thievery">><<else>><<set $money -= _price>><</if>><</link>><<if Time.dayState is "night">><<crime "thievery">><</if>>
+					<br>
+				<</if>>
+			<<else>>
+				<<link [[_buy+" and send home"|_passageCurrent]]>><<set $makeup.owned[_itemType].push($cosmeticsChoice)>><<if Time.dayState is "night">><<crimeUp `_price / 100` "thievery">><<else>><<set $money -= _price>><</if>><</link>><<if Time.dayState is "night">><<crime "thievery">><</if>>
+				<br>
+				<<if _canUseNow == true>>
+					<<link [[_buy+" and use right now"|_passageCurrent]]>><<set $makeup.owned[_itemType].push($cosmeticsChoice)>><<set $makeup[_itemType] = $cosmeticsChoice>><<if Time.dayState is "night">><<crimeUp `_price / 100` "thievery">><<else>><<set $money -= _price>><</if>><</link>><<if Time.dayState is "night">><<crime "thievery">><</if>>
+					<br>
+				<</if>>
+			<</if>>
+		<<else>>
+			<span class="purple">You can't afford the purchase.</span>
+			<br><br>
+		<</if>>
+	<</if>>
+	<<link [[Go back|Cosmetics Store]]>><<unset $cosmeticsChoice>><</link>>
+<</widget>>
+
+<!-- for buying consumable makeup stuff. Usage <<addConsumableCosmetics "lipstick" "red" 20>> -->
+<<widget "addConsumableCosmetics">><<script>>
+	let _args = T.args;
+	let $makeup = V.makeup;
+	let _itemType = _args[0];
+	let _colour = _args[1];
+	let _count = _args[2];
+
+	let done = false;
+	for (let i = 0; i < $makeup.owned[_itemType].length; i++) {
+		if ($makeup.owned[_itemType][i].colour == _colour) {
+			$makeup.owned[_itemType][i].count += _count;
+			done = true;
+			break;
+		}
+	}
+	if (!done) {
+		$makeup.owned[_itemType].push({"colour": _colour, "count": _count});
+	}
+<</script>><</widget>>

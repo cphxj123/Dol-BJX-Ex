@@ -1,0 +1,1393 @@
+:: Elk Compound Climb
+
+<<set $outside to 1>><<set $location to "town">><<effects>>
+You climb the fence and haul yourself over the top, landing on Elk Street proper. You don't think anyone saw you.
+<br><br>
+<<set $compoundalarm to 0>>
+<<set $compoundpipes to 0>>
+<<set $compoundsmoke to 0>>
+<<set $compoundbluff to 0>>
+<<link [[Next|Elk Street]]>><</link>>
+<br>
+
+:: Elk Compound
+
+<<set $outside to 1>><<set $location to "compound">><<effects>>
+You are in the compound on Elk Street. Three red brick buildings stand surrounded by a chain link fence. The gate is guarded by security personnel.
+<<if $compoundalarm gte 1>>
+	<span class="red">You are trespassing.</span>
+<</if>>
+<br><br>
+<<if $compoundcard isnot 2>>
+	<span class="gold">You've discovered the compound on Elk Street.</span>
+	<<earnFeat "Illicit Science">>
+	<br><br>
+	<<set $compoundcard to 2>>
+<</if>>
+<<if $compoundalarm gte 1>>
+	<<set $daily.compoundState to 1>>
+<</if>>
+<<if $compoundalarm is undefined>>
+	<<set $compoundalarm to 0>>
+<</if>>
+<<if $compoundalarm is 0>>
+	<span class="green">Security are relaxed.</span>
+<<elseif $compoundalarm is 1>>
+	<span class="lblue">Security are suspicious.</span>
+<<elseif $compoundalarm is 2>>
+	<span class="purple">Security are aware of an intruder.</span>
+<<else>>
+	<span class="red">Security are on high alert.</span>
+<</if>>
+<br><br>
+<<if $stress gte $stressmax>>
+	<<passoutcompound>>
+<<elseif $hallucinations gte 2 and $wraithCompoundEvent is true and !(isPubfameTaskAccepted("compound") and $pubfame.compound.cameras.length is 0)>>
+	<<unset $wraithCompoundEvent>>
+	<<generateWraith 1 true>><<person1>><<hallucinogen 15>>
+	<<if !$wraith.will>>
+		<<set $wraith.will to random(1300, 1700)>>
+	<</if>>
+	The compound suddenly falls silent, and you look around. You take a deep breath, but it feels like you're breathing through cotton. <<rainWraith true>>
+	<br><br>
+
+	Your ears begin to ring, and a shape forms in the $weather. A beautiful pale figure floats just above the ground, wearing translucent white robes that flow in the wind. Its eyes flash a bright <<wraithEyes>>.
+	<br><br>
+
+	<<if $wraith.state is "haunt" or $wraith.offspring is "dead">>
+		<<if $wraith.state is "haunt">>
+			It claws angrily at its neck, glaring at you. "<span class="wraith">Thief among thieves. You're right at home.</span>"
+		<<else>>
+			It glares at you. "<span class="wraith">Butcher among butchers. You're right at home.</span>"
+		<</if>>
+		It's silent for a few seconds.
+		<br><br>
+
+		<<if $wraith.offspring is "sold">>
+			"<span class="wraith">Or did you hear your children calling to you?</span>"
+			<br><br>
+		<</if>>
+
+		Abruptly, it turns to look at something at the ground, or possibly through it. It looks agitated. You try to take a step back, and it twists its head to stare at you. "<span class="wraith">Enemy of my enemy. A tool.</span>" In an instant, it's standing in front of you. Shapes begin to spin in its eyes, and your body starts to relax in spite of yourself.
+		<br><br>
+
+		<<link [[Give in|Elk Compound Wraith Give]]>><<endevent>><</link>>
+	<<else>>
+		It doesn't seem to notice you at first. It looks agitated. It stares at the ground, or possibly through it, before catching you in the corner of its eye and turning to you. "<span class="wraith"><<pcPetname "Wraith">>.</span>"
+		<br><br>
+
+		It looks you over, before floating toward you. "<span class="wraith">You are not with them. Are you against them?<<if $wraith.offspring is "sold">> Or did you hear our children crying out?<</if>></span>" It reaches you and holds out a hand, palm open. "<span class="wraith">Lend me yourself.</span>" Shapes begin to spin in its eyes, and your body starts to relax in spite of yourself.
+		<br><br>
+
+		<<link [[Take its hand|Elk Compound Wraith Give]]>><<endevent>><</link>>
+	<</if>>
+	<br>
+
+	<<link [[Resist|Elk Compound Wraith Resist]]>><</link>>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger lte (3000 * $compoundalarm) and $eventskip isnot 1>>
+		<!-- Modified for Beast People -->
+		<<if $rng gte 51>>
+			<<beastNEWinit 1 dog>>
+			A guard <<beasttype>> runs towards you. <<bHe>> stops a few feet away and starts barking.
+			<br><br>
+			<<if $monster is 1 or $bestialitydisable is "f">>
+				<<if $deviancy gte 15>>
+					<<link [[Calm it|Elk Compound Bestiality]]>><<set $sexstart to 1>><</link>><<deviant2>>
+					<br>
+				<</if>>
+				<<link [[Fight|Elk Compound Bestiality]]>><<set $molestationstart to 1>><</link>>
+				<br>
+				<<link [[Escape the compound|Elk Compound Run]]>><<crimeUp 30 "trespassing">><</link>><<athleticsdifficulty 1 1000>><<crime "trespassing">>
+				<br>
+			<<else>>
+				<<link [[Escape the compound|Elk Compound Run]]>><<crimeUp 30 "trespassing">><<set $athleticsSuccess to true>><</link>><<crime "trespassing">>
+				<br>
+			<</if>>
+		<<else>>
+			A hand rests on your shoulder. <<generateSecurity 1>><<person1>>"Alright <<girl>>, playtime's over," <<he>> waves <<his>> baton in front of your face. "I found <<phim>> outside," <<he>> says into <<his>> radio. "Alright, I'll keep <<phim>> here until then."
+			<br><br>
+
+			<<if $compoundbluff is 1>>
+				<span class="pink">Bluffing isn't going to work again.</span>
+				<br>
+			<<else>>
+				<<set $skulduggerydifficulty to 600>>
+				<<link [[Bluff|Elk Compound Bluff]]>><</link>><<skulduggerydifficulty>>
+				<br>
+			<</if>>
+			<<link [[Fight|Elk Compound Fight]]>><<set $fightstart to 1>><</link>>
+			<br>
+			<<link [[Wait|Elk Compound Underground]]>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<if isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the courtyard")>>
+			<<link [[Put down a camera|Elk Compound Camera]]>><<set $compoundalarm++>><<set $pubfame.compound.cameras.unshift("the courtyard")>><</link>><<gsecurity>>
+			<br><br>
+		<</if>>
+		<<if $compoundpipes isnot 1 or isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the building with storage tanks")>>
+			<<link [[Investigate the building with storage tanks outside|Elk Compound Pipes]]>><</link>>
+			<br>
+		<</if>>
+		<<if $compoundsmoke isnot 1 or isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the building with smokestacks")>>
+			<<link [[Investigate the building with smokestacks|Elk Compound Smoke]]>><</link>>
+			<br>
+		<</if>>
+		<<if $compoundcentre isnot 1 or $phials_held gte 1 or isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the central building")>>
+			<<link [[Investigate the central building|Elk Compound Central]]>><</link>>
+			<br>
+		<</if>>
+		<<link [[Climb the fence to safety|Elk Compound Climb]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>
+
+:: Elk Compound Pipes
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+The door to the building opens easily, and you enter. The inside is dominated by a pool of pink liquid.
+<<if !$compoundpipes>>
+	In the centre sits a pink crystal on a plinth, connected to the side by a thin walkway. It looks valuable.
+	<br><br>
+	<<link [[Take|Elk Compound Crystal]]>><</link>><<crime "thievery">><<gsecurity>>
+	<br>
+<<else>>
+	<br><br>
+<</if>>
+
+<<if isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the building with storage tanks")>>
+	<<link [[Put down a camera|Elk Compound Pipes Camera]]>><<set $compoundalarm++>><<set $pubfame.compound.cameras.pushUnique("the building with storage tanks")>><</link>><<gsecurity>>
+	<br>
+<</if>>
+
+<<link [[Leave|Elk Compound]]>><</link>>
+<br>
+
+:: Elk Compound Smoke
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+The door opens easily and you enter the building. The inside is full of a sweet-smelling smoke. You can only see a few feet in front of you. The smoke makes you feel light-headed.
+<br><br>
+
+<<if !$compoundsmoke>>
+	<<link [[Explore (0:10)|Elk Compound Explore]]>><<pass 10>><</link>>
+	<br>
+<</if>>
+<<if isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the building with smoke stacks")>>
+	<<link [[Put down a camera|Elk Compound Smoke Camera]]>><<set $compoundalarm++>><<set $pubfame.compound.cameras.pushUnique("the building with smoke stacks")>><</link>><<gsecurity>>
+	<br>
+<</if>>
+<br>
+<<link [[Leave|Elk Compound]]>><</link>>
+<br>
+
+:: Elk Compound Central
+
+<<set $outside to 1>><<set $location to "compound">><<effects>><<set $lock to 300>>
+The door is locked tight.
+<br><br>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<link [[Break in (0:05)|Elk Compound Interior]]>><<pass 5>><<crimeUp 30 "trespassing">><</link>><<ggcrime "trespassing">><<gsecurity>>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span>
+	<<skulduggeryrequired>>
+	<br><br>
+<</if>>
+<<if $phials_held gte 1>>
+	<<if $compoundalarm gte 1>>
+		<span class="blue">You'll need to wait for security to relax before making your delivery.</span>
+		<br>
+	<<else>>
+		<<link [[Ring the doorbell|Elk Compound Central Ring]]>><</link>>
+		<br>
+	<</if>>
+
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Elk Compound Interior]]>><<set $ghostIn to true>><<pass 1>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<link [[Leave|Elk Compound]]>><</link>>
+<br>
+
+:: Elk Compound Central Ring
+<<effects>>
+
+<<generate1>><<person1>>
+A green light flashes above. You feel a rumble, and the door opens. A <<person>> regards you with a cool stare, waiting.
+<br><br>
+
+<<if $phials_held gte 2>>
+	<<link [[Sell the phials of aphrodisiac|Elk Compound Sell]]>><</link>>
+	<br>
+<<elseif $phials_held is 1>>
+	<<link [[Sell the phial of aphrodisiac|Elk Compound Sell]]>><</link>>
+	<br>
+<</if>>
+<<link [[Apologise|Elk Compound Central Apologise]]>><<set $compoundalarm += 1>><<stress 6>><</link>><<gsecurity>><<gstress>>
+<br>
+
+:: Elk Compound Sell
+<<effects>>
+
+You offer the
+<<if $phials_held gte 2>>
+	phials.
+<<else>>
+	phial.
+<</if>>
+The <<person>> examines the fluid without a word, then pulls a wad of cash from <<his>> coat. <<He>> passes it to you without looking, and shuts the door.
+<br><br>
+
+<<set $money += ($phials_held * 100000)>>
+<span class="gold">You've made £<<print ($phials_held * 1000)>>.</span>
+<br><br>
+<<world_corruption "soft" $phials_held>>
+<<set $stat_aphrodisiacs_sold += $phials_held>>
+<<set $phials_held to 0>>
+<<earnFeat "Dealing">>
+
+<<link [[Next|Elk Compound]]>><<endevent>><</link>>
+<br>
+
+
+:: Elk Compound Central Apologise
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"I-I'm lost," you say. "Sorry."
+<<elseif $speech_attitude is "bratty">>
+	"Wrong number," you say. "Sorry."
+<<else>>
+	"I'm lost," you say. "Sorry."
+<</if>>
+<br><br>
+
+The <<person>> slams the door. An alarm blares a moment later.
+<br><br>
+
+<<link [[Next|Elk Compound]]>><<endevent>><</link>>
+<br>
+
+:: Elk Compound Bestiality
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $enemytrust -= 40>><<set $enemyanger += 20>>
+	<<enable_rescue>>
+<<elseif $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<set $enemytrust -= 40>>
+	You drop to the floor and adopt a mating posture. The <<beasttype>> stops barking, but now has something else in mind.
+	<<deviancy2>>
+	<<enable_rescue>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if _combatend>>
+	<span id="next"><<link [[Next|Elk Compound Bestiality Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Elk Compound Bestiality]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Elk Compound Run
+
+<<set $outside to 1>><<set $location to "compound">><<effects>>
+<<if $athleticsSuccess>>
+	You <span class="green">successfully</span> climb the fence and haul yourself over the top, landing on Elk Street proper. You hear <<beasttype>>s bark behind you, alerting the guards, who arrive in time to see you escape.
+	<br><br>
+	<<set $compoundalarm to 0>>
+	<<set $compoundpipes to 0>>
+	<<set $compoundsmoke to 0>>
+	<<set $compoundbluff to 0>>
+	<<link [[Next|Elk Street]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You try to run, <span class="red">but the <<beasttype 0>> chases you down.</span>
+	<br><br>
+	<<link [[Next|Elk Compound Bestiality]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Elk Compound Bestiality Finish
+
+<<set $outside to 1>><<set $location to "compound">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	Panting, the guard <<beasttype 0>> returns to where it came from.
+	<br><br>
+	<<tearful>> you rise to your feet.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Elk Compound]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	The <<beasttype 0>> whimpers and hides behind one of the buildings.
+	<br><br>
+	<<tearful>> you rise to your feet.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Elk Compound]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $alarm is 1 and $rescue is 1>>
+	<<generateSecurity 2>><<generateSecurity 3>><<person2>>A <<person>> and <<person3>><<person>> arrive to investigate the noise.
+	<<if $NPCList[0].stance is "top">>
+		They see the <<beasttype 0>> humping you and laugh. "Good <<beasttype 0>>," the <<person2>><<person>> says.
+		<br><br>
+	<<else>>
+		They see what the <<beasttype 0>> wants from you and laugh. "Good <<beasttype 0>>," the <<person2>><<person>> says.
+		<br><br>
+	<</if>>
+	<<person3>>"We should probably let the <<beasttype 0>> have its treat," says the <<person>> as <<he>> crouches for a closer look. <<He>> pulls out <<his>> phone and starts filming.
+	<br><br>
+	<<set $alarm to 0>><<set $rescue to 0>>
+	<<link [[Next|Elk Compound Bestiality 2]]>><</link>>
+	<br>
+<<else>>
+	The <<beasttype 0>> turns and darts away, barking.
+	<<crime "trespassing">><<set $compoundalarm += 1>>
+	<<crimeUp 50 "trespassing">>
+	<br><br>
+	<<tearful>> you rise to your feet.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Elk Compound]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Elk Compound Bestiality 2
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+The <<person3>><<person>> films you.
+<<if $face is "covered">>
+	At least <<he>> can't see your face.
+<<else>>
+	<<famebestiality 1>>
+<</if>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Elk Compound Bestiality 2 Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Elk Compound Bestiality 2]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Elk Compound Bestiality 2 Finish
+
+<<set $outside to 1>><<set $location to "compound">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	Panting, the guard <<beasttype 0>> returns to where it came from.
+	<br><br>
+	The <<person2>><<person>> grabs your arm. "Alright <<girl>>, you've had your fun," <<he>> says, dragging you to the gate.
+	<br><br>
+	"Think we should tell them downstairs?" the <<person2>><<person>> asks.
+	<br><br>
+	"Sure. You got it all on your phone didn't you? It'll make their day. This <<bitch>> just broke in for the thrill and has paid for it, we don't need to keep <<phim>> longer."
+	They shove you out the gate, closing it behind you.
+	<br><br>
+	<<tearful>> you rise to your feet.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<set $compoundalarm to 0>>
+	<<set $compoundpipes to 0>>
+	<<set $compoundsmoke to 0>>
+	<<set $compoundbluff to 0>>
+	<<link [[Next|Elk Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	The <<beasttype 0>> whimpers and hides behind one of the buildings.
+	<br><br>
+	The <<person2>><<person>> grabs your arm. "Alright <<girl>>, you've had your fun," <<he>> says, dragging you to the gate.
+	<br><br>
+	"Think we should tell them downstairs?" the <<person2>><<person>> asks.
+	<br><br>
+	"Sure. You got it all on your phone didn't you? It'll make their day. This <<bitch>> just broke in for the thrill and has paid for it, we don't need to keep <<phim>> any longer."
+	They shove you out the gate, closing it behind you.
+	<br><br>
+	<<tearful>> you rise to your feet.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<set $compoundalarm to 0>>
+	<<set $compoundpipes to 0>>
+	<<set $compoundsmoke to 0>>
+	<<set $compoundbluff to 0>>
+	<<link [[Next|Elk Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Elk Compound Bluff
+
+<<set $outside to 1>><<set $location to "compound">><<effects>>
+<<if $speech_attitude is "meek">>
+	"I-I-," you stammer. "I kicked my ball over the fence. I just wanted it back." You look down in mock shame.
+<<elseif $speech_attitude is "bratty">>
+	You turn to face <<him>> and place your hands on your hips. "Excuse me?" you say. "I have every right to be here. You'll stop bothering me if you value your job."
+<<else>>
+	"I'm delivering something," you say. "Go ask your boss."
+<</if>>
+<br><br>
+<<skulduggeryuse>>
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
+	<<set $compoundbluff to 1>>
+	<<if $speech_attitude is "meek">>
+		<<He>> sighs. "Stupid <<girl>>, you shouldn't enter places you don't understand. Go find your ball, but then leave straight away, alright?" <span class="green">You nod and skip away.</span>
+	<<elseif $speech_attitude is "bratty">>
+		You've unnerved <<him>>. "Wait a moment," <<he>> says. "Just let me confirm that with my supervisor." <<He>> turns away to talk into <<his>> radio. That's all you need. <span class="green">You slip away while <<his>> back is turned.</span>
+	<<else>>
+		"You really shouldn't be skulking around then," <<he>> says. "Just do your job and leave. It's not safe for you around here." <span class="green">You nod and walk away.</span>
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<link [[Next|Elk Compound]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	"Nice try," <<he>> says. "But you're not wriggling away." <span class="red"><<He>> grips your shoulder more tightly.</span>
+	<br><br>
+	<<link [[Next|Elk Compound Underground]]>><</link>>
+	<br>
+<</if>>
+
+:: Elk Compound Fight
+
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+	You smack <<his>> hand away from you. "If that's how you want it," <<he>> says.
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Elk Compound Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Elk Compound Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Elk Compound Underground
+
+<<set $outside to 1>><<set $location to "compound">><<effects>>
+"We won't need to wait long," the <<person1>><<person>> says. As if in answer, the
+<<if $phase is 1>>
+	lift doors open.
+<<else>>
+	door to the central building opens.
+<</if>>
+A <<generate3>><<npcClothesType $NPCList[2] "compoundLab">><<person3>><<person>> in a lab coat exits.
+<br><br>
+"I'll take the <<girl>> from here," <<he>> says. "They want to speak to <<phim>> downstairs."
+<br><br>
+"If you say so."
+<br><br>
+As soon as the <<person>> touches your arm a jolt surges through you. You lose consciousness.
+<br><br>
+
+<<link [[Next|Elk Compound Experiment]]>><<upperruined>><<lowerruined>><<underruined>><<underupperruined>><<endcombat>><</link>>
+<br>
+
+:: Elk Compound Fight Finish
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation "short">>
+	<<He>> leans against the wall, panting. <<tearful>> you escape into the maze of storage tanks and pipes littering the compound.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Elk Compound]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	<<tearful>> you shove the <<person>> into the wall and run. <<He>> tries to chase, but you lose <<him>> among the storage tanks and pipes littering the compound.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Elk Compound]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	<<tearful>> you fall to the ground. "I didn't like that," the <<person1>><<person>> says. "But it's my job."
+	<br><br>
+	<<clotheson>>
+	<<link [[Next|Elk Compound Underground]]>><</link>>
+	<br>
+<</if>>
+
+:: Elk Compound Experiment
+
+<<pass 1 hour>><<set $outside to 0>><<set $location to "compound">><<effects>>
+<<set $compoundalarm to 0>>
+<<set $compoundpipes to 0>>
+<<set $compoundsmoke to 0>>
+<<set $compoundbluff to 0>>
+You wake up, naked <<if playerChastity()>>save for your $worn.genitals.name<</if>> and strapped to a metal board. Pipes and wires protrude from concrete walls. <<generateRole 0 0 "scientist">><<npcClothesType $NPCList[0] "compoundLab">><<person1>>A <<person>> works at a console in the corner. <<He>> glances at you. "Aha," <<he>> says. "You're awake." <<He>> pushes <<himself>> towards you on <<his>> chair and produces a bundle of wires from <<his>> lab coat.
+<br><br>
+The wires have pads on one end. <<He>> starts sticking them to your body. <<He>> goes about <<his>> work with a clinical professionalism that makes you feel less humiliated by your <<lewdness>> than you'd expect. That is until <<he>> places one on each of your <<nipples>>.
+<br><br>
+<<if playerChastity("penis")>>
+	<<He>> places a whole bunch on your $worn.genitals.name. "We can turn up the frequency, this is no problem," <<he>> mutters to <<himself>>.
+<</if>>
+<<if $player.penisExist and $player.vaginaExist and !playerChastity("hidden")>>
+	<<He>> places one right on the tip of your <<penis>>, one on each teste, and then pushes one into your <<pussy>>. You tense at the sensation.
+<<else>>
+	<<if $player.penisExist>>
+		<<if $worn.genitals.name is "chastity parasite">>
+			<<He>> places one right on your chastity parasite and teases it. You tense at the sensation.
+		<<elseif !playerChastity("cage")>>
+			<<He>> places one right on the tip of your <<penis>> and one on each teste. You tense at the sensation.
+		<</if>>
+	<</if>>
+	<<if $player.vaginaExist and !playerChastity("hidden")>>
+		<<He>> pushes one into your <<pussy>>, then another. You tense at the sensation.
+	<</if>>
+<</if>>
+"There we go," <<he>> says, plugging the other end of the wires into a machine beside <<him>>. "Now <<girl>>, tell me, who are you working for?"
+<br><br>
+<<if $player.penisExist and $player.vaginaExist>>
+	"You should count yourself fortunate," <<he>> adds, glancing at your genitals. "If it were up to me, we'd keep you here for experimentation. True hermaphrodites are rare."
+	<br><br>
+<</if>>
+<i>If your pain or arousal max out, you'll tell <<him>> everything.</i>
+<br><br>
+<<set $compoundmock to 0>>
+<<set $compoundhonest to 0>>
+<<set $compoundlie to 0>>
+<<set $compoundbeg to 0>>
+<<set $compoundflirt to 0>>
+<<compoundoptions>>
+
+:: Elk Compound Crystal
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+<<if $danger gte (9900 - $allure) and $eventskip is 0>>
+	<<if $rng gte 51 and $tentacledisable is "f" and $hallucinations gte 2>>
+		As you cross the walkway several tentacles rise from the fluid beneath you.
+		<br><br>
+		<<link [[Next|Elk Compound Tentacles]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<else>>
+		As you cross the walkway the fluid beneath you becomes agitated. Some splashes you, eating through your clothing.
+		<<if !$worn.over_upper.type.includes("naked")>>
+			<<set $worn.over_upper.integrity -= 10>>
+		<<else>>
+			<<set $worn.upper.integrity -= 10>>
+		<</if>>
+		<<if !$worn.over_lower.type.includes("naked")>>
+			<<set $worn.over_lower.integrity -= 10>>
+		<<else>>
+			<<set $worn.lower.integrity -= 10>>
+		<</if>>
+		<br><br>
+		You continue to the centre and take the crystal. It's warm to the touch.
+		<br><br>
+		<<set $compoundpipes to 1>>
+		<<set $blackmoney += 50>>
+		<<set $compoundalarm += 1>>
+		<<crimeUp 50 "thievery">>
+		<<if isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the building with storage tanks")>>
+			<<link [[Put down a camera|Elk Compound Pipes Camera]]>><<set $compoundalarm++>><<set $pubfame.compound.cameras.pushUnique("the building with storage tanks")>><</link>><<gsecurity>>
+			<br>
+			<<link [[Leave|Elk Compound]]>><</link>>
+			<br>
+		<<else>>
+			<<link [[Next|Elk Compound]]>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+<<else>>
+	You cross the walkway and take the crystal. It's warm to the touch.
+	<br><br>
+	<<set $compoundpipes to 1>>
+	<<set $blackmoney += 50>>
+	<<set $compoundalarm += 1>>
+	<<crimeUp 50 "thievery">>
+	<<if isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the building with storage tanks")>>
+		<<link [[Put down a camera|Elk Compound Pipes Camera]]>><<set $compoundalarm++>><<set $pubfame.compound.cameras.pushUnique("the building with storage tanks")>><</link>><<gsecurity>>
+		<br>
+		<<link [[Leave|Elk Compound]]>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Elk Compound]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Elk Compound Tentacles
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<set $combat to 1>>
+	<<set $enemytype to "tentacles">>
+	<<molested>>
+	<<controlloss>>
+	<<tentaclestart 7 10>>
+	<<set $tentacles[0].shaft to "waist">>
+<</if>>
+<<statetentacles>>
+
+<<effects>>
+<<effectstentacles>>
+<<tentacles>>
+<<actionstentacles>>
+<<if $tentacles.active lte ($tentacles.max / 2)>>
+	<span id="next"><<link [[Next|Elk Compound Tentacles Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Elk Compound Tentacles]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Elk Compound Tentacles Finish
+
+<<effects>>
+The creature loses interest in you, and disappears into the pink liquid. <<tearful>> you struggle to your feet and finish crossing to the crystal. It's warm to the touch.
+<<clotheson>>
+<<endcombat>>
+<<set $compoundpipes to 1>>
+<<set $blackmoney += 50>>
+<<set $compoundalarm += 1>>
+<<crimeUp 50 "thievery">>
+<<if isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the building with storage tanks")>>
+	<<link [[Put down a camera|Elk Compound Pipes Camera]]>><<set $compoundalarm++>><<set $pubfame.compound.cameras.pushUnique("the building with storage tanks")>><</link>><<gsecurity>>
+	<br>
+	<<link [[Leave|Elk Compound]]>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Elk Compound]]>><</link>>
+	<br>
+<</if>>
+
+:: Elk Compound Explore
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+You walk deeper into the building. The entrance is swallowed behind you. You make your way through a maze of pipes and machinery of unknown use. The smoke starts to make you feel warm.
+<<drugs 60>>
+<br><br>
+You come to a plinth with a purple crystal sat atop it. It looks valuable.
+<<if $trash_key isnot 1>>Beside it is a large discoloured key.<</if>>
+<br><br>
+<<link [[Take|Elk Compound Purple]]>><</link>><<crime "thievery">><<gsecurity>>
+<br>
+<<link [[Leave|Elk Compound]]>><</link>>
+<br>
+
+:: Elk Compound Purple
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+
+You take the crystal. It's warm to the touch.
+<<if $trash_key isnot 1>>
+<<set $trash_key to 1>>You grab the key as well. It's not as heavy as it looks. <i>It must fit a large lock somewhere.</i>
+<</if>>
+<br><br>
+Finding your way out is much easier than getting here.
+<br><br>
+<<set $compoundsmoke to 1>>
+<<set $blackmoney += 50>>
+<<set $compoundalarm += 1>>
+<<crimeUp 50 "thievery">>
+<<link [[Next|Elk Compound]]>><</link>>
+<br>
+
+:: Elk Compound Honest
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+<<if isPubfameTaskAccepted("compound")>>
+	<<if $compoundhonest is 1>>
+		"I'm working for a favour for someone," you say, avoiding the question.
+		<br><br>
+		<<He>> looks at a screen that you can only see the back of, then turns a dial. Soothing waves emanate from the pads attached to you, pleasuring every inch of your body. "Good. See, that wasn't so bad, was it? Now then, why are you here?"
+	<<elseif $compoundhonest is 2>>
+		<<if $pubfame.compound.cameras.length gte 1>>
+			"I was placing down cameras," you say. "They look like rocks. There's one in <<print formatList($pubfame.compound.cameras, "and", true)>>."
+		<<else>>
+			"I was supposed to place cameras," you say. "But I got caught before I could put any down."
+		<</if>>
+		<br><br>
+		<<He>> writes something down and turns the dial again, and you are once more assailed by the soothing waves. "You mentioned a favour," <<he>> says. "What kind of favour?"
+	<<elseif $compoundhonest is 3>>
+		<<if $pubfame.goal.includes("Lower")>>
+			"I want to be less famous," you say. "To lower my <<fameProse $pubfame.target>> reputation."
+			<br><br>
+			<<if $fame[$pubfame.target] gte 400>>
+				<<He>> nods.
+				<<if ["sex","prostitution","rape","bestiality","scrap"].includes($pubfame.target)>>
+					"<<underworld_nickname>>,
+				<<else>>
+					"<<overworld_nickname>>,
+				<</if>>
+				then? That makes sense."
+			<<else>>
+				<<He>> squints. "Not sure you need it, but I don't care."
+			<</if>>
+		<<else>>
+			"I want to be more famous," you say. "To boost my <<fameProse $pubfame.target>> reputation."
+			<br><br>
+			<<if $fame[$pubfame.target] gte 400>>
+				<<He>> raises an eyebrow.
+				<<if ["sex","prostitution","rape","bestiality","scrap"].includes($pubfame.target)>>
+					"<<underworld_nickname>>,
+				<<else>>
+					"<<overworld_nickname>>,
+				<</if>>
+				then? You're already up there."
+			<<else>>
+				<<He>> squints. "I don't recognise you. You definitely need it."
+			<</if>>
+		<</if>>
+		<<He>> turns the dial again, and you are once more assailed by the soothing waves. "You dodged my first question. Who are you working for? Who's fiddling with your reputation?"
+	<<elseif $compoundhonest is 4>>
+		"Someone at the pub," you say. "A hacker. Landry knows them."
+		<br><br>
+		<<He>> smiles and turns the dial, sending soothing waves rippling over your body. "Now we're getting somewhere. Who exactly are they?" <span class="red">If you're honest again, <<he>> will have everything <<he>> needs from you, and Mickey will be in trouble.</span>
+	<<else>>
+		"I don't know their real name," you say. "But they go by Mickey." You look away, ashamed.
+	<</if>>
+<<else>>
+	<<if $compoundhonest is 1>>
+		"I'm not working for anyone," you say. "I'm here alone."
+		<br><br>
+		<<He>> looks at a screen that you can only see the back of, then turns a dial. Soothing waves emanate from the pads attached to you, pleasuring every inch of your body. "Good. See, that wasn't so bad, was it? Now then, why are you here?"
+	<<elseif $compoundhonest is 2>>
+		"I<<if $blackmoney is 0>> was trapped while robbing a car. It drove me here<<else>>'m here to steal things<</if>>," you say. "<<if $blackmoney is 0>>Honest<<else>>For money<</if>>."
+		<br><br>
+		<<He>> turns the dial again, and you are once more assailed by the soothing waves. "Now," <<he>> says. "What did you <<if $blackmoney is 0>>try to<</if>> steal?"
+	<<elseif $compoundhonest is 3>>
+		"<<if $blackmoney is 0>>M<<else>>I steal m<</if>>oney or anything I can sell," you say.
+		<br><br>
+		<<He>> turns the dial again, and you are once more assailed by the soothing waves. "Where do you sell things?"
+	<<elseif $compoundhonest is 4>>
+		"<<if $produce_sold gte 1 or $pubintro is 1>>I sell <<if $produce_sold gte 1>>flowers in a stall I rent at Connudatus,<</if>><<if $produce_sold gte 1 and $pubintro is 1>> and <</if>><<if $pubintro is 1>>stolen things on Harvest street,<</if>><<else>>I've never sold anything<</if>>" you say.<<if $chef_state gte 1>> "I've <<if $produce_sold gte 1 and $pubintro is 1>>also <</if>>baked," you add.<</if>><<if $prostitutionstat gte 1 or $forcedprostitutionstat gte 1>> "...<<if $produce_sold gte 1 or $pubintro is 1 or $chef_state gte 1>>and <</if>>I've sold myself," you mumble quietly<<if $forcedprostitutionstat gte 1>>, "whether I wanted to or not."<</if>><<else>>.<</if>>
+		<br><br>
+		<<He>><<if !$pubintro>> looks uninterested as <<he>><</if>> turns the dial again, and you are once more assailed by the soothing waves. "<<if $pubintro is 1>>Who do you sell your stolen goods to?<<else>>Is that really all you do?<</if>>" <span class="red">If you're honest again, <<he>> will have everything <<he>> needs from you.</span>
+	<<else>>
+		"I<<if $pubintro is 1>> sell things to Landry<<else>>'ve told you everything<</if>>," you say<<if $pubintro is 1 or $prostitutionstat gte 1 or $forcedprostitutionstat gte 1>>, ashamed<</if>>.
+	<</if>>
+<</if>>
+<br><br>
+
+<<compoundoptions>>
+
+:: Elk Compound Lie
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+<<if $compoundlie is 1>>
+	"I work for the government," you say. "You better let me go."
+	<br><br>
+	<<He>> looks at a screen you can't see. "Liar." <<He>> turns a dial on the machine and an excruciating pain surges through you. It lasts only a moment, but leaves you shaking. "I don't want to do that again. So don't lie to me."
+	<br><br>
+<<elseif $compoundlie is 2>>
+	"I got lost," you say. "I was just looking for a way out."
+	<br><br>
+	<<He>> turns the dial once more and the pain surges through you again. "This could be so much easier for you," <<he>> says.
+	<br><br>
+<<elseif $compoundlie is 3>>
+	"I'm looking for my ball," <<he>> interrupts you with another surge of pain.
+	<br><br>
+	"I'm not falling for that one," <<he>> says.
+	<br><br>
+<<elseif $compoundlie is 4>>
+	"I'm giving you the chance to let me go," you say. "Before I break out and kick your ass."
+	<br><br>
+	<<He>> laughs as <<he>> turns the dial. "I don't even need to check the screen this time."
+<<else>>
+	"You've hurt me too much," you say. "I can't remember anything."
+	<br><br>
+	"That's bad news for you," <<he>> says, turning the dial. "I can be here awhile."
+<</if>>
+<<compoundoptions>>
+
+:: Elk Compound Mock
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+<<if $compoundmock is 1>>
+	"Sure, I'll tell you everything," you say. "I'm here to spank naughty lab assistants. Unbind me so I can get to work."
+	<br><br>
+	"You won't be laughing for long," <<he>> says, spinning a dial on the machine. Pain sears through you, but leaves your mind feeling clearer.
+	<br><br>
+<<elseif $compoundmock is 2>>
+	"You think you can hurt me with your little toy?" you say through gritted teeth. "It barely tickles."
+	<br><br>
+	"Oh, then you won't mind this." <<He>> spins the dial again.
+	<br><br>
+<<elseif $compoundmock is 3>>
+	"I bet you tie yourself to this thing for fun," you say. "It's okay. We all have our fetishes."
+	<br><br>
+	"I'm starting to think I've found yours." <<He>> spins the dial once more.
+	<br><br>
+<<elseif $compoundmock is 4>>
+	"I could get used to this," you say. "If the science thing doesn't work out, you could have a shining career as a kinky whore."
+	<br><br>
+	"Is this thing even working?" <<he>> muses as <<he>> spins the dial again.
+	<br><br>
+<<else>>
+	"You like hurting <<girls>> then?" you say. "Better keep your porno stash hidden, if the police fi-"
+	<br><br>
+	"Shut up," <<he>> interrupts, spinning the dial.
+	<br><br>
+<</if>>
+<<compoundoptions>>
+
+:: Elk Compound Beg
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+<<if $compoundbeg is 1>>
+	"Please don't hurt me," you say.
+	<br><br>
+	"If you do as I say I won't have to. Here's a little taste." <<He>> spins a dial and a wave of pleasure emanates from the pads. The feeling soothes you to the core.
+	<br><br>
+<<elseif $compoundbeg is 2>>
+	"I-I'm scared," you say.
+	<br><br>
+	"It's okay <<girl>>, just give me what I ask." <<He>> spins the dial again, soothing you once more.
+	<br><br>
+<<elseif $compoundbeg is 3>>
+	"I didn't mean to do anything wrong," you say.
+	<br><br>
+	"I know you didn't, so tell me what I want to know." <<He>> spins the dial.
+	<br><br>
+<<elseif $compoundbeg is 4>>
+	"Let me go, please," you say.
+	<br><br>
+	"Cooperate and I will." <<He>> spins the dial.
+	<br><br>
+<<else>>
+	"Please just let me go," you say.
+	<br><br>
+	"For the last time, cooperate and I will." <<He>> spins the dial.
+	<br><br>
+<</if>>
+<<compoundoptions>>
+
+:: Elk Compound Flirt
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+<<if $compoundflirt is 1>>
+	"You have me all tied up and exposed," you say. "Isn't there something else you'd rather do to me?"<<promiscuity1>>
+
+	<<He>> blushes, unsure how to respond. "D-don't joke around like that. You're in big trouble." You control your breathing and focus.
+	<br><br>
+<<elseif $compoundflirt is 2>>
+	"Some people would pay good money for the treatment you're giving me," you say. "I should thank you properly."<<promiscuity2>>
+
+	<<He>> shifts uncomfortably. "Don't think you can sweet talk me. It won't work."
+	<br><br>
+<<elseif $compoundflirt is 3>>
+	"The real torture here," you say. "Is being denied your touch."
+	<<promiscuity3>>
+
+	<<He>> moves <<his>> hand away from the dials and rubs <<his>> temple. "Just stop it will you?"
+	<br><br>
+<<elseif $compoundflirt is 4>>
+	"You're such a tease. I can't wait to see what you want for the main course." You wink.
+	<<promiscuity4>>
+	"This is the main course," <<he>> says, blushing. "Where did you learn to talk like this?"
+	<br><br>
+<<else>>
+	"I'm getting too hot here," you say. "Please help me. I'm at your mercy. Your fingers, your tongue, your..."
+	<<promiscuity5>>
+	"Stop! Right now." <<He>> seems serious.
+	<br><br>
+<</if>>
+<<compoundoptions>>
+
+:: Elk Compound Interior
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+/* 北极星模组 */
+<<if $ghostIn>>
+	你成功地穿门而入。
+<<else>>
+	你成功地撬开门锁，推门而入。
+<</if>>
+/* 北极星 */
+<<set $compoundalarm += 1>>
+<<if $skulduggery lt 400>>
+	<<skulduggeryskilluse>>
+<<else>>
+	<span class="blue">There's nothing more you can learn from locks this simple.</span>
+<</if>>
+<br><br>
+The inside is dominated by a large lift.
+<<if $compoundcentre is 1>>
+	You see no way to operate it.
+<<else>>
+	You see no way to operate it, but a laptop sits on a table in the corner beside a small canister.
+<</if>>
+<br><br>
+<<if $compoundcentre isnot 1>>
+	<<if $compoundspray isnot 1>>
+		<<link [[Take them and leave|Elk Compound Interior Take]]>><<set $blackmoney += 100>><<crimeUp 100 "thievery">><<set $spraymax += 1>><<spray 5>><<world_corruption "soft" -10>><</link>><<crime "thievery">><<gspraymax>>
+	<<else>>
+		<<link [[Take them and leave|Elk Compound Interior Take]]>><<set $blackmoney += 100>><<crimeUp 100 "thievery">><<spray 1>><</link>><<crime "thievery">><<gspray>>
+	<</if>>
+	<br>
+<</if>>
+<<if isPubfameTaskAccepted("compound") and !$pubfame.compound.cameras.includes("the central building")>>
+	<<link [[Put down a camera|Elk Compound Interior Camera]]>><<set $compoundalarm++>><<set $pubfame.compound.cameras.pushUnique("the central building")>><</link>><<gsecurity>>
+	<br>
+<</if>>
+<br>
+<<link [[Leave|Elk Compound]]>><</link>>
+<br>
+
+:: Elk Compound Interior Take
+
+<<set $outside to 0>><<set $location to "compound">><<effects>><<set $compoundcentre to 1>>
+
+<<if $compoundspray is 1>>
+	You pick up the laptop and canister then head for the exit.
+	<br><br>
+<<else>>
+	<<set $compoundspray to 1>>
+	You pick up the laptop and canister. It looks like a charge for your pepper spray, but with an exposed computer chip at the base. You put it in, then head for the exit.
+	<br><br>
+
+	<span class="gold">You've gained an additional pepper spray charge.</span>
+	<br><br>
+<</if>>
+
+<<if random(1, 4) is 4>>
+	You push the button beside the door. Nothing happens. You push it again, and two hatches open on either side of you. Metal arms shoot out, grasping your wrists and pushing you to the ground.
+	<br><br>
+	<span class="red">INTRUDER DETECTED.</span> The alarm rings out. Someone will hear, if they haven't already.
+	<<set $compoundalarm += 1>>
+	<<set $daily.compoundState to 1>>
+	<br><br>
+	<<if $player.vaginaExist or $analdisable is "f">>
+		<<link [[Protest|Elk Compound Interior Seduce]]>><</link>>
+		<br>
+	<</if>>
+	<<link [[Struggle|Elk Compound Interior Struggle]]>><</link>>
+	<br>
+<<else>>
+	<<link [[Leave|Elk Compound]]>><</link>>
+	<br>
+<</if>>
+
+
+:: Elk Compound Interior Seduce
+<<effects>>
+
+
+<<set $seductiondifficulty to 8000>>
+<<seductioncheck>>
+<br><br>
+<<if $seductionskill lt 1000>>
+	<span class="gold">You feel more confident in your powers of seduction.</span>
+	<br><br>
+<</if>>
+<<seductionskilluse>>
+
+"I'm not an intruder," you say.
+<br><br>
+<<if $seductionrating gte $seductionrequired>>
+
+	<span class="green">"SCANNING."</span> A red light beside the door flickers. "TEST SUBJECT IDENTIFIED. <<if $pregnancyspeechdisable is "f">>BREEDING <</if>>PROCEDURE INITIATED." Another hatch opens, larger than the others. A phallic object emerges from the dark.
+	<br><br>
+
+	<<link [[Next|Elk Compound Machine Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+
+<<else>>
+
+	<span class="red">INTRUDER REFUSING TO COOPERATE.</span> A jolt runs through the metal arms, shocking you.<<gpain>><<pain 4>>
+	<br><br>
+	<<generateSecurity 1>><<generateSecurity 2>>
+	A <<fullGroup>> rush in, batons ready. They relax when they see you.
+	<br><br>
+
+	"This junk was worth bringing up," the <<person1>><<person>> says, strapping the baton to <<his>> side.
+	<br><br>
+
+	"Shut it down," the <<person2>><<person>> says. "I'll let downstairs know." <<He>> unclips a radio from <<his>> side.
+	<br><br>
+
+
+	<<link [[Fight|Elk Compound Interior Fight]]>><</link>>
+	<br>
+	<<link [[Convince them to let you go|Elk Compound Interior Convince]]>><</link>><<englishdifficulty 1 1000>>
+	<br>
+	<<link [[Remain silent|Elk Compound Interior Silent]]>><</link>>
+	<br>
+
+<</if>>
+
+
+
+:: Elk Compound Machine Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+
+	<<set $machine_health to 10>><<set $machine_ammo to 8>>
+	<<if $player.vaginaExist and $analdisable is "f">>
+		<<machine_init vaginal arm_chains>>
+		<<set $machine.vaginal.armed to 1>>
+	<<elseif $player.vaginaExist>>
+		<<machine_init vaginal arm_chains>>
+		<<set $machine.vaginal.armed to 1>>
+	<<else>>
+		<<machine_init anal arm_chains>>
+		<<set $machine.anal.armed to 1>>
+	<</if>>
+<</if>>
+
+<<effects>>
+
+<<machine_effects>><<machine_combat>>
+<<machine_state>>
+
+
+<br><br>
+<<machine_actions>>
+
+<<if $machine.number lte 0 or $finish is 1>>
+	<span id="next"><<link [[Next|Elk Compound Machine Rape End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Elk Compound Machine Rape]]>><</link>></span><<nexttext>>
+<</if>>
+<br>
+
+
+:: Elk Compound Machine Rape End
+<<effects>>
+
+<<if $anusfucked is 1 or $vaginafucked is 1 or $penisfucked is 1>>
+	"<<if $pregnancyspeechdisable is "f">>BREEDING <</if>>SUCCESSFUL," the voice intones. The arms and phallus retract, and the hatches close.
+	<br><br>
+<<else>>
+	"ERROR," the voice intones. The arms and phallus retract, and the hatches close.
+	<br><br>
+<</if>>
+<<tearful>> you rise to your feet.
+<br><br>
+
+<<machine_end>>
+<<clotheson>>
+
+<<link [[Next|Elk Compound]]>><</link>>
+<br>
+
+
+:: Elk Compound Interior Struggle
+<<effects>>
+
+<<generateSecurity 1>><<generateSecurity 2>>
+You pull against the metal grip, but it's too tight. The doors open. A <<fullGroup>> rush in, batons ready. They relax when they see you.
+<br><br>
+
+"This junk was worth bringing up," the <<person1>><<person>> says, strapping the baton to <<his>> side.
+<br><br>
+
+"I'll shut it down," the <<person2>><<person>> says. "You let downstairs know."
+<br><br>
+
+
+<<link [[Fight|Elk Compound Interior Fight]]>><</link>>
+<br>
+<<link [[Convince them to let you go|Elk Compound Interior Convince]]>><</link>><<englishdifficulty 1 1000>>
+<br>
+<<link [[Remain silent|Elk Compound Interior Silent]]>><</link>>
+<br>
+
+:: Elk Compound Interior Fight
+<<effects>>
+
+You grasp the metal arm as it retracts, hauling you to your feet. The <<person2>><<person>> lets <<his>> radio fall to <<his>> side as <<he>> prepares to fight.
+<br><br>
+
+<<link [[Next|Elk Compound Fight 2]]>><<set $fightstart to 1>><</link>>
+<br>
+
+:: Elk Compound Interior Convince
+<<effects>>
+
+<<if $englishSuccess>>
+	<<if $speech_attitude is "meek">>
+		"P-please let me go,"
+		<<if $pain gte 20>>
+			you say, letting your tears flow.
+		<<else>>
+			you say.
+		<</if>>
+		"I'm just a student. I-I didn't mean any harm. I-I-I..."
+	<<elseif $speech_attitude is "bratty">>
+		"I'm sure your boss will be thrilled with you," you say. "Catching a local student. I only made it as far as the compound interior."
+	<<else>>
+		"I'm sure your boss will be thrilled with you," you say. "Catching a local student. I only made it as far as the compound interior."
+	<</if>>
+	<br><br>
+	<span class="green">The pair share an awkward look.</span> "We were just scaring you," the <<person1>><<person>> says.
+	<br><br>
+
+	They take you to the Compound gates. It clanks shut behind you.
+	<br><br>
+
+	<<set $compoundalarm to 0>>
+	<<set $compoundpipes to 0>>
+	<<set $compoundsmoke to 0>>
+	<<set $compoundbluff to 0>>
+	<<link [[Next|Elk Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+
+<<else>>
+	<<if $speech_attitude is "meek">>
+		"Y-you'll get in trouble too if you turn me in," you say. "You were meant to catch me sooner."
+	<<elseif $speech_attitude is "bratty">>
+		"Let me go," you say. "Or I'll tell your boss how much you suck at your jobs."
+	<<else>>
+		"Let me go," you say. "Or I'll tell your boss how far I got before you managed to catch me."
+	<</if>>
+	<br><br>
+
+	<span class="red">The pair ignore you.</span> The <<person2>><<person>> steps away and talks into <<his>> radio.
+	<br><br>
+
+	<<link [[Next|Elk Compound Underground]]>><<set $phase to 1>><</link>>
+	<br>
+
+<</if>>
+
+
+:: Elk Compound Interior Silent
+<<effects>>
+
+You remain silent as the <<person2>><<person>> talks into <<his>> radio.
+<br><br>
+
+<<link [[Next|Elk Compound Underground]]>><<set $phase to 1>><</link>>
+<br>
+
+
+:: Elk Compound Fight 2
+
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Elk Compound Fight 2 Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Elk Compound Fight 2]]>><</link>></span><<nexttext>>
+<</if>>
+
+
+:: Elk Compound Fight 2 Finish
+
+<<set $outside to 0>><<set $location to "compound">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation "short">>
+	The pair lean against the wall either side of the door, giving you the chance you need. <<tearful>> you escape outside. You hear approaching footsteps as haul yourself over the fence.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<set $compoundalarm to 0>>
+	<<set $compoundpipes to 0>>
+	<<set $compoundsmoke to 0>>
+	<<set $compoundbluff to 0>>
+	<<link [[Next|Elk Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	The pair back away from you, giving you the chance you need. <<tearful>> you escape outside. You hear the <<person2>><<person>> shout for backup as you haul yourself over the fence.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<set $compoundalarm to 0>>
+	<<set $compoundpipes to 0>>
+	<<set $compoundsmoke to 0>>
+	<<set $compoundbluff to 0>>
+	<<link [[Next|Elk Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	<<tearful>> you fall to the ground. "We've subdued an intruder," the <<person2>><<person>> says into <<his>> radio while the <<person1>><<person>> holds you down. "That's right. We'll keep <<phim>> here."
+	<br><br>
+	<<clotheson>>
+	<<link [[Next|Elk Compound Underground]]>><</link>>
+	<br>
+<</if>>
+
+
+:: Elk Compound Approach
+<<set $outside to 1>><<set $location to "compound">>
+
+You walk up to the gate. It's guarded by two security guards. <<generateSecurity 1>><<generateSecurity 2>><<person1>>One of them, a <<person>>, puts an arm out as you approach. "No closer, <<girl>>. This is private property." <<His>> companion sizes you up.
+<br><br>
+
+<<if $phials_held gte 1>>
+	<<link [[Show them the aphrodisiac phial|Elk Compound Show]]>><</link>>
+	<br>
+<</if>>
+<<if $compoundcard is 1>>
+	<<link [[Show them the stolen card|Elk Compound Card]]>><<set $compoundcard to 2>><</link>>
+	<br>
+<</if>>
+<<link [[Leave|Elk Street]]>><<endevent>><</link>>
+<br>
+
+
+:: Elk Compound Show
+<<effects>>
+
+You hold out the phial. The <<person>> peers at it. "Hmph," <<he>> sounds. "Fine. Central building. Make your delivery and get out." <<His>> companion disappears into a booth, and the gates shudder open.
+<br><br>
+
+<<link [[Elk Compound]]>><<endevent>><</link>>
+<br>
+
+:: Elk Compound Card
+<<effects>>
+<<if $speech_attitude is "meek">>
+	"S-sorry <<sir>>," you say. "But I was told to come here." You hold out the card you stole.
+<<elseif $speech_attitude is "bratty">>
+	"Shut it," you say. "I have business here." You hold out the card you stole.
+<<else>>
+	"I have business here," you say. You hold out the card you stole.
+<</if>>
+<br><br>
+The guard snatches the card and examines it. <<He>> runs it through a device at <<his>> belt and examines the screen. "Hmph," <<he>> sounds. "Fine. Make your delivery and get out." <<His>> companion disappears into a booth, and the gates shudder open.
+<br><br>
+<<endevent>>
+<<link [[Enter|Elk Compound]]>><<endevent>><</link>>
+<br>
+
+
+:: Elk Compound Station
+<<set $location to "compound">><<effects>>
+
+The carriage slows as it arrives on a new platform, surrounded by stone brickwork. You peer through the carriage window. There's a metal door along one wall. Crates like those at the estate are stacked nearby, but these are empty. There's also a ladder, leading to a hatch several metres above.
+<br><br>
+
+
+<<generateSecurity 1>><<generateSecurity 2>>
+You walk towards the carriage entrance. The blue door shudders open, and you take cover. A <<fullGroup>> jog through, wearing white uniforms and holding large guns. They haven't noticed you.
+<br><br>
+
+<<link [[Next|Elk Compound Station 2]]>><</link>>
+<br>
+
+
+:: Elk Compound Station 2
+<<effects>>
+
+"Empty," the <<person>> says. "Not even loaded."
+<br>
+"Someone's in deep shit," the <<person2>><<person>> replies. "Thought we sent one of ours out there."
+<br>
+<br>
+The <<person1>><<person>> lifts <<his>> radio. "All clear. Roger."
+<br><br>
+
+A small canister rolls out of a pouch at the <<person1>><<persons>> side. The blue door shuts behind them.
+<br><br>
+
+<<if $compoundspray2 isnot 1>>
+	<<peppersprayicon>><<link [[Take the canister|Elk Compound Station Canister]]>><<set $spraymax += 1>><<spray 5>><<world_corruption "soft" -10>><</link>><<gspraymax>>
+	<br>
+<<else>>
+	<<peppersprayicon>><<link [[Take the canister|Elk Compound Station Canister]]>><<spray 1>><</link>><<gspray>>
+	<br>
+<</if>>
+<<getouticon>><<link [[Just leave|Elk Compound Station Leave]]>><</link>>
+<br>
+
+
+:: Elk Compound Station Canister
+<<effects>>
+
+<<if $compoundspray2 isnot 1>>
+	<<set $compoundspray2 to 1>>
+	You pick up the canister. It looks like a charge for your pepper spray, but with an exposed computer chip at the base. You put it in, then head for the exit.
+	<br><br>
+
+	<span class="gold">You've gained an additional pepper spray charge.</span>
+	<br><br>
+<<else>>
+	You pick up the canister. It's a charge for your pepper spray. You put it in, then head for the exit.
+	<br><br>
+<</if>>
+
+There's only one other way out. The hatch on the ceiling. You climb the ladder, and open it. The sound of traffic greets you. You climb the rest of the way, emerging in an alley by Elk Street.
+<br><br>
+
+The hatch clicks shut behind you.
+<br><br>
+
+<<link [[Next|Elk Street]]>><<set $eventskip to 1>><<endevent>><</link>>
+<br>
+
+
+:: Elk Compound Station Leave
+<<effects>>
+
+There's only one other way out. The hatch on the ceiling. You climb the ladder, and open it. The sound of traffic greets you. You climb the rest of the way, emerging in an alley by Elk Street.
+<br><br>
+
+The hatch clicks shut behind you.
+<br><br>
+
+<<link [[Next|Elk Street]]>><<set $eventskip to 1>><<endevent>><</link>>
+<br>
+

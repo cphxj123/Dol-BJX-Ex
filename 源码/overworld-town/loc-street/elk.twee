@@ -1,0 +1,139 @@
+:: Elk Street
+
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "elk">><<getTarget true>>
+You are on Elk Street. There are roads leading to several large industrial complexes.
+<<if Time.dayState is "day">>
+	<<if $weather is "rain">>
+		Water pings off metal all around.
+	<<elseif $weather is "snow">>
+		The sound of machinery is muffled by the snow.
+	<<else>>
+		You hear the sound of machinery all around.
+	<</if>>
+<<elseif Time.dayState is "dawn">>
+	<<if $weather is "rain">>
+		You can't hear the rain behind the groaning of large machines, awaking from their slumber.
+	<<elseif $weather is "snow">>
+		You hear muffled groans all around, large machines awaking from their slumber.
+	<<else>>
+		Large machines groan all around, awaking from their slumber.
+	<</if>>
+<<elseif Time.dayState is "dusk">>
+	<<if $weather is "rain">>
+		Workers hurry through the rain, done for the day.
+	<<elseif $weather is "snow">>
+		Machines continue to rumble, the sound muffled by the snow.
+	<<else>>
+		The groaning of machinery is quieter at this hour, but never fades completely.
+	<</if>>
+<<elseif Time.dayState is "night">>
+	<<if $weather is "rain">>
+		An occasional metallic groan pierces the sound of the rain.
+	<<elseif $weather is "snow">>
+		Though muffled by the snow, you can hear the sound of machinery even at this hour.
+	<<else>>
+		You hear the sound of machinery even at this hour.
+	<</if>>
+<</if>>
+<<streeteffects>>
+<br><br>
+<<if $exposed gte 1>>
+	<<exhibitionism "street">>
+<</if>>
+<<if $arousal gte $arousalmax>>
+	<<orgasmstreet>>
+<</if>>
+<<if $stress gte $stressmax and !$possessed>>
+	<<passoutstreet>>
+<<elseif $compound_breakout is undefined and ($museumAntiques.antiques.antiquewhitecrystal is "found" or $museumAntiques.antiques.antiquewhitecrystal is "talk" or $museumAntiques.antiques.antiquewhitecrystal is "museum")>>
+	<<set $compound_breakout to 1>>
+	<<generate1>><<generate2>><<person1>>
+	A <<person>> in a white uniform runs across the road, forcing oncoming traffic to screech to a halt. <<He>> carries a long pole in both hands, with a small net on the end. A small creature runs ahead of <<him>>. <<He>> swings the net in an arc, but it finds empty space as the creature escapes down a drain.
+	<br><br>
+
+	<<He>> curses, then looks at the surrounding traffic and pedestrians observing <<him>>. "Nothing to see fo-," <<he>> begins, but a bang from within the nearby compound interrupts <<him>>. A plume of white smoke billows into the air, and two more small creatures dart through the fence. <<He>> takes off after one of them, net held aloft.
+	<br><br>
+
+	<<link [[Next|Elk Street]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
+		<<eventsstreet>>
+	<<else>>
+		<<if $options.mapTop is true>>
+			<<map "elk">>
+			<br>
+		<</if>>
+		Places of interest
+		<br>
+		<<if $trash_unlocked is 1>>
+			<<landfillicon>><<link [[Landfill (0:10)|Trash]]>><<pass 10>><<set $trash to 0>><</link>>
+			<br>
+		<<else>>
+			<<landfillicon>><<link [[Landfill (0:05)|Trash Gate Enter]]>><<pass 5>><</link>>
+			<br>
+		<</if>>
+		<<if $daily.compoundState is 1>>
+			<span class="blue">The compound is prowled by guards.</span> They'll be less agitated tomorrow.
+			<br>
+		<<elseif $compoundcard is 2>>
+			<<if $wraithCompoundEvent>>
+				<<hallucinogen 5>>
+				<span class="pink">A faint mist hangs over the compound.</span>
+				<br>
+			<</if>>
+			<<compoundicon>><<link [[Sneak into the compound (0:02)|Elk Compound]]>><<pass 2>><<crimeUp 30>><</link>><<crime "trespassing">>
+			<br>
+			<<if $farm_stage gte 9 and $phials_held gte 1 and $exposed lte 0>>
+				<<compoundicon>><<link [[Approach the compound (0:01)|Elk Compound Approach]]>><<pass 1>><</link>>
+				<br>
+			<</if>>
+		<<elseif ($compoundcard is 1 or $farm_stage gte 9) and $exposed lte 0>>
+			<<compoundicon>><<link [[Approach strange compound (0:01)|Elk Compound Approach]]>><<pass 1>><</link>>
+			<br>
+		<</if>>
+		<<if $adultshopunlocked is undefined>>
+			<<if $adultshopgrandopening is true>>
+				<<shopicon "adult">><<link [[Attend the adult shop grand opening (1:00)|Adult Shop Opening]]>><<pass 10>><</link>>
+			<<else>>
+				<<shopicon "dilapidated">><<link [[Dilapidated Shop (0:01)|Dilapidated Shop]]>><<pass 1>><</link>>
+				<br>
+			<</if>>
+		<<elseif $exposed lte 0>>
+			<<if $adultShop.ban gt 0>>
+				<<shopicon "adult">><<link [[Adult Shop (0:01)|Adult Shop Guard]]>><<pass 1>><</link>>
+				<br>
+			<<else>>
+				<<adultshopentryevent>>
+				<br>
+			<</if>>
+		<</if>>
+		<br>
+		<<if $exposed gte 1 and Time.dayState isnot "night">>
+		<<else>>
+			<<add_link "Travel<br>">><<hideDisplay>>
+			<<nightingale>>
+			<<oxford>>
+			<<harvest>>
+			<<if $exposed lte 0>>
+				<<buswait>>
+			<</if>>
+			/* 北极星模组 */
+			<<if $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+				<<flywait>>
+			<</if>>
+			/* 北极星 */
+			<<loiter>>
+		<</if>>
+		<<add_link "<br>Alternate routes<br>">><<hideDisplay>>
+		<<industrial>>
+		<<stormdrain>>
+		<<displayLinks>>
+		<<if $options.mapTop isnot true>>
+			<br>
+			<<map "elk">>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>

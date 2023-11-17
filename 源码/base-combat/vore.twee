@@ -1,0 +1,909 @@
+:: Widgets Vore Actions Generation [widget]
+<<widget "generateActionsVore">>
+	<<set $combat to 1>>
+	<<if _targetlist is undefined>>
+		<<getTargetList>>
+	<</if>>
+	<div id="listContainer">
+		<div id="leftaction" @class="$options.combatControls + 'Control'">
+			<<leftActionInitVore>>
+		</div>
+
+		<div id="rightaction" @class="$options.combatControls + 'Control'">
+			<<rightActionInitVore>>
+		</div>
+
+		/* 北极星模组 */
+		<<if ($mouthuse is 0 and !($dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined)))>>
+		/* 北极星 */
+			<div id="mouthaction" @class="$options.combatControls + 'Control'">
+				<<mouthActionInit>>
+			</div>
+		<</if>>
+	</div>
+<</widget>>
+
+<<widget "leftActionInitVore">>
+	<<set $lefttarget to "vore">>
+	<<switch $leftarm>>
+		<<case 0>>
+			<<set $lefttarget to "vore">>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<<set _leftOptions to "orgasm">>
+				<span class="lewd">Your left arm is free, but you can't stop the spasms.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<<set _leftOptions to "pain">>
+				<span class="red">Your left arm is free, but hurts to move.</span>
+			<<elseif $dissociation gte 2>>
+				<<set _leftOptions to "unreal">>
+				<span class="pink">Your left arm is free, but doesn't feel real.</span>
+			<<else>>
+				<<if _targetYourself is true and _targetnumber gt 1>>
+					<<set _targetlistarms["Yourself"] to "self">>
+				<</if>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<<targetListBox "left" _targetlistarms>>
+				<</if>>
+				<<set _leftOptions to "free">>
+				<span @class="($lastOptions.left isnot _leftOptions ?'gold':'')">Your left arm is free.</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<br>
+					<<targetListBox "left" _targetlistarms>>
+					<br>
+				<</if>>
+			<</if>>
+		<<case "bound">>
+			<<set _leftOptions to "bound">>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<span class="lewd">Your left arm jerks against its bonds.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<span class="red">Your left arm is held in a painful bind.</span>
+			<<elseif $dissociation gte 2>>
+				<span class="pink">Your left arm lies limp in its bonds.</span>
+			<<else>>
+				<span @class="($lastOptions.left isnot _leftOptions ?'gold':'')">Your left arm is bound.</span>
+			<</if>><<if $options.combatControls.includes("adio")>><br><</if>>
+		<<case "trapped">>
+			<<set _leftOptions to "trapped">>
+			<span @class="($lastOptions.left isnot _leftOptions ?'gold':'purple')">Your left arm is trapped by the $vorecreature.</span><<if $options.combatControls.includes("adio")>><br><</if>>
+		<<case "grappled" "penis" "othervagina" "vagina" "coverpenis" "anus" "behind">>
+			<<set $_changetype to true>><<leftActionInit>>
+		<<case "struggle">>
+			<<set $_changetype to true>><<leftActionInitStruggle>>
+		<<case "swarmgrappled">>
+			<<set $_changetype to true>><<leftActionInitSwarm>>
+		<<case "mechgrappled">>
+			<<set $_changetype to true>><<leftActionInitMachine>>
+		<<default>>
+			<<set $_changetype to true>><<leftActionInitTentacle>>
+	<</switch>>
+	<<if $_changetype isnot true>>
+		<<leftActionsVore>>
+		<<if Object.keys(_leftaction).length gt 0>>
+			<<if !(Object.values(_leftaction).includes($leftactiondefault))>>
+				<<set $leftactiondefault to "rest">>
+			<</if>>
+			<<set $leftaction to $leftactiondefault>>
+			<<set _textColor to combatListColor('leftaction', (Object.values(_leftaction).includes($leftaction) ? $leftaction : Object.values(_leftaction)[0]), "Vore")>>
+			<div class="extraMargin">
+				<<generateCombatActionOthers _leftaction "leftaction" _textColor $leftaction "Vore">>
+			</div>
+			<<if $options.combatControls.includes("ists")>>
+				<div id="leftactionDifficulty">
+					<<leftactionDifficulty>>
+				</div>
+			<</if>>
+		<</if>>
+		<<set $lastOptions.left to clone(_leftOptions)>>
+	<</if>>
+<</widget>>
+
+<<widget "leftactionDifficultyVore">>/* Blank widget to pacify the JavaScript Gods. */
+	<!-- Does nothing -->
+<</widget>>
+
+<<widget "leftActionsVore">>
+	<<set _leftaction to {}>>
+	<<if !(["orgasm", "pain", "unreal"].includes(_leftOptions))>>
+		<<set _leftaction["Rest"] to "rest">>
+	<</if>>
+	<<switch _leftOptions>>
+		<<case "free">>
+			<<set _leftaction["Escape the "+$vorecreature] to "leftescape">>
+			<<if $vorestage lte 6>>
+				<<set _leftaction["Hold on to the "+$vorecreature] to "lefthold">>
+			<</if>>
+			<<if $rightarm is "trapped">>
+				<<set _leftaction["Free your right arm"] to "leftvorefree">>
+			<</if>>
+		<<case "bound" "trapped">>
+		<<case "orgasm">>
+			<<set _leftaction["Fold"] to "leftfold">>
+			<<set _leftaction["Grip"] to "leftgrip">>
+		<<case "pain">>
+			<<set _leftaction["Struggle"] to "leftstruggleweak">>
+			<<set _leftaction["Protect"] to "leftprotect">>
+		<<case "unreal">>
+			<<set _leftaction["Poke yourself"] to "leftpoke">>
+			<<set _leftaction["Keep your arms out of the way"] to "leftcurl">>
+	<</switch>>
+<</widget>>
+
+<<widget "rightActionInitVore">>
+	<<set $righttarget to "vore">>
+	<<switch $rightarm>>
+		<<case 0>>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<<set _rightOptions to "orgasm">>
+				<span class="lewd">Your right arm is free, but you can't stop the spasms.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<<set _rightOptions to "pain">>
+				<span class="red">Your right arm is free, but hurts to move.</span>
+			<<elseif $dissociation gte 2>>
+				<<set _rightOptions to "unreal">>
+				<span class="pink">Your right arm is free, but doesn't feel real.</span>
+			<<else>>
+				<<if _targetYourself is true and _targetnumber gt 1>>
+					<<set _targetlistarms["Yourself"] to "self">>
+				<</if>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<<targetListBox "right" _targetlistarms>>
+				<</if>>
+				<<set _rightOptions to "free">>
+				<span @class="($lastOptions.right isnot _rightOptions ?'gold':'')">Your right arm is free.</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<br>
+					<<targetListBox "right" _targetlistarms>>
+					<br>
+				<</if>>
+			<</if>>
+		<<case "bound">>
+			<<set _rightOptions to "bound">>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<span class="lewd">Your right arm jerks against its bonds.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<span class="red">Your right arm is held in a painful bind.</span>
+			<<elseif $dissociation gte 2>>
+				<span class="pink">Your right arm lies limp in its bonds.</span>
+			<<else>>
+				<span @class="($lastOptions.right isnot _rightOptions ?'gold':'')">Your right arm is bound.</span>
+			<</if>>
+		<<case "trapped">>
+			<<set _rightOptions to "trapped">>
+			<span @class="($lastOptions.right isnot _rightOptions ?'gold':'purple')">Your right arm is trapped by the $vorecreature.</span><br>
+		<<case "grappled" "penis" "othervagina" "vagina" "coverpenis" "anus" "behind">>
+			<<set $_changetype to true>><<rightActionInit>>
+		<<case "struggle">>
+			<<set $_changetype to true>><<rightActionInitStruggle>>
+		<<case "swarmgrappled">>
+			<<set $_changetype to true>><<rightActionInitSwarm>>
+		<<case "mechgrappled">>
+			<<set $_changetype to true>><<rightActionInitMachine>>
+		<<default>>
+			<<set $_changetype to true>><<rightActionInitTentacle>>
+	<</switch>>
+	<<if $_changetype isnot true>>
+		<<rightActionsVore>>
+		<<if Object.keys(_rightaction).length gt 0>>
+			<<if !(Object.values(_rightaction).includes($rightactiondefault))>>
+				<<set $rightactiondefault to "rest">>
+			<</if>>
+			<<set $rightaction to $rightactiondefault>>
+			<<set _textColor to combatListColor('rightaction', (Object.values(_rightaction).includes($rightaction) ? $rightaction : Object.values(_rightaction)[0]), "Vore")>>
+			<div class="extraMargin">
+				<<generateCombatActionOthers _rightaction "rightaction" _textColor $rightaction "Vore">>
+			</div>
+			<<if $options.combatControls.includes("ists")>>
+				<div id="rightactionDifficulty">
+					<<rightactionDifficulty>>
+				</div>
+			<</if>>
+		<</if>>
+		<<set $lastOptions.right to clone(_rightOptions)>>
+	<</if>>
+<</widget>>
+
+<<widget "rightactionDifficultyVore">>/* But seriously, not having this blank widget will cause red blocks of error in the "lists" actions types */
+	<!-- Does nothing -->
+<</widget>>
+
+<<widget "rightActionsVore">>
+	<<set _rightaction to {}>>
+	<<if !(["orgasm", "pain", "unreal"].includes(_rightOptions))>>
+		<<set _rightaction["Rest"] to "rest">>
+	<</if>>
+	<<switch _rightOptions>>
+		<<case "free">>
+			<<set _rightaction["Escape the "+$vorecreature] to "rightescape">>
+			<<if $vorestage lte 6>>
+				<<set _rightaction["Hold on to the "+$vorecreature] to "righthold">>
+			<</if>>
+			<<if $rightarm is "trapped">>
+				<<set _rightaction["Free your right arm"] to "rightvorefree">>
+			<</if>>
+		<<case "bound" "trapped">>
+		<<case "orgasm">>
+			<<set _rightaction["Fold"] to "rightfold">>
+			<<set _rightaction["Grip"] to "rightgrip">>
+		<<case "pain">>
+			<<set _rightaction["Struggle"] to "rightstruggleweak">>
+			<<set _rightaction["Protect"] to "rightprotect">>
+		<<case "unreal">>
+			<<set _rightaction["Poke yourself"] to "rightpoke">>
+			<<set _rightaction["Keep your arms out of the way"] to "rightcurl">>
+	<</switch>>
+<</widget>>
+
+:: Widgets Vore [widget]
+<<widget "vore">>
+	<<rng>>
+	<<if $vorestage is 1>>
+		Your thighs are gripped by the $vorecreature's mouth, your shins and feet at the mercy of its probing tongue.
+		<<neutral 4>>
+	<<elseif $vorestage is 2>>
+		Your waist is gripped by the $vorecreature's mouth, your delicate parts at the mercy of its slippery tongue.
+		<<neutral 2 "genitals">><<neutral 2 "bottom">>
+	<<elseif $vorestage is 3>>
+		Your chest is gripped by the $vorecreature's mouth, your body at the mercy of its slimy tongue.
+		<<neutral 2 "breasts">><<neutral 3 "genitals">><<neutral 3 "bottom">>
+	<<elseif $vorestage is 4>>
+		Your shoulders are gripped by the $vorecreature's mouth, your body at the mercy of its intrusive tongue.
+		<<neutral 3 "breasts">><<neutral 4 "genitals">><<neutral 4 "bottom">>
+	<<elseif $vorestage is 5>>
+		Your entire body is in the $vorecreature's mouth. Its slimy tongue presses against your whole body.
+		<<neutral 4 "breasts">><<neutral 5 "genitals">><<neutral 5 "bottom">>
+	<<elseif $vorestage is 6>>
+		You are in the $vorecreature's gullet, pushed along by movements in the walls.
+		<<neutral 5 "breasts">><<neutral 6 "genitals">><<neutral 6 "bottom">>
+	<<elseif $vorestage is 7>>
+		You are in the $vorecreature's stomach, it's a struggle to keep your head above the slimy liquid.
+		<<neutral 6 "breasts">><<neutral 7 "genitals">><<neutral 7 "bottom">>
+	<</if>>
+	<<if $vorestage is 1>>
+		<<if ($vorestruggle * currentSkillValue('physique')) gte $vorestrength>>
+			<<if $vorestruggle is 2>>
+				You push down on the $vorecreature's maw with both your arms, <span class="green">preventing it from swallowing you further.</span>
+			<<elseif $vorestruggle is 1>>
+				You push down on the $vorecreature's maw with one arm, <span class="green">preventing it from swallowing you further.</span>
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="green">but it doesn't take advantage of your vulnerability.</span>
+			<</if>>
+		<<else>>
+			<<set $vorestage += 1>>
+			<<if $vorestruggle is 2>>
+				You push down on the $vorecreature's maw with both your arms,<span class="blue"> but it isn't enough.</span> You slide deeper into its mouth, until it swallows you up to the waist.
+			<<elseif $vorestruggle is 1>>
+				You push down on the $vorecreature's maw with one arm,<span class="blue"> but it isn't enough.</span> You slide deeper into its mouth, until it swallows you up to the waist.
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="blue">and it takes advantage of your vulnerability.</span> You slide deeper into its mouth, until it swallows you up to the waist.
+			<</if>>
+			<<if $voretrait gte 1 and random(1, 3) is 3>>
+				You shiver at the sensation.<<arousal 100>>
+			<</if>>
+		<</if>>
+	<<elseif $vorestage is 2>>
+		<<if $worn.over_lower.integrity gt 0>>
+			<<set $worn.over_lower.integrity -= 1>>
+		<<elseif $worn.lower.integrity lte 0>>
+			<<set $worn.lower.integrity -= 1>>
+		<<elseif $worn.under_lower.integrity lte 0>>
+			<<set $worn.under_lower.integrity -= 1>>
+		<</if>>
+		<<if ($vorestruggle * currentSkillValue('physique')) gte $vorestrength>>
+			<<if $vorestruggle is 2>>
+				You push down on the $vorecreature's maw with both your arms, <span class="green">preventing it from swallowing you further.</span>
+			<<elseif $vorestruggle is 1>>
+				You push down on the $vorecreature's maw with one arm, <span class="green">preventing it from swallowing you further.</span>
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="green">but it doesn't take advantage of your vulnerability.</span>
+			<</if>>
+		<<else>>
+			<<set $vorestage += 1>>
+			<<if $vorestruggle is 2>>
+				You push down on the $vorecreature's maw with both your arms,<span class="purple"> but it isn't enough.</span> You slide deeper into its mouth, until it swallows you up to your chest.
+			<<elseif $vorestruggle is 1>>
+				You push down on the $vorecreature's maw with one arm,<span class="purple"> but it isn't enough.</span> You slide deeper into its mouth, until it swallows you up to your chest.
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="purple">and it takes advantage of your vulnerability.</span> You slide deeper into its mouth, until it swallows you up to your chest.
+			<</if>>
+		<</if>>
+	<<elseif $vorestage is 3>>
+		<<if $worn.over_lower.integrity gt 0>>
+			<<set $worn.over_lower.integrity -= 1>>
+		<<elseif $worn.lower.integrity gt 0>>
+			<<set $worn.lower.integrity -= 1>>
+		<<elseif $worn.under_lower.integrity gt 0>>
+			<<set $worn.under_lower.integrity -= 1>>
+		<</if>>
+		<<if $worn.over_upper.integrity gt 0>>
+			<<set $worn.over_upper.integrity -= 1>>
+		<<elseif $worn.upper.integrity gt 0>>
+			<<set $worn.upper.integrity -= 1>>
+		<<elseif $worn.under_upper.integrity gt 0>>
+			<<set $worn.under_upper.integrity -= 1>>
+		<</if>>
+		<<set $worn.upper.integrity -= 1>>
+		<<if ($vorestruggle * currentSkillValue('physique')) gte $vorestrength>>
+			<<if $vorestruggle is 2>>
+				You push down on the $vorecreature's maw with both your arms, <span class="green">preventing it from swallowing you further.</span>
+			<<elseif $vorestruggle is 1>>
+				You push down on the $vorecreature's maw with one arm, <span class="green">preventing it from swallowing you further.</span>
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="green">but it doesn't take advantage of your vulnerability.</span>
+			<</if>>
+		<<else>>
+			<<set $vorestage += 1>>
+			<<if $vorestruggle is 2>>
+				You push down on the $vorecreature's maw with both your arms,<span class="pink"> but it isn't enough.</span> You slide deeper into its mouth, until it swallows you up to your neck.
+			<<elseif $vorestruggle is 1>>
+				You push down on the $vorecreature's maw with one arm,<span class="pink"> but it isn't enough.</span> You slide deeper into its mouth, until it swallows you up to your neck.
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="pink">and it takes advantage of your vulnerability.</span> You slide deeper into its mouth, until it swallows you up to your neck.
+			<</if>>
+		<</if>>
+	<<elseif $vorestage is 4>>
+		<<if $worn.over_lower.integrity gt 0>>
+			<<set $worn.over_lower.integrity -= 1>>
+		<<elseif $worn.lower.integrity gt 0>>
+			<<set $worn.lower.integrity -= 1>>
+		<<elseif $worn.under_lower.integrity gt 0>>
+			<<set $worn.under_lower.integrity -= 1>>
+		<</if>>
+		<<if $worn.over_upper.integrity gt 0>>
+			<<set $worn.over_upper.integrity -= 1>>
+		<<elseif $worn.upper.integrity gt 0>>
+			<<set $worn.upper.integrity -= 1>>
+		<<elseif $worn.under_upper.integrity gt 0>>
+			<<set $worn.under_upper.integrity -= 1>>
+		<</if>>
+		<<if ($vorestruggle * currentSkillValue('physique')) gte $vorestrength>>
+			<<if $vorestruggle is 2>>
+				You grab the inside of the $vorecreature's maw with both arms, <span class="green">preventing it from swallowing you further.</span>
+			<<elseif $vorestruggle is 1>>
+				You grab the inside of the $vorecreature's maw with one arm, <span class="green">preventing it from swallowing you further.</span>
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="green">but it doesn't take advantage of your vulnerability.</span>
+			<</if>>
+		<<else>>
+			<<set $vorestage += 1>>
+			<<if $vorestruggle is 2>>
+				You grab the inside of the $vorecreature's maw with both your arms,<span class="pink"> but it isn't enough.</span> The last of your body slides into its mouth, its lips closing behind you.
+			<<elseif $vorestruggle is 1>>
+				You grab the inside of the $vorecreature's maw with one arm,<span class="pink"> but it isn't enough.</span> The last of your body slides into its mouth, its lips closing behind you.
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="pink">and it takes advantage of your vulnerability.</span> The last of your body slides into its mouth, its lips closing behind you.
+			<</if>>
+		<</if>>
+	<<elseif $vorestage is 5>>
+		<<if $worn.over_lower.integrity gt 0>>
+			<<set $worn.over_lower.integrity -= 1>>
+		<<elseif $worn.lower.integrity gt 0>>
+			<<set $worn.lower.integrity -= 1>>
+		<<elseif $worn.under_lower.integrity gt 0>>
+			<<set $worn.under_lower.integrity -= 1>>
+		<</if>>
+		<<if $worn.over_upper.integrity gt 0>>
+			<<set $worn.over_upper.integrity -= 1>>
+		<<elseif $worn.upper.integrity gt 0>>
+			<<set $worn.upper.integrity -= 1>>
+		<<elseif $worn.under_upper.integrity gt 0>>
+			<<set $worn.under_upper.integrity -= 1>>
+		<</if>>
+		<<if ($vorestruggle * currentSkillValue('physique')) gte $vorestrength>>
+			<<if $vorestruggle is 2>>
+				You grab the inside of the $vorecreature's maw with both arms, <span class="green">preventing it from swallowing you further.</span>
+			<<elseif $vorestruggle is 1>>
+				You grab the inside of the $vorecreature's maw with one arm, <span class="green">preventing it from swallowing you further.</span>
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="green">but it doesn't take advantage of your vulnerability.</span>
+			<</if>>
+		<<else>>
+			<<set $vorestage += 1>>
+			<<if $vorestruggle is 2>>
+				You grab the inside of the $vorecreature's maw with both your arms,<span class="pink"> but it isn't enough.</span> The $vorecreature sucks you further down, sliding you into its gullet.
+			<<elseif $vorestruggle is 1>>
+				You grab the inside of the $vorecreature's maw with one arm,<span class="pink"> but it isn't enough.</span> The $vorecreature sucks you further down, sliding you into its gullet.
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="pink">and it takes advantage of your vulnerability.</span> The $vorecreature sucks you further down, sliding you into its gullet.
+			<</if>>
+		<</if>>
+	<<elseif $vorestage is 6>>
+		<<if $worn.over_lower.integrity gt 0>>
+			<<set $worn.over_lower.integrity -= 1>>
+		<<elseif $worn.lower.integrity gt 0>>
+			<<set $worn.lower.integrity -= 1>>
+		<<elseif $worn.under_lower.integrity gt 0>>
+			<<set $worn.under_lower.integrity -= 1>>
+		<</if>>
+		<<if $worn.over_upper.integrity gt 0>>
+			<<set $worn.over_upper.integrity -= 1>>
+		<<elseif $worn.upper.integrity gt 0>>
+			<<set $worn.upper.integrity -= 1>>
+		<<elseif $worn.under_upper.integrity gt 0>>
+			<<set $worn.under_upper.integrity -= 1>>
+		<</if>>
+		<<if ($vorestruggle * currentSkillValue('physique')) gte $vorestrength>>
+			<<if $vorestruggle is 2>>
+				You grab the inside of the $vorecreature's maw with both arms, <span class="green">preventing it from swallowing you further.</span>
+			<<elseif $vorestruggle is 1>>
+				You grab the inside of the $vorecreature's maw with one arm, <span class="green">preventing it from swallowing you further.</span>
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="green">but it doesn't take advantage of your vulnerability.</span>
+			<</if>>
+		<<else>>
+			<<set $vorestomach to 0>>
+			<<set $vorestage += 1>>
+			<<if $vorestruggle is 2>>
+				You grab the inside of the $vorecreature's maw with both your arms,<span class="pink"> but it isn't enough.</span> The $vorecreature sucks you further down, depositing you in a fleshy chamber.
+				<<if $leftarm is "trapped">><<set $leftarm to 0>><</if>><<if $rightarm is "trapped">><<set $rightarm to 0>><<swallowed>><</if>>
+			<<elseif $vorestruggle is 1>>
+				You grab the inside of the $vorecreature's maw with one arm,<span class="pink"> but it isn't enough.</span> The $vorecreature sucks you further down, depositing you in a fleshy chamber.
+				<<if $leftarm is "trapped">><<set $leftarm to 0>><</if>><<if $rightarm is "trapped">><<set $rightarm to 0>><<swallowed>><</if>>
+			<<else>>
+				There's nothing preventing the $vorecreature from swallowing you further, <span class="pink">and it takes advantage of your vulnerability.</span> The $vorecreature sucks you further down, depositing you in a fleshy chamber.
+				<<if $leftarm is "trapped">><<set $leftarm to 0>><</if>><<if $rightarm is "trapped">><<set $rightarm to 0>><</if>><<swallowed>>
+			<</if>>
+		<</if>>
+	<<else>>
+		<<if $worn.over_lower.integrity gt 0>>
+			<<set $worn.over_lower.integrity -= 5>>
+		<</if>>
+		<<if ($worn.over_lower.name is "naked" or $worn.over_lower.integrity lte clothingData('over_lower',$worn.over_lower,'integrity_max') / 5) and $worn.lower.integrity gt 0>>
+			<<set $worn.upper.integrity -= 5>>
+		<</if>>
+		<<if ($worn.over_lower.name is "naked" or $worn.over_lower.integrity lte clothingData('over_lower',$worn.over_lower,'integrity_max') / 5)
+			and ($worn.lower.name is "naked" or $worn.lower.integrity lte clothingData('lower',$worn.lower,'integrity_max') / 5) and $worn.under_lower.integrity gt 0>>
+			<<set $worn.under_lower.integrity -= 5>>
+		<</if>>
+		<<if $worn.over_upper.integrity gt 0>>
+			<<set $worn.over_upper.integrity -= 5>>
+		<</if>>
+		<<if ($worn.over_upper.name is "naked" or $worn.over_upper.integrity lte clothingData('over_upper',$worn.over_upper,'integrity_max') / 5) and $worn.upper.integrity gt 0>>
+			<<set $worn.upper.integrity -= 5>>
+		<</if>>
+		<<if ($worn.over_upper.name is "naked" or $worn.over_upper.integrity lte clothingData('over_upper',$worn.over_upper,'integrity_max') / 5) and
+			($worn.upper.name is "naked" or $worn.upper.integrity lte clothingData('upper',$worn.upper,'integrity_max') / 5) and $worn.under_upper.integrity gt 0>>
+			<<set $worn.under_upper.integrity -= 5>>
+		<</if>>
+	<</if>>
+	<br><br>
+	<<set $vorestruggle to 0>>
+	<<rng>>
+	<<if $vorestage is 1>>
+		<<if $rng gte 66>>
+			You feel the $vorecreature licking your feet.
+			<<neutral 5>>
+		<<elseif $rng gte 33>>
+			The $vorecreature's tongue protrudes from its maw, and licks your inner thighs.
+			<<neutral 5 "genitals">>
+		<<else>>
+			The $vorecreature's tongue protrudes from its maw, and licks your butt.
+			<<neutral 5 "anus">>
+		<</if>>
+	<<elseif $vorestage is 2>>
+		<<if $rng gte 66>>
+			You feel the $vorecreature licking your butt.
+			<<neutral 5 "anus">>
+		<<elseif $rng gte 33>>
+			The $vorecreature gently licks your <<groin>>.
+			<<neutral 10 "genitals">>
+		<<else>>
+			The $vorecreature's tongue wraps around your pelvis, and rubs up and down the length of your thighs.
+			<<neutral 5 "genitals">>
+		<</if>>
+	<<elseif $vorestage is 3>>
+		<<if $rng gte 66>>
+			The $vorecreature's tongue presses your body against the roof of its maw.
+			<<neutral 5>>
+		<<elseif $rng gte 33>>
+			The $vorecreature gently prods your <<groin>>.
+			<<neutral 10 "genitals">>
+		<<else>>
+			The $vorecreature's tongue caresses your inner thighs.
+			<<neutral 5 "genitals">>
+		<</if>>
+	<<elseif $vorestage is 4>>
+		<<if $rng gte 66>>
+			The $vorecreature runs the tip of its tongue down the length of your body.
+			<<neutral 5>>
+		<<elseif $rng gte 33>>
+			The $vorecreature gently prods your <<groin>>.
+			<<neutral 10 "genitals">>
+		<<else>>
+			The $vorecreature's tongue caresses your inner thighs.
+			<<neutral 10 "genitals">>
+		<</if>>
+	<<elseif $vorestage is 5>>
+		<<if $rng gte 66>>
+			The $vorecreature runs the tip of its tongue down the length of your body.
+			<<neutral 10>>
+		<<elseif $rng gte 33>>
+			The $vorecreature wraps its tongue around your body.
+			<<neutral 10>>
+		<<else>>
+			The $vorecreature flicks your <<groin>> with the tip of its tongue.
+			<<neutral 15 "genitals">>
+		<</if>>
+	<<elseif $vorestage is 6>>
+	    /* 北极星模组 */
+		<<if $rng gte 81 and $leftarm is 0 and ($slime is 0 or !$options.bjx_eventTF)>>
+		/* 北极星 */
+			A groove in the side of the gullet constricts around your left arm, trapping it.
+			<<set $leftarm to "trapped">><<set $lefttarget to "vore">><<neutral 10>>
+		/* 北极星模组 */
+		<<elseif $rng gte 61 and $rightarm is 0 and ($slime is 0 or !$options.bjx_eventTF)>>
+		/* 北极星 */
+			A groove in the side of the gullet constricts around your right arm, trapping it.
+			<<set $rightarm to "trapped">><<set $righttarget to "vore">><<neutral 10>>
+		<<elseif $rng gte 41>>
+			The gullet tightens around your entire body, holding you in place.
+			<<neutral 10>>
+		<<elseif $rng gte 21>>
+			Valves open at the side of the tube and release a warm liquid, coating you in a slimy goo.
+			<<neutral 15>>
+		<<elseif $rng gte 1>>
+			The sides of the gullet push against you, sliding you along the tube.
+			<<neutral 15>>
+		<</if>>
+	<<elseif $vorestage is 7>>
+	    /* 北极星模组 */
+		<<if $rng gte 81 and $rightarm is 0 and ($slime is 0 or !$options.bjx_eventTF)>>
+		/* 北极星 */
+			A groove in the side of the chamber constricts around your right arm, trapping it.
+			<<set $rightarm to "trapped">><<set $righttarget to "vore">><<neutral 15>>
+		<<elseif $rng gte 61>>
+			More liquid squirts out the side of the chamber, covering you in a slimy goo.
+			<<neutral 15>><<outergoo>>
+		/* 北极星模组 */
+		<<elseif $rng gte 41 and $leftarm is 0 and ($slime is 0 or !$options.bjx_eventTF)>>
+		/* 北极星 */
+			A groove in the side of the chamber constricts around your left arm, trapping it.
+			<<set $leftarm to "trapped">><<set $lefttarget to "vore">><<neutral 15>>
+		<<elseif $rng gte 21>>
+			The chamber pulses to a gentle rhythm.
+			<<neutral 15>>
+		<<elseif $rng gte 1>>
+			The entire chamber pulsates and rubs against you.
+			<<neutral 20>>
+		<</if>>
+		<<if $vorestomach is 0>>
+			<<set $vorestomach to 1>>
+			<span class="blue">The walls close in around you.</span>
+		<<elseif $vorestomach is 1>>
+			<<set $vorestomach to 2>>
+			<span class="purple">The walls close in around you.</span>
+		<<elseif $vorestomach is 2>>
+			<<set $vorestomach to 3>>
+			<span class="pink">The walls close in around you, squeezing your body and stealing your breath.</span>
+		<<elseif $vorestomach is 3>>
+			<<set $vorestomach to 4>>
+			<span class="red">The walls close in around you. You soon won't be able to move at all.</span>
+		<<else>>
+			<<set $vorestomach to 5>>
+			<span class="red">The walls close in around you. The world starts to fade.</span>
+		<</if>>
+	<</if>>
+	<br><br>
+	<<rng>>
+	<<if $vorestage lte 5>>
+		<<if $rng gte 75>>
+			<<set $vorestrength to random(0, 0)>>
+			<span class="lblue">The $vorecreature seems content to savour your taste, for now.</span>
+		<<elseif $rng gte 50>>
+			<<set $vorestrength to random(-5000, 10000)>>
+			<span class="blue">The $vorecreature salivates in anticipation.</span>
+		<<elseif $rng gte 25>>
+			<<set $vorestrength to random(-5000, 20000)>>
+			<span class="purple">The $vorecreature prepares to suck you in.</span>
+		<<elseif $rng gte 1>>
+			<<set $vorestrength to random(1, 20000)>>
+			<span class="pink">The $vorecreature prepares to gulp you down.</span>
+		<</if>>
+		<br><br>
+	<<else>>
+		<<if $rng gte 75>>
+			<<set $vorestrength to random(0, 0)>>
+		<<elseif $rng gte 50>>
+			<<set $vorestrength to random(-5000, 10000)>>
+		<<elseif $rng gte 25>>
+			<<set $vorestrength to random(-5000, 20000)>>
+		<<elseif $rng gte 1>>
+			<<set $vorestrength to random(1, 20000)>>
+		<</if>>
+	<</if>>
+	<<if $voretrait gte 1>>
+		<<set $vorestrength -= 2500>>
+	<</if>>
+	<<if $panicattacks gte 1 and $panicviolence is 0 and $panicparalysis is 0 and $controlled is 0 and _panicchecked isnot true>>
+		<<rng>>
+		<<if $rng is 100>>
+			<<set $panicparalysis to 5>>
+		<</if>>
+		<<set _panicchecked to true>>
+	<</if>>
+	<<if $panicattacks gte 2 and $panicviolence is 0 and $panicparalysis is 0 and $controlled is 0 and _paniccheckedviolence isnot true>>
+		<<rng>>
+		<<if $rng is 100>>
+			<<set $panicviolence to 3>>
+		<</if>>
+		<<set _paniccheckedviolence to true>>
+	<</if>>
+	<<if $arousal gte $arousalmax and $orgasmdown lte 0>>
+		<<orgasm>>
+		/* 北极星模组 */
+		<<if $options.bjx_animal>>
+    		<<if $vorecreature is "frog">>
+    			<<transform frog 5>>
+    		<</if>>
+		<</if>>
+		/* 北极星 */
+	<</if>>
+<</widget>>
+
+<<widget "swallowedstat">>
+	<<set $swallowedstat += 1>>
+<</widget>>
+
+<<widget "swallowed">>
+	<<if $swallowed isnot 1>>
+		<<set $swallowed to 1>>
+		<<swallowedstat>>
+	<</if>>
+<</widget>>
+:: Widgets Vore Actions [widget]
+<<widget "voreactions">>
+	<<if $options.images is 1 and $options.combatImages is 1>>
+		<<timed 100ms>>
+			<<combatimg>>
+			<br>
+		<</timed>>
+	<</if>>
+	<<willpowerpain>>
+	<<willpowerorgasm>>
+	<<actioncarry>>
+	<<actioncarrydrop>>
+
+	<<combatstate>>
+	<<carryblock>>
+
+	<<if $trance lte 0 and $panicparalysis is 0 and $panicviolence is 0>>
+		<<generateActionsVore>>
+	<</if>>
+	<br>
+<</widget>>
+:: Widgets Vore Effects [widget]
+<<widget "voreeffects">>
+	<<rng>>
+	<<effectspain>>
+	<<effectsorgasm>>
+	<<effectsdissociation>>
+	<<if $leftaction is "leftescape" and $rightaction is "rightescape">>
+		<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "leftescape">><<set $rightactiondefault to "rightescape">><<set $attackstat += 2>><<set $leftactiondefault to "leftescape">><<set $rightactiondefault to "rightescape">>
+		<<if $rng gte 40>>
+			<<if $leftarm is "trapped">><<set $leftarm to 0>><</if>><<if $rightarm is "trapped">><<set $rightarm to 0>><</if>>
+			<<if $vorestage is 1>>
+				<<set $vorestage -= 1>>
+				You hit the $vorecreature's maw with both arms, <span class="green">and make it spit you out.</span>
+			<<elseif $vorestage is 2>>
+				<<set $vorestage -= 1>>
+				You hit the $vorecreature's mouth with both arms. <span class="green">It gags, letting you slide your body out, freeing your <<genitals>> from its maw.</span>
+			<<elseif $vorestage is 3>>
+				<<set $vorestage -= 1>>
+				You hit the $vorecreature's mouth with both arms. <span class="green">It gags, letting you slide your body out, freeing your <<breasts>> from its maw.</span>
+			<<elseif $vorestage is 4>>
+				<<set $vorestage -= 1>>
+				You hit the inside of the $vorecreature's mouth with both arms. <span class="green">It gags, letting you slide your body out, freeing your arms from its maw.</span>
+			<<elseif $vorestage is 5>>
+				<<set $vorestage -= 1>>
+				You hit the inside of the $vorecreature's mouth with both arms. <span class="green">It gags, letting you slide your head back out.</span>
+			<<elseif $vorestage is 6>>
+				<<set $vorestage -= 1>>
+				You hit the walls of the $vorecreature's gullet with both arms. <span class="green">It convulses, violently pushing you up into its mouth.</span>
+			<<elseif $vorestage is 7>>
+				<<set $vorestage -= 1>>
+				You pound the walls of the $vorecreature's stomach with both arms. <span class="green">It convulses, violently pushing you up into its gullet.</span>
+			<</if>>
+		<<else>>
+			<<if $vorestage is 1>>
+				You hit the $vorecreature's maw with both arms, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 2>>
+				You hit the $vorecreature's mouth with both arms, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 3>>
+				You hit the $vorecreature's mouth with both arms, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 4>>
+				You hit the inside of the $vorecreature's mouth with both arms, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 5>>
+				You hit the inside of the $vorecreature's mouth with both arms, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 6>>
+				You hit the walls of the $vorecreature's gullet with both arms, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 7>>
+				You pound the walls of the $vorecreature's stomach with both arms, <span class="red">but it doesn't react.</span>
+			<</if>>
+		<</if>>
+	<<elseif $leftaction is "leftescape">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "leftescape">><<set $attackstat += 1>><<set $leftactiondefault to "leftescape">>
+		<<if $rng gte 20>>
+			<<if $leftarm is "trapped">><<set $leftarm to 0>><</if>><<if $rightarm is "trapped">><<set $rightarm to 0>><</if>>
+			<<if $vorestage is 1>>
+				<<set $vorestage -= 1>>
+				You hit the $vorecreature's maw with your left arm, <span class="green">and make it spit you out.</span>
+			<<elseif $vorestage is 2>>
+				<<set $vorestage -= 1>>
+				You hit the $vorecreature's mouth with your left arm. <span class="green">It gags, letting you slide your body out, freeing your <<genitals>> from its maw.</span>
+			<<elseif $vorestage is 3>>
+				<<set $vorestage -= 1>>
+				You hit the $vorecreature's mouth with your left arm. <span class="green">It gags, letting you slide your body out, freeing your <<breasts>> from its maw.</span>
+			<<elseif $vorestage is 4>>
+				<<set $vorestage -= 1>>
+				You hit the inside of the $vorecreature's mouth with your left arm. <span class="green">It gags, letting you slide your body out, freeing your arms from its maw.</span>
+			<<elseif $vorestage is 5>>
+				<<set $vorestage -= 1>>
+				You hit the inside of the $vorecreature's mouth with your left arm. <span class="green">It gags, letting you slide your head back out.</span>
+			<<elseif $vorestage is 6>>
+				<<set $vorestage -= 1>>
+				You hit the walls of the $vorecreature's gullet with your left arm. <span class="green">It convulses, violently pushing you up into its mouth.</span>
+			<<elseif $vorestage is 7>>
+				<<set $vorestage -= 1>>
+				You pound the walls of the $vorecreature's stomach with your left arm. <span class="green">It convulses, violently pushing you up into its gullet.</span>
+			<</if>>
+		<<else>>
+			<<if $vorestage is 1>>
+				You hit the $vorecreature's maw with your left arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 2>>
+				You hit the $vorecreature's mouth with your left arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 3>>
+				You hit the $vorecreature's mouth with your left arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 4>>
+				You hit the inside of the $vorecreature's mouth with your left arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 5>>
+				You hit the inside of the $vorecreature's mouth with your left arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 6>>
+				You hit the walls of the $vorecreature's gullet with your left arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 7>>
+				You pound the walls of the $vorecreature's stomach with your left arm, <span class="red">but it doesn't react.</span>
+			<</if>>
+		<</if>>
+	<<elseif $rightaction is "rightescape">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "rightescape">><<set $attackstat += 1>><<set $rightactiondefault to "rightescape">>
+		<<if $rng gte 20>>
+			<<if $leftarm is "trapped">><<set $leftarm to 0>><</if>><<if $rightarm is "trapped">><<set $rightarm to 0>><</if>>
+			<<if $vorestage is 1>>
+				<<set $vorestage -= 1>>
+				You hit the $vorecreature's maw with your right arm, <span class="green">and make it spit you out.</span>
+			<<elseif $vorestage is 2>>
+				<<set $vorestage -= 1>>
+				You hit the $vorecreature's mouth with your right arm. <span class="green">It gags, letting you slide your body out, freeing your <<genitals>> from its maw.</span>
+			<<elseif $vorestage is 3>>
+				<<set $vorestage -= 1>>
+				You hit the $vorecreature's mouth with your right arm. <span class="green">It gags, letting you slide your body out, freeing your <<breasts>> from its maw.</span>
+			<<elseif $vorestage is 4>>
+				<<set $vorestage -= 1>>
+				You hit the inside of the $vorecreature's mouth with your right arm. <span class="green">It gags, letting you slide your body out, freeing your arms from its maw.</span>
+			<<elseif $vorestage is 5>>
+				<<set $vorestage -= 1>>
+				You hit the inside of the $vorecreature's mouth with your right arm. <span class="green">It gags, letting you slide your head back out.</span>
+			<<elseif $vorestage is 6>>
+				<<set $vorestage -= 1>>
+				You hit the walls of the $vorecreature's gullet with your right arm. <span class="green">It convulses, violently pushing you up into its mouth.</span>
+			<<elseif $vorestage is 7>>
+				<<set $vorestage -= 1>>
+				You pound the walls of the $vorecreature's stomach with your right arm. <span class="green">It convulses, violently pushing you up into its gullet.</span>
+			<</if>>
+		<<else>>
+			<<if $vorestage is 1>>
+				You hit the $vorecreature's maw with your right arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 2>>
+				You hit the $vorecreature's mouth with your right arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 3>>
+				You hit the $vorecreature's mouth with your right arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 4>>
+				You hit the inside of the $vorecreature's mouth with your right arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 5>>
+				You hit the inside of the $vorecreature's mouth with your right arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 6>>
+				You hit the walls of the $vorecreature's gullet with your right arm, <span class="red">but it doesn't react.</span>
+			<<elseif $vorestage is 7>>
+				You pound the walls of the $vorecreature's stomach with your right arm, <span class="red">but it doesn't react.</span>
+			<</if>>
+		<</if>>
+	<</if>>
+	<<if $leftaction is "lefthold" and $rightaction is "righthold">>
+		<<set $leftaction to 0>><<set $rightaction to 0>><<set $leftactiondefault to "lefthold">><<set $rightactiondefault to "righthold">><<set $vorestruggle to 2>>
+		<<if $vorestage is 1>>
+			You grab hold of the $vorecreature's maw with both arms.
+		<<elseif $vorestage is 2>>
+			You grab hold of the $vorecreature's maw with both arms.
+		<<elseif $vorestage is 3>>
+			You grab hold of the $vorecreature's maw with both arms.
+		<<elseif $vorestage is 4>>
+			You cling to the side of the $vorecreature's mouth with both arms.
+		<<elseif $vorestage is 5>>
+			You cling to the side of the $vorecreature's mouth with both arms.
+		<<elseif $vorestage is 6>>
+			You cling to the side of the $vorecreature's gullet with both arms.
+		<</if>>
+	<<elseif $leftaction is "lefthold">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "lefthold">><<set $vorestruggle to 1>>
+		<<if $vorestage is 1>>
+			You grab hold of the $vorecreature's maw with your left arm.
+		<<elseif $vorestage is 2>>
+			You grab hold of the $vorecreature's maw with your left arm.
+		<<elseif $vorestage is 3>>
+			You grab hold of the $vorecreature's maw with your left arm.
+		<<elseif $vorestage is 4>>
+			You cling to the side of the $vorecreature's mouth with your left arm.
+		<<elseif $vorestage is 5>>
+			You cling to the side of the $vorecreature's mouth with your left arm.
+		<<elseif $vorestage is 6>>
+			You cling to the side of the $vorecreature's gullet with your left arm.
+		<</if>>
+	<<elseif $rightaction is "righthold">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "righthold">><<set $vorestruggle to 1>>
+		<<if $vorestage is 1>>
+			You grab hold of the $vorecreature's maw with your right arm.
+		<<elseif $vorestage is 2>>
+			You grab hold of the $vorecreature's maw with your right arm.
+		<<elseif $vorestage is 3>>
+			You grab hold of the $vorecreature's maw with your right arm.
+		<<elseif $vorestage is 4>>
+			You cling to the side of the $vorecreature's mouth with your right arm.
+		<<elseif $vorestage is 5>>
+			You cling to the side of the $vorecreature's mouth with your right arm.
+		<<elseif $vorestage is 6>>
+			You cling to the side of the $vorecreature's gullet with your right arm.
+		<</if>>
+	<</if>>
+	<<if $leftaction is "leftvorefree">>
+		<<set $leftaction to 0>>
+		<<set $rightarm to 0>>
+		<span class="lblue">Using all your strength, you manage to free your right arm from the side of the gullet.</span>
+	<</if>>
+	<<if $rightaction is "rightvorefree">>
+		<<set $rightaction to 0>>
+		<<set $leftarm to 0>>
+		<span class="lblue">Using all your strength, you manage to free your left arm from the side of the gullet.</span>
+	<</if>>
+	<<if $leftaction is "vorerest">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "vorerest">>
+	<</if>>
+	<<if $rightaction is "vorerest">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "vorerest">>
+	<</if>>
+	<br><br>
+<</widget>>
+
+:: Widgets Vore Img [widget]
+<<widget "voreimg">>
+	<div class="i256">
+		<<if $vorestage is 1>>
+			<img class="layer-foreground anim-idle-2f" src="img/sex/doggy/vorethighsfront.png">
+			<img class="layer-voreback anim-idle-2f" src="img/sex/doggy/vorethighsback.png">
+		<<elseif $vorestage is 2>>
+			<img class="layer-foreground anim-idle-2f" src="img/sex/doggy/vorewaistfront.png">
+			<img class="layer-voreback anim-idle-2f" src="img/sex/doggy/vorewaistback.png">
+		<<elseif $vorestage is 3>>
+			<img class="layer-foreground anim-idle-2f" src="img/sex/doggy/vorechestfront.png">
+			<img class="layer-voreback anim-idle-2f" src="img/sex/doggy/vorechestback.png">
+		<<elseif $vorestage is 4>>
+			<img class="layer-foreground anim-idle-2f" src="img/sex/doggy/voreshouldersfront.png">
+			<img class="layer-voreback anim-idle-2f" src="img/sex/doggy/voreshouldersback.png">
+		<<elseif $vorestage is 5>>
+			<img class="layer-foreground anim-idle-2f" src="img/sex/doggy/vorefullfront.png">
+			<img class="layer-voreback anim-idle-2f" src="img/sex/doggy/vorefullback.png">
+		<<elseif $vorestage is 6>>
+			<img class="layer-foreground anim-idle-2f" src="img/sex/doggy/voregulletfront.png">
+			<img class="layer-voreback anim-idle-2f" src="img/sex/doggy/voregulletback.png">
+		<<elseif $vorestage is 7>>
+			<img class="layer-foreground anim-idle-2f" src="img/sex/doggy/vorestomachfront.png">
+			<img class="layer-voreback anim-idle-2f" src="img/sex/doggy/vorestomachback.png">
+		<</if>>
+	</div>
+<</widget>>

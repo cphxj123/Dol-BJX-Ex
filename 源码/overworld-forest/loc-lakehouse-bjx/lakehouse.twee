@@ -1,0 +1,1354 @@
+:: Lake House Outdoor
+<<set $outside to 1>><<set $location to "lakehouse">><<effects>>
+/* <<run Furniture.in($location)>> */
+<<lakehouseinit>>
+<<if $lakehouse.build isnot undefined and $lakehouse.build isnot 0>>
+	<<switch $lakehouse.build>>
+	<<case "wall 1">>
+		<span class="lblue">正在设立围栏地基。</span>
+	<<case "wall 2">>
+		<span class="lblue">一圈现代风格的栅栏正围着湖边小屋修建。</span>
+	<<case "wall 3">>
+		<span class="lblue">正在往栅栏上加装铁丝网。</span>
+	<<case "tower 1">>
+		<span class="lblue">正在建造着一座瞭望塔。</span>
+	<<case "tower 2">>
+		<span class="lblue">瞭望塔顶正在安装探照灯。</span>
+	<<case "guard post">>
+		<span class="lblue">岗哨正在修建中。</span>
+	<<case "dog training">>
+		<span class="lblue">驯兽设施正在建设中。</span>
+	<<case "traps 1">>
+		<span class="lblue">你的地产周围正在设置着陷阱。</span>
+	<<case "traps 2">>
+		<span class="lblue">你的地产周围正在设置着更多的陷阱。</span>
+	<</switch>>
+	<<if Time.hour gte 6>>
+		<span class="blue">工人们在湖边来回穿梭。</span>
+	<</if>>
+	<<if $lakehouse.build_timer is 1>>
+		估计将会在<span class="gold">明天</span>竣工。
+	<<else>>
+		估计将于<span class="gold"><<number $lakehouse.build_timer>></span>天后竣工。
+	<</if>>
+	<br><br>
+<</if>>
+<<if $lakehouse.billsphase gte 4>>
+	你的门上贴着一张<span class="red">地产收回</span>的通知。
+	<br><br>
+<<elseif $lakehouse.billsphase gte 2>>
+	你的门上贴着一张<span class="red">过期账单</span>的通知。
+	<br><br>
+<</if>>
+
+<<if $stress gte $stressmax and !$possessed>>
+	<<if $lakehouse.wall gte 2>>
+		<<set $previousPassage to $passage>>
+		<<passoutlakehouse>>
+	<<else>>
+		<<passoutlake>>
+	<</if>>
+<<else>>
+	你在湖边小屋。 
+	<<if Time.dayState is "night">>
+		<<if $weather is "rain">>
+			雨水从屋顶上滴下来。
+		<<elseif $weather is "overcast">>
+			在黑暗中你几乎什么也看不见。
+		<<elseif $weather is "snow">>
+			雪覆盖了道路。
+		<<else>>
+			星星于湖面上闪烁。
+		<</if>>
+	<<elseif Time.dayState is "dawn">>
+		<<if $weather is "rain">>
+			雨隐没在湖面中。
+		<<elseif $weather is "overcast">>
+			浓雾吞没了湖水。
+		<<elseif $weather is "snow">>
+			雪覆盖了湖面。
+		<<else>>
+			湖面迎着地平线上的朝阳。
+		<</if>>
+	<<elseif Time.dayState is "dusk">>
+		<<if $weather is "rain">>
+			雨水从海面吹来，笼罩着阴沉的天空。
+		<<elseif $weather is "overcast">>
+			已经很难看清湖了。
+		<<elseif $weather is "snow">>
+			雪飘入湖面。
+		<<else>>
+			太阳落在湖面上。
+		<</if>>
+	<<else>>
+		<<if $weather is "rain">>
+			雨水滋养着湖泊。
+		<<elseif $weather is "overcast">>
+			灰色的天空向四面八方延伸。
+		<<elseif $weather is "snow">>
+			雪覆盖了湖面。
+		<<else>>
+			阳光洒在波光粼粼的湖面上。
+		<</if>>
+	<</if>>
+	<br><br>
+
+	<<if $lakehouse.billsphase lt 4>>
+		<<domusicon>><<link [[进入屋内 (0:01)|Lake House]]>><<set $phase to 1>><<pass 1>><</link>>
+		<br>
+	<</if>>
+	<<link [[离开|Lake Shore]]>><</link>>
+	<br>
+<</if>>
+
+:: Lake House
+<<set $outside to 0>><<set $location to "lakehouse">><<effects>>
+<<lakehouseinit>>
+<<if ($lakehouse_countdown lte 0 or $lakehouse_countdown is undefined) and ($renttime lte -2 or ($renttime lte 0 and Time.hour gte 4 and Time.hour lte 21))>>
+	<<unset $lakehouse_countdown>><<unset $baileyReunionScene>>
+	<span class="red">你听到了敲门声。</span>
+	<br><br>
+
+	<<link [[应门|Lake House Bailey]]>><</link>>
+	<br>
+<!-- <<elseif $lakehouse_attack_timer lte 0 and Time.hour gte 21>> -->
+<<elseif $lakehouse_bills>>
+	<spawn class="red">你听见门外有人。</span>
+	<br><br>
+	
+	<<link [[应门|Lake House Bills]]>><</link>>
+	<br>
+<<elseif $stress gte $stressmax and !$possessed>>
+	<<set $previousPassage to $passage>>
+	<<passoutlakehouse>>
+<<else>>
+	<<set _tv to Furniture.get('tv')>>
+	<<set _gameconsole to Furniture.get('gameconsole')>>
+
+	你进入了起居室。 
+	<<if _tv>>
+		你看见你的电视摆在起居室的桌子上，
+		<<if _gameconsole>>
+			旁边放着你的游戏机，
+		<</if>>
+	<</if>>
+	
+	<<if $lakehouse.petBed isnot undefined and $lakehouse.pet isnot undefined>>
+		<<if $lakehouse.petBed gte 1>>
+			角落里放着$lakehouse.petBed张看起来很柔软的宠物床，
+			<<for _pet range $lakehouse.pet>>
+				<<if _pet.type is "cat">>
+					你的猫猫躺在里面睡觉，
+				<<elseif _pet.type is "dog">>
+					你的狗狗躺在里面睡觉，
+				<</if>>
+			<</for>>
+		<</if>>
+	<</if>>
+	<br><br>
+
+	<<bedroomicon>><<link [[去卧室|Lake House Bedroom]]>><</link>>
+	<br>
+	<<bathroomicon>><<link [[去浴室|Lake House Bathroom]]>><</link>>
+	<br>
+	<<gardenicon>><<link [[去后院|Lake House Backyard]]>><</link>>
+	<br>
+	<<if _tv>>
+		<<if $lakehouse.billsphase gte 3>>
+		没电的情况下你用不了电视。
+		<br>
+		<<else>>
+			<<link [[看电视|Lake House TV]]>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if _tv and _gameconsole>>
+		<<if $lakehouse.billsphase gte 3>>
+			没电的情况下你玩不了游戏机。
+			<br>
+		<<else>>
+			<<link [[玩游戏(0:30)|Lake House Console]]>><<trauma -3>><<set $handskill += 1>><</link>><<ghandskill>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $lakehouse.pet isnot undefined>>
+		<<for _pet range $lakehouse.pet>>
+		    <<set $pet_now to _pet>>
+			<<if _pet.type is "cat">>
+        		<<link [[跟猫猫贴贴(0:30)|Lake House Snuggle Cat]]>><<pass 30>><<stress -10>><<trauma -10>><</link>><<llstress>><<lltrauma>>
+        		<br>
+        		<<link [[操猫猫|Lake House Fuck Cat]]>><<pass 30>><</link>><<deviant2>>
+		        <br>
+        	<<elseif _pet.type is "dog">>
+        		<<link [[跟狗狗玩抛接 (1:00)|Lake House Fetch Dog]]>><<pass 30>><<stress -10>><<trauma -10>><<physique 5>><<tiredness 5>><</link>><<llstress>><<lltrauma>><<gphysique>><<gtiredness>>
+        		<br>
+        		<<link [[操狗狗|Lake House Fuck Dog]]>><<pass 30>><</link>><<deviant2>>
+		        <br>
+        	<</if>>
+		<</for>>
+	<</if>>
+	/* <<link [[Robin options|Lake House Robin Options]]>><</link>>
+	<br> */
+	<<link [[离开|Lake House Outdoor]]>><</link>>
+	<br>
+<</if>>
+
+:: Lake House Bedroom
+<<lakehouseinit>>
+<<bedclotheson "Lake House Bed">>
+<<set $outside to 0>><<set $location to "lakehouse">><<effects>>
+<<if $lakehouse.barrier is undefined>>
+	<<getTarget true>>
+<</if>>
+<<if $stress gte $stressmax and !$possessed>>
+	<<set $previousPassage to $passage>>
+	<<passoutlakehouse>>
+<<else>>
+	你正待在你的卧室中。
+
+	<<set _furniture to $furniture.bedroom>>
+	<<if _furniture.wallpaper>>
+		<<switch _furniture.wallpaper.name>>
+			<<case "vines">>
+				淫荡的绿色藤蔓在墙壁上蠕动着。
+				<<if $backgroundTraits.includes("plantlover")>>
+					对甜美花蜜的思念萦绕在你的脑海中。
+				<</if>>
+			<<case "tentacles">>
+				紫色的触手在墙壁上滑动着。
+				<<if $demon gte 6>>
+					愉悦的念头闪过你的脑海。
+				<</if>>
+			<<case "plainwhite">>
+				墙壁上贴着纯白色的壁纸。
+			<<case "wavywhite">>
+				白色壁纸以波浪形图案渐变为黑色，是有淫秽的暗示吗？
+			<<case "hearts">>
+				墙上布满着粉红色的爱心。
+			<<case "cowgirls">>
+				墙上画着跳舞的牛娘。
+			<<case "trees">>
+				墙上绿色的树木让你仿佛置身于森林。
+			<<case "crosses">>
+				金色的十字架覆盖着墙壁。
+			<<default>> /* Custom */
+				_furniture.wallpaper.name的图案覆盖着墙壁。
+				<<if ['dol', 'degrees of lewdity'].some(e => _furniture.wallpaper.name === e)>>
+					不知为何给你一种熟悉的感觉。
+				<<elseif _furniture.wallpaper.name.startsWith('&lt;&lt')>>
+					<span class="black">你的作弊行为被抓到了！</span>
+				<</if>>
+		<</switch>>
+	<<else>>
+		朴素的墙壁将你与外界隔绝开来。
+	<</if>>
+
+	<<set _deco to Furniture.get('decoration')>>
+	<<if _deco>>
+		<br>
+		<<switch _deco.name>>
+			<<case "large bear plushie">>
+				<<furnitureicon _deco.iconFile>>_deco.nameCap被放在角落里。
+			<<default>>
+				<<furnitureicon _deco.iconFile>>_deco.nameCap正挂在墙上。
+		<</switch>>
+	<</if>>
+
+	<<set _owlplush to Furniture.get('owlplushie')>>
+	<<if _owlplush>>
+		<br>
+		<<switch _owlplush.id>>
+			<<case "owlplushie">>
+				<<furnitureicon _owlplush.iconFile>>_owlplush.nameCap与周围的黑暗融为一体，它貌似正在衣柜上凝视着你。
+		<</switch>>
+	<</if>>
+
+	<<set _windowsill to Furniture.get('windowsill')>>
+	<<if _windowsill>>
+		<br>
+		<<switch _windowsill.name>> /* can be expanded further */
+			<<case "ominous jar">> /* unused */
+				<<furnitureicon _windowsill.iconFile>>_windowsill.nameCap颇有气势地立在窗台上。
+			<<default>>
+				<<furnitureicon _windowsill.iconFile>>你的_windowsill.nameCap被放在了窗台上。
+		<</switch>>
+	<</if>>
+
+	<<if _furniture.poster>>
+		<br>
+		<<switch _furniture.poster.name>>
+			<<case "cowgirl">>
+				墙上挂着一张牛娘海报。
+			<<case "cat">>
+				墙上挂着一张猫咪海报。下面的文字写着："坚持住！"
+			<<case "puppy">>
+				墙上挂着一张小狗的海报。
+			<<default>> /* Custom */
+				墙上挂着一张_furniture.poster.nameCap的海报。
+				<<if ['dol', 'degrees of lewdity'].some(e => _furniture.poster.name === e)>>
+					不知道为什么，你总感觉有一阵奇怪的熟悉感。
+				<<elseif _furniture.poster.name.startsWith('&lt;&lt;')>>
+					<span class="black">你的作弊行为被抓到了！</span>
+				<</if>>
+		<</switch>>
+	<</if>>
+
+	<br><br>
+	/* <<if $robinbed is "yours" and Time.hour gte 6 and !$possessed>>
+		<<unset $robinbed>>
+		<<npc Robin>><<person1>>Robin yawns and heads to <<his>> own room.<<endevent>>
+		<<if Time.hour is 6 and Time.minute lte 20>><<run setRobinLocationOverride("orphanage", 6)>><</if>>
+		<br><br>
+	<</if>> */
+	<<if $unbind is 1>>
+		<<unset $unbind>>
+		<<if $possessed>>
+			你看向身上那些拘束住你的东西。你只要轻轻一拉，它们就会松开，也就没办法再继续绑住你了。<<unbind>>
+			<br><br>
+		<<else>>
+			你在桌子上摩擦你那些用于拘束你的东西。这需要一些努力，但是这些东西最终还是败在了你的努力之下，你的肢体终于得到解放。
+			<br><br>
+		<</if>>
+	<</if>>
+	<<if $nextPassageCheck is "Lake House Bedroom">>
+		<span class="nextLink"><<link [[看向月亮|$passage]]>><</link>></span>
+		<br>
+	<</if>>
+	<<if $stress gte $stressmax and !$possessed>>
+		<<set $previousPassage to $passage>>
+		<<passoutlakehouse>>
+	/* <<elseif $christmas is 1 and Time.monthDay is 25 and $christmas_robin_visit is undefined and $christmas_robin_gift_received is undefined and Time.dayState isnot "night" and $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and !$possessed>>
+		<<set $christmas_robin_visit to true>>
+		<<christmas_robin_visit>> */
+	<<else>>
+		<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
+			<<link [[解开你的拘束 (0:10)|$passage]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
+			<br><br>
+		<</if>>
+		/* <<if $robinpaid is 1 and $robinmissing is 0 and $robinnote isnot 1 and $NPCName[$NPCNameList.indexOf("Robin")].lust gte 10 and $NPCName[$NPCNameList.indexOf("Robin")].love gte 60 and $NPCName[$NPCNameList.indexOf("Robin")].trauma lt 10>>
+			<span class="gold">There's a note by the window.</span>
+			<br>
+			<<link [[Read it|Robin Note]]>><<set $robinnote to 1>><</link>>
+			<br><br>
+		<</if>> */
+		<<projectoptions>>
+		<br>
+		/* <<christmas_options>> */
+		<<set _bed to Furniture.get('bed')>>
+
+		<<if _bed.type.includes('comfy')>>
+			你的床占据了这个房间的大部分空间。
+			<<if $nextPassageCheck is "Lake House Bed">>
+				<br>
+				<<listsleepoutfits "Lake House Bed">>
+			<<elseif $slimeEvent is undefined>>
+				<br>
+				<<furnitureicon _bed.iconFile>><<link [[脱光并爬到床上|Lake House Bed]]>><<undressSleep "Lake House Bed">><</link>>
+				<br>
+				<<listsleepoutfits "Lake House Bed">>
+
+				<<if !_bed.type.includes("starter")>>
+					<<furnitureicon _bed.iconFile>><<link [[在床上自慰|Lake House Masturbation]]>><<set $masturbationstart to 1>><</link>>
+					<br>
+				<</if>>
+			<<else>>
+				<br>
+				<<if $possessed and $lakehouse.barrier is undefined>>
+					<span class="red">你脑袋里的史莱姆保持着沉默。</span>
+				<<else>>
+					<span class="red">史莱姆要求你在睡觉前<<print $slimeEvent>>。</span>
+				<</if>>
+				<br>
+			<</if>>
+		<<else>>
+			你尚未拥有一张床。贝利不会允许你带走孤儿院里的那张。
+			<br>
+		<</if>>
+		<<roomoptions>>
+		<br>
+		<<set _wardrobe to Furniture.get('wardrobe')>>
+		<<if !_wardrobe.type.includes("starter")>>
+			<<if _wardrobe>>
+				你的衣物保存在衣柜里。
+			<</if>>
+			<br>
+			<<furnitureicon _wardrobe.iconFile>><<link [[衣柜|Lake House Wardrobe]]>><</link>>
+			<br>
+		<<else>>
+			你尚未拥有一个衣柜。贝利不会允许你带走孤儿院里的那个。
+			<br>
+		<</if>>
+		<<if playerHasSexToys()>>
+			<<sextoysicon>><<link [[性玩具|Sextoys Inventory]]>><<set $sextoyInvReturnLink to $passage>><</link>>
+			<br>
+		<</if>>
+		<<set _mirror to Furniture.get('mirror')>>
+		<<if _mirror>>
+			<<if $nextPassageCheck is "Lake House Mirror">>
+				<span class="nextLink"><<mirroricon>><<link [[镜子|Lake House Mirror]]>><</link>></span>
+				<br>
+			<<elseif $christmas is 1 and !$christmas_wraith and _wraithEvent>>
+				<br>
+				<span class="purple">你瞥了一眼镜子，里面似乎有一个奇怪的光点。</span>
+				<br>
+				<<bloodmirroricon>><<link [[镜子|Christmas Mirror]]>><</link>>
+				<br>
+			<<elseif Time.hour is 3 and $hallucinations gte 2 and $daily.mirrorTentacles isnot 1 and $tentacledisable is "f">>
+				<br>
+				<span class="purple">一道阴森诡异的光芒从你的镜子中折散而出。</span>
+				<br>
+				<<mirroricon "blood">><<link [[镜子|Eerie Mirror]]>><<set $daily.mirrorTentacles to 1>><<set $phase to 0>><</link>>
+				<br>
+			<<else>>
+				<<mirroricon "home">><<link [[镜子|Lake House Mirror]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			你尚未拥有一面镜子。贝利不会允许你带走孤儿院里的那面。
+			<br>
+		<</if>>
+
+		<<set _table to Furniture.get('table')>>
+		<<set _chair to Furniture.get('chair')>>
+		<<if _table>>
+			<br>
+			你的_table.nameCap<<if _chair>>和一对_chair.nameCap正<<else>>正<</if>>靠墙而立。
+			<br>
+			<!-- <<if $debug>>
+				<<bedroomtablechairicon>><<link [[Table (Debug)|Bedroom Table]]>><</link>>
+				<br><br>
+			<</if>> -->
+		<</if>>
+
+		<<set _bookshelf to Furniture.get('bookshelf')>>
+		<<if _bookshelf>>
+			<<link [[阅读科学材料 (0:20)|$passage]]>><<pass 20>><<scienceskill>><</link>><<gscience>>
+			<br>
+			<<link [[阅读数学解法 (0:20)|$passage]]>><<pass 20>><<mathsskill>><</link>><<gmaths>>
+			<br>
+			<<link [[阅读历史文献 (0:20)|$passage]]>><<pass 20>><<historyskill>><</link>><<ghistory>>
+			<br>
+			<<link [[阅读古文手稿 (0:20)|$passage]]>><<pass 20>><<englishskill>><</link>><<genglish>>
+			<br>
+		<<else>>
+			你尚未拥有一个书架。你必须拥有书架才能在家学习。
+			<br>
+		<</if>>
+
+		<<set _pc to Furniture.get('pc')>>
+		<<if _pc>>
+			<<if $lakehouse.billsphase gte 3>>
+				你需要供电才能使用电脑。
+				<br>
+			<<else>>
+				<<link [[玩电脑 (0:30)|Lake House Play Computer]]>><<pass 30>><<stress -3>><<trauma -3>><</link>><<lstress>><<ltrauma>>
+				<br>
+			<</if>>
+			/* <<link [[Search for job online (0:10)|Lake House Online Search]]>><<pass 10>><</link>>
+			<br> */
+			<<link [[直播跳舞 (0:30)|Lake House Cam Show Dance]]>><<danceinit>><<set $dancing to 1>><<set $venuemod to 1>><<stress -4>><<tiredness 4>><<set $dancelocation to "lakehouse">><<set $camshowrounds to 0>><</link>><<lstress>><<gtiredness>>
+			<br>
+		<</if>>
+
+		<<if _table or _pc>>
+			这里摆放着一张桌子，你可以着手安保项目。
+			<br>
+			<<link [[坐在桌前|Lake House Upgrades]]>><</link>>
+			<br><br>
+		<<else>>
+			你尚未拥有一张桌子或一台电脑。你需要拥有其中之一才能管理升级。
+			<br>
+		<</if>>
+
+	    <<if $options.bjx_antiques and ($museumAntiques.antiques.antiqueliquor is "found" or $museumAntiques.antiques.antiqueliquor is "take")>>
+    	    <<link [[喝古董酒|Forest Mansion Bottle Drink]]>><<set $lastpassage to "Lake House Bedroom">><</link>>
+    	    <br>
+    	<</if>>
+    	<<if $options.bjx_antiques and ($museumAntiques.antiques.antiquescroll is "found" or $museumAntiques.antiques.antiquescroll is "take")>>
+    	    <<link [[展开言灵卷轴|Home Open Antiquescroll]]>><<set $lastpassage to "Lake House Bedroom">><</link>>
+    	    <br>
+    	<</if>>
+
+		<<if $pregnancyStats.parasiteDoctorEvents gte 2>>
+			<<if $container.lakehouse is undefined>>
+				<<containersInit>>
+			<</if>>
+			<<fishtankicon>><<containersLink>>
+		<</if>>
+		
+		<<if $lakehouse.terrarium isnot undefined and $lakehouse.terrarium gte 1>>
+			<<link [[观察饲养箱 (0:30)|Lake House Observe Terrarium]]>><<pass 30>><</link>><<lstress>><<ltrauma>>
+			<br>
+		<</if>>
+		<br>
+		<br>
+		<<main_hall_icon>><<link [[起居室 (0:01)->Lake House]]>><<pass 1>><</link>>
+		<br>
+		<<link [[设置|Settings]]>><<set $settingsExitPassage to $passage>><</link>>
+		<br>
+		<<attitudesControlCheck>>
+		<<if $attitudesControl.showGoldLink is true>>
+			<span class="goldLink"><<link [[态度|Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>> </span><span class="red">!!</span>
+		<<else>>
+			<<link [[态度|Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+		<</if>>
+		<br><br>
+	<</if>>
+<</if>>
+
+:: Lake House Passout
+<<pass 1 hour>>
+<<set $stress -= 2000>>
+<<set $trauma +=10>>
+<<passout>>
+你把自己逼得太紧了。
+<br><br>
+
+<<link [[醒来|$previousPassage]]>><</link>>
+
+:: Lake House Bed
+<<effects>>
+<<wearoutfit>>
+
+你在被子下舒适地窝着。
+<<if $wraith.state and $wraithPrison and ($moonstate is "evening" or $moonstate is _nightstate)>>
+	你感到焦虑，眼睛瞟向镜子。
+<</if>>
+<br><br>
+
+<<lakehouse_sleep_options>>
+
+:: Lake House Sleep
+<<set _autosavehere to true>>
+<<sleep>><<effects>>
+<<if $wraith.nightmare is 2 and isBloodmoon() and $lakehouse.barrier is undefined>>
+	<<sleepeffects>>
+	你梦见一个身着白衣的美丽身影站在红月下。它向你张开双臂，做出欢迎的姿态。当你一步步走近时，你能感觉到它的目光正深深地刺入你的脑海。
+	<br><br>
+
+	四周都是向内弯曲的树木，漂浮在湖面上。周围的一切都在移动，你发现自己悬浮在一片巨大的废墟之上。你无法呼吸。
+	<br><br>
+
+	你慢慢睁开眼睛，呆呆地站到床边。你的耳边充斥着尖锐的鸣声。
+	<br><br>
+
+	<<wraithPossess "lakehouse">>
+	<<storeon "Lake House Bed" "wardrobe">>
+	<span class="nextLink"><<link [[行走|Lake House Bedroom]]>><<rainWraith>><</link>></span>
+	<br>
+<<else>>
+	<<wakingEffects $sleepHoursTotal>>
+	<<if $nightmares gte 1 and $controlled is 0>>
+		你梦到自己被<<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>苍白<<else>>黑暗<</if>>且恐怖的存在追捕着。
+	<<else>>
+		<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
+			你的睡眠被淫荡的梦境所困扰。
+			<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+			<<arousal `100 * $sleepHoursTotal`>>
+			<<if $arousal gte $arousalmax>>
+				这将你推向了高潮。
+				<<orgasm>>
+			<</if>>
+		<<elseif !_wakingEffect>>
+			你睡了个好觉。
+			<br><br>
+		<<else>>
+			<br><br>
+		<</if>>
+	<</if>>
+	<<sleepeffects>>
+	<!--
+	    <<if $baileywake is 1 and $placeholder is 1>>
+		You startle awake hearing commotion outside. <span class="red"><<nnpc_Hes Bailey>> here</span>.
+		<br><br>
+
+		<<lakehouse_assault_intro>>
+		<br><br>
+
+		<<set _bedroom to "Lake House Bed">>
+		<<set $wardrobe_location to "lakehouse">>
+		<<wardrobeSelection true>>
+		<<storeon _bedroom "check">>
+		<<if _store_check is 1>>
+			<<storeon _bedroom>>
+		<</if>>
+		<<link [[Prepare|Lake House Assault Wardrobe]]>><<endevent>><<set $phase to 1>><<unset $baileywake>><</link>>
+		<br>
+	-->
+	<<if $lakehouse.billsphase gte 4>>
+		你听到外面的动静惊醒了。<span class="red">他们是来收回房子的</span>。
+		<br><br>
+
+		<<radiooutfits>>
+		<br><br>
+
+		<<link [[起床|Lake House Repossession]]>><<bedclotheson "Lake House Bed">><</link>>
+		<br>
+	<<elseif $lakehouse.billsphase gte 3>>
+		你睡醒后想开灯，但灯似乎不亮了。事实上，房子里的任何电子设备似乎都无法正常运作。门前夹着一张纸，上面写着：“由于您未按时支付账单，您的水电已被切断。请立即支付账单，否则您的房屋将被收回。"
+		<br><br>
+
+		<<radiooutfits>>
+		<br><br>
+
+		<<link [[起床|Lake House Repossession]]>><<bedclotheson "Lake House Bed">><</link>>
+		<br>
+	<<else>>
+		<<radiooutfits>>
+		<br><br>
+
+		<<link [[起床|Lake House Bedroom]]>><<bedclotheson "Lake House Bed">><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Lake House Mirror
+<<effects>>
+
+<<link [[离开|Lake House Bedroom]]>><<unset $mirrorMenu>><<unset $bodywritingSet>><</link>>
+<br>
+
+<<mirror>>
+<br><br>
+
+:: Lake House Bathroom
+
+<<set $outside to 0>><<set $location to "lakehouse">><<effects>>
+你在浴室里。
+<br><br>
+<<if $stress gte $stressmax>>
+	<<set $previousPassage to $passage>>
+	<<passoutlakehouse>>
+<<else>>
+	<<if $lakehouse.billsphase gte 3>>
+		没有水的情况下你用不了浴室。
+		<br>
+	<<elseif $leftarm is "bound" and $rightarm is "bound">>
+		<<set _clothed = ![V.worn.upper.name, V.worn.lower.name, V.worn.under_upper.name, V.worn.under_lower.name, V.worn.over_upper.name, V.worn.over_lower.name].every(x => x == 'naked')>>
+		<<bathroomicon "bath">><<link [[(_clothed ? "穿着衣服" : "") +"洗澡" + "(0:30)"->Lake House Bath]]>><<water>><<pass 30>><<stress -6>><<set $hygiene to 0>><</link>><<lstress>>
+	<<else>>
+		<<bathroomicon "bath">><<link [[洗澡 (0:30)->Lake House Bath]]>><<strip>><<pass 30>><<stress -6>><<set $hygiene to 0>><</link>><<lstress>>
+	<</if>>
+	<br>
+	<!-- Check if there's any hair-->
+	<<if $lakehouse.billsphase gte 3>>
+		没有灯的情况下你没法剃毛。
+		<br>
+	<<elseif $pbdisable is "f" and ($pblevel gte 2 or $pbstrip gte 1 or $pblevelballs gte 2)>>
+		<<bathroomicon "shave">><<link [[剃阴毛->Lake House Shave]]>><</link>>
+		<br>
+	<</if>>
+	<<mushroomtfoptions>>
+	<<pregnancyTest "Lake House Bedroom">>
+	<br>
+
+	<<main_hall_icon>><<link [[起居室 (0:01)->Lake House]]>><<pass 1>><</link>>
+	<br>
+<</if>>
+
+:: Lake House Bath
+<<effects>><<set $location to "lakehouse">><<set $outside to 0>>
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+
+你洗得干干净净。<<wash>>
+<br><br>
+
+<<link [[出去->Lake House Bath Finish]]>><</link>>
+<br>
+<<link [[自慰|Lake House Bath Masturbation]]>><<set $masturbationstart to 1>><</link>>
+<br>
+
+:: Lake House Bath Finish
+<<effects>><<set $location to "lakehouse">><<set $outside to 0>>
+
+<<if $upperwetstage >= 3 or $lowerwetstage >= 3 or $underupperwetstage >= 3 or $underlowerwetstage >= 3 or $overupperwetstage >= 3 or $overlowerwetstage >= 3>>
+	你的衣服湿透了，水从你身上滴到地板上。
+<<else>>
+	你的皮肤依旧湿湿的。
+<</if>>
+<br><br>
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	<<link [[继续|Lake House Bathroom]]>><</link>>
+<<else>>
+	<<dressasyouwereicon>><<link [[穿着原本的衣服|Lake House Bathroom]]>><<clotheson>><</link>>
+	<br>
+	<<towelicon>><<link [[用毛巾裹着自己|Lake House Bathroom]]>>
+		<<if $player.gender == "f" or $player.breastsize > 0>>
+			<<set $wear_upper = "large_towel">>
+		<<else>>
+			<<set $wear_lower = "towel">>
+		<</if>>
+		<<returnCarried>>
+		<<wardrobewear>>
+	<</link>>
+
+	<<if $wardrobe.upper.findIndex(x => x.name == "bathrobe") >= 0 or $carried.upper.name == "bathrobe">>
+		<br>
+		<<bathroomicon "robe">><<link [[穿上浴袍|Lake House Bathroom]]>>
+			<<returnCarried>>
+			<<set $wear_upper = $wardrobe.upper.findIndex(x => x.name == "bathrobe")>>
+			<<wardrobewear>>
+		<</link>>
+	<</if>>
+<</if>>
+
+:: Lake House Bath Masturbation
+
+<<effects>>
+<<if $masturbationstart is 1>>
+	<<set $masturbationstart to 0>>
+	<<set $masturbationstat += 1>>
+	<<masturbationstart>>
+<</if>>
+<<masturbationeffects>>
+<<masturbationactions>>
+<div id="masturbationButtons">
+	<div><<link [[继续|Lake House Bath Masturbation]]>><</link>></div><<nexttext>>
+	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
+		<div><<link [[停止|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
+	<<elseif $corruptionMasturbation isnot true>>
+		<div><<link [[停止|Lake House Bath Masturbation Finish]]>><<set $finish to 1>><</link>></div>
+	<<else>>
+		<div class="red">你耳中的史莱姆不会允许你停下的。</div>
+	<</if>>
+</div>
+<br>
+
+:: Lake House Bath Masturbation Finish
+
+<<effects>>
+在这里这样做，意味着你可以洗掉痕迹。<<wash>>
+<br><br>
+
+<<endmasturbation>>
+<<endcombat>>
+
+<<wash>>你从浴室中走了出来。
+<br><br>
+
+<<link [[继续|Lake House Bath Finish]]>><</link>>
+<br>
+
+:: Lake House Masturbation
+<<set $outside to 0>><<set $location to "lakehouse">><<effects>>
+
+<<if $masturbationstart is 1>>
+	<<set $masturbationstart to 0>>
+	<<set $masturbationstat += 1>>
+	<<masturbationstart>>
+
+	你躺在毛绒绒的床垫上，任由双手肆意游走。
+	<br><br>
+<</if>>
+<<masturbationeffects>>
+<<masturbationactions>>
+
+<div id="masturbationButtons">
+	<div><<link [[继续|Lake House Masturbation]]>><</link>><<nexttext>></div>
+
+	<<if !$corruptionMasturbation and random(3) gt $orgasmcurrent and $corruption_slime gt ($willpower / 10)>>
+		<div><<link [[停止|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
+	<<elseif !$corruptionMasturbation>>
+		<div><<link [[停止|Lake House Masturbation Finish]]>><<set $finish to 1>><</link>></div>
+	<<else>>
+		<div class="red">你耳中的史莱姆不会允许你停下的。</div>
+	<</if>>
+</div>
+<br>
+
+:: Lake House Masturbation Finish
+
+<<effects>>
+在这里这样做并没有什么快感，但至少你会感到神清气爽。
+<br><br>
+
+<<endmasturbation>>
+<<endcombat>>
+
+<<link [[继续|Lake House Bedroom]]>><<clotheson>><</link>>
+<br>
+
+:: Lake House Wardrobe [exitCheckBypass]
+<<effects>>
+你翻了翻衣柜。
+<br><br>
+<<set $wardrobe_location to "lakehouse">>
+<<wardrobeSelection>>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+
+<<wardrobe>>
+
+:: Lake House Shave
+
+<<effects>>
+<<dontHideForNow>>
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	<span class="red">你的双臂被绑着</span>，而你发现在这种情况下很难对阴毛做出任何事情。
+	<br>
+	<<link [[返回->Lake House Bathroom]]>><<dontHideRevert>><</link>>
+<<else>>
+	<<shavestrip>>
+	你脱下衣服，看着自己的<<genitals>>。
+	<br>
+	<<if $worn.genitals.name is "chastity belt" or $worn.genitals.name is "gold chastity belt">>
+    	贞操带紧贴身体，几乎不可能用剃刀触及阴毛。
+    	<br>
+	    <<link [[返回->Lake House Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+	<<else>>
+    	<<if $worn.genitals.name is "chastity cage">>
+        	你的肉棒被锁在笼子里，在它周围刮阴毛会有点棘手，但这并不是什么大问题。
+        	<br>
+    	<</if>>
+        <<if ($pblevel gte 2 or $pbstrip gte 1 or $pblevelballs gte 2) and $slime gt 0 and $options.bjx_eventTF>>
+        	<<link [[自动脱毛 (0:15)->Lake House Slime Shave]]>><<pass 15>><<arousal 100>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<set $pbstrip to 0>><<set $makeup.pbcolour to 0>><</link>><<slime>>
+        	<br>
+        <</if>>
+    	<<if $pblevel gte 2 or $pbstrip gte 1 or $pblevelballs gte 2>>
+    		<<shavestyleicon 'clean'>><<link [[剃干净 (0:15)->Lake House Shave clean]]>><<pass 15>><<arousal 100>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<set $pbstrip to 0>><<set $makeup.pbcolour to 0>><</link>>
+    		<br>
+    	<</if>>
+    	<<if $pblevel gte 5 or $pbstrip gte 2 or ($pbstrip is 1 and $pblevel gte 2)>>
+    		<<shavestyleicon 'strip'>><<link [[剃成条状 (0:15)->Lake House Shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat landing strip">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 1>><</link>>
+    		<br>
+    	<</if>>
+    	<<if $pblevel gte 5 or $pbstrip gte 3 or ($pbstrip gte 2 and $pblevel gte 2)>>
+    		<<shavestyleicon 'heart'>><<link [[剃成心形 (0:15)->Lake House Shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "cute heart shape">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 2>><</link>>
+    		<br>
+    	<</if>>
+    	<<if $pblevel gte 5 or $pbstrip gte 4 or ($pbstrip gte 3 and $pblevel gte 2)>>
+    		<<shavestyleicon 'triangle'>><<link [[剃成一个箭头 (0:15)->Lake House Shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat triangle">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 3>><</link>>
+    		<br>
+    	<</if>>
+    	<<if $player.ballsExist is true>>
+    		<<if $pblevel gte 2 or $pbstrip gte 1>>
+    			<<shavestyleicon 'clean'>><<link [[只刮阴毛 (0:10)->Lake House Shave pubis]]>><<pass 10>><<arousal 50>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 0>><<if $pblevelballs is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
+    			<br>
+    		<</if>>
+    		<<if $pblevelballs gte 3>>
+    			<<shavestyleicon 'balls'>><<link [[只刮蛋蛋 (0:05)->Lake House Shave balls]]>><<pass 5>><<arousal 50>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<if $pblevel is 0 and $pbstrip is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
+    			<br>
+    		<</if>>
+    	<</if>>
+    	<<if $pblevel gt 5 or $pblevelballs gt 5>>
+    		<<shavestyleicon 'trim'>>
+    		<<link [[刮短 (0:10)->Lake House Shave trim]]>><<pass 10>><<arousal 100>>
+    			<<if $pblevel gte 5>>
+    				<<set $pblevel to 5>><<set $pbgrowth to 7>><<set $pbstrip to 0>>
+    			<</if>>
+    			<<if $pblevelballs gte 5>>
+    				<<set $pblevelballs to 5>><<set $pbgrowthballs to 10>>
+    			<</if>>
+    		<</link>>
+    		<br>
+    	<</if>>
+    	<<if $worn.genitals.name isnot "chastity belt">>
+    		<<dyeicon>><<link [[给阴毛染色->Lake House Dye pubic hair]]>><</link>>
+    		<br>
+    	<</if>>
+	    <<ind>><<link [[什么也不刮->Lake House Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+	<</if>>
+<</if>>
+
+:: Lake House Slime Shave
+
+<<effects>>
+<span class='green'>你的阴毛看起来和你还是人类的时候一样长，但你似乎可以自行将其脱去。
+<br><br>
+你将注意力集中在那个区域，希望它能和你的皮肤其他地方一样光滑。不到几分钟，上面的毛发就一一脱落，现在你的的<<genitals_are 2>>光滑干净了。</span>
+<br><br>
+<<link [[继续|Lake House Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+
+:: Lake House Shave clean
+
+<<effects>>
+你在拿起一些剃须膏和一把剃须刀后就坐了下来。
+<br>
+你张开双腿，开始小心翼翼地刮你的阴毛。只不过用了几分钟，你就做完了这件事，现在你的<<genitals_are 2>>变得光滑干净了。
+<br><br>
+<<link [[继续|Lake House Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+
+:: Lake House Shave pubis
+<<effects>>
+
+你拿起一些剃须膏和剃须刀。
+<br>
+你开始小心翼翼的剃除阴毛，只用了几分钟，你就完成了这件事，现在你的耻骨变得光滑干净了。
+<br><br>
+<<link [[继续|Lake House Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+
+:: Lake House Shave balls
+<<effects>>
+
+你拿起一些剃须膏和一把剃须刀。
+<br>
+你将一条腿架在浴缸上，开始小心翼翼地刮你的睾丸。只用了几分钟，你就完成了这件事，现在你的睾丸变得光滑干净了。
+<br><br>
+<<link [[继续|Lake House Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+
+:: Lake House Shave strip
+<<effects>>
+
+你在拿起一些剃须膏和一把剃须刀后就坐了下来。
+<br>
+你张开双腿，开始小心翼翼地刮除你的阴毛。只不过用了几分钟，你就完成了这件事，现在不仅你的<<genitals_are 2>>变得光滑干净，你的耻骨上也有着<<print $pbstripName>>作为装饰了。
+<br><br>
+<<link [[继续|Lake House Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+
+:: Lake House Shave trim
+<<effects>>
+
+你在找到一把带剪刀的梳子后就坐了下来。
+<br>
+你张开双腿，开始小心翼翼地刮你的阴毛。只不过用了几分钟，你就做完了这件事，现在你<<genitals 2>>周围的阴毛已经被整齐的修剪过了。
+<br><br>
+<<link [[继续|Lake House Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+
+:: Lake House Dye pubic hair
+<<effects>>
+
+<<set _ownedColours = $makeup.owned.hairdye.filter(x => x.count > 0)>>
+<<if _ownedColours.length == 0>>
+	你没有任何染发剂，也许你应该去化妆品店买上一些。
+	<br>
+<<else>>
+	你想染成什么颜色？
+	<br>
+	<<set _choice = _ownedColours[0].colour>>
+	<<for _i, _item range _ownedColours>>
+		<label><span class="grey-shadow"><span @class="'hair-' + _item.colour.replace(/ /g, '-')"><span class="colour-hair"><span style="color:#FD6064;"><<hairmapcolourtext _item.colour>></span></span></span></span>&nbsp;<<print '<<radiobutton "_choice" "'+_item.colour+'" ' + (_choice is _item.colour ? "checked" : "") + '>>'>></label>
+		x _item.count |
+	<</for>>
+
+	<br><br>
+	<<link [[使用选定颜色来染色 (0:30)|Lake House Dye pubic hair Finish]]>><<pass 30>><<set $makeup.owned.hairdye.find(x => x.colour == _choice).count -= 1>><<set $makeup.pbcolour = _choice>><</link>>
+<</if>>
+<br>
+<<link [[返回|Lake House Shave]]>><</link>>
+
+:: Lake House Dye pubic hair Finish
+<<effects>>
+
+你用凡士林涂抹了敏感部位后，然后拿出准备好的染发剂。
+<br>
+你用一把小刷子小心地涂上化学染发剂，等待它们渗透进去。
+<br>
+<<arousal 100>>
+<br>
+过了几分钟后，你在用水冲刷你私密部位的同时看看你的<<genitals 2>>和<<hairmapcolourtext $makeup.pbcolour>>阴毛。
+<br><br>
+<<link [[继续|Lake House Bathroom]]>><<clotheson>><<dontHideRevert>><</link>>
+
+:: Lake House Backyard
+<<set $outside to 1>><<effects>>
+
+<<if $stress gte $stressmax and !$possessed>>
+	<<if $lakehouse.wall gte 2>>
+		<<set $previousPassage to $passage>>
+		<<passoutlakehouse>>
+	<<else>>
+		<<passoutlake>>
+	<</if>>
+<<else>>
+	你回到后院。
+	<br><br>
+
+	<<if $lakehouse.plots lt 3>>
+		<<set _clearing to (25 - $lakehouse.clearing)>>
+		<<set $percent=Math.floor((_clearing/25)*100)>>
+		其中一片田地正在被清理，
+		<<if $lakehouse.clearing lte 0>>
+			<span class="green">并已经做好种植准备了！</span>
+			<div class="meter">
+			<<print '<div class="greenbar" style="width:' + $percent + '%"></div>'>>
+			</div>
+		<<elseif $lakehouse.clearing lte 5>>
+			<span class="teal">并基本可以种植了。</span>
+			<div class="meter">
+			<<print '<div class="tealbar" style="width:' + $percent + '%"></div>'>>
+			</div>
+		<<elseif $lakehouse.clearing lte 10>>
+			<span class="lblue">它看起来没有那么荒芜了。</span>
+			<div class="meter">
+			<<print '<div class="lbluebar" style="width:' + $percent + '%"></div>'>>
+			</div>
+		<<elseif $lakehouse.clearing lte 15>>
+			<span class="blue">其中一部分的土壤已经重现天日了。</span>
+			<div class="meter">
+			<<print '<div class="bluebar" style="width:' + $percent + '%"></div>'>>
+			</div>
+		<<elseif $lakehouse.clearing lte 20>>
+			<span class="purple">但这里依旧处于乱糟糟的状态。</span>
+			<div class="meter">
+			<<print '<div class="purplebar" style="width:' + $percent + '%"></div>'>>
+			</div>
+		<<elseif $lakehouse.clearing lte 24>>
+			<span class="pink">但看起来收效甚微。</span>
+			<div class="meter">
+			<<print '<div class="pinkbar" style="width:' + $percent + '%"></div>'>>
+			</div>
+		<<else>>
+			<span class="red">但它看起来依旧像一片原始丛林。</span>
+			<div class="meter">
+			<<print '<div class="redbar" style="width:' + $percent + '%"></div>'>>
+			</div>
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $lakehouse.plots lt 3>>
+		<<link [[清理田地 (0:40)|$passage]]>><<pass 40>><<tiredness 4>><<set $lakehouse.clearing -= 1>><<lakehouseclearplot>><</link>><<gtiredness>>
+		<br>
+	<</if>>
+	<<if $lakehouse.plots is 3 and $lakehouse.wetplot is undefined>>
+		<<link [[设置一块水田 (4:00)|$passage]]>><<pass 4 hour>><<tiredness 24>><<add_plot lakehouse water 3 medium>><<set $lakehouse.wetplot to 1>><</link>>
+		<br>
+	<</if>>
+	<<link [[回到屋内 (0:01)|Lake House]]>><<pass 1>><</link>>
+	<br>
+
+	<<if $lakehouse.plots gte 1>>
+		<<display_plot lakehouse>>
+	<</if>>
+<</if>>.
+
+
+:: Lake House Play Computer
+<<effects>>
+你坐在椅子上，开始美美地打上几把电脑游戏。你度过了一段欢乐时光，在回到现实生活之前暂时将一些压力抛诸脑后。
+<br><br>
+
+<<link [[继续|Lake House Bedroom]]>><</link>>
+<br>
+
+:: Lake House Online Search
+<<effects>>
+
+:: Lake House Observe Terrarium
+
+<<effects>>
+<<if $lakehouse.smallpet is undefined>>
+	<<set $lakehouse.smallpet to {}>>
+<</if>>
+<<set _total to 0>>
+<<for _type, _num range $lakehouse.smallpet>>
+	<<set _total += _num>>
+<</for>>
+<<set _stress to -1 * ( 1 + _total)>>
+<<set _trauma to -1 * ( 1 + _total)>>
+<<stress _stress>><<trauma _trauma>>
+
+你坐了下来，观察着
+<<if _total is 0>>
+    空空如也的饲养箱，你思考着自己是不是应该去宠物店买些小生物养。
+    <br><br>
+<<else>>
+    饲养箱里的
+    <<for _type, _num range $lakehouse.smallpet>>
+	    <<if _num gte 1>>
+    	    <<if _type is "geckos">>
+        		小蜥蜴、
+        	<<elseif _type is "crabs">>
+        		小螃蟹、
+        	<<elseif _type is "turtles">>
+        		小乌龟、
+        	<</if>>
+	    <</if>>
+    <</for>>
+    看着它们的互动，不一会儿你就平静了下来。
+    <br><br>
+<</if>>
+
+<<link [[继续|Lake House Bedroom]]>><</link>>
+<br>
+
+:: Lake House TV
+<<link [[观看走近科学 (0:40)|$passage]]>><<pass 40>><<scienceskill>><<stress -3>><</link>><<gscience>><<lstress>>
+<br>
+<<link [[观看最强大脑 (0:40)|$passage]]>><<pass 40>><<mathsskill>><<stress -3>><</link>><<gmaths>><<lstress>>
+<br>
+<<link [[观看百家讲坛 (0:40)|$passage]]>><<pass 40>><<historyskill>><<stress -3>><</link>><<genglish>><<lstress>>
+<br>
+<<link [[观看非诚勿扰 (0:40)|$passage]]>><<pass 40>><<englishskill>><<stress -3>><</link>><<ghistory>><<lstress>>
+<br>
+
+:: Lake House Console
+<<cleareventpool>>
+<<addinlineevent>>
+	你坐在沙发上打开游戏，大杀四方，在连赢了几场匹配后，你见好就收停止下来。
+	<br><br>
+
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<</addinlineevent>>
+<<addinlineevent>>
+	你坐在地板上打开游戏，战况激烈，在酣畅淋漓的战斗中，你艰难拿下了胜利。
+	<br><br>
+
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<</addinlineevent>>
+<<addinlineevent>>
+	你坐在沙发上打开游戏，你开了几把排位，但在你关闭游戏之前一把没赢。
+	<br><br>
+
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<</addinlineevent>>
+<<addinlineevent>>
+	你坐在地板上打开游戏，开了把排位，尽管你一度力挽狂澜，但还是棋差一招输掉了。
+	<br><br>
+
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<</addinlineevent>>
+<<runeventpool>>
+
+:: Lake House Snuggle Cat
+
+<<effects>>
+<<beastNEWinit 1 cat $pet_now.gender>>
+你抱起你的$pet_now.name，将<<him>>拥入怀中暴风吸入。<<His>>软软的皮毛让你感到快乐，你感觉心情稍微好了一些。
+<br><br>
+<<link [[继续|Lake House]]>><</link>>
+<br>
+
+:: Lake House Fetch Dog
+
+<<set $outside to 1>><<effects>>
+<<beastNEWinit 1 dog $pet_now.gender>>
+你带着你的$pet_now.name出门。你找到一根绝世好棍，然后扔出去，$pet_now.name追着棍子跑，然后把棍子叼回来交给你，你摸摸<<him>>的头，再次将棍子抛出，玩的不亦乐乎。一段时间后，你和$pet_now.name都玩累了，这才回去屋里休息。
+<br><br>
+<<link [[继续|Lake House]]>><</link>>
+<br>
+
+:: Lake House Fuck Cat
+
+<<effects>>
+<<beastNEWinit 1 cat $pet_now.gender>>
+你跪下来，并轻轻摇了摇你的屁股。$pet_now.name从后面骑上你。
+<<deviancy2>>
+<<link [[继续|Lake House Cat Sex]]>><<set $sexstart to 1>><</link>>
+<br>
+
+:: Lake House Cat Sex
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<set $NPCList[0].stance to "top">>
+	<<set $NPCList[0].fullDescription to $pet_now.name>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[继续|Lake House Cat Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Lake House Cat Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Lake House Cat Sex Finish
+
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<tearful>>你站了起来。"好猫猫，"你抚摸着$pet_now.name的脑袋。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	$pet_now.name转身逃跑。
+	<br><br>
+	<<tearful>>你爬了起来。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<<else>>
+	$pet_now.name从你身边退开。<<tearful>>你爬了起来。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<</if>>
+
+:: Lake House Fuck Dog
+
+<<effects>>
+<<beastNEWinit 1 dog $pet_now.gender>>
+你跪下来，并轻轻摇了摇你的屁股。$pet_now.name从后面骑上你。
+<<deviancy2>>
+<<link [[继续|Lake House Dog Sex]]>><<set $sexstart to 1>><</link>>
+<br>
+
+:: Lake House Dog Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<set $NPCList[0].stance to "top">>
+	<<set $NPCList[0].fullDescription to $pet_now.name>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[继续|Lake House Dog Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Lake House Dog Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Lake House Dog Sex Finish
+
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<tearful>>你站了起来。"乖狗狗，"你抚摸着$pet_now.name的肚子。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	$pet_now.name转身逃跑。
+	<br><br>
+	<<tearful>>你爬了起来。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<<else>>
+	$pet_now.name从你身边退开。<<tearful>>你爬了起来。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Lake House]]>><</link>>
+	<br>
+<</if>>
+
+:: Lake House Bailey
+
+<<effects>>
+你打开门。<span class="red">是贝利。</span>
+<br><br>
+"是时候付钱了，"<<nnpc_he Bailey>>说道。
+<br><br>
+<<lakehouse_bailey_options>>
+<<set $rentday to Time.weekDay>>
+
+:: Lake House Bailey Refuse
+<<effects>>
+
+<<if $submissive gte 1150>>
+	"我不付钱，"你说道。你无法直视贝利的目光。"走开。"
+<<elseif $submissive lte 850>>
+	"你一个子儿都别想拿到，"你盯着贝利怒拒道，"你没有这个权力。"
+<<else>>
+	"我不会让你欺负我的，"你坚定地凝视着贝利的眼睛，"那钱不属于你。"
+<</if>>
+<br><br>
+
+"行吧，"贝利撂下话头，"我的朋友们会很高兴的。"<<nnpc_He Bailey>>转身离开。
+<br><br>
+
+<<link [[继续|Lake House]]>><</link>>
+<br>
+
+:: Lake House Repossession
+<<effects>>
+
+你听到有人敲门，打开门后，看到一个穿着西装、打着领带的年轻人。他一边咳嗽一边推开门，盯着你说：“对不起<<sir>>，由于您已经有几周没有付账单了，您的房子将会被收回。请立即离开这里。如果您被发现在这栋房屋内，却没有支付您应付的欠款，将会被视为非法入侵，列入警局的嫌犯名单中。祝您生活愉快。”这个男子向你致意后便离开了。
+<br><br>
+
+<<link [[继续|Lake House Outdoor]]>><</link>>
+<br>
+
+:: Lake House Cam Show Dance
+<<location "lakehouse">><<effects>>
+<<danceeffects>>
+<<danceaudience>>
+<<if $camshowrounds lte 30>>
+	<<danceactions>>
+<</if>>
+
+<<if $danceevent is 0 and $exhibitionism lte 34 and $exposed gte 2>>
+	你不可能在如此暴露的情况下继续跳舞！你脸涨得通红，中止了表演。
+	<br><br>
+<<elseif $danceevent is 0 and $exhibitionism lte 14 and $exposed gte 1 and !$worn.under_lower.type.includes("dance")>>
+	你不可能在如此暴露的情况下继续跳舞！你脸涨得通红，中止了表演。
+	<br><br>
+<</if>>
+
+<<if $danceevent is 0>>
+	<<if $exposed gte 2 and $exhibitionism lte 34>>
+		<<link [[关播|Lake House Bedroom]]>><<clotheson>><<endevent>><<set $dancelocation to 0>><</link>>
+	<<elseif $exposed gte 1 and $exhibitionism lte 14>>
+		<<link [[关播|Lake House Bedroom]]>><<clotheson>><<endevent>><<set $dancelocation to 0>><</link>>
+	<<else>>
+		<<if $exhibitionism gte 55>>
+			<<link [[自慰秀|Lake House Cam Show Masturbate]]>><<endevent>><</link>>
+			<br>
+		<</if>>
+		<<link [[停止|Lake House Bedroom]]>><<clotheson>><<endevent>><<set $dancelocation to 0>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Lake House Cam Show Masturbate
+<<effects>><<set _enableSexToys to true>>
+<<if $masturbationstart is 1>>
+	<<set $masturbationstart to 0>>
+	<<set $masturbationstat += 1>>
+	<<masturbationstart>>
+<</if>>
+<<rng>>
+<<if $speechcum is 1 and $rng gte 61 and $speechorgasmrepeat lte 1 and $speechorgasmcount lte 6>>
+	<<cumspeech>>
+<<elseif $rng gte 91>>
+	<<basespeech>>
+<<elseif $rng gte 61>>
+	<<dancespeech>>
+<<elseif $rng gte 41>>
+	<<clothesspeech>>
+<</if>>
+
+<<masturbationeffects>>
+<<masturbationactions>>
+
+<div id="masturbationButtons">
+	<div><<link [[继续|$passage]]>><</link>><<nexttext>></div>
+
+	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
+		<div><<link [[停止|$passage]]>><<set $corruptionMasturbation to true>><<set $dancelocation to 0>><</link>></div>
+	<<elseif $corruptionMasturbation isnot true>>
+		<div><<link [[停止|Lake House Bedroom]]>><<set $finish to 1>><<set $dancelocation to 0>><</link>></div>
+	<<else>>
+		<div class="red">你耳中的史莱姆不会允许你停下的。</div>
+	<</if>>
+</div>
+<br>

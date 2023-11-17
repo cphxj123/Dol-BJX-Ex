@@ -1,0 +1,169 @@
+:: mobileStats [widget]
+<<widget "mobileStats">>
+	<<if Number.isFinite($pain) and ($options.sidebarStats is "all" or $pain gt 50)>>
+		<<mobileStatsColor "pain">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">P<span>Pain: <<print $pain.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+	<<if Number.isFinite($arousal) and ($options.sidebarStats is "all" or $arousal gt $arousalmax / 2)>>
+		<<mobileStatsColor "arousal">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">Ar<span>Arousal: <<print $arousal.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+
+	<<if Number.isFinite($tiredness) and ($options.sidebarStats is "all" or $tiredness gt C.tiredness.max / 2)>>
+		<<mobileStatsColor "fatigue">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">F<span>Fatigue: <<print $tiredness.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+	<<if Number.isFinite($stress) and ($options.sidebarStats is "all" or $stress gt $stressmax / 2)>>
+		<<mobileStatsColor "stress">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">S<span>Stress: <<print $stress.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+	    <<if Number.isFinite($innocencestate) and $innocencestate is 1 and ($options.sidebarStats is "all" or $awareness gt -100)>>
+		<<mobileStatsColor "innocence">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">I<span>Innocence: <<print Math.abs($awareness).toFixed(2)>></span></mouse>
+		</div>
+	<<elseif Number.isFinite($trauma) and ($options.sidebarStats is "all" or $trauma gt $traumamax / 2)>>
+		<<mobileStatsColor "trauma">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">T<span>Trauma: <<print $trauma.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+	<<if Number.isFinite($control) and ($options.sidebarStats is "all" or $control gt $controlmax / 2)>>
+		<<mobileStatsColor "control">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">C<span>Control: <<print $control.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+	<<mobileStatsColor "allure">>
+	<<if Number.isFinite($allure)>>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">Al<span>Allure: <<print $allure.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+	<<if Number.isFinite($drunk) and $drunk gt 0>>
+		<<mobileStatsColor "drunk">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">Dk<span>Drunk: <<print $drunk.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+	<<if Number.isFinite($drugged) and $drugged gt 0>>
+		<<mobileStatsColor "drugged">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">Dg<span>Drugged: <<print $drugged.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+	<<if Number.isFinite($hallucinogen) and $hallucinogen gt 0>>
+		<<mobileStatsColor "hallucinogen">>
+		<div @class="'stat ' + _mobileColor">
+			<mouse class="tooltip-centertop">H<span>Hallucinogen: <<print $hallucinogen.toFixed(2)>></span></mouse>
+		</div>
+	<</if>>
+<</widget>>
+
+<<widget "mobileStatsTime">>
+	<div class="stat time">
+		<<ampm>>
+	</div>
+<</widget>>
+
+<<widget "mobileStatsColor">>
+	<<switch _args[0]>>
+		<<case "pain">>
+			<<mobileStatsColorSet `($pain gte 100 and $willpowerpain is 0 ? $pain : Math.clamp($pain, 0, 99))` 100>>
+		<<case "arousal">>
+			<<mobileStatsColorSet `Math.clamp($arousal, 0, $arousalmax)` $arousalmax>>
+		<<case "fatigue">>
+			<<mobileStatsColorSet `Math.clamp($tiredness, 0, C.tiredness.max)` `C.tiredness.max`>>
+		<<case "stress">>
+			<<mobileStatsColorSet `Math.clamp($stress, 0, $stressmax)` $stressmax>>
+		<<case "innocence">>
+			<<mobileStatsColorSetIverted `Math.clamp($awareness, 0, -200)` -200>>
+		<<case "trauma">>
+			<<mobileStatsColorSet `Math.clamp($trauma, 0, $traumamax)` $traumamax>>
+		<<case "control">>
+			<<mobileStatsColorSetIverted `Math.clamp($control, 0, $controlmax)` $controlmax>>
+		<<case "allure">>
+			<<mobileStatsColorAllure>>
+		<<case "drunk">>
+			<<mobileStatsColorSet `Math.clamp($drunk, 50, 500)` 500>>
+		<<case "drugged">>
+			<<mobileStatsColorSet `Math.clamp($drugged, 50, 500)` 500>>
+		<<case "hallucinogen">>
+			<<mobileStatsColorSet `Math.clamp($hallucinogen, 50, 500)` 500>>
+	<</switch>>
+<</widget>>
+
+<<widget "mobileStatsColorSet">>
+	<<if _args[0] is 0>>
+		<<set _mobileColor to "green">>
+	<<else>>
+		<<set _percent=Math.floor((_args[0]/_args[1])*10)>>
+		<<switch _percent>>
+		<<case 8 9>>
+			<<set _mobileColor to "pink">>
+		<<case 6 7>>
+			<<set _mobileColor to "purple">>
+		<<case 4 5>>
+			<<set _mobileColor to "blue">>
+		<<case 2 3>>
+			<<set _mobileColor to "lblue">>
+		<<case 0 1>>
+			<<set _mobileColor to "teal">>
+		<<default>>
+			<<set _mobileColor to "red">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "mobileStatsColorSetIverted">>
+	<<if _args[0] is 0>>
+		<<set _mobileColor to "red">>
+	<<else>>
+		<<set _percent=Math.floor((_args[0]/_args[1])*10)>>
+		<<switch _percent>>
+		<<case 8 9>>
+			<<set _mobileColor to "teal">>
+		<<case 6 7>>
+			<<set _mobileColor to "lblue">>
+		<<case 4 5>>
+			<<set _mobileColor to "blue">>
+		<<case 2 3>>
+			<<set _mobileColor to "purple">>
+		<<case 0 1>>
+			<<set _mobileColor to "pink">>
+		<<default>>
+			<<set _mobileColor to "green">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "mobileStatsColorAllure">>
+	<<if $allure gte (6000 * $alluremod)>>
+		<<set _mobileColor to "red">>
+	<<else>>
+		<<switch Math.floor($allure / $alluremod / 1000)>>
+		<<case 3>>
+			<<set _mobileColor to "purple">>
+		<<case 2>>
+			<<set _mobileColor to "blue">>
+		<<case 1>>
+			<<if $allure / $alluremod gte 1500>>
+				<<set _mobileColor to "lblue">>
+			<<else>>
+				<<set _mobileColor to "teal">>
+			<</if>>
+		<<case 0>>
+			<<set _mobileColor to "green">>
+		<<default>>
+			<<set _mobileColor to "pink">>
+		<</switch>>
+	<</if>>
+<</widget>>

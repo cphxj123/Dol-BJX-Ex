@@ -1,0 +1,187 @@
+:: Hive Observe
+
+<<set $outside to 1>><<set $location to "hive">><<effects>>
+<<cleareventpool>>
+<<addinlineevent "observe_cooperate">>
+    <<beastNEWinit 5 bee>>
+    你看着<<beastsplural>>合作完成任务，这让你更深入地了解了它们如何生活。
+    <br><br>
+    <<transform bee 1>>
+    <<link [[继续|Hive Entrance]]>><<endevent>><</link>>
+<</addinlineevent>>
+<<addinlineevent "observe_enemyhive">>
+    <<beastNEWinit 3 wasp>>
+    来自另一个蜂巢的一小群<<beastsplural>>接近你正观察的蜂巢入口，而后被工蜂拦下。  
+    <br><br>
+    在来自另一个蜂巢的<<beastsplural>>逃离之前，一场战斗爆发了。这让你对蜜蜂的领地意识有了更深入的认知。
+    <br><br>
+    <<transform bee 1>>
+    <<link [[继续|Hive Entrance]]>><<endevent>><</link>>
+<</addinlineevent>>
+<<addinlineevent "observe_queen">>
+    你瞥到了蜂后一眼，但很快她就从你的视线里消失了。管中窥豹，她很漂亮。古怪的感觉油然而生：汝需服从。
+    <br><br>
+    <<transform bee 1>>
+    <<link [[继续|Hive Entrance]]>><<endevent>><</link>>
+<</addinlineevent>>
+<<addinlineevent "observe_hunt" 0.5>>
+    <<beastNEWinit 3 wasp>>
+    一小群<<beastsplural>>带着简陋的长矛离开了蜂巢。你看见它们进入树林，便蹑手蹑脚地跟上，突然间<<beastsplural>>停下了脚步。
+    <br><br>
+    <<if random(1)>>
+        <<link [[继续|Hive Wasp Detect]]>><</link>>
+    <<else>>
+        <<link [[继续|Hive Wasp Continue]]>><</link>>
+    <</if>>  
+<</addinlineevent>>
+<<addinlineevent "observe_workers" 0.5>>
+    <<beastNEWinit 3 bee>>
+    你跟着一群<<beastsplural>>进入森林里的一片小空地。空地上开满了美丽的花朵。 
+    <br><br>
+    你小心翼翼地看着<<beastsplural>>轻手轻脚地收集花粉。在填满自己后，它们将返回蜂巢。 
+    <br><br>
+    看见<<beastsplural>>为蜂巢忙前忙后，你的内心感到温暖。
+    <br><br>
+    <<transform bee 1>>
+    <<link [[继续|Hive Entrance]]>><<endevent>><</link>>  
+<</addinlineevent>>
+<<runeventpool>>
+
+:: Hive Wasp Continue
+
+<<set $outside to 1>><<set $location to "hive">><<effects>>
+<<beastsplural>>稍微休息了一会，然后继续往前飞。它们在湖边停下，停在草丛上。过了一会儿，一头大野猪跌跌撞撞地穿过树林，来到空地上。 
+<br><br>
+<<beastsplural>>迅速突袭，杀死野猪，然后将尸体切碎，带回蜂巢。它们对狩猎的精通让你叹为观止，对它们的本事有了新的了解。 
+<br><br>
+<<transform bee 1>>
+<<link [[继续|Hive Entrance]]>><<endevent>><</link>>
+
+
+:: Hive Wasp Detect 
+
+<<set $outside to 1>><<set $location to "hive">><<effects>>
+<<beastsplural>>稍微休息了一会，然后继续往前飞。你继续跟随，但树林复杂的地形让你跟丢了，你环顾四周，没看见周围有任何踪迹。
+<br><br>
+你本欲离开，但突然听见周围剧烈的嗡嗡声。你转过身，发现自己被<<beastsplural>>包围了。
+<br><br>
+<<link [[继续|Hive Observe Gang Rape]]>><<set $molestationstart to 1>><</link>>
+
+:: Hive Observe Gang Rape
+
+<<if $molestationstart is 1>>
+    <<set $molestationstart to 0>>
+    <<controlloss>>
+    <<violence 1>>
+    <<neutral 1>>
+    <<molested>>
+    <<beastCombatInit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<beast $enemyno>>
+<<if $enemyhealth gt 0>><<npcdamage>><</if>>
+<<stateman>>
+<<actionsman>>
+
+<<if $enemyhealth lte 0>>
+	<span id="next"><<link [[继续|Hive Observe Gang Rape Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[继续|Hive Observe Gang Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Hive Observe Gang Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Hive Observe Gang Rape Finish 
+
+<<effects>><<set $feetuse to 0>><<set $stress -= 500>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+    <<if random(1)>>
+        "也许下次我们能好好狩猎，"狩猎队在两手空空地回到蜂巢时嗡嗡作响道。 
+        <br><br>
+        <<tearful>>你站了起来。
+        <br><br>
+        <<clotheson>>
+        <<endcombat>>
+        <<link [[继续|Hive Entrance]]>><<endevent>><</link>>
+    <<else>>
+        "既然你想破坏我们的狩猎，那我们只能把你作为囚犯关起来。"狩猎队把你抬起来带回蜂巢。 
+        <br><br>
+        它们把你带到蜂巢里面，扔进一个牢房。"我们得想想怎么处置你。"它们离开你的视线，让你一个人呆在牢房里。 
+        <br><br>
+        <<tearful>>你振作起来。
+        <br><br>
+        <<clotheson>>
+        <<endcombat>>
+        <<set $beeprisoner to 1>>
+        <<link [[继续|Hive Cell]]>><<endevent>><</link>>
+    <</if>>
+<<elseif $enemyhealth lte 0>>
+	<<beastsplural>>被你的力量震惊了，"没想到你竟然如此强而有力，低估你了啊。"<<bHe>>嗡嗡作响，和狩猎队的其他蜜蜂一起空手回到蜂巢。
+	<br><br>
+    <<tearful>>你振作起来。
+    <br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>>
+<<else>>
+	<<beastsplural>>被你的力量震惊了，"没想到你竟然如此强而有力，低估你了啊。"<<bHe>>嗡嗡作响，和狩猎队的其他蜜蜂一起空手回到蜂巢。
+	<br><br>
+    <<tearful>>你振作起来。
+    <br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>>
+<</if>>
+
+:: Hive Passout Rape
+
+<<if $molestationstart is 1>>
+    <<set $molestationstart to 0>>
+    <<controlloss>>
+    <<violence 1>>
+    <<neutral 1>>
+    <<molested>>
+    <<beastCombatInit>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<beast $enemyno>>
+<<stateman>>
+<<actionsman>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[继续|Hive Passout Rape Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[继续|Hive Passout Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Hive Passout Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Hive Passout Rape Finish
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<beasttype>>满意地嗡嗡飞走了，把躺在地上的你丢着不管了。
+	<br><br>
+	<<tearful>>你站了起来。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Barracks]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	<<beasttype>>踉踉跄跄地飞起，让你有机会逃离。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Barracks]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+    <<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Barracks]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>

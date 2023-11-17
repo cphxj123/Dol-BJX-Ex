@@ -1,0 +1,131 @@
+:: Widgets Actions Man [widget]
+<<widget "actionsman">>
+	<div @class="($debugLines ? 'debugLines-actionsman' : '')">
+	<<exposure>>
+	<<set $face to 0>>
+
+	<<if $enemyno gte 2>>
+		<<set $pronoun to "n">>
+	<<else>>
+		<<if $NPCList[0].pronoun is "m">>
+			<<set $pronoun to "m">>
+		<</if>>
+		<<if $NPCList[0].pronoun is "f">>
+			<<set $pronoun to "f">>
+		<</if>>
+		<<if $NPCList[0].pronoun is "i">>
+			<<set $pronoun to "i">>
+		<</if>>
+		<<if $NPCList[0].pronoun is "n">>
+			<<set $pronoun to "n">>
+		<</if>>
+		<<if $NPCList[0].pronoun is "t">>
+			<<set $pronoun to "t">>
+		<</if>>
+	<</if>>
+
+	<<if $options.images is 1 and $options.combatImages is 1>>
+		<<if $position isnot "stalk">>
+			<<timed 100ms>>
+				<<combatimg>>
+				<br>
+			<</timed>>
+		<</if>>
+	<</if>>
+	<<fetishPregnancyImg>>
+
+	<<if $traumafocus gte 1 and $traumafocusintro isnot 1>>
+		<<set $traumafocusintro to 1>>
+		<i>As you gain focus, you become more and more likely to escape your helpless state of dissociation.</i>
+		<br><br>
+	<</if>>
+
+	<<if $traumafocus gt random(1, 1000) and $dissociation gte 2 and $combat is 1>>
+		<<set $traumafocus to 0>><<set $trauma -= 1000>><<set $dissociation to 1>>
+		<span class="green">Your lucidity returns.</span>
+		<<ltrauma>>
+		<br>
+		<span class="red">The weight of reality crashes down on you.</span>
+		<br><br>
+	<</if>>
+
+	<<oxygen 50>>
+
+	<<willpowerpain>>
+	<<willpowerorgasm>>
+	<<actioncarry>>
+	<<actioncarrydrop>>
+
+	<<combatstate>>
+	<<carryblock>>
+
+	<<if $trance lte 0 and $panicparalysis is 0 and ($panicviolence is 0 or $position is "stalk")>>
+	    /* 北极星模组 */
+		<<if $dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
+		/* 北极星 */
+			<<if $options.images is 1 and $options.combatImages is 1 and $consensual is 1 and $position_lock isnot 1>>
+				<<if $position is "doggy">>
+					| <label>Roll over <<radiobutton "$bodyaction" "missionary">></label>
+				<<elseif $position is "missionary" and !["facesit", "anal"].includes($mouthuse)>>
+					| <label>Roll over <<radiobutton "$bodyaction" "doggy">></label>
+				<</if>>
+				<<if $position isnot "stalk">>
+					| <label>Rest <<radiobutton "$bodyaction" "rest" checked>></label>
+					<br>
+				<</if>>
+			<</if>>
+		<</if>>
+
+		<<if $options.combatControls isnot "disabled">>
+			<<generateActionsMan>>
+		<</if>>
+		<br>
+	<</if>>
+
+	<br><br>
+
+	<<set $face to 0>>
+
+	</div>
+
+	/*Due to how combat is setup, this is the best location for it*/
+	<<setupMidOrgasm>>
+
+	<<set _combatend to
+		($alarm is 1 and $rescue gte 1) or
+		($enemyhealth lte 0) or
+		($enemyarousal gte $enemyarousalmax) or
+		($finish is 1)
+	>>
+
+	<!-- Lose consciousness if it has been 20+ seconds since PC ran out of air -->
+	<<if $suffocating gte 2 and $suffocated isnot 1 and !_combatend>>
+		<<set $previousPassage = $passage>>
+		<<set $suffocationPhase to 1>>
+		<<set $suffocated to 1>>
+
+		<<set $nextPassage to "Man combat suffocated">>
+	<</if>>
+
+	<<if $debug is 1>>
+		__Debug__
+		<br>
+		Enemy Health: $enemyhealth -- Enemy Health Max: $enemyhealthmax
+		<br>
+		Enemy number: $enemyno -- Enemy max number: $enemynomax
+		<br><br>
+		<<for _i to 0; _i lt $enemynomax; _i++>>
+			#<<print _i>>: $NPCList[_i].fullDescription
+			<br>
+			Head Location: $NPCList[_i].location.head -- Genitals Location: $NPCList[_i].location.genitals
+			<br>
+			Active: $NPCList[_i].active -- Stance: $NPCList[_i].stance -- Health: $NPCList[_i].health
+			<br>
+			Penis: $NPCList[_i].penis -- Vagina: $NPCList[_i].vagina -- Mouth: $NPCList[_i].mouth -- Anus: $NPCList[_i].anus
+			/* Note: Anus is literally not a real var for npcs yet. Don't think anything is wrong when you see it isn't printing a logical value. A rework is required first. */
+			<br>
+			Left Hand: $NPCList[_i].lefthand -- Right Hand: $NPCList[_i].righthand
+			<br><br>
+		<</for>>
+	<</if>>
+<</widget>>

@@ -1,0 +1,612 @@
+:: Forest
+
+<<location "forest">><<effects>><<wPersist "forest">><<getTarget true>>
+<<if $foresthunt gte 1>>
+	<<if $edenforesthunt is 1>>
+		<<print either(
+			`<span class="red">You are being hunted. You see spent bullet casings lying on the ground.</span>`,
+			`<span class="red">You are being hunted. You see boot prints on the ground.</span>`,
+			`<span class="red">You are being hunted. You hear a gun firing from afar.</span>`
+		)>>
+	<<elseif $blackwolfhunt is 1>>
+		<<print either(
+			`<span class="red">You are being hunted. You see wolf fur tangled in the trees.</span>`,
+			`<span class="red">You are being hunted. You see wolf prints on the ground.</span>`,
+			`<span class="red">You are being hunted. You hear a growl in the distance.</span>`
+		)>>
+	<<elseif $wraith.hunt>>
+		<<if $moonstate is "morning" and Time.hour gte 6>>
+			With the rising of the sun, you feel a sense of relief. The dread passes. <span class="blue"><i>You're safe until the next blood moon.</i></span>
+			<<clearWraith>>
+		<<else>>
+			<<print either(
+				`<span class="red">You are being hunted. Red moonlight casts dire shadows all around you.</span><<stress 6>><<gstress>>`,
+				`<span class="red">You are being hunted. You hear distant laughter.</span> <<trauma 6>><<gtrauma>>`,
+				`<span class="red">You are being hunted. It's becoming harder to breathe.</span> <<stress 6>><<gstress>><<trauma 6>><<gtrauma>>`
+			)>>
+		<</if>>
+	<<else>>
+		<!-- generic text for when a hunt is happening but we haven't written a more specific version of the text. -->
+		<span class="red">You are being hunted.</span>
+	<</if>>
+	<br><br>
+<</if>>
+
+<<if $arousal gte $arousalmax>>
+	<<orgasmforest>>
+<</if>>
+
+<<if $forest lte 0>>
+	<<set $forest to 0>>
+	<<forestmove>>
+	<<if $stress gte $stressmax and !$possessed>>
+		<<passoutforest>>
+	<<elseif $foresthunt gte 10>>
+		<<foresthunt>>
+	<<else>>
+		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+		<<if $eventskip is 0>>
+			<<rng>>
+			<<if $rng gte 81 or ($forest_search is true and $rng gte 61)>>
+				<<eventforestitem>>
+			<<elseif $danger gte (9900 - ($allure * $forestmod))>>
+				<<eventforestoutskirts>>
+			<<else>>
+				<<eventforestsafe>>
+			<</if>>
+		<<elseif $town_projects.road is 1>>
+			<<set $town_projects.road to 2>>
+			You are in the forest outskirts. You can make out the town between the trees.
+			<br><br>
+
+			You almost trip over a worn brick. It draws your attention to others like it. There used to be a road here, connecting the town to the lake. <span class="teal">An idea strikes you.</span> If the road were restored, the journey would be safer, for both you and other students.
+			<br><br>
+
+			<i>You could enquire about the road at the town hall.</i>
+			<br><br>
+
+			<<link [[Next|Forest]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<<elseif $town_projects.road is 3>>
+			<<set $town_projects.road to 4>>
+			You are in the forest outskirts. You can make out the town between the trees.
+			<br><br>
+
+			The mayor's office acted fast. A road stretches into the forest, swerving out of sight. <span class="green">Getting to and from the lake will be much easier.</span>
+			<br><br>
+
+			<<earnFeat "Safe Trail">>
+			<<link [[Next|Forest]]>><<set $eventskip to 1>><</link>>
+			<br>
+		<<elseif $eventskip gte 1>>
+			You are in the forest outskirts. You can make out the town between the trees.
+			<br><br>
+
+			<<if $exposed lte 1>>
+				<<if $forest_shop_intro is 1>>
+					<<shopicon "forest">><<link [[Forest shop|Forest Shop]]>><</link>>
+					<br><br>
+				<<else>>
+					<<shopicon "forest">><<link [[Strange shop|Forest Shop]]>><</link>>
+					<br><br>
+				<</if>>
+			<</if>>
+
+			<<forestdeeper>>
+			<br><br>
+
+			<<forestsearch>>
+			<br><br>
+
+			Leave the forest
+			<br>
+			<<danubeicon>><<link [[Danube Street (0:10)|Danube Street]]>><<pass 10>><<set $foresthunt to 0>><</link>>
+			<br>
+			<<wolficon>><<link [[Wolf Street (0:10)|Wolf Street]]>><<pass 10>><<set $foresthunt to 0>><</link>>
+			<br>
+			<<nightingaleicon>><<link [[Nightingale Street (0:10)|Nightingale Street]]>><<pass 10>><<set $foresthunt to 0>><</link>>
+			<br>
+			<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">>
+				<<wolficon>><<link [[Temple (0:10)|Temple Garden]]>><<pass 10>><<set $foresthunt to 0>><</link>>
+				<br>
+			<</if>>
+			<br><br>
+
+			<<if $historytrait gte 2 and $thicket_tunnel_intro is 1>>
+				<<link [[Take the secret tunnel to the residential alleyways (0:05)|Residential Thicket]]>><<pass 5>><</link>>
+				<br>
+			<</if>>
+			<<if $historytrait gte 3>>
+				<<forestroadicon "secret">>
+				<<link [[Take secret path deeper into the woods (0:10)|Forest]]>>
+					<<set $forestmod to 1.5>><<set $forest += 50>><<set $forestmove to "secretin">><<pass 10>>
+					<<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>>
+				<</link>>
+				<br>
+			<</if>>
+		<</if>>
+	<</if>>
+
+<<elseif $forest lte 20>>
+	<<forestmove>>
+	<<if $stress gte $stressmax and !$possessed>>
+		<<passoutforest>>
+	<<elseif $foresthunt gte 10>>
+		<<foresthunt>>
+	<<else>>
+		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+		<<if $eventskip is 0>>
+			<<rng>>
+			<<if $rng gte 81 or ($forest_search is true and $rng gte 61)>>
+				<<eventforestitem>>
+			<<elseif $danger gte (9900 - ($allure * $forestmod))>>
+				<<eventforestoutskirts>>
+			<<else>>
+				<<eventforestsafe>>
+			<</if>>
+		<<elseif $eventskip gte 1>>
+			You are in the forest. The trees are quite sparse, you can't be too far from town.
+			<br><br>
+
+			<<if $forest gte 10 and $forest lte 14>>
+				<<foresticon "churchyard">><<link [[Old Churchyard|Churchyard]]>><</link>>
+				<br><br>
+			<</if>>
+
+			<<if $smuggler_location is "forest" and $smuggler_timer is 0 and Time.dayState is "night" and Time.hour gte 18>>
+				<span class="gold">You see a flickering through the trees. Like a flame.</span>
+				<br><br>
+			<</if>>
+
+			<<if $smuggler_location is "forest" and $smuggler_timer is 0 and Time.dayState is "night" and Time.hour gte 18>>
+				<<link [[Approach flame|Smuggler Forest]]>><</link>>
+				<br><br>
+			<</if>>
+
+			<<forestdeeper>>
+			<br><br>
+
+			<<forestsearch>>
+			<br><br>
+
+			<<forestlessdeep>>
+		<</if>>
+	<</if>>
+
+<<elseif $forest lte 50>>
+	<<forestmove>>
+	<<if $stress gte $stressmax and !$possessed>>
+		<<passoutforest>>
+	<<elseif $foresthunt gte 10>>
+		<<foresthunt>>
+	<<else>>
+		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+		<<if $eventskip is 0>>
+			<<rng>>
+			<<if $rng gte 81 or ($forest_search is true and $rng gte 61)>>
+				<<eventforestitem>>
+			<<elseif $danger gte (9900 - ($allure * $forestmod))>>
+				<<eventforest>>
+			<<else>>
+				<<eventforestsafe>>
+			<</if>>
+		<<elseif $eventskip gte 1>>
+			You are in the forest, surrounded by nature.
+			<br><br>
+
+			<<if $forest lte 30>>
+				<<if $nextPassageCheck is "Lake Shore">>
+					<span class="nextLink"><<lakeicon>><<link [[The lake.|Lake Shore]]>><<pass 10>><</link>></span>
+				<<else>>
+					<<lakeicon>><<link [[Lake (0:10)|Lake Shore]]>><<pass 10>><</link>>
+				<</if>>
+			<<elseif $forest lte 40>>
+				<<lakeicon>><<link [[Lake (0:10)|Lake Waterfall]]>><<pass 10>><</link>>
+			<<else>>
+				<<if $nextPassageCheck is "Lake Fishing Rock">>
+					<span class="nextLink"><<lakeicon>><<link [[The lake.|Lake Fishing Rock]]>><<pass 10>><</link>></span>
+				<<else>>
+					<<lakeicon>><<link [[Lake (0:10)|Lake Fishing Rock]]>><<pass 10>><</link>>
+				<</if>>
+			<</if>>
+			
+			/* 北极星模组 */
+			<<if $historytrait gte 1>>
+				<br><<kylarmanoricon>><<link [[废弃庄园 (0:10)|Forest Mansion Explore]]>><</link>>
+			<</if>>
+			/* 北极星 */
+			
+			<br><br>
+
+			<<forestdeeper>>
+			<br><br>
+
+			<<forestsearch>>
+			<br><br>
+
+			<<forestlessdeep>>
+			<br><br>
+
+			<<if $historytrait gte 3>>
+				<<forestroadicon "secret">>
+				<<link [[Take secret path out of the woods (0:10)|Forest]]>>
+					<<set $forestmod to 1.5>><<set $forest -= 50>><<set $forestmove to "secretout">><<pass 10>>
+					<<if $foresthunt gte 1>><<set $foresthunt += 1>><</if>>
+				<</link>>
+				<br>
+			<</if>>
+		<</if>>
+	<</if>>
+
+<<elseif $forest lte 99>>
+    /* 北极星模组 */
+    <<location "forest">>
+    /* 北极星 */
+	<<forestmove>>
+	<<if $stress gte $stressmax and !$possessed>>
+		<<passoutforest>>
+	<<elseif $foresthunt gte 10>>
+		<<foresthunt>>
+	<<else>>
+		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+		<<if $eventskip is 0>>
+			<<rng>>
+			/* 北极星模组 */
+			<<if $hive_intro isnot 1 and $rng gte 50>>
+				<<set $hive_intro to 1>>
+				你在树丛中发现了一个巨大的蜡制蜂巢。你可以看到里面有动静，两只看起来很强壮的黄蜂守在入口处。 
+				<br><br>
+				<<link [[靠近 (0:20)|Hive Approach]]>><<pass 20>><<set $eventskip to 1>><</link>>
+				<br>
+			<<elseif $rng gte 81 or ($forest_search is true and $rng gte 61)>>
+			/* 北极星 */
+				<<eventforestitem>>
+			<<elseif $danger gte (9900 - ($allure * $forestmod))>>
+				<<eventforestdeep>>
+			<<else>>
+				<<eventforestsafe>>
+			<</if>>
+		<<elseif $eventskip gte 1>>
+			You are deep in the forest. The trees are tall and dark, their branches twisting together to form the canopy.
+			<br><br>
+
+			<<if $edenfreedom gte 1>>
+				<<edenicon>><<link [[Eden's cabin (0:10)|Eden Clearing]]>><<pass 10>><</link>>
+				<br>
+			<<elseif $syndromeeden gte 1>>
+				<<edenicon>><<link [[Eden's cabin (0:10)|Eden Clearing]]>><<pass 10>><</link>>
+				<br>
+			<</if>>
+			<<if $syndromewolves gte 1 and $caveHumanPregnancyDiscovered isnot 1>>
+				<<wolfcaveicon>><<link [[Wolf cave (0:10)|Wolf Cave Clearing]]>><<pass 10>><</link>>
+				<br>
+			<<elseif $syndromewolves gte 1 and $caveHumanPregnancyDiscovered is 1>>
+				<span class="blue">You don't think the wolves would allow you to come back until your pregnancy is over.</span>
+				<br>
+			<</if>>
+			<<if $pubtask is "forest" and $pubtask2 isnot 1>>
+				<<rng>>
+				<!-- Modified for Monster People -->
+				<<if $pubtasksetting is "bear" and $bestialitydisable is "f">>
+					<<crimeicon "black box">><<link [[Search for Landry's black box|Forest Bear Box]]>><</link>>
+				<<elseif $pubtasksetting is "pair">>
+					<<crimeicon "black box">><<link [[Search for Landry's black box|Forest Box]]>><</link>>
+				<<elseif $rng gte 51 and $bestialitydisable is "f">>
+					<<crimeicon "black box">><<link [[Search for Landry's black box|Forest Bear Box]]>><</link>>
+				<<else>>
+					<<crimeicon "black box">><<link [[Search for Landry's black box|Forest Box]]>><</link>>
+				<</if>>
+				<br>
+			<</if>>
+			/* 北极星模组 */
+			<<if $hive_intro is 1>>
+				<br>
+				<<link [[蜂巢 (0:20)|Hive Entrance]]>><<pass 20>><</link>>
+				<br>
+			<</if>>
+			/* 北极星 */
+			<br>
+			
+			<<forestdeeper>>
+			<br><br>
+
+			<<forestsearch>>
+			<br><br>
+
+			<<forestlessdeep>>
+		<</if>>
+	<</if>>
+	
+/* 北极星模组 */
+<<elseif $forest lte 150>>
+	<<location "bog">>
+	<<bogmove>>
+	<<if $stress gte $stressmax and !$possessed>>
+		<<passoutforest>>
+	<<else>>
+		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+		<<if $eventskip is 0>>
+			<<rng>>
+			<<if $rng gte 81 or ($forest_search is true and $rng gte 61)>>
+				<<eventbogitem>>
+			<<elseif $danger gte (9900 - ($allure * $forestmod))>>
+				<<eventbog>>
+			<<else>>
+				<<eventbogsafe>>
+			<</if>>
+		<<elseif $eventskip gte 1>>
+			<<if $foresthunt gte 1>>
+				<span class="lblue">你在沼泽里相对安全，不管是谁在跟踪你，应该都会选择放弃。</span>
+				<br><br>
+				<<set $foresthunt to 0>>
+			<</if>>
+			你穿过森林，来到了一片大沼泽。树木稀疏，静静地停驻在水池中，空气中弥漫着浓重的湿气。
+			<br><br>
+			<<bogdeeper>>
+			<br><br>
+
+			<<bogsearch>>
+			<br><br>
+
+			<<boglessdeep>>
+		<</if>>
+	<</if>>
+	
+<<elseif $forest gte 150>>
+	<<set $forest to 150>>
+	<<bogmove>>
+
+	<<if $stress gte $stressmax and !$possessed>>
+		<<passoutforest>>
+	<<elseif $foresthunt gte 10>>
+		<<foresthunt>>
+	<<else>>
+		<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+		<<if $eventskip is 0>>
+			<<rng>>
+			<<if $rng gte 81 or ($forest_search is true and $rng gte 61)>>
+				<<eventbogitem>>
+			<<elseif $danger gte (9900 - ($allure * $forestmod))>>
+				<<eventbog>>
+			<<else>>
+				<<eventbogsafe>>
+			<</if>>
+		<<elseif $eventskip gte 1>>
+			你在沼泽深处。空气中弥漫着刺鼻的气味，你觉得不应该继续前进。
+			<br><br>
+
+			<<bogsearch>>
+			<br><br>
+
+			<<boglessdeep>>
+		<</if>>
+	<</if>>
+<</if>>
+/* 北极星 */
+
+<<unset $forest_search>>
+<<set $eventskip to 0>>
+
+:: Forest Bear Box
+<<location "forest">><<effects>>
+
+<<if $pubtasksetting is "bear">>
+	You return to the cave, where Landry's black box can be found. You hear something large breathing within.
+<<else>>
+	<<set $pubtasksetting to "bear">>
+
+	You come to a cave, the location Landry said the black box would be found. It must be inside.
+	<br><br>
+
+	You've barely taken two steps further when you hear a deep growl. There's something big in there.
+<</if>>
+<br><br>
+
+<<link [[Enter|Forest Bear Box Molestation]]>><<set $molestationstart to 1>><</link>>
+<br>
+<<link [[Leave|Forest]]>><</link>>
+
+:: Forest Box
+<<location "forest">><<effects>>
+
+<<if $pubtasksetting is "pair">>
+	<<generate1>><<generate2>>
+	You return to the clearing with the dilapidated cabin. The <<fullGroup>> are still there.
+	"Changed your mind?" says the <<person1>><<person>> "Let us have our way with you and we'll give you the black box."
+<<else>>
+	<<set $pubtasksetting to "pair">>
+
+	<<generate1>><<generate2>>
+	You come to the clearing where the black box supposedly resides. There's a dilapidated wood cabin in the middle.
+	A <<fullGroup>> sit outside beside a fire. They look up as you approach.
+	"This is unexpected," says the <<person1>><<person>>. "What brings you all the way out here?"
+	<br><br>
+
+	You tell them you're looking for a small black box. "Oh," <<he>> says. "You mean this?" <<He>> stands and produces a black box from <<his>> pocket.
+	"We could be persuaded to part with it. We'd want something in return though." <<He>> walks closer to you.
+	"You're a cute little thing, Landry sure knows how to pick em. We'll give you the box if you let us fuck you." The <<person2>><<person>> grins.
+<</if>>
+<br><br>
+
+<<if $promiscuity gte 15>>
+	<<link [[Accept|Forest Box Molestation]]>><<set $sexstart to 1>><</link>><<promiscuous2>>
+	<br>
+<</if>>
+<<if $submissive lte 500>>
+	<<link [[Attack them|Forest Box Molestation]]>><<set $molestationstart to 1>><<set $phase to 2>><</link>>
+	<br>
+<</if>>
+<<link [[Refuse|Forest Box Refuse]]>><</link>>
+<br>
+
+:: Forest Bear Box Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+
+	<<beastNEWinit 1 bear>>
+	<<beastCombatInit>><<set $enemytrust -= 40>><<set $enemyanger += 40>><<set $enemyhealthmax to 400>><<set $enemyhealth to 400>>
+	You creep into the cave. After some fumbling through the dark you see the light catch on something. It's the black box.
+	The box in hand, you turn to leave the cave, but something emerges from the darkness. As you turn back around, <<bhe>> descends down onto you.
+	<<set $pubtask2 to 1>>
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Forest Bear Box Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Forest Bear Box Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Forest Bear Box Molestation Finish
+<<location "forest">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+
+	Satisfied, the <<beasttype>> retreats into <<bhis>> abode.
+	<<if $monster is 1>>
+		<<bHe>> yawns, giving <<bhis>> hairy chest one last scratch before returning to <<bhis>> slumber.
+	<</if>>
+<<elseif $enemyhealth lte 0>>
+	<<if $monster is 1>>
+		The <<beasttype>> recoils in pain, turning away from you. <<bHe>> covers <<bhis>> wrist with <<bhis>> hand, before fleeing deeper into <<bhis>> abode.
+	<<else>>
+		The <<beasttype>> turns away from you and flees deeper into its abode.
+	<</if>>
+<</if>>
+<br><br>
+
+<<tearful>> you leave the cave.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Forest]]>><</link>>
+
+:: Forest Box Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+
+	<<if $phase is 1>>
+		<<set $enemytrust -= 40>>
+	<<elseif $phase is 2>>
+		<<set $enemyanger += 40>><<set $enemytrust -= 100>><<set $enemyhealth -= 100>>
+		You stand still, waiting until they draw close.
+		With their guard down, you stomp on the <<person2>><<persons>> foot and smack <<his>> face, sending <<him>> reeling.
+		<<person1>>The <<person>> is not amused. "Stupid slut. You'll pay for that."
+		<br><br>
+	<</if>>
+
+<<elseif $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 40>>
+	<<promiscuity2>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Forest Box Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Forest Box Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Forest Box Refuse
+<<location "forest">><<effects>>
+
+"I don't think you quite understand the situation you're in," the <<person1>><<person>> says, now very close. "We're getting what we want."
+<br><br>
+
+<<link [[Next|Forest Box Molestation]]>><<set $phase to 1>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Forest Box Molestation Finish
+<<effects>>
+
+<<if $finish is 1>>
+	"You're not getting away that easily," the <<person1>><<person>> says.
+	<br><br>
+
+	<<controlloss>><<set $consensual to 0>><<molested>><<set $finish to 0>>
+
+	<<link [[Next|Forest Box Molestation]]>><</link>>
+
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"Here you go," says the <<person1>><<person>>, dropping the box in front of you. "Give Landry our regards." <<tearful>> you collect the box and leave the clearing.
+	<<set $pubtask2 to 1>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Forest]]>><</link>>
+
+<<elseif $enemyhealth lte 0>>
+	The pair recoil in pain and drop the box on the grass. <<tearful>> you seize it and flee the clearing, chased by their angry shouts.
+	<<set $pubtask2 to 1>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Forest]]>><</link>>
+<</if>>
+
+:: Forest Science Shroom
+<<location "forest">><<effects>>
+
+<<if $scienceshroomknown isnot 1>>
+	<<set $scienceshroomknown to 1>>
+	<span class="gold">You have discovered a new science project.</span>
+	<br><br>
+<</if>>
+
+<<if $phase is 0>>
+	<<set $scienceshroomheart += 1>>
+	You kneel and gather the mushrooms. They smell refreshing.
+	<<ltiredness>><<tiredness -6>>
+	<br><br>
+
+	<span class="gold">You can add the mushrooms you found to your project in your room or the school library.</span>
+	<br><br>
+<<else>>
+	<<set $scienceshroomwolf += 1>>
+	You kneel and gather the mushrooms. They smell sweet.
+	<<garousal>><<arousal 600>>
+	<br><br>
+
+	<span class="gold">You can add the mushrooms you found to your project in your room or the school library.</span>
+	<br><br>
+<</if>>
+
+<<link [[Next|Forest]]>><<set $eventskip to 1>><</link>>
+<br>

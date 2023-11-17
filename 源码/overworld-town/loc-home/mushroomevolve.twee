@@ -1,0 +1,49 @@
+:: Mushroom Evolve
+
+<<mushroomtfcheck>>
+<span class='yellow'>蘑菇进化</span>
+<br>
+<i>你当前拥有<<print $fungalpoint>>个进化点，你总共进化过<<print ($mushroom-1)>>次。</i>
+<br><br>
+<<if $fungalpoint gte 1>>
+    <<link [[强化孢子驱散素|$passage]]>><<set $mushroomtf.allure += 500>><<set $fungalpoint -= 1>><<set $mushroom += 1>><</link>>
+    <<link [[强化孢子催情素|$passage]]>><<set $mushroomtf.attractive += 500>><<set $fungalpoint -= 1>><<set $mushroom += 1>><</link>>
+    <<link [[强化蘑菇衣耐久|$passage]]>><<set $mushroomtf.integrity += 200>><<set $fungalpoint -= 1>><<set $mushroom += 1>><</link>>
+    <<link [[强化蘑菇衣防御|$passage]]>><<set $mushroomtf.defence += 80>><<set $fungalpoint -= 1>><<set $mushroom += 1>><</link>>
+<</if>>
+<br><br>
+
+<<link [[返回|$lastpassage]]>><</link>>
+
+:: Widgets MushroomTfCheck [widget]
+
+<<widget "mushroomtfcheck">>
+    <<if $mushroomtf is undefined or typeof $mushroomtf is "number">>
+		<<set $mushroomtf to {}>>
+	<</if>>
+	<<if $mushroomtf.allure is undefined>>
+		<<set $mushroomtf.allure to 1000>>
+	<</if>>
+	<<if $mushroomtf.attractive is undefined>>
+		<<set $mushroomtf.attractive to 1000>>
+	<</if>>
+	<<if $mushroomtf.integrity is undefined>>
+		<<set $mushroomtf.integrity to 0>>
+	<</if>>
+	/* 减伤公式: 总防御力 ÷ (总防御力 + 120) */
+	<<if $mushroomtf.defence is undefined>>
+		<<set $mushroomtf.defence to 40>>
+	<</if>>
+<</widget>>
+
+:: Widgets MushroomTfOptions [widget]
+
+<<widget "mushroomtfoptions">>
+	<<if $mushroom gte 1 and $options.bjx_eventTF>>
+		你可以消耗积攒的营养物质(进化点)，以进化并增强自己的某种能力。
+		<br>
+		<<bjxclotheswear "over_head" "mushroom cap">>
+		<<icon "tending/mushroom.png">><<link [[进化 (0:10)->Mushroom Evolve]]>><<pass 10>><<set $lastpassage to $passage>><</link>>
+	<</if>>
+	/* 北极星 */
+<</widget>>

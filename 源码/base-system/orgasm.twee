@@ -1,0 +1,1303 @@
+:: Widgets Orgasm [widget]
+
+<<widget "orgasm">>
+	<<orgasmstat>><<orgasmcount 1>><<set $orgasmdown to 3>>
+	<<if $combat is 1>>
+		<<set $speechcum to 1>><<set $speechorgasmcount += 1>>
+	<</if>>
+	<<tinyPenisDryOrgasmChance>>
+	<<if $earSlime.growth gte 100 and $earSlime.defyCooldown gte Math.clamp(30 - Math.floor($earSlime.growth / 9), 2, 20) and !$possessed and $ruinedorgasmdisable is "f">>
+		<span class="red">You are almost overcome by sensation, but it ends prematurely.</span><<pain 10>><<stress 10>><<gpain>><<gstress>>
+		<<set _deniedOrgasm to true>>
+		<<set $ruinedOrgasmStat++>>
+		<<if $masturbating>>
+			<<set $masturbationRuinedOrgasm++>>
+		<</if>>
+	<<elseif $player.penisExist>>
+		<<if $earSlime.focus is "pregnancy" and $earSlime.growth gte 100>>
+			<<set _cumDesc to "watery cum">>
+		<<elseif $earSlime.focus is "impregnation" and $earSlime.growth gte 100>>
+			<<set _cumDesc to "thick cum">>
+		<<else>>
+			<<set _cumDesc to "cum">>
+		<</if>>
+		<<if $femaleclimax is 1>>
+			<span class="pink">You are overcome by sensation and climax like a girl.</span>
+			<<semenvolume `$player.penissize is -2 ? -5 : -1`>>
+		<<elseif $semen_volume is 0 or $semen_amount lt 0.1>>
+			<span class="pink">You are overcome by sensation and climax, but nothing comes out.</span>
+			<<set $femaleclimax to 1>>
+			<<semenvolume -1>>
+		<<else>>
+			<<set $parasitePenis to $player.gender is "f" and $parasite.clit.name is "parasite" ? " parasitic" : "">>
+			<<if !playerHasStrapon()>>
+				<<bodyliquid "penis" "semen">>
+			<</if>>
+			<<if wearingCondom("player")>>
+			    /* 北极星模组 */
+			    <<if $demonhunter gte 2 and !playerHasStrapon()>>
+                    <span class="lustful">在你灼热精液的腐蚀下，避孕套发出不堪重负地嘶嘶声。</span>
+                    <<set $player.condom.state to "sabotaged">>
+                    <br>
+                <</if>>
+                /* 北极星 */
+				<<set _condom to $player.condom.state>>
+			<</if>>
+			<<if ($parasite.penis.name and $parasite.penis.name isnot "parasite") or $worn.genitals.name is "chastity parasite">>
+				/* No need for you to know it breaks */
+			<<elseif _condom is "defective">>
+				<span class="red">The condom broke.</span>
+			<<elseif _condom is "sabotaged">>
+				<span class="red">The tip of the condom bursts, exposing the head of your<<print $parasitePenis>> penis.</span>
+			<</if>>
+			<<if $parasite.penis.name and $parasite.penis.name isnot "parasite">>
+				/* 北极星模组 */
+			    <<if $parasite.penis.name is "livingclothes">>
+                    <span class="pink">你被快感征服，射精到了触手服内。</span>
+                    <<if $demonhunter gte 2>>
+                        <span class="lustful">在你灼热精液的腐蚀下，触手服痛苦地颤抖着。</span>
+                        <<set $worn.under_lower.integrity -= 400>>
+                    <</if>>
+                    <br>
+                <<else>>
+    				<span class="pink">你被快感征服，射精到了附着在你<<print $parasitePenis>>阴茎上的寄生虫体内。</span>
+    				<<if $demonhunter gte 2>>
+                        <span class="lustful">在你灼热精液的腐蚀下，寄生虫痛苦地颤抖着从你身上脱落，再无生息。</span>
+                        <<removeparasite penis>>
+                    <</if>>
+                    <br>
+                <</if>>
+                /* 北极星 */
+			<<elseif _condom is "normal" or _condom is "used">>
+				<span class="pink">You are overcome by sensation, and ejaculate into the condom that covers your<<print $parasitePenis>> penis.</span>
+				<<set $player.condom.state to "used">>
+			<<elseif playerHasStrapon()>>
+				<span class="pink">You are overcome by sensation and climax under your strap-on.</span>
+			<<elseif $penisuse is "othervagina">>
+				<<if $NPCList[$penistarget].vagina is "penis">>
+					<<personselect $penistarget>>
+					<<penileejacstat>>
+					<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> deep into <<his>> womb.</span>
+					<<if $earSlime.event is "ejaculate into someones vagina">>
+						<<set $earSlime.event to "">>
+						<<set $_earslimeEjaculateTask to true>>
+					<</if>>
+					<<purity -1>><<internalejac>><<creampie "npc" "vagina">>
+					/* 北极星模组 */
+					<<hunterhotfluid 3 $penistarget>>
+					/* 北极星 */
+					<<if $earSlime.focus is "pregnancy" and $earSlime.growth gte 75>>
+						<<set _orgasmSpermRng to 25>>
+					<<elseif $earSlime.focus is "impregnation" and $earSlime.growth gte 75>>
+						<<set _orgasmSpermRng to 200>>
+					<<else>>
+						<<set _orgasmSpermRng to 100>>
+					<</if>>
+					<<if $semen_amount lte ($semen_volume * (6 / 24))>>
+						<<set _orgasmSpermRng to Math.floor(_orgasmSpermRng / 2)>>
+					<</if>>
+					<<if $abomination is 1>>
+						/*ToDo: Pregnancy, figure out how the Wraith, plantpeople, etc will handle pregnancy.*/
+					<<elseif $npcrow.includes($penistarget)>>
+						<<recordSperm `{target: $NPCList[$penistarget].fullDescription, spermOwner: "pc", spermType: "human", rngModifier: _orgasmSpermRng}`>>
+					<<elseif $NPCList[$penistarget].pregnancy is 0 and $consensual is 1 and ["realistic", "fetish"].includes($pregnancytype)>>
+						/* Pregnancy Count */
+						<<set $_count to Object.values($storedNPCs).reduce((prev, curr) => {
+							if(curr.pregnancy) return prev + 1;
+							return prev;
+						},0)>>
+						/* Pregnancy chance checks */
+						<<set $_impregnatedChance to 200 / (20 - $baseNpcPregnancyChance)>>
+						<<if V.sexStats.pills.pills["fertility booster"].doseTaken gt 0>>
+							<<set $_impregnatedChance to Math.ceil($_impregnatedChance * (1 + (V.sexStats.pills.pills["fertility booster"].doseTaken * 0.5)))>>
+						<</if>>
+						<<if V.sexStats.pills.pills["contraceptive"].doseTaken gt 0>>
+							<<set $_impregnatedChance to Math.ceil($_impregnatedChance * 0.1)>>
+						<</if>>
+						<<set $_impregnatedChance to Math.floor($_impregnatedChance * (_orgasmSpermRng / 100))>>
+						/*If random NPC is impregnated, compress NPC and fetus*/
+						<<if ($_impregnatedChance gte random(0,200) or _npcForceImpregnation) and $_count lte 10>>
+							<<switch $NPCList[$penistarget].type>>
+								<<case "human">><<set $_pregnancy to pregnancyGenerator.human(V.NPCList[$penistarget], "pc", true)>>
+								<<case "wolf">><<set $_pregnancy to pregnancyGenerator.wolf(V.NPCList[$penistarget], "pc", true, "vagina", false)>>
+								<<case "wolfgirl" "wolfboy">><<set $_pregnancy to pregnancyGenerator.wolf(V.NPCList[$penistarget], "pc", true, "vagina", true)>>
+							<</switch>>
+							<<if $_pregnancy and !(typeof $_pregnancy is "string" || $_pregnancy instanceof String)>>
+								<<if random(0,2) is 0 or setup.pregnancy.randomAlwaysKeep.includes($location)>>
+									<<compressNPC $penistarget "pregnancy">>
+									<<set $storedNPCs[_lastCompressedName].pregnancy to $_pregnancy>>
+									/* ToDo: Uncomment when compression when is ready */
+									/*<<run $storedNPCs[_lastCompressedName].pregnancy.fetus.forEach((child, index, array) => array[index] to childCompressor(child, false))>>*/
+								<</if>>
+								<<if $pregnancytype is "fetish">><<set _npcIsNowPregnant to $NPCList[$penistarget].fullDescription>><</if>>
+								<<set $NPCList[$penistarget].pregnancy to 1>>
+							<</if>>
+						<</if>>
+					<</if>>
+				<<elseif $NPCList[$penistarget].vagina is "penisimminent" or $NPCList[$penistarget].vagina is "penisentrance">>
+					<<personselect $penistarget>>
+					<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> on <<his>> pussy.</span>
+					/* 北极星模组 */
+					<<hunterhotfluid 2 $penistarget>>
+					/* 北极星 */
+				<</if>>
+			<<elseif $penisuse is "otheranus">>
+				<<for $_i = 0; $_i lt $enemynomax; $_i++>>
+					<<if $NPCList[$_i].penis is "otheranus" or $NPCList[$_i].vagina is "otheranus">>
+						<<personselect $_i>>
+						<<penileejacstat>>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> deep into <<his>> bowels.</span>
+						<<purity -1>><<internalejac>><<creampie "npc" "anus">>
+						/* 北极星模组 */
+						<<hunterhotfluid 3 $_i>>
+						/* 北极星 */
+					<<elseif $NPCList[$_i].penis is "otheranusimminent" or $NPCList[$_i].penis is "otheranusentrance" or $NPCList[$_i].vagina is "otheranusimminent" or $NPCList[$_i].vagina is "otheranusentrance">>
+						<<personselect $_i>>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> on <<his>> ass.</span>
+						/* 北极星模组 */
+						<<hunterhotfluid 2 $_i>>
+						/* 北极星 */
+					<</if>>
+				<</for>>
+			<<elseif $penisuse is "othermouth">>
+				<<for $_i = 0; $_i lt $enemynomax; $_i++>>
+					<<if $NPCList[$_i].mouth is "penis">>
+						<<personselect $_i>>
+						<<penileejacstat>>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> into <<his>> mouth.</span>
+						<<purity -1>><<internalejac>><<creampie "npc" "mouth">>
+						/* 北极星模组 */
+						<<hunterhotfluid 3 $_i>>
+						/* 北极星 */
+					<<elseif $NPCList[$_i].mouth is "penisimminent" or $NPCList[$_i].mouth is "penisentrance">>
+						<<personselect $_i>>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> on <<his>> face.</span>
+						/* 北极星模组 */
+						<<hunterhotfluid 2 $_i>>
+						/* 北极星 */
+					<</if>>
+				<</for>>
+			<<elseif $penisuse is "otherpenis">>
+				<<for $_i = 0; $_i lt $enemyno; $_i++>>
+					<<if $NPCList[$_i].penis is "penis">>
+						<<personselect $_i>>
+						<<penileejacstat>>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> over <<his>> penis.</span>
+						<<purity -1>><<internalejac>>
+						/* 北极星模组 */
+						<<hunterhotfluid 3 $_i>>
+						/* 北极星 */
+						<!-- <<creampie "npc" "penis">> -->
+					<<elseif $NPCList[$_i].penis is "penisimminent" or $NPCList[$_i].penis is "penisentrance">>
+						<<personselect $_i>>
+						<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> over <<his>> cock and stomach.</span>
+						/* 北极星模组 */
+						<<hunterhotfluid 2 $_i>>
+						/* 北极星 */
+					<</if>>
+				<</for>>
+			/* 北极星模组 */
+			<<elseif $penisuse is "feet">>
+    			<<for $_i = 0; $_i lt $enemynomax; $_i++>>
+    				<<if $NPCList[$_i].penis is "footjob" or $NPCList[$_i].vagina is "footjob">>
+    					<<personselect $_i>>
+    					<span class="pink">你被快感征服，射精到了<<his>>的脚上。</span>
+    					<<hunterhotfluid 1 $_i>>
+    				    <br>
+    				<</if>>
+    			<</for>>
+    		/* 北极星 */
+			<<elseif $penisuse is "tentacle">>
+				<<if $penisstate isnot "tentacleentrance" and $penisstate isnot "tentacleimminent">>
+					<<penileejacstat>>
+					<span class="pink">You are overcome by sensation. The $tentaclePenis milks you of your semen.</span>
+					<<purity -1>><<internalejac>>
+					/* 北极星模组 */
+					<<hunterhotfluid 3>>
+					/* 北极星 */
+					<!-- <<creampie "npc" "tentacle">> -->
+				<<else>>
+					<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> on the $tentaclePenis.</span>
+					/* 北极星模组 */
+					<<hunterhotfluid 2>>
+					/* 北极星 */
+				<</if>>
+			<<elseif $mouth is "mpenisentrance">>
+				<span class="pink">
+					You are overcome by sensation. A surge of _cumDesc erupts from your<<print $parasitePenis>> penis onto your
+					face<<if $rng gte 10 and $semen_amount gt ($semen_volume / 24) * 18>> and hair.<<bodyliquid "hair" "semen">><<else>>.<</if>>
+				</span>
+				<<if $semen_amount gt ($semen_volume / 24) * 18>>
+					<<bodyliquid "face" "semen">>
+				<</if>>
+			<<elseif $mouth is "mpenis">>
+				<<if $selfsuckDepth gte 2>>
+					<span class="pink">You are overcome by sensation. A surge of _cumDesc pumps up the length of your<<print $parasitePenis>> penis and flows straight down your throat.</span>
+				<<else>>
+					<span class="pink">You are overcome by sensation and ejaculate<<if _cumDesc isnot "cum">> _cumDesc<</if>> in your mouth, forcing you to quickly drink it down.</span>
+				<</if>>
+				<<set $_released to calculateSemenReleased()>>
+				<<if $_released gt 0>>
+					<<cumswallow "pc" $_released>>
+				<</if>>
+
+			<<elseif playerChastity()>>
+				<span class="pink">You are overcome by sensation. A surge of _cumDesc erupts from your<<print $parasitePenis>> penis into your $worn.genitals.name.</span>
+			<<elseif $leftarm is "mpenisentrance" or $rightarm is "mpenisentrance">>
+				<<if $leftarm is "mpenisentrance" and $semen_amount gte random(500,1500)>>
+					<<set $leftFingersSemen to 1>>
+					<<set $_hand to "left hand">>
+				<</if>>
+				<<if $rightarm is "mpenisentrance" and $semen_amount gte random(500,1500)>>
+					<<set $rightFingersSemen to 1>>
+					<<set $_hand to ($_hand is undefined ? "right hand" : "hands")>>
+				<</if>>
+				<span class="pink">You are overcome by sensation. A surge of _cumDesc erupts from your<<print $parasitePenis>> penis<<if $_hand>>, and some of it gets on your $_hand<</if>>.</span>
+			<<else>>
+				<span class="pink">You are overcome by sensation. A surge of _cumDesc erupts from your<<print $parasitePenis>> penis.</span>
+			<</if>>
+			<<if $semen_amount lte ($semen_volume * (6 / 24))>>
+				<span class="pink">Exhausted, your body only manages to produce a few droplets of watery cum.</span>
+				<<semenvolume -2>>
+			<<elseif $semen_amount lte ($semen_volume * (12 / 24))>>
+				<span class="pink">Tired from overuse, your cum is thin and watery.</span>
+				<<semenvolume -1>>
+			<<elseif $semen_amount lte ($semen_volume * (18 / 24))>>
+				<span class="pink">The repeated orgasms are taking their toll, reducing the amount of _cumDesc your body manages to produce.</span>
+				<<semenvolume -1>>
+			<</if>>
+
+		<</if>>
+	<</if>>
+	<<if $player.vaginaExist and !_deniedOrgasm>>
+        /* 北极星模组 */
+		<span class="pink">你被高潮带来的快感征服，</span>
+		<<bodyliquid "vagina" "goo">>
+		<<if $parasite.clit.name>>
+    	    <<if $parasite.penis.name is "livingclothes">>
+                <span class="pink">在触手服内潮吹了。</span>
+                <<if $demonhunter gte 2>>
+                    <span class="lustful">在你灼热爱液的腐蚀下，触手服痛苦地颤抖着。</span>
+                    <<set $worn.under_lower.integrity -= 400>>
+                <</if>>
+                <br>
+            <<else>>
+    			<span class="pink">潮吹到了阴蒂上的寄生虫体内。</span>
+    			<<if $demonhunter gte 2>>
+                    <span class="lustful">在你灼热爱液的腐蚀下，寄生虫痛苦地颤抖着从你身上脱落，再无生息。</span>
+                    <<removeparasite clit>>
+                <</if>>
+                <br>
+            <</if>>
+        <<elseif $vaginause is "othervagina">>
+			<<if $NPCList[$vaginatarget].vagina is "vagina">>
+				<<personselect $vaginatarget>>
+				<span class="pink">潮吹到了<<his>>的小穴里。</span>
+				<<internalejac>>
+				<<hunterhotfluid 3 $vaginatarget>>
+				<br>
+			<<elseif $NPCList[$vaginatarget].vagina is "vaginaimminent" or $NPCList[$vaginatarget].vagina is "vaginaentrance">>
+				<<personselect $vaginatarget>>
+				<span class="pink">在<<his>>的阴蒂上潮吹了。</span>
+				<<hunterhotfluid 2 $vaginatarget>>
+				<br>
+			<</if>>
+		<<elseif $vaginause is "penis">>
+			<<if $NPCList[$vaginatarget].penis is "vagina">>
+				<<personselect $vaginatarget>>
+				<span class="pink">在<<his>>的肉棒抽插下潮吹了。</span>
+				<<internalejac>>
+				<<hunterhotfluid 3 $vaginatarget>>
+				<br>
+			<<elseif $NPCList[$vaginatarget].penis is "vaginaimminent" or $NPCList[$vaginatarget].penis is "vaginaentrance">>
+				<<personselect $vaginatarget>>
+				<span class="pink">在<<his>>的肉棒摩擦下潮吹了。</span>
+				<<hunterhotfluid 2 $vaginatarget>>
+				<br>
+			<</if>>
+		<<elseif $vaginause is "penisdouble">>
+		    <span class="pink">在两根肉棒的玩弄下潮吹了。</span>
+			<<for $_i = 0; $_i lt $enemynomax; $_i++>>
+				<<if $NPCList[$_i].penis is "vaginadouble">>
+					<<personselect $_i>>
+					<<internalejac>>
+					<<hunterhotfluid 3 $_i>>
+				<<elseif $NPCList[$_i].penis is "vaginaimminentdouble" or $NPCList[$_i].penis is "vaginaentrancedouble">>
+					<<personselect $_i>>
+					<<hunterhotfluid 2 $_i>>
+				<</if>>
+			<</for>>
+			<br>
+		<<elseif $vaginause is "othermouth">>
+			<<for $_i = 0; $_i lt $enemynomax; $_i++>>
+				<<if $NPCList[$_i].mouth is "vagina">>
+					<<personselect $_i>>
+					<span class="pink">潮吹到了<<his>>的嘴里。</span>
+					<<internalejac>>
+					<<hunterhotfluid 3 $_i>>
+				    <br>
+				<<elseif $NPCList[$_i].mouth is "vaginaimminent" or $NPCList[$_i].mouth is "vaginaentrance">>
+					<<personselect $_i>>
+					<span class="pink">潮吹到了<<his>>的脸上。</span>
+					<<hunterhotfluid 2 $_i>>
+					<br>
+				<</if>>
+			<</for>>
+		<<elseif $vaginause is "feet">>
+			<<for $_i = 0; $_i lt $enemynomax; $_i++>>
+				<<if $NPCList[$_i].penis is "footjob" or $NPCList[$_i].vagina is "footjob">>
+					<<personselect $_i>>
+					<span class="pink">潮吹到了<<his>>的脚上。</span>
+					<<hunterhotfluid 1 $_i>>
+				    <br>
+				<</if>>
+			<</for>>
+		<<elseif $vaginause is "tentacle">>
+			<<if $vaginastate isnot "tentacleentrance" and $vaginastate isnot "tentacleimminent">>
+				<span class="pink">在触手的抽插下潮吹了。</span>
+				<<internalejac>>
+				<<hunterhotfluid 3>>
+				<br>
+			<<else>>
+				<span class="pink">潮吹到了触手上。</span>
+				<<hunterhotfluid 2>>
+				<br>
+			<</if>>
+		<<elseif $vaginause is "tentaclerub">>
+			<span class="pink">在触手的爱抚下潮吹了。</span>
+			<<hunterhotfluid 2>>
+			<br>
+		<<elseif playerChastity()>>
+		    <span class="pink">在你的$worn.genitals.cn_name_cap里潮吹了。</span>
+		    <br>
+        <<elseif $vaginause is "cover">>
+            <span class="pink">潮吹到了自己手上。</span>
+            <br>
+            <<if $leftarm is "vagina">>
+                <<bodyliquid "leftarm" "goo">>
+            <</if>>
+            <<if $rightarm is "vagina">>
+                <<bodyliquid "rightarm" "goo">>
+            <</if>>
+        <<else>>
+			<span class="pink">情不自禁地潮吹了。</span>
+			<br>
+        <</if>>
+        /* 北极星 */
+        <<if $leftarm is "mvaginafist" or $rightarm is "mvaginafist">>
+			<span class="pink">You feel your muscles clamp down around your hand, pulsing as your orgasm runs its course.</span>
+		<<elseif $leftarm is "mvagina" or $rightarm is "mvagina">>
+			<span class="pink">You feel your muscles clamp down around your fingers, pulsing as your orgasm runs its course.</span>
+		<</if>>
+	<</if>>
+
+	<<if $arousalmasochism/$arousal gte 0.70 and !_deniedOrgasm>>
+		<!-- If over 70% arousal is from pain, PC has added reaction NG v2.7 -->
+		<span class="green"> Your body writhes and yearns for more pain.</span>
+		<<masochism 5>>
+	<</if>>
+
+	<<if $masturbation_bowl is 1>><<set _liquid_collection_text to []>><</if>>
+	<<if $player.penisExist and !_deniedOrgasm>>
+		<<semenOrgasm>>/*Makes changes to semen values*/
+	<</if>>
+	<<if $player.vaginaExist and !_deniedOrgasm>>
+		<<vaginaFluidOrgasm>>
+		<<if _lube_released gt 10>>
+			<span class="pink">Fluids gush from your <<pussy>>.</span>
+		<<elseif _lube_released gt 0>>
+			<span class="pink">Fluids leak from your <<pussy>>.</span>
+		<</if>>
+	<</if>>
+	
+	/* 北极星模组 */
+	<<if $parasite.clit.name is "livingclothes">>
+		<span class="blue">活体衣服以你的性高潮为食。</span>当它贴上你的<<bottom>>时，你能感觉到成千上万的小触手在你的<<genitals>>周边蠕动进出着。<<ggarousal>><<arousal 1200>><<set $tentacleclothesorgasm += 1>><<set $worn.under_lower.integrity += 30>><<set $worn.feet.integrity += 30>><<set $worn.legs.integrity += 30>><br>
+			<<if $lactating is 1 and $parasite.nipples.name>>
+				触手吸收着你的乳汁来壮大自己，随着你的乳汁被吸走，<span class="purple">你感觉乳头上有一种温暖的感觉。</span><<garousal>><<arousal 100>><<set $milk_amount -= 10>><<set $worn.under_upper.integrity += 30>><<set $worn.hands.integrity += 30>><br>
+			<</if>>
+
+	<<elseif $parasite.penis.name is "livingclothes">>
+		<span class="blue">活体衣服以你的性高潮为食。</span>你能感觉到成千上万的小触手在你的<<genitals>>周围摩擦，就像一个活生生的触手穴，在你的<<bottom>>里。<<ggarousal>><<arousal 1200>><<set $tentacleclothesorgasm += 1>><<set $worn.under_lower.integrity += 30>><br>
+			<<if $lactating is 1 and $parasite.nipples.name>>
+				触手吸收着你的乳汁来壮大自己，随着你的乳汁被吸走，<span class="purple">你感觉乳头上有一种温暖的感觉。</span><<garousal>><<arousal 100>><<set $milk_amount -=10>><<set $worn.under_upper.integrity += 30>><<set $worn.hands.integrity += 30>><br>
+			<</if>>
+	<</if>>
+
+	<<if $tentacleclothesorgasm is 10>>
+		<span class="purple">你感觉到乳头被什么东西刺痛，你注意到一些触手在衣服底下生长，这件活体衣服开始逐渐长大。</span><<set $lactating to 1>><br>
+	<<elseif $tentacleclothesorgasm is 50>>
+		<span class="purple">你的性高潮次数越多，活体衣服就越结实。</span>触手们一边在你衣服下摩擦你的乳房，一边在你的皮肤上涂抹催情药。<gggarousal><arousal 8000><<set $drugged += 50>><br>
+	<</if>>
+
+	<<if $demonhunter gte 2 and !_deniedOrgasm>>
+		<span class="green">尽情的释放高潮让你神清气爽。</span>
+		<<lpain>><<ltrauma>><<lstress>>
+		<<pain -5>><<trauma -50>><<stress -100>>
+		<br>
+    <</if>>
+    /* 北极星 */
+
+	<<if _deniedOrgasm>>
+		<span class="blue">A forgiving warmth fills you.</span>
+		You can tell it's the slimes in your ears, rewarding you for having a ruined orgasm.
+		<<gcorruption>><<ltrauma>><<trauma -1>><<corruption 1>>
+		<br>
+	<<elseif $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime" and $_earslimeEjaculateTask>>
+		<span class="green">A pleased warmth fills you.</span>
+		You almost forget the strife of the world. You can tell it's the slimes in your ears, rewarding you for having an orgasm while completing it's request.
+		<<gcorruption>><<lltrauma>><<llstress>><<trauma -24>><<stress -24>><<corruption 2>>
+		<br>
+	<<elseif $parasite.left_ear.name is "slime" and $parasite.right_ear.name is "slime">>
+		<span class="blue">A soothing warmth fills you.</span>
+		You almost forget the strife of the world. You can tell it's the slimes in your ears, rewarding you for having an orgasm.
+		<<gcorruption>><<ltrauma>><<lstress>><<trauma -12>><<stress -12>><<corruption 2>>
+		<br>
+	<<elseif $parasite.left_ear.name is "slime">>
+		<span class="blue">A soothing warmth fills you.</span>
+		You almost forget the strife of the world. You can tell it's the slime in your left ear, rewarding you for having an orgasm.
+		<<gcorruption>><<ltrauma>><<lstress>><<trauma -6>><<stress -6>><<corruption 1>>
+		<br>
+	<<elseif $parasite.right_ear.name is "slime">>
+		<span class="blue">A soothing warmth fills you.</span>
+		You almost forget the strife of the world. You can tell it's the slime in your right ear, rewarding you for having an orgasm.
+		<<gcorruption>><<ltrauma>><<lstress>><<trauma -6>><<stress -6>><<corruption 1>>
+		<br>
+	<</if>>
+
+	<!-- This code is orphaned, the $swarmchestgrab variable is not referenced or set in any other file -->
+	<<if $swarmchestgrab gte 1 and !_deniedOrgasm>>
+		<span class="pink">Your convulsions launch the _swarmcreature away from your chest.</span>
+		<<set $swarmchestgrab to 0>>
+	<</if>>
+
+	<<if $orgasmcount lte 4>>
+		<<set $stress -= 200>>
+		<<set $_arousalDrop to -3000 - ($orgasmcount * 1000)>>
+		<<if _deniedOrgasm>><<set $_arousalDrop += 1000>><</if>>
+		<<if $drugged gte 1>>
+			<<arousal $_arousalDrop>><<drugs -20>>
+		<<else>>
+			<<arousal `$_arousalDrop * 2`>>
+		<</if>>
+		<<if _deniedOrgasm>>
+			<span class="pink">You shudder despite the lack of release.</span>
+		<<else>>
+			<span class="pink">You shudder from the sudden release.</span>
+		<</if>>
+	<<elseif $orgasmcount lte 5>>
+		<<set $stress -= 200>>
+		<<if $drugged gte 1>>
+			<<arousal -8000>><<drugs -20>>
+		<<else>>
+			<<arousal -10000>>
+		<</if>>
+		<span class="pink">You feel spent.</span>
+	<<elseif $orgasmcount lte 8>>
+		<<set $stress -= 100>>
+		<<if $drugged gte 1>>
+			<<set $_arousalDrop to -7000 + (($orgasmcount - 8) * 1000)>>
+			<<arousal $_arousalDrop>><<drugs -20>>
+		<<else>>
+			<<arousal -10000>>
+		<</if>>
+		<<if _deniedOrgasm>>
+			<span class="pink">Despite being denied the orgasm, your left feeling like you've nothing to give.</span>
+		<<else>>
+			<span class="pink">Despite feeling like you've nothing left to give, the orgasm is intense.</span>
+		<</if>>
+	<<elseif $orgasmcount lte 11>>
+		<<if $drugged gte 1>>
+			<<set $_arousalDrop to -4000 + (($orgasmcount - 9) * 1000)>>
+			<<arousal $_arousalDrop>><<drugs -20>>
+		<<else>>
+			<<arousal -10000>>
+		<</if>>
+		<span class="pink">Your body is tiring from the repeated<<if _deniedOrgasm>> failed<</if>> climaxes.</span>
+	<<elseif $orgasmcount lte 18>>
+		<<if $drugged gte 1>>
+			<<arousal -2000>><<drugs -20>>
+		<<else>>
+			<<arousal -10000>>
+		<</if>>
+		<<set $stress += 100>>
+		<span class="pink">The repeated<<if _deniedOrgasm>> failed<</if>> orgasms are causing you great strain. You don't want to cum any more.</span>
+	<<elseif $orgasmcount lte 23>>
+		<<if $drugged gte 1>>
+			<<arousal -2000>><<drugs -20>>
+		<<else>>
+			<<arousal -10000>>
+		<</if>>
+		<<set $stress += 100>><<combattrauma 10>>
+		<span class="pink">Your mind and body buckle under the continued<<if _deniedOrgasm>> failed<</if>> orgasms.</span>
+	<<else>>
+		<<if $drugged gte 1>>
+			<<arousal -2000>><<drugs -20>>
+		<<else>>
+			<<arousal -10000>>
+		<</if>>
+		<<set $stress += 100>><<combattrauma 10>><<pain 1>>
+		<<if _deniedOrgasm>>
+			<span class="red">You've had so many failed orgasms in such a short span of time that you are numb to them.</span>
+		<<else>>
+			<span class="red">You've had so many orgasms in such a short span of time that you no longer gain any pleasure from them. They're painful, both physically and psychologically.</span>
+		<</if>>
+	<</if>>
+
+	<!-- Chance to get "dick drunk" after 3rd orgasm, chance is 45% for consensual and 15% otherwise, +5% for each following orgasm, but aphrodisiacs make it 100% -->
+	<<if $orgasmcount gte 3 and $drunk lte 1000 and playerIsPenetrated() and $mouth isnot "mpenis" and !_deniedOrgasm>>
+		<<if $drugged gt 0 or (random(1,100) + ($orgasmcount * 5) gte ($consensual ? 70 : 100))>>
+			<<alcohol 25>>
+			<span class="purple"><<print either("You feel dizzy.", "You feel lightheaded.", "You can't think straight.")>></span>
+		<</if>>
+	<</if>>
+	<!-- If came while being choked -->
+	<<if $neckuse is "hand" and $oxygen lt $oxygenmax and !_deniedOrgasm>>
+		<<set $chokeorgasm += 1>>
+		<<if $chokeorgasm gte 35 and $choketrait isnot 1>>
+			<<set $choketrait = 1>>
+			<br><span class="green">You feel that your orgasms are more intense when you can't breathe and you like it.</span>
+		<</if>>
+	<</if>>
+	<<if ($halloween is 1 or $NPCList[0].fullDescription is "Ivory Wraith") and random(1, 10000) is 10000>>
+		<span class="pink">Bustin' makes you feel good.</span>
+	<</if>>
+	<br><br>
+	<<if $orgasmtrait gte 1 and !_deniedOrgasm>>
+		<<set $stress -= 100>>
+	<</if>>
+
+	<<set $orgasmcurrent += 1>>
+	<<wetnessCalculate>>
+
+	<<if $masturbation_bowl is 1>>
+		<<if $masturbation_milk gt 0>>
+			<<set _liquid_collection_text.push($masturbation_milk.toFixed(1) + " mL of milk")>>
+		<</if>>
+		<<if _liquid_collection_text.length is 0>>
+			<span class="purple">You've failed to gather anything.</span>
+		<<else>>
+			<span class="gold">You've gathered <<print formatList(_liquid_collection_text, "and", true)>>.</span>
+		<</if>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "orgasmstreet">>
+	<<orgasm>>
+	<<if $exposed gte 1>>
+		<<if Time.dayState isnot "night">>
+			You steady yourself as your spasms subside, feeling exposed and hoping the noise hasn't given away your hiding place.
+		<<else>>
+			You steady yourself as your spasms subside, feeling exposed and hoping the noise hasn't attracted attention.
+		<</if>>
+	<<else>>
+		<<if Time.dayState isnot "night">>
+			The sight and sound of a <<girl>> convulsing in climax draws attention, and as you regain control you find yourself stared at from all directions. Face red, you flee the scene.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+		<<else>>
+			You steady yourself as your spasms subside, and hope the noise hasn't attracted attention.
+		<</if>>
+	<</if>>
+	<br><br>
+<</widget>>
+
+/* 北极星模组 */
+<<widget "orgasmcemetery">>
+	<<orgasm>>
+	<<if $exposed gte 1>>
+		<<if Time.dayState isnot "night">>
+			你的呻吟声在空旷的墓地里回荡，你很确定没有人听到你的声音，但你还是觉得很尴尬。
+		<<else>>
+			随着痉挛的缓解，你稳住了身体，努力压制住自己的呻吟，生怕在这个地方引起别人的注意。
+		<</if>>
+	<<else>>
+		<<if Time.dayState isnot "night">>
+			你很庆幸周围除了你没有其他人，你让自己的呻吟声回荡在整个区域，在墓地里达到高潮的荒唐事你并不陌生。
+		<<else>>
+			随着痉挛消退，你再次平静了下来，你希望声音没有引起别人的注意。
+		<</if>>
+	<</if>>
+	<br><br>
+<</widget>>
+/* 北极星 */
+
+<<widget "orgasmforest">>
+	<<orgasm>>
+	<<if $exposed gte 1>>
+		<<if Time.dayState isnot "night">>
+			You steady yourself against a tree as your spasms subside.
+		<<else>>
+			You steady yourself against a tree as your spasms subside.
+		<</if>>
+	<<else>>
+		<<if Time.dayState isnot "night">>
+			You steady yourself against a tree as your spasms subside.
+		<<else>>
+			You steady yourself against a tree as your spasms subside.
+		<</if>>
+	<</if>>
+	<br><br>
+<</widget>>
+
+/* 北极星模组 */
+<<widget "orgasmisland">>
+	<<orgasm>>
+	<<if $exposed gte 1>>
+		<<if Time.dayState isnot "night">>
+			随着痉挛消退，你再次平复了下来。
+		<<else>>
+			随着痉挛消退，你再次平复了下来。
+		<</if>>
+	<<else>>
+		<<if Time.dayState isnot "night">>
+			随着痉挛消退，你再次平复了下来。
+		<<else>>
+			随着痉挛消退，你再次平复了下来。
+		<</if>>
+	<</if>>
+	<br><br>
+<</widget>>
+/* 北极星 */
+
+<<widget "orgasmbeach">>
+	<<orgasm>>
+	<<if $exposed gte 1>>
+		<<if Time.dayState isnot "night">>
+			You steady yourself as your spasms subside, feeling exposed and hoping the noise hasn't given away your hiding place.
+		<<else>>
+			You steady yourself as your spasms subside, feeling exposed on the open beach.
+		<</if>>
+	<<else>>
+		<<if Time.dayState isnot "night">>
+			The sight and sound of a <<girl>> convulsing in climax draws attention, and as you regain control you find yourself stared at from all across the beach. Face red, you flee the scene.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+		<<else>>
+			You steady yourself as your spasms subside, feeling exposed on the open beach.
+		<</if>>
+	<</if>>
+	<br><br>
+<</widget>>
+
+<<widget "orgasmstage">>
+	<<if $exhibitionism gte 75 and $backgroundTraits.includes("lustful") and $orgasmtrait gte 1>>
+		You feel a massive orgasm building up.
+		<br><br>
+		Blinded by your <span class="lewd">lust</span> and your <span class="lewd">hedonism</span>, you
+		<<if $exposed lte 1 and $leftarm isnot "bound" and $rightarm isnot "bound">>
+			rip the clothes still covering you and
+			<<clothesstrip>>
+		<</if>>
+		kneel right at the edge of the stage, presenting your naked <<body_size_text>> and <<breasts>> to the crowd.
+		Hands reach out to grope you. <<arousal 500 "breasts">><<garousal>>
+		<br><br>
+		<<set $audience += 26>>
+		/* Fills all unoccupied NPC slots; generatel not to be confused with generate1 */
+		<<if $enemyno is 0>>
+			<<generatel>><<generatel>><<generatel>><<generatel>><<generatel>><<generatel>>
+		<<elseif $enemyno is 1>>
+			<<generatel>><<generatel>><<generatel>><<generatel>><<generatel>>
+		<<elseif $enemyno is 2>>
+			<<generatel>><<generatel>><<generatel>><<generatel>>
+		<<elseif $enemyno is 3>>
+			<<generatel>><<generatel>><<generatel>>
+		<<elseif $enemyno is 4>>
+			<<generatel>><<generatel>>
+		<<elseif $enemyno is 5>>
+			<<generatel>>
+		<</if>>
+		The muscles in your legs and abs tense. Your pelvis twitches back and forth. You moan and convulse with a mix of pain and pleasure while the audience cheers.
+		<br><br>
+		<<orgasm>>
+		After a while, the spasms subside. You lie on the floor gasping for air. The music has stopped.
+		The multitude around you gaze at your body, covered in sweat and fluids.
+		<br><br>
+		You rise, shaking, to your feet and bow. The gathered crowd erupts in applause.
+		<<fameexhibitionism 15>>
+		<<set $audiencearousal += 80>>
+		<<set $audienceexcitement += 50>>
+		<<set $audiencemod += 5>>
+	<<else>>
+		You feel an orgasm build within, interrupting your dance. <<orgasm>>
+		<<if currentSkillValue('danceskill') lte 500>>
+			It breaks your focus. You try to regain balance, but your knees give in and you fall to your knees.
+			The gathered crowd taunts you, and mocks your dance skills.
+			<br><br>
+
+			<<if $worn.feet.type.includes("heels")>>
+				You try to climb to your feet, but one last orgasmic shiver disrupts your balance.
+				The heel on one of your shoes breaks your fall, and your weight breaks your heel.
+				You crash to the floor again, eliciting laughter from the crowd.<<ggpain>> <<pain 10>>
+				<<feetruined>>
+				<br><br>
+			<</if>>
+			<<if $dancelocation is "smuggler_forced" or $dancelocation is "underground">>
+				You feel ashamed, but you've nowhere to run.
+				<<ggtrauma>><<gggstress>><<trauma 12>><<stress 24>>
+			<<else>>
+				<<tearful>> you crawl out of sight, face red and ashamed.
+				<<gtrauma>><<gstress>><<trauma 10>><<stress 10>>
+				<<set $danceevent to "finish">>
+			<</if>>
+		<<elseif currentSkillValue('danceskill') gte 500 and $exhibitionism gte 55 and $promiscuity gte 55>>
+			You drop to your knees before you collapse outright. Your <<body_size_text>> is wracked by violent spasms. The crowd cheers you on.
+			<br><br>
+			You climb to your feet and continue dancing, as the crowd jeer.
+			<<fameexhibitionism 15>>
+			<<set $audiencearousal += 10>>
+			<<set $audienceexcitement += 5>>
+			<<set $audiencemod += 2>>
+		<<else>>
+			You try to conceal your shaking <<body_size_text>> with your dance moves.
+			<<if $dancelocation is "smuggler_forced" or $dancelocation is "underground">>
+				The humiliation is too much to bear, but you stay put for fear of your captors.
+				<<trauma 10>><<stress 12>><<gtrauma>><<ggstress>>
+			<<else>>
+				But it's too much to bear. You flee the scene with as much grace as you can manage.
+				<<gtrauma>><<gstress>><<trauma 5>><<stress 5>>
+				<<set $danceevent to "finish">>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "orgasmLocation">>
+	<<orgasm>>
+	<<switch _args[0]>>
+		<<case "schoolHallway">>
+			<<if ["early","late","earlynoschool","latenoschool","daynoschool"].includes($schoolstate)>>
+				You steady yourself as your spasms subside. You feel fortunate that the hallway is empty right now, and hope the noise hasn't attracted attention.
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws attention, and as you regain control you find yourself stared at from all directions by your fellow students. A few whispers start to run down the hallway. Face red, you turn around a corner, out of sight.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "emptyClassroom">>
+			You steady yourself as your spasms subside. You feel fortunate that the classroom is empty right now, and hope the noise hasn't attracted attention.
+		<<case "classroom">>
+			<<if $schoolstate is "second" and ($whitneymaths is "active" or $whitneymaths is "seat")>>
+				Having taken notice of your orgasm, Whitney smiles at you.
+				<<npcincr Whitney lust 1>><<glust>>
+				<br><br>
+			<<elseif $schoolstate is "third" and ($kylarenglishstate is "watching" or $kylarenglishstate is "seat")>>
+				Kylar watches you, transfixed by your orgasm.
+				<<npcincr Kylar lust 1>><<glust>>
+				<br><br>
+			<<elseif $schoolstate is "fourth" and $robinhistory is "seat">>
+				Robin politely tries to look away, but still can't avoid a peek.
+				<<npcincr Robin lust 1>><<glust>>
+				<br><br>
+			<</if>>
+			You manage to keep yourself from moaning, but your spasms announce your climax to the students around you. A few whispers start to run through the classroom, but are quickly shut down by <<print _teacher>>. <<nnpc_He _teacher>> doesn't seem to know the reason, but understands that you are the talk of the class.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>><<detention 1>><<gdelinquency>>
+		<<case "swimClassroom">>
+			You manage to keep quiet, so as to not draw Mason's attention. However, your spasms announce your climax to the students around you. A few whispers start to run through the pool. <<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+		<<case "emptySwimClassroom">>
+			You steady yourself as your spasms subside. You feel fortunate that the pool is empty right now, and hope the noise hasn't attracted attention.
+		<<case "canteen">>
+			<<if ["early","late","earlynoschool","latenoschool","daynoschool"].includes($schoolstate)>>
+				You steady yourself as your spasms subside. You feel fortunate that the canteen is empty right now, and hope the noise hasn't attracted attention.
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws attention, and as you regain control you find yourself stared at from all directions by your fellow students. A few whispers start to run through the canteen. Face red, you attempt to conceal yourself.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "library">>
+			<<if ["early","late","earlynoschool","latenoschool","daynoschool"].includes($schoolstate)>>
+				You steady yourself as your spasms subside. You feel fortunate that the library is empty right now, and hope the noise hasn't attracted attention.
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws attention, and as you regain control you find yourself stared at from all directions by your fellow students. A few whispers start to run through the library.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+				<<if $sydneySeen and _sydney_location is "library">>
+					<br><br>
+					Sydney clears <<nnpc_his "Sydney">> throat. The other students get the message and the whispers stop.
+				<</if>>
+			<</if>>
+		<<case "boyChangingRoom">>
+			<<if $changingroomstate is "empty">>
+				You steady yourself as your spasms subside. You feel fortunate that the room is empty right now, and hope the noise hasn't attracted attention.
+			<<elseif $player.gender_appearance is "f">>
+				The sight and sound of a <<girl>> convulsing in climax incites the <<if $changingRoomGender is "girls">>girls<<else>>boys<</if>>. Their reactions vary. Some cheer you on. Some try to look away. And some shout all kinds of insults at you.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws attention, and as you regain control you find yourself stared at from all directions by your fellow students. A few whispers start to run through the room. Face red, you turn away to hide your face.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "girlChangingRoom">>
+			<<if $changingroomstate is "empty">>
+				You steady yourself as your spasms subside. You feel fortunate that the room is empty right now, and hope the noise hasn't attracted attention.
+			<<elseif $player.gender_appearance is "m">>
+				The sight and sound of a <<girl>> convulsing in climax incites the <<if $changingRoomGender is "girls">>girls<<else>>boys<</if>>. Their reactions vary. Some cheer you on. Some try to look away. And some shout all kinds of insults at you.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws attention, and as you regain control you find yourself stared at from all directions by your fellow students. A few whispers start to run through the room. Face red, you turn away to hide your face.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "policeStation">>
+			<<if Time.dayState is "night">>
+				<<set $_quiet to "police station">>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws the attention of those in the police station. Their reactions are mixed. Some citizens filing a complaint avoid looking. Some more sketchy individuals loudly cheer you on. As you regain control of yourself, you see two officers coming in your direction. Face red, you decide it's best to flee the scene.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "danceStudio">>
+			<<if $openinghours is 0 and Time.hour isnot $closinghour>>
+				<<set $_quiet to "studio">>
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws the attention of those in the studio. Their reactions are mixed. Some avoid looking. Some stare at you with displeasure. But some also cheer you on. As you regain control of yourself, you notice how rowdy the studio has become. Face red, you try to make yourself look as small and unassuming as possible.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "pound">>
+			The sight and sound of a <<girl>> convulsing in climax draws the attention of the <<pound_text>>, who watch with curiosity as you shake and steady yourself.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+		<<case "danceStudioLesson">>
+			The sight and sound of a <<girl>> convulsing in climax draws the attention of those in the studio. Their reactions are mostly muted, only the odd glances as they focus on their dancing. As you regain control of yourself, you notice Charlie blushing.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>><<npcincr Charlie love 1>>
+		<<case "danceStudioHeelLesson">>
+			The sight and sound of a <<girl>> convulsing in climax draws the attention of those in the studio. Their reactions are mostly muted, only the odd glances as they focus on Charlie. As you regain control of yourself, you notice Charlie blushing.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>><<npcincr Charlie love 1>>
+		<<case "cafe">>
+			<<if $openinghours is 0>>
+				<<set $_quiet to "cafe">>
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws the attention of the patrons. Their reactions are mixed. Some avoid looking. Some stare at you with displeasure. But some also cheer you on. As you regain control of yourself, you notice how rowdy the cafe has become. Face red, you try to make yourself look as small and unassuming as possible.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "arcade">>
+			<<if Time.dayState is "night" or Time.dayState is "dawn">>
+				<<set $_quiet to "arcade">>
+			<<else>>
+				You steady yourself as your spasms subside. Fortunately, the loud ambient noise has stifled your moans, and the dim lights made your spasms almost imperceptible. Still, as you look around, you notice a <<generatey1>><<person1>><<person>> staring at you, with a look of surprise and disbelief. <<His>> attention, however, quickly goes back to the game <<he>> was playing.
+				<<endevent>>
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "docks">>
+			<<if Time.dayState is "night">>
+				<<set $_quiet to "docks">>
+			<<else>>
+				You steady yourself as your spasms subside. You look around, and it doesn't look like anyone noticed your orgasm. That is, until you take note of a <<generate1>><<person1>><<person>> looking at you from afar. <<He>> gives you a grin, and then goes back to work.
+				<<endevent>>
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "stripClub">>
+			<<if Time.dayState isnot "night" and Time.dayState isnot "dusk" and Time.hour isnot 6>>
+				<<set $_quiet to "club">>
+			<<else>>
+				You steady yourself as your spasms subside. Fortunately, the loud ambient noise has stifled your moans, and the dim lights made your spasms almost imperceptible. Still, as you look around, you notice a patron staring at you. <<generate1>><<person1>><<He>> grins and gives you a wink, before getting up and leaving.
+				<<endevent>>
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "shoppingCentre">>
+			<<if Time.dayState is "night">>
+				<<set $_quiet to "shopping centre">>
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws the attention of the other shoppers. Their reactions are mixed. Some avoid looking. Some stare at you with displeasure. But some also cheer you on. As you regain control of yourself, you notice how rowdy the place has become. Face red, you flee around a corner.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "museum">>
+			<<if Time.dayState is "night">>
+				<<set $_quiet to "museum">>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws the attention of the other visitors. As you regain control, you feel yourself stared from all directions. Face red, you flee the scene.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "brothel">>
+			The sight and sound of a <<girl>> convulsing in climax draws attention. Those in the brothel cheer you on, while shouting all kinds of profanities. As you regain control of yourself, you notice how rowdy the place has become. Face red, you disappear into a crowded area.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+		<<case "pub">>
+			The sight and sound of a <<girl>> convulsing in climax draws attention. Those in the pub cheer you on, while shouting all kinds of profanities. As you regain control of yourself, you notice how rowdy the place has become. Face red, you disappear into a crowded area
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+		<<case "spa">>
+			<<if $openinghours is 0 and Time.hour isnot $closinghour>>
+				<<set $_quiet to "spa">>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws the attention of the patrons. Their reactions are mixed. Some avoid looking. Some stare at you with displeasure. But some also cheer you on. As you regain control of yourself, you notice how rowdy the spa has become. Face red, you duck behind a tanning bed.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "temple">>
+			<<if Time.dayState is "night">>
+				<<set $_quiet to "temple walls">>
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws attention. The prevalent silence only makes your moans more obvious. Most look at you with disdain, but some shower you with a lustful gaze. As you regain control, you notice yourself stared at from all directions. Face red, you duck behind a pew.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "hospital">>
+			<<if Time.dayState is "night">>
+				<<set $_quiet to "hospital">>
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws attention. The reaction of those in the hospital is mixed. Some avoid looking. Some stare at you with displeasure. But some also cheer you on. As you regain control of yourself, you notice how rowdy the place has become. Face red, you try to feign it as a medical condition.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "countryside">>
+			<<switch random(1,10)>>
+				<<case 1 2 3>>
+					You steady yourself as your spasms subside. A car passes by your side. You wonder if the people inside noticed your climax.
+					<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+				<<case 4>>
+					You steady yourself as your spasms subside. A truck passes by your side. You wonder if the driver noticed your climax.
+					<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+				<<case 5>>
+					You steady yourself as your spasms subside. A tractor passes by your side. You wonder if the farmer noticed your climax.
+					<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+				<<default>>
+					<<set $_quiet to "countryside">>
+			<</switch>>
+		<<case "meadow">>
+			<<if $rng gte 91>>
+				You grip the blades, steadying yourself as your spasms subside. You think there's no one around to listen, but you notice a
+				<<if ($monsterchance gte 1 and $hallucinations gte 1) or ($monsterchance gte 1 and $monsterhallucinations is "f") or ($bestialitydisable is "t")>>
+					<<if maleChance() lt random(1, 100)>> foxgirl <<else>> foxboy <</if>>
+				<<else>>
+					fox
+				<</if>>
+				staring at you, hiding in the grass. It runs off before you can flee.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+			<<else>>
+				You grip the blades, steadying yourself as your spasms subside. The sounds of your climax get carried by the breeze, but fortunately there's no one around to listen.
+			<</if>>
+		<<case "alexFarmWork">>
+			<<if Time.dayState is "night">>
+				You steady yourself as your spasms subside, and hope the noise hasn't disturbed the animals.
+			<<elseif ($exposed gte 2 and $uncomfortable.nude is true) or ($exposed is 1 and $uncomfortable.underwear is true)>>
+				<<set $_hidden to true>>
+			<<elseif ["shower","tending","admin","clearing"].includes($farm_work.alex)>>
+				The sight and sound of a <<girl>> convulsing in climax agitate the animals around you. Fortunately, Alex is not around to see you in such a state. You steady yourself and go back to work.
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax agitate the animals around you. Alex takes notice of the small commotion, looking at you as your orgasm starts to subside. Face deep red, you both avoid eye contact, and try to act like nothing happened.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<npcincr Alex lust 1>><<glust>>
+			<</if>>
+		<<case "alexFarmTending">>
+			Noticing your spasms, Alex comes to check on you. Once <<nnpc_he "Alex">> understands what's happening, however, <<nnpc_he "Alex">> stops <<nnpc_himself "Alex">>, watching as your orgasm subsides. Face deep red, you both avoid eye contact, and try to act like nothing happened.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<npcincr Alex lust 1>><<glust>>
+		<<case "alexFarmTendingAlone">>
+			You steady yourself as your spasms subside, and feel grateful that Alex isn't around right now to see you in such a state.
+		<<case "alexFarmAdmin">>
+			Your loud moans attract the attention of Alex and the person on the phone. "I-I'm sorry," <<nnpc_he "Alex">> stammers. "Th-that was just the wind."
+			<br><br>
+			<<nnpc_He "Alex">> continues the call with <<nnpc_his "Alex">> face deep red, and you both avoid eye contact as your spasms subside.
+			<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<npcincr Alex lust 1>><<glust>>
+		<<case "sewers">>
+			Your loud moans echo through the tunnels.
+			<<if _args[1]>>
+				As your spasms subside, you hope the noise hasn't attracted further attention.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+				<<set $sewerschasedstep -= 1>>
+			<<else>>
+				As your spasms subside, you hope the noise hasn't attracted attention.
+			<</if>>
+		<<case "lake">>
+			<<if _args[1]>>
+				You steady yourself against a tree as your spasms subside. Fortunately, there's no one around right now to see you in such a state.
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				You steady yourself as your spasms subside. Fortunately, the loud ambient noise has stifled your moans, and the foliage provides cover for your spasms. Still, as you look around, you notice a <<generatey1>><<person1>><<person>> staring at you. <<He>> grins, before going back to <<his>> friends.
+				<<endevent>>
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "campsite">>
+			<<if $weather is "rain" or $weather is "snow" or Time.hour lt 18 or $daily.lakeCouple is 1>>
+				You steady yourself against a tree as your spasms subside. Fortunately, there's no one around right now to see you in such a state.
+			<<elseif $exposed gte 1>>
+				<<set $_hidden to true>>
+			<<else>>
+				The sight and sound of a <<girl>> convulsing in climax draws the attention of the campers. They look surprised for a moment, but soon smile at your lewd display. As you regain control of yourself, you notice their lustful gaze. Face red, you flee the scene.
+				<<gtrauma>><<gstress>><<trauma 6>><<stress 6>><<fameexhibitionism 10>>
+			<</if>>
+		<<case "moor">>
+			You almost fall down to the short grass, but manage to steady yourself as your orgasm subsides.
+	<</switch>>
+	<<if $_hidden>>
+		You steady yourself as your spasms subside, feeling exposed and hoping the noise hasn't given away your hiding place.
+	<</if>>
+	<<if $_quiet>>
+		Your loud moans echo through the empty <<print $_quiet>>. As your spasms subside, you hope the noise hasn't attracted attention.
+	<</if>>
+	<br><br>
+<</widget>>
+
+<<widget "breastfeed">>
+	<<set $_milk_released to random(10, 50)>>
+	<<if $cow gte 6>>
+		<<set $_milk_released *= 2>>
+	<</if>>
+	<<set $_milk_released /= 10>>
+	<<set $_milk_released to parseFloat($_milk_released.toFixed(1))>>
+
+	<<if _args[0]>><<set $_milk_released *= _args[0]>><</if>>
+
+	/* if the player doesn't have enough milk, set $_milk_released to whatever they have left */
+	<<if $milk_amount lt $_milk_released>>
+		<<set $_milk_released to $milk_amount>>
+	<</if>>
+	<<set $milk_produced_stat += Math.trunc($_milk_released)>>
+
+	<<milkvolume 1>>
+
+	<<if $worn.over_upper.exposed is 0 and $worn.upper.exposed is 0 and $worn.under_upper.exposed is 0>>
+	<<else>>
+		<<if $masturbating>>
+			<<set $masturbation_milk += $_milk_released>>
+		<</if>>
+		<<if _args[1] is "pump">>
+			<<set $bottledMilk to ($bottledMilk or 0) + $_milk_released>>
+		<</if>>
+		<<if $masturbation_bowl is 1>>
+			<!-- If the player is using both hands, only print this text the second time, and report the total milk released this turn -->
+			<<set _milk_this_turn to (_milk_this_turn is undefined ? $_milk_released : _milk_this_turn + $_milk_released)>>
+			<!-- _args[0] is how many times this widget has been called this turn -->
+			<span class="gold">You gather <<print (_milk_this_turn).toFixed(1)>> mL of your breast milk.</span>
+		<<elseif $leftaction is "mbreastpumppump" or $rightaction is "mbreastpumppump">>
+			<span class="gold">You store <<print ($_milk_released).toFixed(1)>> mL of your breast milk.</span>
+		<</if>>
+	<</if>>
+
+	<<milk_amount `-$_milk_released`>>
+<</widget>>
+
+<<widget "orgasmHourlyRecovery">>
+	<<if $purity gte 990>>
+		<<orgasmcount -1>>
+	<<else>>
+		<<set _orgmod to Math.floor((1100-$purity)/100)>>
+		<<set _orgmod to Math.clamp(_orgmod, 2, 11)>>
+		<<orgasmcount `-_orgmod`>>
+	<</if>>
+	<<if $cow gte 6>>
+		<<semenvolume 1>>
+		<<milkvolume 1>>
+	<</if>>
+	<<if $player.penisExist>>
+		<<if $arousal gte $arousalmax * (4/5)>>
+			<<set $_semen_gain to Math.floor($semen_volume * (3/24))>>
+		<<elseif $arousal gte $arousalmax * (3/5)>>
+			<<set $_semen_gain to Math.floor($semen_volume * (2/24))>>
+		<<else>>
+			<<set $_semen_gain to Math.floor($semen_volume * (1/24))>>
+		<</if>>
+		<<if $cow gte 6 or ($earSlime.growth gte 100 and $earSlime.focus is "impregnation")>>
+			<<set $_semen_gain *= 2>>
+		<</if>>
+		<<if $earSlime.growth gte 100 and $earSlime.focus is "pregnancy">>
+			<<set $_semen_gain /= 4>>
+		<</if>>
+		<<if $drugged gte 1>>
+			<<set $_semen_gain += Math.floor($semen_volume * (1/24))>>
+		<</if>>
+		<<semen_amount $_semen_gain>>
+
+		<<if $semen_amount gte $semen_volume>>
+			<<if $arousal gte $arousalmax * (4/5)>>
+				<<semenvolume 2>>
+			<<elseif $arousal gte $arousalmax * (3/5)>>
+				<<semenvolume 1>>
+			<</if>>
+			<<if $drugged gte 1>>
+				<<semenvolume 1>>
+			<</if>>
+			<<set $semen_amount to $semen_volume>>
+		<</if>>
+	<</if>>
+	<<set $_milk_gain to $milk_volume / 24>>
+	<<if $earSlime.growth gte 75 and $earSlime.focus is "impregnation">>
+		<<set $_milk_gain /= 4>>
+	<</if>>
+	<<if $earSlime.growth gte 75 and $earSlime.focus is "pregnancy">>
+		<<set $_milk_gain *= 2>>
+	<</if>>
+	<<milk_amount `Math.floor($_milk_gain)`>>
+	<<if $milk_amount is $milk_volume and $lactating>>
+		<<set $milkFullPain to Math.clamp(($milkFullPain || 0) + Math.ceil($milk_volume / 1000),0,200 + Math.ceil($milk_volume / 60))>>
+	<<else>>
+		<<set $milkFullPain to 0>>
+	<</if>>
+<</widget>>
+
+<<widget "semenOrgasm">>
+	<<set $_semen_released to calculateSemenReleased()>>
+
+	<<if $semen_amount gte 1 and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1 and $mouth isnot "mpenis">>
+		<<if $masturbating>>
+			<<set $masturbation_semen += $_semen_released>>
+		<</if>>
+		<<if $masturbation_bowl is 1>>
+			<<set _liquid_collection_text.push($masturbation_semen.toFixed(1) + " mL of <<semen>>")>>
+		<</if>>
+	<</if>>
+
+	<<if $femaleclimax isnot 1>>
+		<<semenvolume 1>>
+	<</if>>
+
+	<<set $semen_produced_stat += $_semen_released>>
+	<<semen_amount `-$_semen_released`>>
+	<<set _semen_released to $_semen_released>>
+<</widget>>
+
+<<widget "wetnessCalculate">>
+	<<if $player.vaginaExist>>
+		<<vaginaWetnessCalculate>>
+	<</if>>
+	<<if $player.penisExist>>
+		<<set $penisWetness to setup.bodyliquid.combined("penis") * 12>>
+		<<set $penisWetness to Math.clamp($penisWetness, 0, 120)>>
+	<</if>>
+	<<set $anusWetness to (setup.bodyliquid.combined("anus") + setup.bodyliquid.combined("bottom")) * 6>>
+	<<set $anusWetness to Math.clamp($anusWetness, 0, 120)>>
+	<<if $combat is 1>>
+		<<penetrationPainCalculate>>
+	<</if>>
+<</widget>>
+
+<<widget "vaginaWetnessCalculate">>
+	<<set _totalArousal = 0>>
+	<<set _length to $trackedArousal.length>>
+	<<for _ia to 0; _ia lt _length; _ia++>>
+		<<set _totalArousal += $trackedArousal[_ia] / ((_length - _ia) * 1.5)>>
+	<</for>>
+	<<if $combat is 1>>
+		<!-- combatWetBoost can be from 0 to 5, because max promiscuity/deviancy is 100. -->
+		<<if $enemytype is "man">>
+			<<set $combatWetBoost to Math.floor($promiscuity /20)>>
+		<<elseif $enemytype is "tentacles" or $enemytype is "beast">>
+			<<set $combatWetBoost to Math.floor($deviancy /20)>>
+		<<else>>
+			<<set $combatWetBoost to 0>>
+		<</if>>
+		<!-- combatArousalWetness has been replaced by vaginaArousalWetness but I don't want to remove it completely so it's commented out for now. -->
+		/* <<set $_combatArousalWetness to 75 - Math.floor(Math.pow(0.99985,_totalArousal) * 75)>>
+		<<set $combatWetBoost += $_combatArousalWetness>> */
+	<<else>>
+		<<set $combatWetBoost to 0>>
+	<</if>>
+
+	<<set $vaginaWetness to $vaginaArousalWetness + $combatWetBoost + (setup.bodyliquid.combined("vagina") + setup.bodyliquid.combined("vaginaoutside")) * 6>>
+	<<set $vaginaWetness to Math.clamp($vaginaWetness, 0, 120)>>
+<</widget>>
+
+<<widget "penetrationPainCalculate">>
+	<<set $vaginalPain to 0>>
+	<<set $analPain to 0>>
+	<<set $penisPain to 0>>
+	<<if $demon lt 6 and $gamemode isnot "soft">>
+		<<if $player.vaginaExist>>
+			<<if $consensual is 1>>
+				<<set $vaginalPain to Math.floor(3 * Math.pow(0.4,$vaginaWetness/8))>>
+			<<else>>
+				<<set $vaginalPain to Math.floor(6 * Math.pow(0.5,$vaginaWetness/25))>>
+			<</if>>
+		<</if>>
+		<<if $player.penisExist>>
+			<<if $consensual is 1>>
+				<<set $penisPain to Math.floor(3 * Math.pow(0.4,$penisWetness/8))>>
+			<<else>>
+				<<set $penisPain to Math.floor(6 * Math.pow(0.5,$penisWetness/25))>>
+			<</if>>
+		<</if>>
+		<<if $consensual is 1>>
+			<<set $analPain to Math.floor(3 * Math.pow(0.4,$anusWetness/8))>>
+		<<else>>
+			<<set $analPain to Math.floor(6 * Math.pow(0.5,$anusWetness/25))>>
+		<</if>>
+		<<if $gamemode is "hard">>
+			<<set $vaginalPain *= 2>>
+			<<set $penisPain *= 2>>
+			<<set $analPain *= 2>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<!-- Lube is only released when vaginaArousalWetness is over 60 (also, its max value is 100)-->
+<!-- "passive" means the lube is dripping out, while "active" means it is being pushed out -->
+<<widget "vaginaFluidPassive">>
+	<<set $_lube_max to Math.round(30*Math.log10($vaginaArousalWetness - 59))>>
+	<<set _lube_released to random(0, $_lube_max)/20>>
+	<!-- Expected value is between 0 and 2.5, much more likely to be on the lower end due to wetness having a softcap -->
+	<<set _lube_released to parseFloat(_lube_released.toFixed(1))>>
+
+	<<set $masturbation_vaginaFluid += _lube_released>>
+	<<set $lube_produced_stat += _lube_released>>
+<</widget>>
+
+<<widget "vaginaFluidActive">>
+	<<set $_lube_max to Math.ceil(30*Math.log10($vaginaArousalWetness - 59))>>
+	<<set _lube_released to random(10, $_lube_max)/10>>
+	<!-- Expected value is between 1 and 5, much more likely to be on the lower end due to wetness having a softcap -->
+	<<set _lube_released to parseFloat(_lube_released.toFixed(1))>>
+
+	<<set $masturbation_vaginaFluid += _lube_released>>
+	<<set $lube_produced_stat += _lube_released>>
+<</widget>>
+
+<<widget "vaginaFluidOrgasm">>
+	<<addVaginalWetness 10>>
+	<<if $vaginaArousalWetness gte 60>>
+		<<set _lube_released to (2*Math.log10($vaginaArousalWetness - 59)) + 11>>
+	<<elseif $vaginaArousalWetness gte 30>>
+		<<set _lube_released to ($vaginaArousalWetness / 10) + 5>>
+	<<else>>
+		<<set _lube_released to 0>>
+	<</if>>
+	<!-- Expected value is either 0, or between 5 and 15 -->
+	<<set _lube_released to parseFloat(_lube_released.toFixed(1))>>
+
+	<<if $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+		<<if $masturbating>>
+			<<set $masturbation_vaginaFluid += _lube_released>>
+		<</if>>
+		<<if $masturbation_bowl is 1>>
+			<<set _liquid_collection_text.push($masturbation_vaginaFluid.toFixed(1) + " mL of vaginal fluid")>>
+		<</if>>
+	<<elseif $worn.under_lower.vagina_exposed is 0>>
+		<<set $underlowerwet += Math.round(30 * Math.clamp((1 - $underlowerwet/100), 0, 1))>>
+	<</if>>
+	<<set $lube_produced_stat += _lube_released>>
+<</widget>>
+
+<<widget "tinyPenisDryOrgasmChance">>
+	<<if !$player.penisExist or $player.penissize gte 0>>
+		<!-- Cannot have a "femaleclimax" (aka an orgasm with no cum, but with extra humiliation) without a size -1 or lower penis -->
+		<<set $femaleclimax to 0>>
+	<<else>>
+		<!-- Guaranteed at size -2 -->
+		<<set $femaleclimax to 1>>
+		<!-- chance at -1, if haven't cum in a while -->
+		<<if $player.penissize is -1 and $orgasmdown lt 0>>
+			<<set $_femaleclimaxchance to 50>>
+			<<if ['penetrated', 'tentacle', 'tentacledeep', 'doublepenetrated'].includes($anusstate)>>
+				<<set $_femaleclimaxchance += 40>>
+				<<if $anusstate is "doublepenetrated">>
+					<<set $_femaleclimaxchance += 20>>
+				<</if>>
+			<</if>>
+			<<if ['penetrated', 'tentacle', 'tentacledeep'].includes($mouthstate)>>
+				<<set $_femaleclimaxchance += 20>>
+			<</if>>
+			<<if ['penetrated', 'otheranus', 'tentacle', 'tentacledeep'].includes($penisstate)>>
+				<<set $_femaleclimaxchance -= 40>>
+			<</if>>
+			<<set $femaleclimax to (random(1, 100) lte $_femaleclimaxchance ? 1 : 0)>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "orgasmcount">>
+	<<if _args[0]>>
+		<<set $orgasmcount += _args[0]>>
+		<<set $orgasmcount = Math.clamp($orgasmcount, 0, 25)>>
+	<</if>>
+<</widget>>

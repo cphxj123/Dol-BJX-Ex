@@ -1,0 +1,3414 @@
+:: Widgets Actions Generation [widget]
+
+/*Please read dev comments before making changes*/
+/*Be careful with changing names around, they are intentional as can get re-used when the user uses the controls, leading to errors if incorrect*/
+
+/*Sends the required variables to the chosen display type*/
+<<widget "generateCombatAction">>
+	<<switch $options.combatControls>>
+		<<case "radio" "columnRadio">>
+			<<generateCombatActionRadio _args[0] _args[1] _args[3]>>
+		<<case "lists" "limitedLists">>
+			<<generateCombatActionList _args[0] _args[1] _args[2]>>
+	<</switch>>
+<</widget>>
+
+/*Generated each set of actions in the form of a set of radio buttons*/
+<<widget "generateCombatActionRadio">>
+	<br>
+	<<for _labelC, _valueC range _args[0]>>
+		<label>
+			<<print '<<radiobutton "$'+_args[1]+'" "'+_valueC+'" ' + (_valueC is _args[2] ? "checked" : "") + '>>'>>
+			<span @id="(_valueC isnot 'ask' ?'':'askLabel')" @class="(_valueC isnot 'ask' ? combatListColor('', _valueC, '') : $askActionColour)"><<print _labelC>></span>
+			<<print '<<'+_args[1]+'Difficulty "'+_valueC+'">>'>><<if $options.combatControls is "radio">> |<</if>>
+		</label>
+	<</for>>
+	<br><br>
+<</widget>>
+
+/*Generated each set of actions in the form of a list*/
+<<widget "generateCombatActionList">>
+	<<if _args[0]>>
+		<<set _options to _args[0]>>
+		<<set _name to _args[1]>>
+		<<capture _var _options _name>>
+			<span @id="_name + 'Select'" @class="_args[2] + 'List flavorText'">
+				<<listbox `"$"+_name` autoselect>>
+					<<optionsfrom _options>>
+				<</listbox>>
+			</span>
+			/*Changes the colour of the list border when the option is changed*/
+			<<combatButtonAdjustments _name "">>
+		<</capture>>
+	<</if>>
+<</widget>>
+
+/*Generates the required divs and calls each type of action*/
+<<widget "generateActionsMan">>
+	<br>
+	<<if $defaultsType is undefined>>
+		<<getCombatDefaultsType>>
+	<</if>>
+	<<if $position isnot "stalk">>
+		<div id="replaceAction">
+			<<replaceActionLink>>
+		</div>
+		<<if _targetlist is undefined>>
+			<<getTargetList>>
+		<</if>>
+	<</if>>
+	<<if !$stalk_end>>
+		<div id="listContainer">
+			<div id="leftaction" @class="$options.combatControls + 'Control'">
+				<<leftActionInit>>
+			</div>
+
+			<div id="rightaction" @class="$options.combatControls + 'Control'">
+				<<rightActionInit>>
+			</div>
+
+			<div id="feetaction" @class="$options.combatControls + 'Control'">
+				<<feetActionInit>>
+			</div>
+            
+            /* 北极星模组 */
+            <<if $options.bjx_animal>>
+    			<div id="tailaction" @class="$options.combatControls + 'Control'">
+    				<<tailActionInit>>
+    			</div>
+		    <</if>>
+			/* 北极星 */
+			
+			<div id="mouthaction" @class="$options.combatControls + 'Control'">
+				<<mouthActionInit>>
+			</div>
+
+			<<if $player.penisExist or $worn.genitals.type.includes("strap-on") or playerHasStrapon()>>
+				<div id="penisaction" @class="$options.combatControls + 'Control'">
+					<<penisActionInit>>
+				</div>
+			<</if>>
+
+			<<if $player.vaginaExist>>
+				<div id="vaginaaction" @class="$options.combatControls + 'Control'">
+					<<vaginaActionInit>>
+				</div>
+			<</if>>
+
+			<div id="anusaction" @class="$options.combatControls + 'Control'">
+				<<anusActionInit>>
+			</div>
+
+			<<if $chestuse isnot 0>>
+				<div id="chestaction" @class="$options.combatControls + 'Control'">
+					<<chestActionInit>>
+				</div>
+			<</if>>
+
+			<<if $thighuse isnot 0>>
+				<div id="thighaction" @class="$options.combatControls + 'Control'">
+					<<thighActionInit>>
+				</div>
+			<</if>>
+		</div>
+	<</if>>
+<</widget>>
+
+/*Generates the required values for defaults to be setup based on the situation*/
+<<widget "getCombatDefaultsType">>
+	<<if $consensual == 1>>
+		<<set $defaultsCombatType = "consensual">>
+	<<else>>
+		<<set $defaultsCombatType = "rape">>
+	<</if>>
+	<<switch $enemytype>>
+		<<case "man">>
+			<<if $NPCNameList.includes($NPCList[0].fullDescription)>>
+				<<if $actionDefaults[$NPCList[0].fullDescription] isnot undefined>>
+					<<set $defaultsType to $NPCList[0].fullDescription>>
+				<<else>>
+					<<set $defaultsType to "Acquaintances">>
+				<</if>>
+			<<else>>
+				<<set $defaultsType to "Strangers">>
+			<</if>>
+		<<case "beast">><<set $defaultsType to "Animals">>
+		<<case "tentacles" "vore">>
+			<<set $defaultsType to "Tentacles">>
+			<<set $regrab = DefaultActions.get($defaultsCombatType, 'Tentacles', 'regrab', $actionDefaults, 0)[0]>>
+		<<default>><<set $defaultsType to "Everyone">>
+	<</switch>>
+<</widget>>
+
+<<widget "getCombatDefaultsTypeClear">>
+	<<unset $defaultsType>>
+	<<unset $defaultsCombatType>>
+	<<unset $replaceAction>>
+	<<unset $regrab>>
+<</widget>>
+
+<<widget "replaceActionLink">>
+	<<if $replaceAction isnot "Alternative">>
+		<a onclick="wikifier('replaceAction','Alternative')">Switch to Alternative Actions</a>
+		|
+	<</if>>
+	<<if $replaceAction isnot "Submissive">>
+		<a onclick="wikifier('replaceAction','Submissive')">Switch to Submissive Actions</a>
+		|
+	<</if>>
+	<<if $replaceAction isnot "Defiant">>
+		<a onclick="wikifier('replaceAction','Defiant')">Switch to Defiant Actions</a>
+		|
+	<</if>>
+	<<if $replaceAction isnot undefined>>
+		<a onclick="wikifier('replaceAction','Normal')">Switch to Normal Actions</a>
+		|
+	<</if>>
+	<br>
+<</widget>>
+
+<<widget "replaceAction">>
+	<<set $_rape to ($actionDefaults || {}).rape || {}>>
+	<<set $_consent to ($actionDefaults || {}).rape || {}>>
+	<<switch _args[0]>>
+		<<case "Alternative">>
+			<<if $_rape.Alternative === undefined
+				|| $_consent.Alternative === undefined>>
+				<<setupDefaults>>
+			<</if>>
+			<<set $defaultsType to "Alternative">>
+			<<set $replaceAction to "Alternative">>
+		<<case "Submissive">>
+			<<if $_rape.Submissive === undefined
+				|| $_consent.Submissive === undefined>>
+				<<setupDefaults>>
+			<</if>>
+			<<set $defaultsType to "Submissive">>
+			<<set $replaceAction to "Submissive">>
+		<<case "Defiant">>
+			<<if $_rape.Defiant === undefined
+				|| $_consent.Defiant === undefined>>
+				<<setupDefaults>>
+			<</if>>
+			<<set $defaultsType to "Defiant">>
+			<<set $replaceAction to "Defiant">>
+		<<case "Normal">>
+			<<getCombatDefaultsType>>
+			<<unset $replaceAction>>
+	<</switch>>
+
+	<<safereplace #replaceAction>><<replaceActionLink _replace>><</safereplace>>
+	<<safereplace #leftaction>><<leftActionInit true>><</safereplace>>
+	<<safereplace #rightaction>><<rightActionInit true>><</safereplace>>
+	<<safereplace #feetaction>><<feetActionInit true>><</safereplace>>
+	/* 北极星模组 */
+	<<if $options.bjx_animal>>
+	    <<safereplace #tailaction>><<tailActionInit true>><</safereplace>>
+	<</if>>
+	/* 北极星 */
+	<<safereplace #mouthaction>><<mouthActionInit true>><</safereplace>>
+	<<if $player.penisExist or $worn.genitals.type.includes("strap-on") or playerHasStrapon()>>
+		<<safereplace #penisaction>><<penisActionInit true>><</safereplace>>
+	<</if>>
+	<<if $player.vaginaExist>>
+		<<safereplace #vaginaaction>><<vaginaActionInit true>><</safereplace>>
+	<</if>>
+	<<safereplace #anusaction>><<anusActionInit true>><</safereplace>>
+	<<if $chestuse isnot 0>>
+		<<safereplace #chestaction>><<chestActionInit true>><</safereplace>>
+	<</if>>
+	<<if $thighuse isnot 0>>
+		<<safereplace #thighaction>><<thighActionInit true>><</safereplace>>
+	<</if>>
+<</widget>>
+
+/*This takes two arguments and one optional argument*/
+/*_arg[0] is the name of the body part*/
+/*_arg[1] is the list of targets*/
+/*_arg[2] is optional and used if a special receiver is needed*/
+<<widget "targetListBox">>
+	<<set _onChangeString to "actionsreplace('" + _args[0] + "')">>
+	<<set _listBoxReceiver to _args[2] === undefined ? "$" + _args[0] + "target" : _args[2]>>
+	<label>
+		Target: <span @onchange=_onChangeString>
+			<<listbox _listBoxReceiver autoselect>>
+				<<optionsfrom _args[1]>>
+			<</listbox>>
+		</span>
+	</label>
+<</widget>>
+
+/*Each set of actions are based on the same set of rules*/
+/*Setup by getting the situation that the player is in. i.e Their left hand is hold onto a penis*/
+
+/*This is then followed up in getting the options that are available to the player, this would be from <<leftActions>>*/
+/*in the case for the left hand. An object will be provide that contain moves in the form of {"actionName":"actionValue"}*/
+/*actionName will be shown to the player, actionValue will be used to do the action*/
+
+/*After the list of actions is setup, as long as there is more than one provide it will continue on to setting up the defaults*/
+/*This will use the object setup in "base-system\attitudes.twee"*/
+
+/*To provide extra information to the player, widgets such as `<<leftactionDifficulty>> can be used to display extra*/
+/*information to the player such as "<<handdifficulty>>"" or "<<skulduggerydifficulty>><<combatcrime>>"*/
+/*This will use the previous "actionValue"*/
+
+/*Move colors will be provided through "combatListColor" found in "03-JavaScript\ingame.js"*/
+/*These again use the "actionValue"*/
+
+<<widget "leftActionInit">>
+	<<switch $leftarm>>
+		<<case 0>>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<<set _leftOptions to "orgasm">>
+				<span class="lewd">Your left arm is free, but you can't stop the spasms.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
+				<<set _leftOptions to "pain">>
+				<span class="red">Your left arm is free, but hurts to move.</span>
+			<<elseif $dissociation gte 2 and !$possessed>>
+				<<set _leftOptions to "unreal">>
+				<span class="pink">Your left arm is free, but doesn't feel real.</span>
+			<<elseif $possessed>>
+				<<set _leftOptions to "possessed">>
+				Your left arm is free, <span class="pink">but not under your control.</span>
+			<<else>>
+				<<if _targetYourself is true and _targetnumber gt 1>>
+					<<set _targetlistarms["Yourself"] to "self">>
+				<</if>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateleft is undefined>>
+					<<targetListBox "left" _targetlistarms>>
+				<</if>>
+				<<set _leftOptions to "free">>
+				<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is free.</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateleft is undefined>>
+					<br>
+					<<targetListBox "left" _targetlistarms>>
+				<</if>>
+				<<if _targetnumber is 1>>
+					<<set $lefttarget to _firsttarget>>
+				<</if>>
+			<</if>>
+		<<case "penis">>
+			<<set _leftOptions to "penis">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "leftarm">><<set $lefttarget to $index>>Your left hand is <<if $NPCList[_j].chastity.penis.includes("chastity")>>teasing<<else>>holding<</if>> <<combatpersons>> $NPCList[_j].penisdesc<<if $NPCList[_j].chastity.penis.includes("chastity")>> through <<his>> $NPCList[_j].chastity.penis<</if>>.</span>
+		<<case "grappled">>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<<set _leftOptions to "bothBound">>
+				<span class="lewd">Your left arm jerks against their grip.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<<set _leftOptions to "bothBound">>
+				<span class="red">Your left arm is held in a painful grip.</span>
+			<<elseif $dissociation gte 2>>
+				<<set _leftOptions to "bothBound">>
+				<span class="pink">Your left arm lies limp in their grip.</span>
+			<<elseif $possessed>>
+				<<set _leftOptions to "possessedBound">>
+				Your left arm writhes in their grip, unbidden.
+			<<else>>
+				<<set _leftOptions to "grappled">>
+				<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left arm is being held down.</span>
+			<</if>>
+		<<case "bound">>
+			<<set _leftOptions to "bothBound">>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<span class="lewd">Your left arm jerks against its bonds.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<span class="red">Your left arm is held in a painful bind.</span>
+			<<elseif $dissociation gte 2>>
+				<span class="pink">Your left arm lies limp in its bonds.</span>
+			<<elseif $possessed>>
+				Your left arm writhes in its bounds, unbidden.
+			<<else>>
+				<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your arms are helplessly bound.</span>
+			<</if>>
+		<<case "othervagina">>
+			<<set _leftOptions to "pussy">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "leftarm">><<set $lefttarget to $index>>Your left hand is <<if $NPCList[_j].chastity.vagina.includes("chastity")>>teasing<<else>>stroking<</if>> <<combatpersons>> pussy<<if $NPCList[_j].chastity.vagina.includes("chastity")>> through <<his>> $NPCList[_j].chastity.vagina<</if>>.</span>
+		<<case "vagina">>
+			<<set _leftOptions to "coverVagina">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is protecting your <<pussy>>.</span>
+		<<case "coverpenis">>
+			<<set _leftOptions to "coverPenis">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is protecting your <<penis>>.</span>
+		<<case "anus">>
+			<<set _leftOptions to "coverAss">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is protecting your <<bottom>>.</span>
+		<<case "behind">>
+			<<set _leftOptions to "behind">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is behind your back.</span>
+		<<case "handheld">>
+			<<set _leftOptions to "handheld">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is being held.</span>
+		<<case "heldSexToy">>
+			<<if _targetYourself is true and _targetnumber gt 1>>
+				<<set _targetlistarms["Yourself"] to "self">>
+			<</if>>
+			<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<<targetListBox "left" _targetlistarms>>
+			<</if>>
+			<<set _leftOptions to "heldSexToy">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is holding the <<print $currentSexToyLeft.name>>.</span>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<br>
+				<<targetListBox "left" _targetlistarms>>
+			<</if>>
+			<<if _targetnumber is 1>>
+				<<set $lefttarget to _firsttarget>>
+			<</if>>
+		<<case "dildoSelfPussyEntrance">>
+			<<set _leftOptions to "dildoSelfPussyEntrance">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is holding the <<print $currentSexToyLeft.name>> above your <<pussy>>.</span>
+		<<case "dildoSelfPussy">>
+			<<set _leftOptions to "dildoSelfPussy">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand fucks your <<pussy>> with the <<print $currentSexToyLeft.name>>.</span>
+		<<case "dildoSelfAnusEntrance">>
+			<<set _leftOptions to "dildoSelfAnusEntrance">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is holding the <<print $currentSexToyLeft.name>> above your anus.</span>
+		<<case "dildoSelfAnus">>
+			<<set _leftOptions to "dildoSelfAnus">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand fucks your <<bottom>> with the <<print $currentSexToyLeft.name>>.</span>
+		<<case "strokerSelfPenisEntrance">>
+			<<set _leftOptions to "strokerSelfPenisEntrance">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is holding the <<print $currentSexToyLeft.name>> above your <<penisSimple>>.</span>
+		<<case "strokerSelfPenis">>
+			<<set _leftOptions to "strokerSelfPenis">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand fucks your <<penisSimple>> with the <<print $currentSexToyLeft.name>></span>
+		<<case "dildoOtherPussyTease">>
+			<<set _leftOptions to "dildoOtherPussyTease">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is <<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>>teasing<<else>>stroking<</if>> <<combatpersons>> pussy<<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>> through <<his>> $NPCList[$lefttarget].chastity.vagina<</if>> with your $currentSexToyLeft.name.</span>
+		<<case "dildoOtherPussyFuck">>
+			<<set _leftOptions to "dildoOtherPussyFuck">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "leftDildo">><<set $lefttarget to $index>>Your left hand fucks the <<combatpersons>> pussy with the $currentSexToyLeft.name.</span>
+		<<case "dildoOtherAnusTease">>
+			<<set _leftOptions to "dildoOtherAnusTease">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is <<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>>teasing<<else>>stroking<</if>> <<combatpersons>> ass<<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>> through <<his>> $NPCList[$lefttarget].chastity.vagina<</if>> with your $currentSexToyLeft.name.</span>
+		<<case "dildoOtherAnusFuck">>
+			<<set _leftOptions to "dildoOtherAnusFuck">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')"><<selectNpcWithPartInPositionAnus "leftDildoAnus">><<set $lefttarget to $index>>Your left hand fucks <<combatpersons>> ass with the $currentSexToyLeft.name.</span>
+		<<case "strokerOtherPenisTease">>
+			<<set _leftOptions to "strokerOtherPenisTease">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is <<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>>teasing<<else>>stroking<</if>> <<combatpersons>> <<npcPenisSimple $lefttarget>><<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>> through <<his>> $NPCList[$lefttarget].chastity.penis<</if>> with your $currentSexToyLeft.name.</span>
+		<<case "strokerOtherPenisFuck">>
+			<<set _leftOptions to "strokerOtherPenisFuck">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand fucks <<combatpersons>> <<npcPenisSimple $lefttarget>> with the $currentSexToyLeft.name.</span>
+		<<case "struggle">>
+			<<set $_changetype to true>><<leftActionInitStruggle>>
+		<<case "swarmgrappled">>
+			<<set $_changetype to true>><<leftActionInitSwarm>>
+		<<case "mechgrappled">>
+			<<set $_changetype to true>><<leftActionInitMachine>>
+		<<default>>
+			<<set $_changetype to true>><<leftActionInitTentacle>>
+	<</switch>>
+	<<if $_changetype isnot true>>
+		<<if $lastOptions.left isnot _leftOptions>>
+			<<set _leftGold to true>>
+		<</if>>
+		<<leftActions>>
+		<<if Object.keys(_leftaction).length gt 0>>
+			<<if Object.values(_leftaction).includes($leftactiondefault) is false or _args[0] is true or $leftactiondefault is "rest">>
+				<<set _defaultsCombatAction to "leftaction">>
+				<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+				<<set _pass to false>>
+				<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+					<<if Object.values(_leftaction).includes(_actionsSet[_set])>>
+						<<set $leftactiondefault to clone(_actionsSet[_set])>>
+						<<set _pass to true>>
+						<<break>>
+					<</if>>
+				<</for>>
+				<<if _pass is false>>
+					<<set $leftactiondefault to Object.values(_leftaction)[0]>>
+				<</if>>
+			<</if>>
+
+			<<set $leftaction to $leftactiondefault>>
+			<<set _textColor to combatListColor('leftaction', (Object.values(_leftaction).includes($leftaction) ? $leftaction : Object.values(_leftaction)[0]), "")>>
+			<<generateCombatAction _leftaction "leftaction" _textColor $leftaction>>
+
+			/*Checks/Difficulty*/
+			<<if $options.combatControls.includes("ists")>>
+				<div id="leftactionDifficulty">
+					<<leftactionDifficulty>>
+				</div>
+			<</if>>
+		<</if>>
+		<<set $lastOptions.left to clone(_leftOptions)>>
+	<</if>>
+<</widget>>
+
+<<widget "leftactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $leftaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "leftwork" "leftclit">><<handdifficulty>>
+		<<case "leftplay" "leftgrab">><<handdifficulty>> <<combatpromiscuous3>>
+		<<case "handedge">> <<combatpromiscuous4>>
+		<<case "steal">><<skulduggerydifficulty>><<combatcrime "petty">>
+		<<case "spray">>Remaining: $spray / $spraymax
+		<<case "lefthandholdnew">><<handholdingvirginitywarning>><<NPCvirginitywarning $NPCList[$lefttarget].fullDescription "handholding">>
+		<<case "leftUndressOther">>
+		<<if Object.keys(_undressLeftTargets).length gt 1>>
+			<<listbox "$undressLeftTarget">>
+				<<optionsfrom _undressLeftTargets>>
+			<</listbox>>
+			<<handdifficulty>> <<combatpromiscuous2>>
+		<</if>>
+		<<case "leftmasturbatepussy">> <<combatpromiscuous2>>
+		<<case "leftmasturbatepenis">> <<combatpromiscuous2>>
+		<<case "leftmasturbateanus">> <<combatpromiscuous3>>
+		<<case "pickupSexToy">>
+			<<if Object.keys(_itemsLeft).length gte 1>>
+				<<listbox "$selectedItemLeft" autoselect>>
+					<<optionsfrom _itemsLeft>>
+				<</listbox>>
+			<</if>>
+			<<combatpromiscuous3>>
+		<<case "handguide">>
+			<<if Object.keys(_handGuideOptions).length gt 0>>
+				<<listbox "$handGuideLeft" autoselect>>
+					<<optionsfrom _handGuideOptions>>
+				<</listbox>>
+			<</if>>
+			<<handdifficulty>> <<combatpromiscuous2>>
+		<<case "peniscondom">><<handdifficulty>>
+		<<case "penisremovecondom">><<handdifficulty>>
+		<<case "npcremovecondom">><<handdifficulty>> <<if $consensual is 0 and playerPregnancyPossibleWith($NPCList[$lefttarget])>><<combatpromiscuous6>><</if>>
+	<</switch>>
+<</widget>>
+
+<<widget "leftActions">>
+	/*Generate Actions*/
+	<<set _leftaction to {}>>
+	<<if $position is "stalk">>
+		<<if $leftarm isnot "bound">>
+			<<set _leftaction["Clench"] to "clench">>
+			<<set _leftaction["Fold"] to "fold">>
+			<<leftFixAndCoverActions>>
+			<<leftcoverface>>
+			<<left_pursuit_grab>>
+		<</if>>
+	<<else>>
+		<<switch _leftOptions>>
+			<<case "free">>
+				<<set _leftaction["Rest"] to "rest">>
+				<<leftdefault>>
+				<<leftgrabnew>>
+				<<leftplaynew>>
+				<<combatMasturbate "left">>
+				<<applyLube "left">>
+				<<leftclothesnew>>
+				<<removeButtplug "left">>
+				<<leftspraynew>>
+				<<leftstealnew>>
+				<<leftpenwhacknew>>
+				<<combathandhold "lefthand">>
+				<<leftFixAndCoverActions>>
+				<<leftchoke>>
+				<<leftCondom>>
+				<<leftNPCCondom>>
+				<<leftshacklewhack>>
+				<<lefthypnosiswhack>>
+				<<handsstrugglefreebodypart "left">>
+				<<leftUndressOther>>
+				<<leftdildowhack>>
+				<<pickupSexToy "left">>
+				<<leftcamerapose>>
+				<<lefthandpull>>
+			<<case "handheld">>
+				<<if $consensual is 1>>
+				<<set _leftaction["Keep holding"] to "lefthandholdkeep">>
+				<</if>>
+				<<combathandguide "left">>
+				<<set _leftaction["Stop"] to "lefthandholdstop">>
+			<<case "penis">>
+				<<if $NPCList[$lefttarget].chastity.penis.includes("chastity")>>
+					<<set _leftaction["Tease " + $NPCList[$lefttarget].pronouns.him] to "leftwork">>
+				<<else>>
+					<<set _leftaction["Work " + $NPCList[$lefttarget].pronouns.his + " shaft"] to "leftwork">>
+					<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and currentSkillValue("handskill") gte 800>>
+						<<set _leftaction["Edge"] to "handedge">>
+					<</if>>
+				<</if>>
+				<<set _leftaction["Stop"] to "leftstoppenis">>
+			<<case "grappled">>
+				<<set _leftaction["Rest"] to "rest">>
+				<<set _leftaction["Struggle"] to "leftstruggle">>
+			<<case "bothBound">>
+			<<case "pussy">>
+				<<if $NPCList[$lefttarget].chastity.vagina.includes("chastity")>>
+					<<set _leftaction["Tease " + $NPCList[$lefttarget].pronouns.him] to "leftclit">>
+				<<else>>
+					<<set _leftaction["Rub " + $NPCList[$lefttarget].pronouns.his + " clit"] to "leftclit">>
+					<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and currentSkillValue("handskill") gte 800>>
+						<<set _leftaction["Edge"] to "handedge">>
+					<</if>>
+				<</if>>
+				<<set _leftaction["Stop"] to "leftothervaginastop">>
+			<<case "coverVagina">>
+				<<set _leftaction["Keep covering"] to "leftcovervagina">>
+				<<set _leftaction["Stop"] to "leftstopvagina">>
+			<<case "coverPenis">>
+				<<set _leftaction["Keep covering"] to "leftcoverpenis">>
+				<<set _leftaction["Stop"] to "leftstopcoverpenis">>
+			<<case "coverAss">>
+				<<set _leftaction["Keep covering"] to "leftcoveranus">>
+				<<set _leftaction["Stop"] to "leftstopanus">>
+			<<case "behind">>
+				<<set _leftaction["Keep behind"] to "behind">>
+				<<set _leftaction["Stop"] to "stopbehind">>
+			<<case "orgasm">>
+				<<set _leftaction["Fold"] to "leftfold">>
+				<<set _leftaction["Grip"] to "leftgrip">>
+			<<case "pain">>
+				<<set _leftaction["Struggle"] to "leftstruggleweak">>
+				<<set _leftaction["Protect"] to "leftprotect">>
+			<<case "unreal">>
+				<<set _leftaction["Poke yourself"] to "leftpoke">>
+				<<set _leftaction["Keep your arms out of the way"] to "leftcurl">>
+			<<case "possessed">>
+				<<set _leftaction["Accept it"] to "leftacceptW">>
+				<<set _leftaction["Hold it still"] to "leftresistW">>
+			<<case "possessedBound">>
+				<<set _leftaction["Struggle"] to "leftstruggleW">>
+				<<set _leftaction["Hold it still"] to "leftstillW">>
+			<<case "heldSexToy">>
+				<<heldSexToy "left">>
+			<<case "dildoSelfPussyEntrance">>
+				<<dildoSelfPussyEntrance "left">>
+			<<case "dildoSelfPussy">>
+				<<set _leftaction["Fuck your pussy with your "+$currentSexToyLeft.name] to "dildoSelfPussy">>
+				<<set _leftaction["Drop your " + $currentSexToyLeft.name] to "dildoDrop">>
+			<<case "dildoSelfAnusEntrance">>
+				<<if $analdisable is "f">>
+					<<dildoSelfAnusEntrance "left">>
+				<</if>>
+			<<case "dildoSelfAnus">>
+				<<set _leftaction["Fuck your ass with your "+$currentSexToyLeft.name] to "dildoSelfAnus">>
+				<<set _leftaction["Drop your " + $currentSexToyLeft.name] to "dildoDrop">>
+			<<case "strokerSelfPenisEntrance">>
+				<<strokerSelfPenisEntrance "left">>
+			<<case "strokerSelfPenis">>
+				<<set _leftaction["Fuck your penis with your "+$currentSexToyLeft.name] to "strokerSelfPenis">>
+				<<set _leftaction["Drop your " + $currentSexToyLeft.name] to "strokerDrop">>
+			<<case "dildoOtherPussyTease">>
+				<<if $NPCList[$lefttarget].vagina is 0>>
+					/*<<set _leftaction["Tease " + $NPCList[$righttarget].pronouns.his + " pussy"] to "dildoOtherPussyTease">>*/ /* Kept incase someone wants to make this happen in the future */
+					<<set _leftaction["Fuck " + $NPCList[$lefttarget].pronouns.his + " pussy with your "+$currentSexToyLeft.name] to "dildoOtherPussyFuck">>
+				<</if>>
+				<<set _leftaction["Drop your " + $currentSexToyLeft.name] to "dildoDropLeft">>
+			<<case "dildoOtherPussyFuck">>
+				<<if $NPCList[$lefttarget].vagina is "leftDildo">>
+					<<set _leftaction["Fuck " + $NPCList[$lefttarget].pronouns.his + " pussy with your "+$currentSexToyLeft.name] to "dildoOtherPussyFuck">>
+				<</if>>
+				<<set _leftaction["Drop your " + $currentSexToyLeft.name] to "dildoDropLeft">>
+			<<case "dildoOtherAnusTease">>
+				<<if $NPCList[$lefttarget].vagina is 0 or $NPCList[$lefttarget].penis is 0>>
+					<<set _leftaction["Fuck " + $NPCList[$lefttarget].pronouns.his + " ass with your "+$currentSexToyLeft.name] to "dildoOtherAnusFuck">>
+				<</if>>
+				<<set _leftaction["Drop your " + $currentSexToyLeft.name] to "dildoDropAnusLeft">>
+			<<case "dildoOtherAnusFuck">>
+				<<if $NPCList[$lefttarget].vagina is "leftDildoAnus" or $NPCList[$lefttarget].penis is "leftDildoAnus">>
+					<<set _leftaction["Fuck " + $NPCList[$lefttarget].pronouns.his + " ass with your "+$currentSexToyLeft.name] to "dildoOtherAnusFuck">>
+				<</if>>
+				<<set _leftaction["Drop your " + $currentSexToyLeft.name] to "dildoDropAnusLeft">>
+			<<case "strokerOtherPenisTease">>
+				<<if $NPCList[$lefttarget].penis is 0 or $NPCList[$lefttarget].penis is "leftStroker">>
+					<<set _leftaction["Fuck " + $NPCList[$lefttarget].pronouns.his + " penis with your "+$currentSexToyLeft.name] to "strokerOtherPenisFuck">>
+				<</if>>
+				<<set _leftaction["Drop your " + $currentSexToyLeft.name] to "strokerDropLeft">>
+			<<case "strokerOtherPenisFuck">>
+				<<if $NPCList[$lefttarget].penis is "leftStroker">>
+					<<set _leftaction["Fuck " + $NPCList[$lefttarget].pronouns.his + " penis with your "+$currentSexToyLeft.name] to "strokerOtherPenisFuck">>
+				<</if>>
+				<<set _leftaction["Drop your " + $currentSexToyLeft.name] to "strokerDropLeft">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "rightActionInit">>
+	<<switch $rightarm>>
+		<<case 0>>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<<set _rightOptions to "orgasm">>
+				<span class="lewd">Your right arm is free, but you can't stop the spasms.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
+				<<set _rightOptions to "pain">>
+				<span class="red">Your right arm is free, but hurts to move.</span>
+			<<elseif $dissociation gte 2 and !$possessed>>
+				<<set _rightOptions to "unreal">>
+				<span class="pink">Your right arm is free, but doesn't feel real.</span>
+			<<elseif $possessed>>
+				<<set _rightOptions to "possessed">>
+				Your right arm is free, <span class="pink">but not under your control.</span>
+			<<else>>
+				<<if _targetYourself is true and _targetnumber gt 1>>
+					<<set _targetlistarms["Yourself"] to "self">>
+				<</if>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateright is undefined>>
+					<<targetListBox "right" _targetlistarms>>
+				<</if>>
+				<<set _rightOptions to "free">>
+				<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is free.</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and $stealstateright is undefined>>
+					<br>
+					<<targetListBox "right" _targetlistarms>>
+				<</if>>
+				<<if _targetnumber is 1>>
+					<<set $righttarget to _firsttarget>>
+				<</if>>
+			<</if>>
+		<<case "penis">>
+			<<set _rightOptions to "penis">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "rightarm">><<set $righttarget to $index>>Your right hand is <<if $NPCList[_j].chastity.penis.includes("chastity")>>teasing<<else>>holding<</if>> <<combatpersons>> $NPCList[_j].penisdesc<<if $NPCList[_j].chastity.penis.includes("chastity")>> through <<his>> $NPCList[_j].chastity.penis<</if>>.</span>
+		<<case "grappled">>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<<set _rightOptions to "bothBound">>
+				<span class="lewd">Your right arm jerks against their grip.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<<set _rightOptions to "bothBound">>
+				<span class="red">Your right arm is held in a painful grip.</span>
+			<<elseif $dissociation gte 2>>
+				<<set _rightOptions to "bothBound">>
+				<span class="pink">Your right arm lies limp in their grip.</span>
+			<<elseif $possessed>>
+				<<set _rightOptions to "possessedBound">>
+				Your right arm writhes in their grip, unbidden.
+			<<else>>
+				<<set _rightOptions to "grappled">>
+				<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right arm is being held down.</span>
+			<</if>>
+		<<case "bound">>
+			<<set _rightOptions to "bothBound">>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<span class="lewd">Your right arm jerks against its bonds.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<span class="red">Your right arm is held in a painful bind.</span>
+			<<elseif $dissociation gte 2>>
+				<span class="pink">Your right arm lies limp in its bonds.</span>
+			<<elseif $possessed>>
+				Your right arm writhes in its bounds, unbidden.
+			<<else>>
+				<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your arms are helplessly bound.</span>
+			<</if>>
+		<<case "othervagina">>
+			<<set _rightOptions to "pussy">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "rightarm">><<set $righttarget to $index>>Your right hand is <<if $NPCList[_j].chastity.vagina.includes("chastity")>>teasing<<else>>stroking<</if>> <<combatpersons>> pussy<<if $NPCList[_j].chastity.vagina.includes("chastity")>> through <<his>> $NPCList[_j].chastity.vagina<</if>>.</span>
+		<<case "vagina">>
+			<<set _rightOptions to "coverVagina">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is protecting your <<pussy>>.</span>
+		<<case "coverpenis">>
+			<<set _rightOptions to "coverPenis">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is protecting your <<penis>>.</span>
+		<<case "anus">>
+			<<set _rightOptions to "coverAss">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is protecting your <<bottom>>.</span>
+		<<case "behind">>
+			<<set _rightOptions to "behind">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is behind your back.</span>
+		<<case "handheld">>
+			<<set _rightOptions to "handheld">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is being held.</span>
+		<<case "heldSexToy">>
+			<<if _targetYourself is true and _targetnumber gt 1>>
+				<<set _targetlistarms["Yourself"] to "self">>
+			<</if>>
+			<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<<targetListBox "right" _targetlistarms>>
+			<</if>>
+			<<set _rightOptions to "heldSexToy">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is holding the $currentSexToyRight.name.</span>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<br>
+				<<targetListBox "right" _targetlistarms>>
+			<</if>>
+			<<if _targetnumber is 1>>
+				<<set $righttarget to _firsttarget>>
+			<</if>>
+		<<case "dildoSelfPussyEntrance">>
+			<<set _rightOptions to "dildoSelfPussyEntrance">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is holding the <<print $currentSexToyRight.name>> above your <<pussy>>.</span>
+		<<case "dildoSelfPussy">>
+			<<set _rightOptions to "dildoSelfPussy">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand fucks your <<pussy>> with the <<print $currentSexToyRight.name>>.</span>
+		<<case "dildoSelfAnusEntrance">>
+			<<set _rightOptions to "dildoSelfAnusEntrance">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is holding the <<print $currentSexToyRight.name>> above your anus.</span>
+		<<case "dildoSelfAnus">>
+				<<set _rightOptions to "dildoSelfAnus">>
+				<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand fucks your <<bottom>> with the <<print $currentSexToyRight.name>>.</span>
+		<<case "strokerSelfPenisEntrance">>
+			<<set _rightOptions to "strokerSelfPenisEntrance">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is holding the <<print $currentSexToyRight.name>> above your <<penisSimple>>.</span>
+		<<case "strokerSelfPenis">>
+			<<set _rightOptions to "strokerSelfPenis">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand fucks your <<penisSimple>> with the <<print $currentSexToyRight.name>></span>
+		<<case "dildoOtherPussyTease">>
+			<<set _rightOptions to "dildoOtherPussyTease">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is <<if $NPCList[$righttarget].chastity.vagina.includes("chastity")>>teasing<<else>>stroking<</if>> <<combatpersons>> pussy<<if $NPCList[$righttarget].chastity.vagina.includes("chastity")>> through <<his>> $NPCList[_j].chastity.vagina<</if>> with your $currentSexToyRight.name.</span>
+		<<case "dildoOtherPussyFuck">>
+			<<set _rightOptions to "dildoOtherPussyFuck">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "rightDildo">><<set $righttarget to $index>>Your right hand fucks <<combatpersons>> pussy with the $currentSexToyRight.name.</span>
+		<<case "dildoOtherAnusTease">>
+			<<set _rightOptions to "dildoOtherAnusTease">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is <<if $NPCList[$righttarget].chastity.vagina.includes("chastity")>>teasing<<else>>stroking<</if>> <<combatpersons>> ass<<if $NPCList[$righttarget].chastity.vagina.includes("chastity")>> through <<his>> $NPCList[_j].chastity.vagina<</if>> with your $currentSexToyRight.name.</span>
+		<<case "dildoOtherAnusFuck">>
+			<<set _rightOptions to "dildoOtherAnusFuck">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')"><<selectNpcWithPartInPositionAnus "rightDildoAnus">><<set $righttarget to $index>>Your right hand fucks <<combatpersons>> ass with the $currentSexToyRight.name.</span>
+		<<case "strokerOtherPenisTease">>
+			<<set _rightOptions to "strokerOtherPenisTease">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is <<if $NPCList[$righttarget].chastity.penis.includes("chastity")>>teasing<<else>>stroking<</if>> <<combatpersons>> <<npcPenisSimple $righttarget>><<if $NPCList[$righttarget].chastity.penis.includes("chastity")>> through <<his>> $NPCList[$righttarget].chastity.penis<</if>> with your $currentSexToyRight.name.</span>
+		<<case "strokerOtherPenisFuck">>
+			<<set _rightOptions to "strokerOtherPenisFuck">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand fucks <<combatpersons>> <<npcPenisSimple $righttarget>> with the $currentSexToyRight.name.</span>
+		<<case "struggle">>
+			<<set $_changetype to true>><<rightActionInitStruggle>>
+		<<case "swarmgrappled">>
+			<<set $_changetype to true>><<rightActionInitSwarm>>
+		<<case "mechgrappled">>
+			<<set $_changetype to true>><<rightActionInitMachine>>
+		<<default>>
+			<<set $_changetype to true>><<rightActionInitTentacle>>
+	<</switch>>
+	<<if $lastOptions.right isnot _rightOptions>>
+		<<set _rightGold to true>>
+	<</if>>
+	<<if $_changetype isnot true>>
+		<<rightActions>>
+		<<if Object.keys(_rightaction).length gt 0>>
+			<<if Object.values(_rightaction).includes($rightactiondefault) is false or _args[0] is true or $rightactiondefault is "rest">>
+				<<set _defaultsCombatAction to "rightaction">>
+				<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+				<<set _pass to false>>
+				<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+					<<if Object.values(_rightaction).includes(_actionsSet[_set])>>
+						<<set $rightactiondefault to clone(_actionsSet[_set])>>
+						<<set _pass to true>>
+						<<break>>
+					<</if>>
+				<</for>>
+				<<if _pass is false>>
+					<<set $rightactiondefault to Object.values(_rightaction)[0]>>
+				<</if>>
+			<</if>>
+
+			<<set $rightaction to $rightactiondefault>>
+			<<set _textColor to combatListColor('rightaction', (Object.values(_rightaction).includes($rightaction) ? $rightaction : Object.values(_rightaction)[0]), "")>>
+			<<generateCombatAction _rightaction "rightaction" _textColor $rightaction>>
+
+			/*Checks/Difficulty*/
+			<<if $options.combatControls.includes("ists")>>
+				<div id="rightactionDifficulty">
+					<<rightactionDifficulty>>
+				</div>
+			<</if>>
+		<</if>>
+		<<set $lastOptions.right to clone(_rightOptions)>>
+	<</if>>
+<</widget>>
+
+<<widget "rightactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $rightaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "rightwork" "rightclit">><<handdifficulty>>
+		<<case "rightplay" "rightgrab">><<handdifficulty>> <<combatpromiscuous3>>
+		<<case "handedge">> <<combatpromiscuous4>>
+		<<case "steal">><<skulduggerydifficulty>><<combatcrime "petty">>
+		<<case "spray">>Remaining: $spray / $spraymax
+		<<case "righthandholdnew">><<handholdingvirginitywarning>><<NPCvirginitywarning $NPCList[$righttarget].fullDescription "handholding">>
+		<<case "rightUndressOther">>
+		<<if Object.keys(_undressRightTargets).length gt 1>>
+			<<listbox "$undressRightTarget">>
+				<<optionsfrom _undressRightTargets>>
+			<</listbox>>
+			<<handdifficulty>> <<combatpromiscuous2>>
+		<</if>>
+		<<case "rightmasturbatepussy">> <<combatpromiscuous2>>
+		<<case "rightmasturbatepenis">> <<combatpromiscuous2>>
+		<<case "rightmasturbateanus">> <<combatpromiscuous3>>
+		<<case "pickupSexToy">>
+			<<if Object.keys(_itemsRight).length gte 1>>
+				<<listbox "$selectedItemRight" autoselect>>
+					<<optionsfrom _itemsRight>>
+				<</listbox>>
+			<</if>>
+			<<combatpromiscuous3>>
+		<<case "handguide">>
+			<<if Object.keys(_handGuideOptions).length gt 0>>
+				<<listbox "$handGuideRight" autoselect>>
+					<<optionsfrom _handGuideOptions>>
+				<</listbox>>
+			<</if>>
+			<<handdifficulty>> <<combatpromiscuous2>>
+		<<case "peniscondom">><<handdifficulty>>
+		<<case "penisremovecondom">><<handdifficulty>>
+		<<case "npcremovecondom">><<handdifficulty>> <<if $consensual is 0 and playerPregnancyPossibleWith($NPCList[$righttarget])>><<combatpromiscuous6>><</if>>
+	<</switch>>
+<</widget>>
+
+<<widget "rightActions">>
+	/*Generate Actions*/
+	<<set _rightaction to {}>>
+	<<if $position is "stalk">>
+		<<if $rightarm isnot "bound">>
+			<<set _rightaction["Clench"] to "clench">>
+			<<set _rightaction["Fold"] to "fold">>
+			<<rightFixAndCoverActions>>
+			<<rightcoverface>>
+			<<right_pursuit_grab>>
+		<</if>>
+	<<else>>
+		<<switch _rightOptions>>
+			<<case "free">>
+				<<set _rightaction["Rest"] to "rest">>
+				<<rightdefault>>
+				<<rightgrabnew>>
+				<<rightplaynew>>
+				<<combatMasturbate "right">>
+				<<applyLube "right">>
+				<<rightclothesnew>>
+				<<removeButtplug "right">>
+				<<rightspraynew>>
+				<<rightstealnew>>
+				<<rightpenwhacknew>>
+				<<combathandhold "righthand">>
+				<<rightFixAndCoverActions>>
+				<<rightchoke>>
+				<<rightCondom>>
+				<<rightNPCCondom>>
+				<<rightshacklewhack>>
+				<<righthypnosiswhack>>
+				<<handsstrugglefreebodypart "right">>
+				<<rightUndressOther>>
+				<<rightdildowhack>>
+				<<pickupSexToy "right">>
+				<<rightcamerapose>>
+				<<righthandpull>>
+			<<case "handheld">>
+				<<if $consensual is 1>>
+					<<set _rightaction["Keep holding"] to "righthandholdkeep">>
+				<</if>>
+				<<combathandguide "right">>
+				<<set _rightaction["Stop"] to "righthandholdstop">>
+			<<case "penis">>
+				<<if $NPCList[$righttarget].chastity.penis.includes("chastity")>>
+					<<set _rightaction["Tease " + $NPCList[$righttarget].pronouns.him] to "rightwork">>
+				<<else>>
+					<<set _rightaction["Work " + $NPCList[$righttarget].pronouns.his + " shaft"] to "rightwork">>
+					<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and currentSkillValue("handskill") gte 800>>
+						<<set _rightaction["Edge"] to "handedge">>
+					<</if>>
+				<</if>>
+				<<set _rightaction["Stop"] to "rightstoppenis">>
+			<<case "grappled">>
+				<<set _rightaction["Rest"] to "rest">>
+				<<set _rightaction["Struggle"] to "rightstruggle">>
+			<<case "bothBound">>
+			<<case "pussy">>
+				<<if $NPCList[$righttarget].chastity.vagina.includes("chastity")>>
+					<<set _rightaction["Tease " + $NPCList[$righttarget].pronouns.him] to "rightclit">>
+				<<else>>
+					<<set _rightaction["Rub " + $NPCList[$righttarget].pronouns.his + " clit"] to "rightclit">>
+					<<if ($consensual is 0 or ($enemytype is "man" ? $promiscuity : $deviancy) gte 55 or $promiscuityIgnore) and currentSkillValue("handskill") gte 800>>
+						<<set _rightaction["Edge"] to "handedge">>
+					<</if>>
+				<</if>>
+				<<set _rightaction["Stop"] to "rightothervaginastop">>
+			<<case "coverVagina">>
+				<<set _rightaction["Keep covering"] to "rightcovervagina">>
+				<<set _rightaction["Stop"] to "rightstopvagina">>
+			<<case "coverPenis">>
+				<<set _rightaction["Keep covering"] to "rightcoverpenis">>
+				<<set _rightaction["Stop"] to "rightstopcoverpenis">>
+			<<case "coverAss">>
+				<<set _rightaction["Keep covering"] to "rightcoveranus">>
+				<<set _rightaction["Stop"] to "rightstopanus">>
+			<<case "behind">>
+				<<set _rightaction["Keep behind"] to "behind">>
+				<<set _rightaction["Stop"] to "stopbehind">>
+			<<case "orgasm">>
+				<<set _rightaction["Fold"] to "rightfold">>
+				<<set _rightaction["Grip"] to "rightgrip">>
+			<<case "pain">>
+				<<set _rightaction["Struggle"] to "rightstruggleweak">>
+				<<set _rightaction["Protect"] to "rightprotect">>
+			<<case "unreal">>
+				<<set _rightaction["Poke yourself"] to "rightpoke">>
+				<<set _rightaction["Keep your arms out of the way"] to "rightcurl">>
+			<<case "possessed">>
+				<<set _rightaction["Accept it"] to "rightacceptW">>
+				<<set _rightaction["Hold it still"] to "rightresistW">>
+			<<case "possessedBound">>
+				<<set _rightaction["Struggle"] to "rightstruggleW">>
+				<<set _rightaction["Hold it still"] to "rightstillW">>
+			<<case "heldSexToy">>
+				<<heldSexToy "right">>
+			<<case "dildoSelfPussyEntrance">>
+				<<dildoSelfPussyEntrance "right">>
+			<<case "dildoSelfPussy">>
+				<<set _rightaction["Fuck your pussy with your "+$currentSexToyRight.name] to "dildoSelfPussy">>
+				<<set _rightaction["Drop your " + $currentSexToyRight.name] to "dildoDrop">>
+			<<case "dildoSelfAnusEntrance">>
+				<<if $analdisable is "f">>
+					<<dildoSelfAnusEntrance "right">>
+				<</if>>
+			<<case "dildoSelfAnus">>
+				<<set _rightaction["Fuck your ass"] to "dildoSelfAnus">>
+				<<set _rightaction["Drop your " + $currentSexToyRight.name] to "dildoDropAnus">>
+			<<case "strokerSelfPenisEntrance">>
+				<<strokerSelfPenisEntrance "right">>
+			<<case "strokerSelfPenis">>
+				<<set _rightaction["Fuck your penis with your "+$currentSexToyRight.name] to "strokerSelfPenis">>
+				<<set _rightaction["Drop your " + $currentSexToyRight.name] to "strokerDrop">>
+			<<case "dildoOtherPussyTease">>
+				<<if $NPCList[$righttarget].vagina is 0>>
+					/*<<set _rightaction["Tease " + $NPCList[$righttarget].pronouns.his + " pussy"] to "dildoOtherPussyTease">>*/ /* Kept incase someone wants to make this happen in the future. */
+					<<set _rightaction["Fuck " + $NPCList[$righttarget].pronouns.his + " pussy with your "+$currentSexToyRight.name] to "dildoOtherPussyFuck">>
+				<</if>>
+				<<set _rightaction["Drop your " + $currentSexToyRight.name] to "dildoDropRight">>
+			<<case "dildoOtherPussyFuck">>
+				<<if $NPCList[$righttarget].vagina is "rightDildoAnus">>
+					<<set _rightaction["Fuck " + $NPCList[$righttarget].pronouns.his + " pussy with your "+$currentSexToyRight.name] to "dildoOtherPussyFuck">>
+				<</if>>
+				<<set _rightaction["Drop your " + $currentSexToyRight.name] to "dildoDropRight">>
+			<<case "dildoOtherAnusTease">>
+				<<if $NPCList[$righttarget].vagina is 0 or $NPCList[$righttarget].penis is 0>>
+					<<set _rightaction["Fuck " + $NPCList[$righttarget].pronouns.his + " ass with your "+$currentSexToyRight.name] to "dildoOtherAnusFuck">>
+				<</if>>
+				<<set _rightaction["Drop your " + $currentSexToyRight.name] to "dildoDropAnusRight">>
+			<<case "dildoOtherAnusFuck">>
+				<<if $NPCList[$righttarget].vagina is "rightDildoAnus" or $NPCList[$righttarget].penis is "rightDildoAnus">>
+					<<set _rightaction["Fuck " + $NPCList[$righttarget].pronouns.his + " ass with your "+$currentSexToyRight.name] to "dildoOtherAnusFuck">>
+				<</if>>
+				<<set _rightaction["Drop your " + $currentSexToyRight.name] to "dildoDropAnusRight">>
+			<<case "strokerOtherPenisTease">>
+				<<if $NPCList[$righttarget].penis is 0 or $NPCList[$righttarget].penis is "rightstroker">>
+					<<set _rightaction["Fuck " + $NPCList[$righttarget].pronouns.his + " penis with your "+$currentSexToyRight.name] to "strokerOtherPenisFuck">>
+				<</if>>
+				<<set _rightaction["Drop your " + $currentSexToyRight.name] to "strokerDropRight">>
+			<<case "strokerOtherPenisFuck">>
+				<<if $NPCList[$righttarget].penis is "rightstroker">>
+					<<set _rightaction["Fuck " + $NPCList[$righttarget].pronouns.his + " penis with your "+$currentSexToyRight.name] to "strokerOtherPenisFuck">>
+				<</if>>
+				<<set _rightaction["Drop your " + $currentSexToyRight.name] to "strokerDropRight">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "feetActionInit">>
+	<<if $dissociation lte 1 and ($pain lt 100 or $willpowerpain is undefined or $possessed)>>
+		<<switch $feetuse>>
+			<<case 0>>
+				<<if $possessed>>
+					<<set _feetOptions to "possessed">>
+					Your legs are free, <span class="pink">but you can't feel them beneath you.</span>
+				/* 北极星模组 */
+				<<elseif $orgasmdown gte 1 and $demonhunter lte 5>>
+				/* 北极星 */
+					<<set _feetOptions to "orgasm">>
+					<span class="lewd">Your legs are free, but you can't stop the spasms.</span>
+				<<else>>
+					<<if _targetYourself is true and _targetnumber gt 1>>
+						<<set _targetlistall["Yourself"] to "self">>
+					<</if>>
+					<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+						<<if !(($leftleg is "grappled" and $rightleg is "grappled") or ($leftleg is "bound" and $rightleg is "bound"))>>
+							<<targetListBox "feet" _targetlistall>>
+						<</if>>
+					<</if>>
+					<<if $leftleg is 0 and $rightleg is 0>>
+						<<set _feetOptions to "free">>
+						<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your legs are free.</span>
+					<<elseif $leftleg is 0>>
+						<<set _feetOptions to "leftFree">>
+						<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your left leg is free.</span>
+					<<elseif $rightleg is 0>>
+						<<set _feetOptions to "rightFree">>
+						<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your right leg is free.</span>
+					<<elseif $leftleg is "grappled" and $rightleg is "grappled">>
+						/* 北极星模组 */
+						<<if $slime gt 0 and $options.bjx_eventTF>>
+							<<set $leftleg to 0>>
+							<<set $rightleg to 0>>
+							<<set _feetOptions to "free">>
+							<br><span class='green'>抓住你双脚的尝试失败了，你的身体直接就滑了出来！</span><br>
+						<<else>>
+							<<set _feetOptions to "grappled">>
+							<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">你的腿被抓住并被迫分开，让你更难保护你的<<genitals>>。</span>
+						<</if>>
+						/* 北极星 */
+					<<elseif $leftleg is "bound" and $rightleg is "bound">>
+						<<set _feetOptions to "bound">>
+						<span @class="($lastOptions.feet isnot _feetOptions ?'gold':'')">Your legs are bound and forced apart, leaving you less able to protect your <<genitals>>.</span>
+					<<else>>
+						<<set _feetOptions to "free">>
+						<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your feet are free.</span>
+					<</if>>
+					<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and _feetOptions.toLowerCase().includes("free")>>
+						<br>
+						<<targetListBox "feet" _targetlistall>>
+					<</if>>
+					<<if _targetnumber is 1>>
+						<<set $feettarget to _firsttarget>>
+					<</if>>
+				<</if>>
+			<<case "penis">>
+				<<set _feetOptions to "penis">>
+				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "feet">><<set $feettarget to $index>>Your feet are <<if $NPCList[_j].chastity.penis.includes("chastity")>>pressed against<<else>>holding<</if>> <<combatpersons>> <<npcPenis _j>>.</span>
+			<<case "othervagina">>
+				<<set _feetOptions to "othervagina">>
+				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "feet">><<set $feettarget to $index>>Your feet are <<if $NPCList[_j].chastity.vagina.includes("chastity")>>pressed against<<else>>holding back<</if>> <<combatpersons>> <<npcVagina _j>>.</span>
+			<<case "bound">>
+				<<if $possessed>>
+					Your legs thrash in their shackles, unbidden.
+				/* 北极星模组 */
+				<<elseif $orgasmdown gte 1 and $demonhunter lte 5>>
+				/* 北极星 */
+					<span class="lewd">Your legs thrash against their bindings.</span>
+				<<else>>
+					<<set _feetOptions to "bound">>
+					<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your legs are bound.</span>
+				<</if>>
+			<<case "walk">>
+				<<set _feetOptions to "walk">>
+				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">You are walking.</span>
+			<<case "strut">>
+				<<set _feetOptions to "strut">>
+				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">You are strutting.</span>
+			<<case "run">>
+				<<set _feetOptions to "run">>
+				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">You are running.</span>
+			<<case "none">>
+				<<set _feetOptions to "unusable">>
+				<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your feet are free but unusable in this position.</span>
+			<<case "mechgrappled">>
+				<<set $_changetype to true>><<feetActionInitMachine>>
+			<<case "legLock">>
+				/* 北极星模组 */
+				<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+				/* 北极星 */
+					<<set _feetOptions to "orgasmLegLock">>
+					<span class="lewd"><<if $position is "missionary">>Your legs clench around<<else>>You push back against<</if>> $NPCList[$leglocktarget].pronouns.him even harder as you climax.</span>
+				<<else>>
+					<<set _feetOptions to "legLocked">>
+					<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your legs are locked around <<personselect $leglocktarget>><<combatperson>>.</span>
+				<</if>>
+			<<default>>
+				<<set $_changetype to true>><<feetActionInitTentacle>>
+		<</switch>>
+		<<if $lastOptions.feet isnot _feetOptions>>
+			<<set _feetGold to true>>
+		<</if>>
+		<<if $_changetype isnot true>>
+			<<feetActions>>
+			<<if Object.keys(_feetaction).length gt 0>>
+				<<if Object.values(_feetaction).includes($feetactiondefault) is false or _args[0] is true or $feetactiondefault is "rest">>
+					<<set _defaultsCombatAction to "feetaction">>
+					<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+					<<set _pass to false>>
+					<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+						<<if Object.values(_feetaction).includes(_actionsSet[_set])>>
+							<<set $feetactiondefault to clone(_actionsSet[_set])>>
+							<<set _pass to true>>
+							<<break>>
+						<</if>>
+					<</for>>
+					<<if _pass is false>>
+						<<set $feetactiondefault to Object.values(_feetaction)[0]>>
+					<</if>>
+				<</if>>
+
+				<<set $feetaction to $feetactiondefault>>
+				<<set _textColor to combatListColor('feetaction', (Object.values(_feetaction).includes($feetaction) ? $feetaction : Object.values(_feetaction)[0]), "")>>
+				<<generateCombatAction _feetaction "feetaction" _textColor $feetaction>>
+
+				/*Checks/Difficulty*/
+				<<if $options.combatControls.includes("ists")>>
+					<div id="feetactionDifficulty">
+						<<feetactionDifficulty>>
+					</div>
+				<</if>>
+			<</if>>
+			<<set $lastOptions.feet to clone(_feetOptions)>>
+		<</if>>
+	<<else>>
+		<<timed 100ms>>
+			<<run jQuery("#feetaction").remove();>>
+		<</timed>>
+	<</if>>
+<</widget>>
+
+<<widget "feetactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $feetaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "grab" "vaginagrab">><<feetdifficulty>><<combatpromiscuous3>>
+		<<case "legLock">><<thighdifficulty>><<if $consensual is 0>><<combatpromiscuous6>><<else>><<combatpromiscuous3>><</if>>
+		<<case "legLocked">><<if _feetOptions isnot "orgasmLegLock">><<thighdifficulty>><</if>>
+		<<case "run">><<if $NPCList[0].legs is "run">><<stalk_athletics_difficulty>><</if>>
+		<<case "hide">><<if $NPCList[0].state is "stalk">><<stalk_skulduggery_difficulty>><</if>>
+		/* 北极星模组 */
+		<<case "pleaseagain">><span class="lewd">- 恶魔</span>
+		<<case "forceagain">><span class="gold">- 龙</span>
+		/* 北极星 */
+	<</switch>>
+<</widget>>
+
+<<widget "feetActions">>
+	/*Generate Actions*/
+	<<set _feetaction to {}>>
+	<<if $position is "stalk">>
+		<<feet_walk>>
+		<<feet_strut>>
+		<<feet_run>>
+		<<feet_hobble>>
+		<<feet_stand>>
+		<<feet_hide>>
+		<<feet_confront>>
+	<<else>>
+		<<set _feetaction["Rest"] to "rest">>
+		/* 北极星模组 */
+		<<if $options.bjx_divine and $demon gte 6 and $enemyarousal gte $enemyarousalmax>>
+    		<<set _feetaction["再来一发"] to "pleaseagain">>
+    	<</if>>
+    	<<if $options.bjx_animal and $dragon gte 6 and $enemyarousal gte $enemyarousalmax>>
+    		<<set _feetaction["贪婪索取"] to "forceagain">>
+    	<</if>>
+    	/* 北极星 */
+		<<switch _feetOptions>>
+			<<case "free">>
+				<<feetgrabnew>>
+				<<feetKick>>
+				<<feetshoes>>
+				<<feetsocks>>
+				<<legLock>>
+			<<case "leftfree" "rightFree">>
+				<<feetgrabnew>>
+				<<feetKick>>
+			<<case "penis">>
+				<<feetGrabRub>>
+			<<case "othervagina">>
+				<<feetOthervagina>>
+			<<case "legLocked">>
+				<<run delete _feetaction["Rest"]>>
+				<<legLocked>>
+			<<case "orgasm">>
+				<<run delete _feetaction["Rest"]>>
+				<<set _feetaction["Hold still"] to "feetHold">>
+				<<set _feetaction["Curl toes"] to "feetCurl">>
+				<<legLock>>
+			<<case "orgasmLegLock">>
+				<<run delete _feetaction["Rest"]>>
+				<<set _feetaction["No escape!"] to "legLocked">>
+			<<case "possessed">>
+				<<set _feetaction to {}>>
+				<<set _feetaction["Accept it"] to "feetacceptW">>
+				<<set _feetaction["Hold it still"] to "feetresistW">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+/* 北极星模组 */
+<<widget "tailActionInit">>
+    <<if $hastail is "true">>
+        <<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+    		<<targetListBox "tail" _targetlistall>>
+    	<</if>>
+    	<<set _tailOptions to "free">>
+    	<span @class="($lastOptions.tail isnot _tailOptions ?'gold':'')">你的尾巴是自由的。</span>
+    	<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+    		<br>
+    		<<targetListBox "tail" _targetlistall>>
+    	<</if>>
+    	<<if _targetnumber is 1>>
+    		<<set $tailtarget to _firsttarget>>
+    	<</if>>
+    	<<if $lastOptions.tail isnot _tailOptions>>
+    		<<set _tailGold to true>>
+    	<</if>>
+    	<<if $_changetype isnot true>>
+    		<<tailActions>>
+    		<<if Object.keys(_tailaction).length gt 0>>
+    		    <<if Object.values(_tailaction).includes($tailactiondefault) is false or _args[0] is true or $tailactiondefault is "rest">>
+    				<<set _defaultsCombatAction to "tailaction">>
+    				<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+    				<<set _pass to false>>
+    				<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+    					<<if Object.values(_tailaction).includes(_actionsSet[_set])>>
+    						<<set $tailactiondefault to clone(_actionsSet[_set])>>
+    						<<set _pass to true>>
+    						<<break>>
+    					<</if>>
+    				<</for>>
+    				<<if _pass is false>>
+    					<<set $tailactiondefault to Object.values(_tailaction)[0]>>
+    				<</if>>
+    			<</if>>
+    			<<set $tailaction to $tailactiondefault>>
+    			<<set _textColor to combatListColor('tailaction', (Object.values(_tailaction).includes($tailaction) ? $tailaction : Object.values(_tailaction)[0]), "")>>
+    			<<generateCombatAction _tailaction "tailaction" _textColor $tailaction>>
+    
+    			<<if $options.combatControls.includes("ists")>>
+    				<div id="tailactionDifficulty">
+    					<<tailactionDifficulty>>
+    				</div>
+    			<</if>>
+    		<</if>>
+    		<<set $lastOptions.tail to clone(_tailOptions)>>
+    	<<else>>
+    		<<timed 100ms>>
+    			<<run jQuery("#tailaction").remove();>>
+    		<</timed>>
+    	<</if>>
+    <</if>>
+<</widget>>
+
+<<widget "tailactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $tailaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+<</widget>>
+
+<<widget "tailActions">>
+	/*Generate Actions*/
+	<<set _tailaction to {}>>
+	<<set _tailaction["休息"] to "rest">>
+	<<if $NPCList[0].state isnot "stalk">>
+		<<switch _tailOptions>>
+			<<case "free">>
+				<<if $options.bjx_animal and $transformationParts.dog.tail is "default">>
+                    <<tailshake>>
+                <</if>>
+                <<if $options.bjx_animal and $transformationParts.spider.tail is "default" and ($cobwebuse is undefined or $cobwebuse lte 5)>>
+                    <<tailspin>>
+                <</if>>
+                <<if $options.bjx_animal and $transformationParts.bee.tail is "default">>
+					<<tailstab>>
+				<</if>>
+		<</switch>>
+	<</if>>
+<</widget>>
+/* 北极星 */
+
+<<widget "mouthActionInit">>
+	<<if $robinRentEvent is 1 and ["pay","still"].includes($combatPhase)>>
+		<<set _mouthGold to true>>
+	<</if>>
+	/* 北极星模组 */
+	<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+	/* 北极星 */
+		<<if $mouthuse is 0>>
+			<<set _mouthOptions to "orgasm">>
+			<span class="lewd">Your mouth is free, but involuntary moans and cries prevent speaking.</span>
+		<<else>>
+			<<timed 100ms>>
+				<<run jQuery("#mouthaction").remove();>>
+			<</timed>>
+		<</if>>
+	<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
+		<<if $mouthuse is 0>>
+			<<set _mouthOptions to "pain">>
+			<span class="red">Your mouth is free, but involuntary sobs and cries prevent speaking.</span>
+		<<else>>
+			<<timed 100ms>>
+				<<run jQuery("#mouthaction").remove();>>
+			<</timed>>
+		<</if>>
+	<<elseif $dissociation gte 2 and !$possessed>>
+		<<if $mouthuse is 0>>
+			<<set _mouthOptions to "unreal">>
+			<span class="pink">Your mouth is free, but you don't know why.</span>
+		<<else>>
+			<<timed 100ms>>
+				<<run jQuery("#mouthaction").remove();>>
+			<</timed>>
+		<</if>>
+	<<elseif $possessed>>
+		<<if $mouthuse is 0>>
+			<<set _mouthOptions to "possessed">>
+			Your mouth is free, <span class="pink">but unfamiliar words spill from your tongue.</span>
+		<<elseif $mouthuse is "lefthand" or $mouthuse is "righthand">>
+			<<set _mouthOptions to "possessedBound">>
+			Your mouth is blocked, muffling the foreign words that well up within you.
+		<<else>>
+			<<timed 100ms>>
+				<<run jQuery("#mouthaction").remove();>>
+			<</timed>>
+		<</if>>
+	<<else>>
+		<<switch $mouthuse>>
+			<<case 0>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<<targetListBox "mouth" _targetlist>>
+				<</if>>
+				<<set _mouthOptions to "free">>
+				<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is free.</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<br>
+					<<targetListBox "mouth" _targetlist>>
+				<</if>>
+				<<if _targetnumber is 1>>
+					<<set $mouthtarget to _firsttarget>>
+				<</if>>
+			<<case "othervagina">>
+				<<set _mouthOptions to "othervagina">><<selectNpcWithPartInPosition "vagina" "mouth">><<set $mouthtarget to $index>>
+				<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<combatPerson>>'s pussy presses against your lips.</span>
+			<<case "kiss">>
+				<<set _mouthOptions to "kiss">>
+				<<switch $mouthstate>>
+					<<case "kissentrance">>
+						<<selectNpcWithPartInPosition "mouth" "kissentrance">><<set $mouthtarget to $index>>
+						<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is about to be pressed by <<combatpersons>>.</span>
+						<<if $player.virginity.kiss is true>><span class="red">Your first kiss is about to be taken.</span><</if>>
+					<<case "kissimminent">>
+						<<selectNpcWithPartInPosition "mouth" "kissimminent">><<set $mouthtarget to $index>>
+						<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is pressed by <<combatpersons>>.</span>
+					<<case "kiss">>
+						<<selectNpcWithPartInPosition "mouth" "kiss">><<set $mouthtarget to $index>>
+						<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is engulfed by <<combatpersons>>.</span>
+				<</switch>>
+			<<case "facesit">>
+				<<switch $mouthstate>>
+				<<case "vagina">>
+					<<set _mouthOptions to "facesit">><<selectNpcWithPartInPosition "vagina" "facesit">>
+				<<case "anal">>
+					<<set _mouthOptions to "otheranus">><<selectNpcWithPartInPosition "vagina" "facesitanal">>
+				<</switch>><<set $mouthtarget to $index>>
+				<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<facesitFlavorText>></span>
+			<<case "gagged">>
+				<<set _mouthOptions to "gagged">>
+				<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is helplessly gagged.</span>
+			<<case "tentacle">>
+				<<set $_changetype to true>><<mouthActionInitTentacle>>
+			<<case "struggle">>
+				<<set $_changetype to true>><<mouthActionInitStruggle>>
+			/* 北极星模组 */
+			<<case "frog">>
+				<<set $_changetype to true>><<mouthActionInitStruggle>>
+			/* 北极星 */
+		<<default>>
+			<<switch $mouthstate>>
+				<<case "entrance">>
+					<<set _mouthOptions to "penisEntrance">>
+					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "mouthentrance">><<set $mouthtarget to $index>><<combatPerson>>'s <<npcPenis $index>> hovers in front of your mouth.</span>
+				<<case "imminent">>
+					<<set _mouthOptions to "penisImminent">>
+					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "mouthimminent">><<set $mouthtarget to $index>><<combatPerson>>'s <<npcPenis $index>> presses against your lips.</span>
+				<<case "penetrated">>
+					<<set _mouthOptions to "penisPenetrated">>
+					<<if $enemyarousal gte $enemyarousalmax>>
+						<span class="gold"><<selectNpcWithPartInPosition "penis" "mouth">><<set $mouthtarget to $index>><<combatPerson>>'s <<npcPenis $index>> spasms in your mouth.</span>
+					<<else>>
+						<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "mouth">><<set $mouthtarget to $index>><<combatPerson>>'s <<npcPenis $index>> penetrates your mouth.</span>
+					<</if>>
+				<<case "gagged">>
+					<<set _mouthOptions to "gagged">>
+					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is helplessly gagged.</span>
+				<<case "breasts">>
+					<<set _mouthOptions to "breasts">>
+					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<breastFlavorText>></span><<set $mouthtarget to $index>>
+				<<case "nipple">>
+					<<set _mouthOptions to "nipple">>
+					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<nippleFlavorText>></span><<set $mouthtarget to $index>>
+				<<case "otheranus">>
+					<<set _mouthOptions to "otheranus">><<selectNpcWithPartInPosition "penis" "mouthotheranus">><<set $mouthtarget to $index>>
+					<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')"><<combatPerson>>'s ass presses against your lips.</span>
+				<<default>>
+					<<if $mouthuse is "righthand" or $mouthuse is "lefthand">>
+						<<set _mouthOptions to $mouthuse>>
+						<<if $mouthuse is "righthand">>
+							<<selectNpcWithPartInPosition "hand" "mouth">>
+						<<else>>
+							<<selectNpcWithPartInPosition "lefthand" "mouth">>
+						<</if>><<set $mouthtarget to $index>>
+						<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is blocked by <<combatpersons>> hand, muffling any noise you make.</span>
+					<<else>>
+						<<set _mouthOptions to "blocked">>
+						<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">Your mouth is blocked, muffling any noise you make.</span>
+					<</if>>
+			<</switch>>
+		<</switch>>
+	<</if>>
+	<<if $lastOptions.mouth isnot _mouthOptions>>
+		<<set _mouthGold to true>>
+	<</if>>
+	<<if $_changetype isnot true>>
+		<<mouthActions>>
+		<<if Object.keys(_mouthaction).length gt 0>>
+			<<if Object.values(_mouthaction).includes($mouthactiondefault) is false or _args[0] is true or $mouthactiondefault is "rest">>
+				<<set _defaultsCombatAction to "mouthaction">>
+				<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+				<<set _pass to false>>
+				<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+					<<if Object.values(_mouthaction).includes(_actionsSet[_set])>>
+						<<set $mouthactiondefault to clone(_actionsSet[_set])>>
+						<<set _pass to true>>
+						<<break>>
+					<</if>>
+				<</for>>
+				<<if _pass is false>>
+					<<set $mouthactiondefault to Object.values(_mouthaction)[0]>>
+				<</if>>
+			<</if>>
+
+			<<set $mouthaction to $mouthactiondefault>>
+			<<set _textColor to combatListColor('mouthaction', (Object.values(_mouthaction).includes($mouthaction) ? $mouthaction : Object.values(_mouthaction)[0]), "")>>
+			<<generateCombatAction _mouthaction "mouthaction" _textColor $mouthaction>>
+
+			/*Checks/Difficulty*/
+			<<if $options.combatControls.includes("ists")>>
+				<div id="mouthactionDifficulty">
+					<<mouthactionDifficulty>>
+				</div>
+			<</if>>
+		<</if>>
+		<<set $lastOptions.mouth to clone(_mouthOptions)>>
+	<</if>>
+<</widget>>
+
+<<widget "mouthactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $mouthaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "mouth" "othervagina">><<oraldifficulty>> <<combatpromiscuous4>>
+		<<case "oraledge">> <<combatpromiscuous4>>
+		<<case "movetochest">><<oraldifficulty>> <<combatpromiscuous3>>
+		<<case "ejacswallow">><<oraldifficulty>> <<combatpromiscuous5>>
+		<<case "ejacspit">><<oraldifficulty>>
+		<<case "swallow">><<oralvirginitywarning>> <<combatpromiscuous5>>
+		<<case "grasp">><<chestdifficulty>> <<combatpromiscuous3>>
+		<<case "kisslips">><<oraldifficulty>> <<combatpromiscuous1>>
+		<<case "pullaway" "pullawaykiss">><<oraldifficulty>>
+		<<case "finish">><<if !$gloryhole and $gamemode isnot "soft">><<seductiondifficulty>><</if>>
+		<<case "novaginal">><<if !$gloryhole and $gamemode isnot "soft">><<seductiondifficulty>><</if>>
+		<<case "nopenile">><<if !$gloryhole and $gamemode isnot "soft">><<seductiondifficulty>><</if>>
+		<<case "noanal">><<if !$gloryhole and $gamemode isnot "soft">><<seductiondifficulty>><</if>>
+		<<case "noupper">><<if !$gloryhole and $gamemode isnot "soft">><<seductiondifficulty>><</if>>
+		<<case "mock">>
+			<<listbox "$mockaction">>
+				<<option "ethics" "ethics" `$mockaction is "ethics" ? "selected" : ""`>>
+				<<option "looks" "looks" `$mockaction is "looks" ? "selected" : ""`>>
+				<<option "strength" "weak" `$mockaction is "weak" ? "selected" : ""`>>
+				<<option "skill" "skill" `$mockaction is "skill" ? "selected" : ""`>>
+				<<option "penis" "penis" `$mockaction is "penis" ? "selected" : ""`>>
+				<<option "pussy" "vagina" `$mockaction is "vagina" ? "selected" : ""`>>
+			<</listbox>>
+			<<run $(() => { $('#listbox-mockaction').on('change', () => $('#listbox-mockaction').parent().click()) })>>
+		<<case "ask">>
+			<<switch $askAction>>
+				<<case "askchoke" "condoms" "noCondoms">>
+					<<set $_label to "subList">>
+				<<default>>
+					<<set $_label to "bratList">>
+			<</switch>>
+			<div id="askDifficulty" @class="($options.combatControls is 'radio' ? '' : $_label)" style="display:inline;">
+				<<listbox "$askAction" autoselect>>
+					<<optionsfrom _askActions>>
+				<</listbox>>
+			</div>
+			<<if _runOnce isnot true>><<updateAskColour>><<set _runOnce to true>><</if>>
+			<<run $(() => { $('#askDifficulty select').on('change', () => $('#askDifficulty').click()) })>>
+	<</switch>>
+<</widget>>
+
+<<widget "mouthActions">>
+	/*Generate Actions*/
+	<<set _mouthaction to {}>>
+	<<if !(["orgasm", "pain", "unreal", "possessed"].includes(_mouthOptions))>>
+		<<set _mouthaction["Rest"] to "rest">>
+	<</if>>
+	<<if $position is "stalk">>
+		<<head_turn>>
+		<<head_down>>
+		<<head_up>>
+	<<else>>
+		<<switch _mouthOptions>>
+			<<case "free">>
+				<<if $head isnot "grappled" and $head isnot "bound">>
+					<<if !$worn.face.type.includes("covered") and !$worn.face.type.includes("gag")>>
+						<<if $chestuse is "penis">>
+							<<set _mouthaction["Kiss"] to "peniskiss">>
+						<<else>>
+							<<set _mouthaction["Kiss " + $NPCList[$mouthtarget].pronouns.his + " skin"] to "kissskin">>
+						<</if>>
+						<<if $NPCList[$mouthtarget].mouth is 0 and $enemytype isnot "beast" and $NPCList[$mouthtarget].location.genitals isnot "head" and $consensual is 1 and !$gloryhole>>
+							<<set _mouthaction["Move your lips to " + $NPCList[$mouthtarget].pronouns.hers] to "kisslips">>
+						<</if>>
+					<</if>>
+				<</if>>
+				<<oralnew>>
+				<<speak>>
+				<<combatApologise>>
+				/* 北极星模组 */
+				<<if $options.bjx_animal and $dragon gte 6 and $consensual isnot 1 and ($dragonbreathuse lte 5 or $dragonbreathuse is undefined)>>
+					<<set _mouthaction["龙息"] to "dragonBreath">>
+				<</if>>
+				/* 北极星 */
+			<<case "othervagina" "facesit">>
+				<<combatOthervagina>>
+			<<case "otheranus">>
+				<<combatMouthOtherAnus>>
+			<<case "kiss">>
+				<<set _mouthaction["Kiss"] to "kissback">>
+				<<if $head isnot "grappled" and $head isnot "bound">>
+					<<set _mouthaction["Pull away"] to "pullawaykiss">>
+				<</if>>
+				<<if $consensual isnot 1 and ($fightTargets is undefined or $fightTargets.includes($mouthtarget))>>
+					<<set _mouthaction["Headbutt"] to "headbutt">>
+				<</if>>
+				/* 北极星模组 */
+				<<if $options.bjx_eventTF and $consensual isnot 1 and $slime is 1 and ($fightTargets is undefined or $fightTargets.includes($mouthtarget))>>
+					<<set _mouthaction["腐蚀"] to "corrode">>
+				<</if>>
+				/* 北极星 */
+				<<if $mouthstate isnot "kiss" and $mouthstate isnot "kissimminent">>
+					<<speak>>
+				<</if>>
+			<<case "gagged">>
+			<<case "penisEntrance">>
+				<<combatPenisEntrance>>
+			<<case "penisImminent">>
+				<<combatPenisImminent>>
+			<<case "penisPenetrated">>
+				<<combatPenisPenetrated>>
+			<<case "breasts">>
+				<<combatBreast>>
+			<<case "nipple">>
+				<<combatNipple>>
+			<<case "lefthand" "righthand">>
+				<<if $fightTargets is undefined or $fightTargets.includes($mouthtarget)>>
+					<<set _mouthaction["Bite"] to "handbite">>
+				<</if>>
+			<<case "orgasm">>
+				<<set _mouthaction["Stifle"] to "stifleorgasm">>
+				<<set _mouthaction["Let it out"] to "letoutorgasm">>
+			<<case "pain">>
+				<<set _mouthaction["Stifle"] to "stifle">>
+				<<set _mouthaction["Let it out"] to "letout">>
+			<<case "unreal">>
+				<<set _mouthaction["Try to speak"] to "speak">>
+				<<set _mouthaction["Make soft noises"] to "noises">>
+			<<case "possessed">>
+				<<set _mouthaction["Accept it"] to "mouthacceptW">>
+				<<set _mouthaction["Clamp your mouth shut"] to "mouthresistW">>
+			<<case "possessedBound">>
+				<<set _mouthaction["Bite"] to "handbiteW">>
+				<<set _mouthaction["Clamp your mouth shut"] to "handcloseW">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "penisActionInit">>
+	/* 北极星模组 */
+	<<if $dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
+	/* 北极星 */
+		<<switch $penisstate>>
+			<<case 0>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<<targetListBox "penis" _targetlist>>
+				<</if>>
+				<<set _penisOptions to "free">>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')">Your <<penis>> is free.</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<br>
+					<<targetListBox "penis" _targetlist>>
+				<</if>>
+				<<if _targetnumber is 1>>
+					<<set $penistarget to _firsttarget>>
+				<</if>>
+			<<case "othermouthentrance">>
+				<<set _penisOptions to "mouthEntrance">><<selectNpcWithPartInPosition "mouth" "penisentrance">><<set $penistarget to $index>>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')">You feel breath on your <<penis>>.</span>
+			<<case "othermouthimminent">>
+				<<set _penisOptions to "mouthImminent">><<selectNpcWithPartInPosition "mouth" "penisimminent">><<set $penistarget to $index>>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<combatPerson>>'s lips press against the tip of your <<penis>>.</span>
+			<<case "othermouth">>
+				<<set _penisOptions to "mouthPenetration">><<selectNpcWithPartInPosition "mouth" "penis">><<set $penistarget to $index>>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<combatPerson>>'s mouth envelops your <<penis>>.</span>
+			<<case "entrance">>
+				<<set _penisOptions to "pussyEntrance">>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "penisentrance">><<set $penistarget to $index>><<combatPerson>>'s <<npcVagina _j>> hovers near your <<penis>>.</span>
+			<<case "imminent">>
+				<<set _penisOptions to "pussyImminent">>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "vagina" "penisimminent">><<set $penistarget to $index>><<combatPerson>>'s <<npcVagina _j>> presses against your <<penis>>.</span>
+			<<case "penetrated">>
+				<<set _penisOptions to "pussyPenetration">><<selectNpcWithPartInPosition "vagina" "penis">><<set $penistarget to $index>>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<combatPerson>>'s vagina envelops your <<penis>>.</span>
+			<<case "otheranusentrance">>
+				<<set _penisOptions to "anusEntrance">>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPositionAnus "otheranusentrance">><<set $penistarget to $index>><<combatPerson>>'s <<npcAnus _j>> hovers near your <<penis>>.</span>
+			<<case "otheranusimminent">>
+				<<set _penisOptions to "anusImminent">>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPositionAnus "otheranusimminent">><<set $penistarget to $index>><<combatPerson>>'s <<npcAnus _j>> presses against your <<penis>>.</span>
+			<<case "otheranus">>
+				<<set _penisOptions to "anusPenetration">><<selectNpcWithPartInPositionAnus "otheranus">><<set $penistarget to $index>>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<combatPerson>>'s ass envelops your <<penis>>.</span>
+			<<case "otherpenisentrance">>
+				<<set _penisOptions to "penisEntrance">>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "penisentrance">><<set $penistarget to $index>><<combatPerson>>'s <<npcPenisSimple $penistarget>> hovers near your <<penis>>.</span>
+			<<case "otherpenisimminent">>
+				<<set _penisOptions to "penisImminent">>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "penisimminent">><<set $penistarget to $index>><<combatPerson>>'s <<npcPenisSimple $penistarget>> threatens your <<penis>>.</span>
+			<<case "otherpenis">>
+				<<set _penisOptions to "penisPenetration">>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "penis">><<set $penistarget to $index>><<combatPerson>>'s <<npcPenisSimple $penistarget>> presses against your <<penis>>.</span>
+			<<case "otherhandentrance">>
+				<<set _penisOptions to "otherHandEntrance">><<selectNpcWithPartInPosition "hand" "penisentrance">><<set $penistarget to $index>>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<combatPerson>>'s fingers brush against your shaft.</span>
+			<<case "otherhand">>
+				<<set _penisOptions to "otherHand">><<selectNpcWithPartInPosition "hand" "penis">><<set $penistarget to $index>>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<combatPerson>> holds your penis.</span>
+			<<case "strokerSelfPenis">>
+				<<set _penisOptions to "strokerSelfPenis">>
+				<<if $currentSexToyLeft isnot undefined and $currentSexToyLeft.type.includes("stroker")>>
+					<<set $_stroker to $currentSexToyLeft.name>>
+				<<else>>
+					<<set $_stroker to $currentSexToyRight.name>>
+				<</if>>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')">Your $_stroker envelops your <<penis>>.</span>
+			<<case "stroker">>
+				<<set _penisOptions to "strokerPenetration">><<selectNpcWithPartInPosition "hand" "penisstroker">>
+				<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<combatPerson>>'s stroker envelops your <<penis>>.</span>
+			<<case "tentacleentrance" "tentacleimminent" "tentacle" "tentacledeep" "tentaclerub">>
+				<<set $_changetype to true>><<penisActionInitTentacle>>
+			<<case "struggle" "struggle_pen">>
+				<<set $_changetype to true>><<penisActionInitStruggle>>
+			<<default>>
+				<<switch $penisuse>>
+					<<case "clit">>
+						<<set _penisOptions to "penisAgainstClit">><<selectNpcWithPartInPosition "vagina" "frot">><<set $penistarget to $index>>
+						<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')">You press your <<penis>> against <<his>> <<if $enemytype is "beast">><<beasttype>> pussy<<else>>clit<</if>>.</span>
+					<<case "otheranusrub">>
+						<<set _penisOptions to "penisAgainstAss">>
+						<span @class="($lastOptions.penis isnot _penisOptions or _penisGold is true ?'gold':'')"><<selectNpcWithPartInPositionAnus "otheranusfrot">><<set $penistarget to $index>>You hold your <<penis>> between <<his>> ass cheeks<<if $NPCList[_j].chastity.anus.includes("shield")>>, teasing through <<his>> $NPCList[_j].chastity.anus<</if>>.</span>
+				<</switch>>
+		<</switch>>
+		<<if $lastOptions.penis isnot _penisOptions>>
+			<<set _penisGold to true>>
+		<</if>>
+		<<if $_changetype isnot true>>
+			<<penisActions>>
+			<<if Object.keys(_penisaction).length gt 0>>
+				<<if Object.values(_penisaction).includes($penisactiondefault) is false or _args[0] is true or $penisactiondefault is "rest">>
+					<<set _defaultsCombatAction to "penisaction">>
+					<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+					<<set _pass to false>>
+					<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+						<<if Object.values(_penisaction).includes(_actionsSet[_set])>>
+							<<set $penisactiondefault to clone(_actionsSet[_set])>>
+							<<set _pass to true>>
+							<<break>>
+						<</if>>
+					<</for>>
+					<<if _pass is false>>
+						<<set $penisactiondefault to Object.values(_penisaction)[0]>>
+					<</if>>
+				<</if>>
+
+				<<set $penisaction to $penisactiondefault>>
+				<<set _textColor to combatListColor('penisaction', (Object.values(_penisaction).includes($penisaction) ? $penisaction : Object.values(_penisaction)[0]), "")>>
+				<<generateCombatAction _penisaction "penisaction" _textColor $penisaction>>
+
+				/*Checks/Difficulty*/
+				<<if $options.combatControls.includes("ists")>>
+					<div id="penisactionDifficulty">
+						<<penisactionDifficulty>>
+					</div>
+				<</if>>
+			<</if>>
+			<<set $lastOptions.penis to clone(_penisOptions)>>
+		<</if>>
+	<<else>>
+		<<timed 100ms>>
+			<<run jQuery("#penisaction").remove();>>
+		<</timed>>
+	<</if>>
+<</widget>>
+
+<<widget "penisactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $penisaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "penistovagina" "penistoanus">><<peniledifficulty>> <<combatpromiscuous5>>
+		<<case "penisvaginafuck" "penisanusfuck">><<combatpromiscuous5>> <<penilevirginitywarning>><<if _diffAction is "penisvaginafuck">><<NPCvirginitywarning $NPCList[_n].fullDescription "vaginal">><<else>><<NPCvirginitywarning $NPCList[_n].fullDescription "anal">><</if>>
+		<<case "thighbay">><<thighdifficulty>> <<combatpromiscuous1>>
+		<<case "bay">><<peniledifficulty>> <<combatpromiscuous4>>
+		<<case "otheranusbay">><<peniledifficulty>> <<combatpromiscuous4>>
+		<<case "clitrub" "otheranusrub">><<peniledifficulty>>
+		<<case "vaginaEdging" "otheranusEdging">><<combatpromiscuous4>>
+		<<case "penistopenis" "penistopenis">><<peniledifficulty>> <<combatpromiscuous4>>
+		<<case "penistopenisfuck">><<combatpromiscuous4>>
+		<<case "penisthighs">><<thighdifficulty>> <<combatpromiscuous4>>
+		<<case "penisanus">><<analdifficulty>>
+		<<case "penisanusdouble">><<analdifficulty>><<combatpromiscuous5>><<combataware 4>>
+		<<case "pullOut">><<peniledifficulty>>
+		<<case "forceImpregnation">><span class="red">- Demon</span>
+	<</switch>>
+<</widget>>
+
+<<widget "penisActions">>
+	/*Generate Actions*/
+	<<set _penisaction to {}>>
+	/* 北极星模组 */
+	<<if $demonhunter gte 2>>
+		<<set _penisaction["忍耐"] to "endure">>
+	<</if>>
+	/* 北极星 */
+	<<if $position is "stalk">>
+
+	<<else>>
+		<<switch _penisOptions>>
+			<<case "free">>
+				<<set _penisaction["Rest"] to "rest">>
+				<<actionspenistovaginanew>>
+				<<actionspenistoanusnew>>
+				<<actionspenistopenis>>
+			<<case "mouthEntrance">>
+				<<set _penisaction["Rest"] to "rest">>
+				<<actionspenisMouthEntrance>>
+			<<case "mouthImminent">>
+				<<set _penisaction["Rest"] to "rest">>
+				<<actionspenisMouthImminent>>
+			<<case "mouthPenetration">>
+				<<actionspenisMouthPenetration>>
+			<<case "pussyEntrance">>
+				<<set _penisaction["Rest"] to "rest">>
+				<<actionspenisPussyEntrance>>
+			<<case "pussyImminent">>
+				<<set _penisaction["Rest"] to "rest">>
+				<<actionspenisPussyImminent>>
+			<<case "pussyPenetration">>
+				<<actionspenisPussyPenetration>>
+			<<case "anusEntrance">>
+				<<set _penisaction["Rest"] to "rest">>
+				<<actionspenisAnusEntrance>>
+			<<case "anusImminent">>
+				<<set _penisaction["Rest"] to "rest">>
+				<<actionspenisAnusImminent>>
+			<<case "anusPenetration">>
+				<<actionspenisAnusPenetration>>
+			<<case "penisAgainstClit">>
+				<<actionspenisAgainstClit>>
+			<<case "penisAgainstAss">>
+				<<actionspenisAgainstAss>>
+			<<case "penisEntrance">>
+				<<set _penisaction["Rest"] to "rest">>
+				<<actionspenistopenisfucknew>>
+				<<actionspenisPenisEntrance>>
+			<<case "penisImminent">>
+				<<set _penisaction["Rest"] to "rest">>
+				<<actionspenistopenisfucknew>>
+				<<actionspenisPenisImminent>>
+			<<case "penisPenetration">>
+				<<actionspenisPenisFencing>>
+			<<case "otherHandEntrance">>
+				<<set _penisaction["Rest"] to "rest">>
+			<<case "otherHand">>
+				<<set _penisaction["Rest"] to "rest">>
+			<<case "strokerSelfPenis">>
+				<<set _penisaction["Rest"] to "rest">>
+			<<case "strokerPenetration">>
+				<<set _penisaction["Rest"] to "strokerRest">>
+				<<set _penisaction["Cooperate"] to "strokerCooperate">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "vaginaActionInit">>
+    /* 北极星模组 */
+	<<if $dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
+	/* 北极星 */
+		<<switch $vaginastate>>
+			<<case 0>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<<targetListBox "vagina" _targetlist>>
+				<</if>>
+				<<set _vaginaOptions to "free">>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions ?'gold':'')">Your <<pussy>> is free.</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<br>
+					<<targetListBox "vagina" _targetlist>>
+				<</if>>
+				<<if _targetnumber is 1>>
+					<<set $vaginatarget to _firsttarget>>
+				<</if>>
+			<<case "othermouthentrance">>
+				<<set _vaginaOptions to "mouthEntranch">><<selectNpcWithPartInPosition "mouth" "vaginaentrance">><<set $vaginatarget to $index>>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">You feel breath on your <<pussy>>.</span>
+			<<case "othermouthimminent">>
+				<<set _vaginaOptions to "mouthImminent">><<selectNpcWithPartInPosition "mouth" "vaginaimminent">><<set $vaginatarget to $index>>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<combatPerson>>'s lips press against your labia.</span>
+			<<case "othermouth">>
+				<<set _vaginaOptions to "mouthPenetrated">><<selectNpcWithPartInPosition "mouth" "vagina">><<set $vaginatarget to $index>>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<combatPerson>>'s tongue penetrates your <<pussy>>.</span>
+			<<case "entrance">>
+				<<set _vaginaOptions to "penisEntrance">>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "vaginaentrance">><<set $vaginatarget to $index>><<combatPerson>>'s <<npcPenis _j>> hovers near your <<pussy>>.</span>
+				<<if $vaginaldoubledisable is "f">>
+					<<getDoubleTargetList>>
+				<</if>>
+				<<if _secondtarget is true>>
+					<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
+					<<if $vaginadoubletarget is undefined>>
+						<<set $vaginadoubletarget to _firstdoubletarget>>
+					<</if>>
+					<<targetListBox "vagina" _doubletargetlist "$vaginadoubletarget">>
+				<</if>>
+			<<case "imminent">>
+				<<set _vaginaOptions to "penisImminent">>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "vaginaimminent">><<set $vaginatarget to $index>><<combatPerson>>'s <<npcPenis _j>> presses against your <<pussy>>.</span>
+				<<if $vaginaldoubledisable is "f">>
+					<<getDoubleTargetList>>
+				<</if>>
+				<<if _secondtarget is true>>
+					<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
+					<<if $vaginadoubletarget is undefined>>
+						<<set $vaginadoubletarget to _firstdoubletarget>>
+					<</if>>
+					<<targetListBox "vagina" _doubletargetlist "$vaginadoubletarget">>
+				<</if>>
+			<<case "penetrated">>
+				<<set _vaginaOptions to "penisPenetrated">>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<selectNpcWithPartInPosition "penis" "vagina">><<set $vaginatarget to $index>><<combatPerson>>'s <<npcPenis _j>> penetrates your <<pussy>>.</span>
+				<<if $vaginaldoubledisable is "f">>
+					<<getDoubleTargetList>>
+				<</if>>
+				<<if _secondtarget is true>>
+					<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
+					<<if $vaginadoubletarget is undefined>>
+						<<set $vaginadoubletarget to _firstdoubletarget>>
+					<</if>>
+					<<targetListBox "vagina" _doubletargetlist "$vaginadoubletarget">>
+				<</if>>
+			<<case "othervaginaentrance">>
+				<<set _vaginaOptions to "vaginaEntrance">><<selectNpcWithPartInPosition "vagina" "vaginaentrance">><<set $vaginatarget to $index>>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<combatPerson>>'s pussy hovers near yours.</span>
+			<<case "othervaginaimminent">>
+				<<set _vaginaOptions to "vaginaImminent">><<selectNpcWithPartInPosition "vagina" "vaginaimminent">><<set $vaginatarget to $index>>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<combatPerson>>'s pussy threatens yours.</span>
+			<<case "othervagina">>
+				<<set _vaginaOptions to "vaginaPenetrated">><<selectNpcWithPartInPosition "vagina" "vagina">><<set $vaginatarget to $index>>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<combatPerson>>'s pussy presses against yours.</span>
+			<<case "doubleentrance">>
+				<<set _vaginaOptions to "penisDoubleEntrance">>
+				<<set $_npcA to ($NPCList[$vaginatarget].penis is "vaginaentrancedouble" ? $vaginatarget : $vaginadoubletarget)>>
+				<<set $_npcB to ($NPCList[$vaginatarget].penis is "vaginaentrancedouble" ? $vaginadoubletarget : $vaginatarget)>>
+				<<if $NPCList[$vaginatarget].penis is "vaginaentrancedouble" and $NPCList[$vaginadoubletarget].penis is "vaginaentrancedouble">>
+					<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">Their cocks hover near your <<pussy>>.</span>
+				<<elseif ($NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginaentrancedouble") or ($NPCList[$vaginatarget].penis is "vaginaentrancedouble" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
+					<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
+					<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> presses against your ?vulva while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> hovers nearby.
+					</span>
+				<<else>>
+					<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">Their cocks hover near your <<pussy>>.</span>
+				<</if>>
+			<<case "doubleimminent">>
+				<<set _vaginaOptions to "penisDoubleImminent">>
+				<<set $_npcA to ($NPCList[$vaginatarget].penis is "vaginaimminentdouble" ? $vaginatarget : $vaginadoubletarget)>>
+				<<set $_npcB to ($NPCList[$vaginatarget].penis is "vaginaimminentdouble" ? $vaginadoubletarget : $vaginatarget)>>
+				<<if $NPCList[$vaginatarget].penis is "vaginaimminentdouble" and $NPCList[$vaginadoubletarget].penis is "vaginaimminentdouble">>
+					<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">Their cocks press against your <<pussy>>.</span>
+				<<elseif ($NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginaimminentdouble") or ($NPCList[$vaginatarget].penis is "vaginaimminentdouble" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
+					<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
+					<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> penetrates your vagina while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> presses against your ?vulva.
+					</span>
+				<<else>>
+					<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
+					<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> presses against your ?vulva while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> hovers nearby.
+					</span>
+				<</if>>
+			<<case "doublepenetrated">>
+				<<set _vaginaOptions to "penisDoublePenetration">>
+				<<set $_npcA to ($NPCList[$vaginatarget].penis is "vaginadouble" ? $vaginatarget : $vaginadoubletarget)>>
+				<<set $_npcB to ($NPCList[$vaginatarget].penis is "vaginadouble" ? $vaginadoubletarget : $vaginatarget)>>
+				<<if $NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginadouble">>
+					<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">Their cocks penetrate your <<pussy>>.</span>
+				<<elseif ($NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginaimminentdouble") or ($NPCList[$vaginatarget].penis is "vaginaimminentdouble" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
+					<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
+					<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> penetrates your vagina while <<personselect $_npcB>><<combatperson>>'s <<npcPenisSimple $_npcB>> presses against your ?vulva.
+					</span>
+				<<else>>
+					<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')">
+					<<personselect $_npcA>><<combatPerson>>'s <<npcPenisSimple $_npcA>> penetrates your vagina while the other hovers nearby.
+					</span>
+				<</if>>
+			<<case "otherhandentrance">>
+				<<set _vaginaOptions to "otherHandEntrance">><<selectNpcWithPartInPosition "hand" "vaginaentrance">><<set $vaginatarget to $index>>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<combatPerson>>'s fingers press against your ?vulva.</span>
+			<<case "otherhand">>
+				<<set _vaginaOptions to "otherHand">><<selectNpcWithPartInPosition "hand" "vaginaentrance">><<set $vaginatarget to $index>>
+				<span @class="($lastOptions.vagina isnot _vaginaOptions or _vaginaGold is true ?'gold':'')"><<combatPerson>> fingers your pussy.</span>
+			<<case "tentacleentrance" "tentacleimminent" "tentacle" "tentacledeep" "tentaclerub">>
+				<<set $_changetype to true>><<vaginaActionInitTentacle>>
+			<<case "struggle" "struggle_pen">>
+				<<set $_changetype to true>><<vaginaActionInitStruggle>>
+		<</switch>>
+		<<if $lastOptions.vagina isnot _vaginaOptions>>
+			<<set _vaginaGold to true>>
+		<</if>>
+		<<if $_changetype isnot true>>
+			<<vaginaActions>>
+			<<if Object.keys(_vaginaaction).length gt 0>>
+				<<if Object.values(_vaginaaction).includes($vaginaactiondefault) is false or _args[0] is true or $vaginaactiondefault is "rest">>
+					<<set _defaultsCombatAction to "vaginaaction">>
+					<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+					<<set _pass to false>>
+					<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+						<<if Object.values(_vaginaaction).includes(_actionsSet[_set])>>
+							<<set $vaginaactiondefault to clone(_actionsSet[_set])>>
+							<<set _pass to true>>
+							<<break>>
+						<</if>>
+					<</for>>
+					<<if _pass is false>>
+						<<set $vaginaactiondefault to Object.values(_vaginaaction)[0]>>
+					<</if>>
+				<</if>>
+
+				<<set $vaginaaction to $vaginaactiondefault>>
+				<<set _textColor to combatListColor('vaginaaction', (Object.values(_vaginaaction).includes($vaginaaction) ? $vaginaaction : Object.values(_vaginaaction)[0]), "")>>
+				<<generateCombatAction _vaginaaction "vaginaaction" _textColor $vaginaaction>>
+
+				/*Checks/Difficulty*/
+				<<if $options.combatControls.includes("ists")>>
+					<div id="vaginaactionDifficulty">
+						<<vaginaactionDifficulty>>
+					</div>
+				<</if>>
+			<</if>>
+			<<set $lastOptions.vagina to clone(_vaginaOptions)>>
+		<</if>>
+	<<else>>
+		<<timed 100ms>>
+			<<run jQuery("#vaginaaction").remove();>>
+		<</timed>>
+	<</if>>
+<</widget>>
+
+<<widget "vaginaactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $vaginaaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "vaginatopenis" "vaginatopenis">><<vaginaldifficulty>> <<combatpromiscuous5>>
+		<<case "vaginatovagina" "vaginatovagina">><<vaginaldifficulty>> <<combatpromiscuous5>>
+		<<case "vaginapenisfuck">><<combatpromiscuous5>> <<vaginalvirginitywarning>><<NPCvirginitywarning $NPCList[_n].fullDescription "penile">>
+		<<case "vaginatovaginafuck">><<combatpromiscuous5>>
+		<<case "thighbay">><<thighdifficulty>> <<combatpromiscuous1>>
+		<<case "penisthighs">><<thighdifficulty>> <<combatpromiscuous4>>
+		<<case "penisanus">><<analdifficulty>>
+		<<case "penisanusdvp">><<analdifficulty>>
+		<<case "penisanusdouble">><<analdifficulty>> <<combatpromiscuous5>> <<combataware 4>>
+		<<case "penisDoubleEdging">><<combatpromiscuous5>> <<combataware 4>>
+		<<case "vaginatopenisdouble">><<vaginaldifficulty>> <<combatpromiscuous5>> <<combataware 4>>
+		<<case "vaginapenisdoublefuck">><<vaginaldifficulty>> <<combatpromiscuous5>> <<combataware 4>> <<vaginalvirginitywarning>><<NPCvirginitywarning $NPCList[_n].fullDescription "penile">>
+		<<case "penisEdging" "tribedge">><<combatpromiscuous4>>
+		<<case "forceImpregnation">><span class="red">- Demon</span>
+	<</switch>>
+<</widget>>
+
+<<widget "vaginaActions">>
+	/*Generate Actions*/
+	<<set _vaginaaction to {}>>
+	/* 北极星模组 */
+	<<if $demonhunter gte 2>>
+		<<set _vaginaaction["忍耐"] to "endure">>
+	<</if>>
+	/* 北极星 */
+	<<if $position is "stalk">>
+
+	<<else>>
+		<<switch _vaginaOptions>>
+			<<case "free">>
+				<<set _vaginaaction["Rest"] to "rest">>
+				<<actionsvaginatopenisnew>>
+				<<actionsvaginatovaginanew>>
+			<<case "mouthEntranch">>
+				<<set _vaginaaction["Rest"] to "rest">>
+				<<actionsvaginaMouthEntrance>>
+			<<case "mouthImminent">>
+				<<set _vaginaaction["Rest"] to "rest">>
+				<<actionsvaginaMouthImminent>>
+			<<case "mouthPenetrated">>
+				<<actionsvaginaMouthPenetrated>>
+			<<case "penisEntrance">>
+				<<set _vaginaaction["Rest"] to "rest">>
+				<<actionsvaginaPenisEntrance>>
+			<<case "penisImminent">>
+				<<set _vaginaaction["Rest"] to "rest">>
+				<<actionsvaginaPenisImminent>>
+			<<case "penisPenetrated">>
+				<<actionsvaginaPenisPenetrated>>
+			<<case "vaginaEntrance">>
+				<<actionsTribRest>>
+				<<actionsvaginatovaginafucknew>>
+				<<actionsvaginaVaginaEntrance>>
+			<<case "vaginaImminent">>
+				<<actionsTribRest>>
+				<<actionsvaginatovaginafucknew>>
+				<<actionsvaginaVaginaImminent>>
+			<<case "vaginaPenetrated">>
+				<<actionsvaginaVagina>>
+			<<case "penisDoubleEntrance">>
+				<<set _vaginaaction["Rest"] to "rest">>
+				<<actionsvaginapenisdoublefuck>>
+				<<actionsvaginaPenisDoubleEntrance>>
+			<<case "penisDoubleImminent">>
+				<<set _vaginaaction["Rest"] to "rest">>
+				<<actionsvaginapenisdoublefuck>>
+				<<actionsvaginaPenisDoubleImminent>>
+			<<case "penisDoublePenetration">>
+				<<actionsvaginaPenisDoublePenetrated>>
+			<<case "otherHandEntrance">>
+				<<set _vaginaaction["Rest"] to "rest">>
+			<<case "otherHand">>
+				<<set _vaginaaction["Rest"] to "rest">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "anusActionInit">>
+	/* 北极星模组 */
+	<<if $dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
+	/* 北极星 */
+		<<if $bottomuse is "mouth">>
+			<<set _anusOptions to "faceAgainstAnus">><<selectNpcWithPartInPosition "mouth" "bottom">><<set $anustarget to $index>>
+			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">You press your <<bottom>> against <<combatpersons>> face.</span>
+		<<elseif $bottomuse is "penis">>
+			<<set _anusOptions to "penisAgainstAnus">><<selectNpcWithPartInPosition "penis" "cheeks">><<set $anustarget to $index>>
+			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">You hold <<combatpersons>> <<npcPenis _j>> between your buttocks.</span>
+		<<elseif $bottomuse is "hand">>
+			<<set _anusOptions to "handAgainstAnus">><<selectNpcWithPartInPosition "hand" "bottom">><<set $anustarget to $index>>
+			<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">You rub your clenched buttcheeks against <<combatpersons>> hand.</span>
+		<<else>>
+			<<switch $anusstate>>
+				<<case 0>>
+					<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+						<<targetListBox "anus" _targetlist>>
+					<</if>>
+					<<set _anusOptions to "free">>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">Your <<bottom>> is free.</span>
+					<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+						<br>
+						<<targetListBox "anus" _targetlist>>
+					<</if>>
+					<<if _targetnumber is 1>>
+						<<set $anustarget to _firsttarget>>
+					<</if>>
+				<<case "othermouthentrance">>
+					<<set _anusOptions to "mouthEntrance">><<selectNpcWithPartInPosition "mouth" "anusentrance">><<set $anustarget to $index>>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">You feel breath on your <<bottom>>.</span>
+				<<case "othermouthimminent">>
+					<<set _anusOptions to "mouthImminent">><<selectNpcWithPartInPosition "mouth" "anusimminent">><<set $anustarget to $index>>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson>>'s lips press against your anus<<andButtPlug>>.</span>
+				<<case "othermouth">>
+					<<set _anusOptions to "mouthPenetration">><<selectNpcWithPartInPosition "mouth" "anus">><<set $anustarget to $index>>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson>>'s tongue penetrates your <<bottom>>.</span>
+				<<case "handentrance">>
+					<<set _anusOptions to "handEntrance">><<selectNpcWithPartInPosition "hand" "anusentrance">><<set $anustarget to $index>>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">You feel <<combatperson>>'s hand on your <<bottom>>.</span>
+				<<case "hand">>
+					<<set _anusOptions to "handPenetration">><<selectNpcWithPartInPosition "hand" "anus">><<set $anustarget to $index>>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson>>'s finger penetrates your <<bottom>>.</span>
+				<<case "entrance">>
+					<<set _anusOptions to "penisEntrance">><<selectNpcWithPartInPosition "penis" "anusentrance">><<set $anustarget to $index>>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson>>'s <<npcPenis _j>> hovers near your <<bottom>><<andButtPlug>>.</span>
+					<<if $analdoubledisable is "f">>
+						<<getDoubleTargetList>>
+					<</if>>
+					<<if _secondtarget is true>>
+						<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
+						<<if $anusdoubletarget is undefined>>
+							<<set $anusdoubletarget to _firstdoubletarget>>
+						<</if>>
+						<<targetListBox "anus" _doubletargetlist "$anusdoubletarget">>
+					<</if>>
+				<<case "imminent">>
+					<<set _anusOptions to "penisImminent">><<selectNpcWithPartInPosition "penis" "anusimminent">><<set $anustarget to $index>>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson>>'s <<npcPenis _j>> presses against your anus<<andButtPlug>>.</span>
+				<<case "penetrated">>
+					<<set _anusOptions to "penisPenetration">><<selectNpcWithPartInPosition "penis" "anus">><<set $anustarget to $index>>
+					<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson>>'s <<npcPenisSimple _j>> penetrates your anus.</span>
+					<<if $analdoubledisable is "f">>
+						<<getDoubleTargetList>>
+					<</if>>
+					<<if _secondtarget is true>>
+						<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br><</if>>
+						<<if $anusdoubletarget is undefined>>
+							<<set $anusdoubletarget to _firstdoubletarget>>
+						<</if>>
+						<<targetListBox "anus" _doubletargetlist "$anusdoubletarget">>
+					<</if>>
+				<<case "doubleentrance">>
+					<<set _anusOptions to "penisDoubleEntrance">>
+					<<if $NPCList[$anustarget].penis is "anusentrancedouble" and $NPCList[$anusdoubletarget].penis is "anusentrancedouble">>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">Their cocks hover near your <<bottom>><<andButtPlug>>.</span>
+					<<elseif ($NPCList[$anustarget].penis is "anusdouble" and $NPCList[$anusdoubletarget].penis is "anusentrancedouble") or ($NPCList[$anustarget].penis is "anusentrancedouble" and $NPCList[$anusdoubletarget].penis is "anusdouble")>>
+						<<selectNpcWithPartInPosition "penis" "anusdouble">>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson>>'s <<npcPenisSimple _j>> penetrates your anus while the other penis hovers nearby.</span>
+					<<else>>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">Their cocks hover near your <<bottom>><<andButtPlug>>.</span>
+					<</if>>
+				<<case "doubleimminent">>
+					<<set _anusOptions to "penisDoubleImminent">>
+					<<if $NPCList[$anustarget].penis is "anusimminentdouble" and $NPCList[$anusdoubletarget].penis is "anusimminentdouble">>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">Their cocks press against your anus<<andButtPlug>>.</span>
+					<<elseif ($NPCList[$anustarget].penis is "anusdouble" and $NPCList[$anusdoubletarget].penis is "anusimminentdouble") or ($NPCList[$anustarget].penis is "anusimminentdouble" and $NPCList[$anusdoubletarget].penis is "anusdouble")>>
+						<<selectNpcWithPartInPosition "penis" "anusdouble">>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson>>'s <<npcPenisSimple _j>> penetrates your anus while the other penis presses against the entrance.</span>
+					<<else>>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">Their cocks press against your anus<<andButtPlug>>.</span>
+					<</if>>
+				<<case "doublepenetrated">>
+					<<set _anusOptions to "penisDoublePenetration">>
+					<<if $NPCList[$anustarget].penis is "anusdouble" and $NPCList[$anusdoubletarget].penis is "anusdouble">>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')">Their cocks penetrate your anus.</span>
+					<<else>>
+						<<selectNpcWithPartInPosition "penis" "anus">>
+						<span @class="($lastOptions.anus isnot _anusOptions or _anusGold ?'gold':'')"><<combatPerson>>'s cock penetrates your anus while the other hovers nearby.</span>
+					<</if>>
+				<<case "tentacleentrance" "tentacleimminent" "tentacle" "tentacledeep" "tentaclerub">>
+					<<set $_changetype to true>><<anusActionInitTentacle>>
+				<<case "struggle" "struggle_pen">>
+					<<set $_changetype to true>><<anusActionInitStruggle>>
+			<</switch>>
+		<</if>>
+		<<if $lastOptions.anus isnot _anusOptions>>
+			<<set _anusGold to true>>
+		<</if>>
+		<<if $_changetype isnot true>>
+			<<anusActions>>
+			<<if Object.keys(_anusaction).length gt 0>>
+				<<if Object.values(_anusaction).includes($anusactiondefault) is false or _args[0] is true or $anusactiondefault is "rest">>
+					<<set _defaultsCombatAction to "anusaction">>
+					<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+					<<set _pass to false>>
+					<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+						<<if Object.values(_anusaction).includes(_actionsSet[_set])>>
+							<<set $anusactiondefault to clone(_actionsSet[_set])>>
+							<<set _pass to true>>
+							<<break>>
+						<</if>>
+					<</for>>
+					<<if _pass is false>>
+						<<set $anusactiondefault to Object.values(_anusaction)[0]>>
+					<</if>>
+				<</if>>
+
+				<<set $anusaction to $anusactiondefault>>
+				<<set _textColor to combatListColor('anusaction', (Object.values(_anusaction).includes($anusaction) ? $anusaction : Object.values(_anusaction)[0]), "")>>
+				<<generateCombatAction _anusaction "anusaction" _textColor $anusaction>>
+
+				/*Checks/Difficulty*/
+				<<if $options.combatControls.includes("ists")>>
+					<div id="anusactionDifficulty">
+						<<anusactionDifficulty>>
+					</div>
+				<</if>>
+			<</if>>
+			<<set $lastOptions.anus to clone(_anusOptions)>>
+		<</if>>
+	<<else>>
+		<<timed 100ms>>
+			<<run jQuery("#anusaction").remove();>>
+		<</timed>>
+	<</if>>
+<</widget>>
+
+<<widget "anusactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $anusaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "wiggle">><<seductiondifficulty>>
+		<<case "bottombay">><<bottomdifficulty>> <<combatpromiscuous1>>
+		<<case "bottomhandbay">><<bottomdifficulty>> <<combatpromiscuous1>>
+		<<case "penischeeks">><<analdifficulty>> <<combatpromiscuous4>>
+		<<case "anustopenis">><<analdifficulty>> <<combatpromiscuous5>>
+		<<case "anuspenisfuck">><<combatpromiscuous5>> <<analvirginitywarning>><<NPCvirginitywarning $NPCList[_n].fullDescription "penile">>
+		<<case "otherAnusRub" "otherMouthAnusRub">> <<analdifficulty>>
+		<<case "penisEdging">><<combatpromiscuous4>>
+		<<case "penispussy">><<vaginaldifficulty>>
+		<<case "penispussydap">><<vaginaldifficulty>> <<combatpromiscuous5>> <<combataware 4>>
+		<<case "penispussydouble">><<vaginaldifficulty>> <<combatpromiscuous5>> <<combataware 4>>
+		<<case "penisDoubleEdging">><<combatpromiscuous5>> <<combataware 4>>
+		<<case "anustopenisdouble">><<analdifficulty>> <<combatpromiscuous5>> <<combataware 4>>
+		<<case "anuspenisdoublefuck">><<combatpromiscuous5>> <<combataware 4>> <<analvirginitywarning>><<NPCvirginitywarning $NPCList[_n].fullDescription "penile">>
+		<<case "forceImpregnation">><span class="red">- Demon</span>
+	<</switch>>
+<</widget>>
+
+<<widget "anusActions">>
+	/*Generate Actions*/
+	<<set _anusaction to {}>>
+	<<if $position is "stalk">>
+		<<set _anusaction["Rest"] to "rest">>
+		<<bottom_wiggle>>
+	<<else>>
+		<<switch _anusOptions>>
+			<<case "free">>
+				<<set _anusaction["Rest"] to "rest">>
+				<<actionsanustopenisnew>>
+			<<case "mouthEntrance">>
+				<<set _anusaction["Rest"] to "rest">>
+				<<actionsanusMouthEntrance>>
+			<<case "mouthImminent">>
+				<<set _anusaction["Rest"] to "rest">>
+				<<actionsanusMouthImminent>>
+			<<case "mouthPenetration">>
+				<<actionsanusMouthPenetration>>
+			<<case "handEntrance">>
+				<<set _anusaction["Rest"] to "rest">>
+				<<actionsanusHandEntrance>>
+			<<case "handPenetration">>
+				<<actionsanusHandPenetration>>
+			<<case "handAgainstAnus">>
+				<<actionsanusHandAgainstAnus>>
+			<<case "penisEntrance">>
+				<<set _anusaction["Rest"] to "rest">>
+				<<actionsanusPenisEntrance>>
+			<<case "penisImminent">>
+				<<set _anusaction["Rest"] to "rest">>
+				<<actionsanusPenisImminent>>
+			<<case "penisPenetration">>
+				<<actionsanusPenisPenetration>>
+			<<case "faceAgainstAnus">>
+				<<actionsanusFaceAgainstAnus>>
+			<<case "penisAgainstAnus">>
+				<<actionsanusPenisAgainstAnus>>
+			<<case "penisDoubleEntrance">>
+				<<set _anusaction["Rest"] to "rest">>
+				<<actionsanusPenisDoubleEntrance>>
+			<<case "penisDoubleImminent">>
+				<<set _anusaction["Rest"] to "rest">>
+				<<actionsanusPenisDoubleImminent>>
+			<<case "penisDoublePenetration">>
+				<<actionsanusPenisDoublePenetration>>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "chestActionInit">>
+	/* 北极星模组 */
+	<<if $dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
+	/* 北极星 */
+		<<switch $chestuse>>
+			<<case "penis">>
+				<<set _chestOptions to "penis">><<selectNpcWithPartInPosition "penis" "chest">><<set $chesttarget to $index>>
+				<span @class="($lastOptions.chest isnot _chestOptions ?'gold':'')"><<combatPerson>>'s <<npcPenisSimple _j>> rests <<print ($player.breastsize is 0 ?"against":"between")>> your <<breasts>>.</span>
+			<<case "tentaclerub">>
+				<<set $_changetype to true>><<chestActionInitTentacle>>
+		<</switch>>
+		<<if $_changetype isnot true>>
+			<<chestActions>>
+			<<if Object.keys(_chestaction).length gt 0>>
+				<<if $chestactiondefault is 0>>
+					<<set $chestactiondefault to Object.values(_chestaction)[0]>>
+				<</if>>
+
+				<<set $chestaction to $chestactiondefault>>
+				<<set _textColor to combatListColor('chestaction', (Object.values(_chestaction).includes($chestaction) ? $chestaction : Object.values(_chestaction)[0]), "")>>
+				<<generateCombatAction _chestaction "chestaction" _textColor $chestaction>>
+
+				/*Checks/Difficulty*/
+				<<if $options.combatControls.includes("ists")>>
+					<div id="chestactionDifficulty">
+						<<chestactionDifficulty>>
+					</div>
+				<</if>>
+			<</if>>
+			<<set $lastOptions.chest to clone(_chestOptions)>>
+		<</if>>
+	<<else>>
+		<<timed 100ms>>
+			<<run jQuery("#chestaction").remove();>>
+		<</timed>>
+	<</if>>
+<</widget>>
+
+<<widget "chestactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $chestaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "rub">><<chestdifficulty>>
+	<</switch>>
+<</widget>>
+
+<<widget "chestActions">>
+	/*Generate Actions*/
+	<<set _chestaction to {}>>
+	/*<<set _chestaction["Rest"] to "rest">>*/
+	<<if $position is "stalk">>
+
+	<<else>>
+		<<switch _chestOptions>>
+			<<case "penis">>
+				<<set _chestaction["Rub"] to "rub">>
+				<<set _chestaction["Stop"] to "stop">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "thighActionInit">>
+	/* 北极星模组 */
+	<<if $dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined) and !$possessed>>
+	/* 北极星 */
+		<<switch $thighuse>>
+		<<case "mouth">>
+			<<set _thighOptions to "mouth">><<selectNpcWithPartInPosition "mouth" "thigh">><<set $thightarget to $index>>
+			<span @class="($lastOptions.thigh isnot _thighOptions ?'gold':'')">You press your thigh against <<combatpersons>> mouth.</span>
+		<<case "penis">>
+			<<set _thighOptions to "penis">><<selectNpcWithPartInPosition "penis" "thighs">><<set $thightarget to $index>>
+			<span @class="($lastOptions.thigh isnot _thighOptions ?'gold':'')">You hold <<combatpersons>> penis between your thighs.</span>
+		<</switch>>
+
+		<<thighactions>>
+		<<if Object.keys(_thighaction).length gt 0>>
+			<<if $thighactiondefault is 0>>
+				<<set $thighactiondefault to Object.values(_thighaction)[0]>>
+			<</if>>
+			<<set $thighaction to $thighactiondefault>>
+			<<set _textColor to combatListColor('thighaction', (Object.values(_thighaction).includes($thighaction) ? $thighaction : Object.values(_thighaction)[0]), "")>>
+			<<generateCombatAction _thighaction "thighaction" _textColor $thighaction>>
+
+			/*Checks/Difficulty*/
+			<<if $options.combatControls.includes("ists")>>
+				<div id="thighactionDifficulty">
+					<<thighactionDifficulty>>
+				</div>
+			<</if>>
+		<</if>>
+		<<set $lastOptions.thigh to clone(_thighOptions)>>
+	<<else>>
+		<<timed 100ms>>
+			<<run jQuery("#thighaction").remove();>>
+		<</timed>>
+	<</if>>
+<</widget>>
+
+<<widget "thighactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $thighaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "rub" "othermouthrub">><<thighdifficulty>>
+	<</switch>>
+<</widget>>
+
+<<widget "thighactions">>
+	/*Generate Actions*/
+	<<set _thighaction to {}>>
+	/*<<set _thighaction["Rest"] to "rest">>*/
+	<<if $position is "stalk">>
+
+	<<else>>
+		<<switch _thighOptions>>
+			<<case "mouth">>
+				<<set _thighaction["Rub"] to "othermouthrub">>
+				<<set _thighaction["Stop"] to "othermouthstop">>
+			<<case "penis">>
+				<<set _thighaction["Rub"] to "rub">>
+				<<set _thighaction["Stop"] to "stop">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "resetLastOptions">>
+	<<set $lastOptions to {
+		"left":"",
+		"right":"",
+		"feet":"",
+		"mouth":"",
+		"penis":"",
+		"vagina":"",
+		"anus":"",
+		"chest":"",
+		"thigh":"",
+		"cheek":"",
+	}>>
+<</widget>>
+
+<<widget "getTargetList">><<silently>>
+	<<unset _firsttarget>>
+	<<set _targetlist to {}>><<set _targetnumber to 0>>
+	<<if $NPCList.some( x => Object.values(x).includes("active"))>>
+		<<set _repeatcontroller to []>>
+		<<for _namecontroller = 0; _namecontroller lt $enemynomax; _namecontroller++>>
+			<<if $NPCList[0].type isnot "human" and $NPCList[0].type isnot "plant">>
+				<<set _namecontroller to $active_enemy>>
+				<<set _targetlist[$NPCList[_namecontroller].type] to _namecontroller>><<set _targetnumber += 1>>
+				<<if _firsttarget is undefined>>
+					<<set _firsttarget to _namecontroller>>
+				<</if>>
+				<<if $options.targetYourself is true>>
+					<<set _targetYourself to true>>
+				<</if>>
+				<<break>>
+			<<elseif $NPCList[_namecontroller].active is "active" and $NPCList[_namecontroller].stance isnot "defeated">>
+				<<if $NPCList[_namecontroller].fullDescription is "Ivory Wraith">>
+					<<set _smoltext to "pale figure">>
+					<<set $_wraithbreak to true>>
+				<<else>>
+					<<set _smoltext to $NPCList[_namecontroller].fullDescription>>
+				<</if>>
+				<<targetrepeatcontroller>>
+				<<set _repeatcontroller[_namecontroller] to _smoltext>>
+				<<if !($npc.includes($NPCList[_namecontroller].fullDescription)) and $NPCList[_namecontroller].name_known isnot 1>>
+					<<set _smoltext to "the " + _smoltext>>
+				<</if>>
+				<<set _targetlist[_smoltext] to _namecontroller>><<set _targetnumber += 1>>
+				<<if _firsttarget is undefined>>
+					<<set _firsttarget to _namecontroller>>
+				<</if>>
+				<<if $options.targetYourself is true>>
+					<<set _targetYourself to true>>
+				<</if>>
+				<<if $_wraithbreak is true>>
+					<<break>>
+				<</if>>
+			<</if>>
+		<</for>>
+	<</if>>
+	<<set _targetlistall to clone(_targetlist)>>
+	<<if $tentacles.active gte 1>>
+		<<set _targetlistall[$tentacles[0].type.toUpperFirst()+"s"] to "tentacles">><<set _targetnumber += 1>>
+	<</if>>
+	<<if $swarm.type isnot 0>>
+		<<set _targetlistall[$swarm.type.toUpperFirst()] to "swarm">><<set _targetnumber += 1>>
+		<<if $options.targetYourself is true>>
+			<<set _targetYourself to true>>
+		<</if>>
+	<</if>>
+	<<if $struggle isnot undefined>>
+		<<if $struggle.done lt $struggle.number>>
+			<<set _targetlistall[$struggle.creature.toUpperFirst()+"s"] to "struggle">><<set _targetnumber += 1>>
+		<</if>>
+	<</if>>
+	<<if $machine isnot undefined>>
+		<<set _targetlistall["Machine"] to "machine">><<set _targetnumber += 1>>
+	<</if>>
+	<<set _targetlistarms to clone(_targetlistall)>>
+	<<if $vorecreature isnot 0>>
+		<<if $vorestage gt 0>>
+			<<set _targetlistarms["the "+ $vorecreature.toUpperFirst()] to "vore">><<set _targetnumber += 1>>
+		<</if>>
+	<</if>>
+<</silently>><</widget>>
+
+<<widget "getDoubleTargetList">><<silently>>
+	<<unset _firstdoubletarget>>
+	<<if $consensual is 1 and ((($promiscuity gte 75 and $enemytype is "man") or ($deviancy gte 75 and $enemytype isnot "man")) and $awareness gte 300 or ($promiscuityIgnore is 1))>>
+		<<set _doubletargetlist to {}>><<set _secondtarget to false>>
+		<<set _repeatcontroller to []>>
+		<<for _namecontroller = 0; _namecontroller lt $enemynomax; _namecontroller++>>
+			<<if $NPCList[_namecontroller].active is "active" and $NPCList[_namecontroller].stance isnot "defeated" and $NPCList[_namecontroller].penis is 0 and !($NPCList[_namecontroller].chastity.penis.includes("chastity"))>>
+				<<set _smoltext to $NPCList[_namecontroller].fullDescription>>
+				<<targetrepeatcontroller>>
+				<<set _repeatcontroller[_namecontroller] to _smoltext>>
+				<<if !($npc.includes($NPCList[_namecontroller].fullDescription))>>
+					<<set _smoltext to "the " + _smoltext>>
+				<</if>>
+				<<set _doubletargetlist[_smoltext] to _namecontroller>><<set _secondtarget to true>>
+				<<if _firstdoubletarget is undefined>>
+					<<set _firstdoubletarget to _namecontroller>>
+				<</if>>
+			<</if>>
+		<</for>>
+	<</if>>
+<</silently>><</widget>>
+
+<<widget "getPussyTargetList">><<silently>>
+	<<unset _firstpussytarget>>
+	<<if $consensual is 1 and ((($promiscuity gte 75 and $enemytype is "man") or ($deviancy gte 75 and $enemytype isnot "man")) and $awareness gte 300 or ($promiscuityIgnore is 1))>>
+		<<set _pussytargetlist to {}>><<set _pussytarget to false>>
+		<<set _repeatcontroller to []>>
+		<<for _namecontroller = 0; _namecontroller lt $enemynomax; _namecontroller++>>
+			<<if $NPCList[_namecontroller].active is "active" and $NPCList[_namecontroller].stance isnot "defeated" and $NPCList[_namecontroller].vagina is 0 and !($NPCList[_namecontroller].vagina.penis.includes("chastity"))>>
+				<<set _smoltext to $NPCList[_namecontroller].fullDescription>>
+				<<targetrepeatcontroller>>
+				<<set _repeatcontroller[_namecontroller] to _smoltext>>
+				<<if !($npc.includes($NPCList[_namecontroller].fullDescription))>>
+					<<set _smoltext to "the " + _smoltext>>
+				<</if>>
+				<<set _pussytargetlist[_smoltext] to _namecontroller>><<set _pussytarget to true>>
+
+			<</if>>
+		<</for>>
+	<</if>>
+<</silently>><</widget>>
+
+<<widget "targetrepeatcontroller">>
+	<<set _smollertext to _smoltext>>
+	<<for _repeatnamecontroller = 0; _repeatnamecontroller lte _namecontroller; _repeatnamecontroller++>>
+		<<if _repeatcontroller[_repeatnamecontroller] is _smollertext>>
+			<<if _smollertext.includes("fifth") is true>>
+				<<set _smollertext to "last "+_smoltext>>
+			<<elseif _smollertext.includes("fourth") is true>>
+				<<set _smollertext to "fifth "+_smoltext>>
+			<<elseif _smollertext.includes("third") is true>>
+				<<set _smollertext to "fourth "+_smoltext>>
+			<<elseif _smollertext.includes("second") is true>>
+				<<set _smollertext to "third "+_smoltext>>
+			<<else>>
+				<<set _smollertext to "second "+_smoltext>>
+			<</if>>
+		<</if>>
+	<</for>>
+	<<set _smoltext to _smollertext>>
+<</widget>>
+
+<<widget "leftActionInitSelf">>
+	<<switch $leftarm>>
+		<<case 0>>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<<set _leftOptions to "orgasm">>
+				<span class="lewd">Your left arm is free, but you can't stop the spasms.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<<set _leftOptions to "pain">>
+				<span class="red">Your left arm is free, but hurts to move.</span>
+			<<elseif $dissociation gte 2>>
+				<<set _leftOptions to "unreal">>
+				<span class="pink">Your left arm is free, but doesn't feel real.</span>
+			<<else>>
+				<<if _targetYourself is true and _targetnumber gt 1>>
+					<<set _targetlistarms["Yourself"] to "self">>
+				<</if>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<<targetListBox "left" _targetlistarms>>
+				<</if>>
+				<<set _leftOptions to "free">>
+				<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is free.</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<br>
+					<<targetListBox "left" _targetlistarms>>
+				<</if>>
+				<<if _targetnumber is 1>>
+					<<set $lefttarget to _firsttarget>>
+				<</if>>
+			<</if>>
+		<<case "vagina">>
+			<<set _leftOptions to "coverVagina">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is protecting your <<pussy>>.</span>
+		<<case "coverpenis">>
+			<<set _leftOptions to "coverPenis">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is protecting your <<penis>>.</span>
+		<<case "anus">>
+			<<set _leftOptions to "coverAss">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is protecting your <<bottom>>.</span>
+		<<case "behind">>
+			<<set _leftOptions to "behind">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is behind your back.</span>
+		<<case "heldSexToy">>
+			<<if _targetYourself is true and _targetnumber gt 1>>
+				<<set _targetlistarms["Yourself"] to "self">>
+			<</if>>
+			<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<<targetListBox "left" _targetlistarms>>
+			<</if>>
+			<<set _leftOptions to "heldSexToy">>
+			<span @class="($lastOptions.left isnot _leftOptions or _leftGold is true ?'gold':'')">Your left hand is holding the <<print $currentSexToyLeft.name>>.</span>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<br>
+				<<targetListBox "left" _targetlistarms>>
+			<</if>>
+			<<if _targetnumber is 1>>
+				<<set $lefttarget to _firsttarget>>
+			<</if>>
+
+	<</switch>>
+	<<if $lastOptions.left isnot _leftOptions>>
+		<<set _leftGold to true>>
+	<</if>>
+	<<leftActionsSelf>>
+	<<if Object.keys(_leftaction).length gt 0>><<if $options.combatControls.includes("adio")>><br><</if>>
+		<<if Object.values(_leftaction).includes($leftactiondefault) is false or _args[0] is true or $leftactiondefault is "rest">>
+			<<set _defaultsCombatAction to "leftaction">>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+			<<set _pass to false>>
+			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+				<<if Object.values(_leftaction).includes(_actionsSet[_set])>>
+					<<set $leftactiondefault to clone(_actionsSet[_set])>>
+					<<set _pass to true>>
+					<<break>>
+				<</if>>
+			<</for>>
+			<<if _pass is false>>
+				<<set $leftactiondefault to Object.values(_leftaction)[0]>>
+			<</if>>
+		<</if>>
+
+		<<set $leftaction to $leftactiondefault>>
+		<<set _textColor to combatListColor('leftaction', (Object.values(_leftaction).includes($leftaction) ? $leftaction : Object.values(_leftaction)[0]), "Self")>>
+		<<generateCombatActionOthers _leftaction "leftaction" _textColor $leftaction "Self">>
+
+		<<if $options.combatControls.includes("ists")>>
+			<div id="leftactionDifficulty">
+				<<leftactionDifficulty>>
+			</div>
+			<div id="leftactionDifficultySelf">
+				<<leftactionDifficultySelf>>
+			</div>
+		<</if>><<if $options.combatControls.includes("adio")>><br><br><</if>>/* Seems to render no effect..? */
+	<</if>>
+	<<set $lastOptions.left to clone(_leftOptions)>>
+<</widget>>
+
+<<widget "leftactionDifficultySelf">>/* Here we go again. */
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $leftaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "leftmasturbatepussy">> <<combatpromiscuous2>>
+		<<case "leftmasturbatepenis">> <<combatpromiscuous2>>
+		<<case "leftmasturbateanus">> <<combatpromiscuous3>>
+		<<case "pickupSexToy">>
+			<<if Object.keys(_itemsLeft).length gte 1>>
+				<<listbox "$selectedItemLeft" autoselect>>
+					<<optionsfrom _itemsLeft>>
+				<</listbox>>
+			<</if>>
+			<<combatpromiscuous3>>
+	<</switch>>
+<</widget>>
+
+<<widget "leftActionsSelf">>
+	<<set _leftaction to {}>>
+	<<switch _leftOptions>>
+		<<case "free">>
+			<<set _leftaction["Rest"] to "rest">>
+			<<if $rightarm is "swarmgrappled">>
+				<<set _leftaction["Free your right arm"] to "leftfree">>
+			<</if>>
+			<<if Object.values(_targetlistarms).includes("swarm")>>
+				<<if _swarmamounts.genital[0] lte 0 and _swarmamounts.genital[1] lte 0>>
+					<<genitals>>
+					<<set _leftaction["Cover your " + _text_output] to "frontcoverleft">>
+				<</if>>
+				<<if _swarmamounts.butt[0] lte 0 and _swarmamounts.butt[1] lte 0>>
+					<<set _leftaction["Cover your butt"] to "frontcoverleft">>
+				<</if>>
+				<<if _swarmamounts.chest lte 0>>
+					<<set _leftaction["Cover your chest"] to "frontcoverleft">>
+				<</if>>
+				<<if $water is 1 and $vorecreature is 0 and ($consensual isnot 1 or $gamemode is "soft")>>
+					<<set _leftaction["Swim to safety"] to "swim">>
+				<</if>>
+			<</if>>
+			<<if Object.values(_targetlistarms).includes(0) or Object.values(_targetlistarms).includes(1) or Object.values(_targetlistarms).includes(2) or Object.values(_targetlistarms).includes(3) or Object.values(_targetlistarms).includes(4) or Object.values(_targetlistarms).includes(5)>>/* placeholder for the future */
+				<<leftdefault>>
+				<<combatMasturbate "left">>
+				<<applyLube "left">>
+				<<leftclothesnew>>
+				<<leftFixAndCoverActions>>
+				<<leftCondom>>
+				<<removeButtplug "left">>
+				<<pickupSexToy "left">>
+			<</if>>
+		<<case "coverVagina">>
+			<<set _leftaction["Keep covering"] to "leftcovervagina">>
+			<<set _leftaction["Stop"] to "leftstopvagina">>
+		<<case "coverPenis">>
+			<<set _leftaction["Keep covering"] to "leftcoverpenis">>
+			<<set _leftaction["Stop"] to "leftstopcoverpenis">>
+		<<case "coverAss">>
+			<<set _leftaction["Keep covering"] to "leftcoveranus">>
+			<<set _leftaction["Stop"] to "leftstopanus">>
+		<<case "behind">>
+			<<set _leftaction["Keep behind"] to "behind">>
+			<<set _leftaction["Stop"] to "stopbehind">>
+		<<case "orgasm">>
+			<<set _leftaction["Fold"] to "leftfold">>
+			<<set _leftaction["Grip"] to "leftgrip">>
+		<<case "pain">>
+			<<set _leftaction["Struggle"] to "leftstruggleweak">>
+			<<set _leftaction["Protect"] to "leftprotect">>
+		<<case "unreal">>
+			<<set _leftaction["Poke yourself"] to "leftpoke">>
+			<<set _leftaction["Keep your arms out of the way"] to "leftcurl">>
+		<<case "heldSexToy">>
+			<<heldSexToy "left">>
+	<</switch>>
+<</widget>>
+
+<<widget "rightActionInitSelf">>
+	<<switch $rightarm>>
+		<<case 0>>
+			/* 北极星模组 */
+			<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+			/* 北极星 */
+				<<set _rightOptions to "orgasm">>
+				<span class="lewd">Your right arm is free, but you can't stop the spasms.</span>
+			<<elseif $pain gte 100 and $willpowerpain is 0>>
+				<<set _rightOptions to "pain">>
+				<span class="red">Your right arm is free, but hurts to move.</span>
+			<<elseif $dissociation gte 2>>
+				<<set _rightOptions to "unreal">>
+				<span class="pink">Your right arm is free, but doesn't feel real.</span>
+			<<else>>
+				<<if _targetYourself is true and _targetnumber gt 1>>
+					<<set _targetlistarms["Yourself"] to "self">>
+				<</if>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<<targetListBox "right" _targetlistarms>>
+				<</if>>
+				<<set _rightOptions to "free">>
+				<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is free.</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<br>
+					<<targetListBox "right" _targetlistarms>>
+				<</if>>
+				<<if _targetnumber is 1>>
+					<<set $righttarget to _firsttarget>>
+				<</if>>
+			<</if>>
+		<<case "vagina">>
+			<<set _rightOptions to "coverVagina">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is protecting your <<pussy>>.</span>
+		<<case "coverpenis">>
+			<<set _rightOptions to "coverPenis">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is protecting your <<penis>>.</span>
+		<<case "anus">>
+			<<set _rightOptions to "coverAss">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is protecting your <<bottom>>.</span>
+		<<case "behind">>
+			<<set _rightOptions to "behind">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is behind your back.</span>
+		<<case "heldSexToy">>
+			<<if _targetYourself is true and _targetnumber gt 1>>
+				<<set _targetlistarms["Yourself"] to "self">>
+			<</if>>
+			<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<<targetListBox "right" _targetlistarms>>
+			<</if>>
+			<<set _rightOptions to "heldSexToy">>
+			<span @class="($lastOptions.right isnot _rightOptions or _rightGold is true ?'gold':'')">Your right hand is holding the $currentSexToyRight.name.</span>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1>><br>
+				<<targetListBox "right" _targetlistarms>>
+			<</if>>
+			<<if _targetnumber is 1>>
+				<<set $righttarget to _firsttarget>>
+			<</if>>
+	<</switch>>
+	<<if $lastOptions.right isnot _rightOptions>>
+		<<set _rightGold to true>>
+	<</if>>
+	<<rightActionsSelf>>
+	<<if Object.keys(_rightaction).length gt 0>><<if $options.combatControls.includes("adio")>><br><</if>>
+		<<if Object.values(_rightaction).includes($rightactiondefault) is false or _args[0] is true or $rightactiondefault is "rest">>
+			<<set _defaultsCombatAction to "rightaction">>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+			<<set _pass to false>>
+			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+				<<if Object.values(_rightaction).includes(_actionsSet[_set])>>
+					<<set $rightactiondefault to clone(_actionsSet[_set])>>
+					<<set _pass to true>>
+					<<break>>
+				<</if>>
+			<</for>>
+			<<if _pass is false>>
+				<<set $rightactiondefault to Object.values(_rightaction)[0]>>
+			<</if>>
+		<</if>>
+
+		<<set $rightaction to $rightactiondefault>>
+		<<set _textColor to combatListColor('rightaction', (Object.values(_rightaction).includes($rightaction) ? $rightaction : Object.values(_rightaction)[0]), "Self")>>
+		<<generateCombatActionOthers _rightaction "rightaction" _textColor $rightaction "Self">>
+
+		<<if $options.combatControls.includes("ists")>>
+			<div id="rightactionDifficulty">
+				<<rightactionDifficulty>>
+			</div>
+			<div id="rightactionDifficultySelf">
+				<<rightactionDifficultySelf>>
+			</div>
+		<</if>><<if $options.combatControls.includes("adio")>><br><br><</if>>/* Seems to render no effect..? */
+	<</if>>
+	<<set $lastOptions.right to clone(_rightOptions)>>
+<</widget>>
+
+<<widget "rightactionDifficultySelf">>/* This was unexpected. */
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $rightaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+	<<switch _diffAction>>
+		<<case "rightmasturbatepussy">> <<combatpromiscuous2>>
+		<<case "rightmasturbatepenis">> <<combatpromiscuous2>>
+		<<case "rightmasturbateanus">> <<combatpromiscuous3>>
+		<<case "pickupSexToy">>
+			<<if Object.keys(_itemsRight).length gte 1>>
+				<<listbox "$selectedItemRight" autoselect>>
+					<<optionsfrom _itemsRight>>
+				<</listbox>>
+			<</if>>
+			<<combatpromiscuous3>>
+	<</switch>>
+<</widget>>
+
+<<widget "rightActionsSelf">>
+	<<set _rightaction to {}>>
+	<<switch _rightOptions>>
+		<<case "free">>
+			<<set _rightaction["Rest"] to "rest">>
+			<<if $leftarm is "swarmgrappled">>
+				<<set _rightaction["Free your right arm"] to "rightfree">>
+			<</if>>
+			<<if Object.values(_targetlistarms).includes("swarm")>>
+				<<if _swarmamounts.genital[0] lte 0 and _swarmamounts.genital[1] lte 0>>
+					<<genitals>>
+					<<set _rightaction["Cover your " + _text_output] to "frontcoverright">>
+				<</if>>
+				<<if _swarmamounts.butt[0] lte 0 and _swarmamounts.butt[1] lte 0>>
+					<<set _rightaction["Cover your butt"] to "frontcoverright">>
+				<</if>>
+				<<if _swarmamounts.chest lte 0>>
+					<<set _rightaction["Cover your chest"] to "frontcoverright">>
+				<</if>>
+				<<if $water is 1 and $vorecreature is 0 and ($consensual isnot 1 or $gamemode is "soft")>>
+					<<set _rightaction["Swim to safety"] to "swim">>
+				<</if>>
+			<</if>>
+			<<if Object.values(_targetlistarms).includes(0) or Object.values(_targetlistarms).includes(1) or Object.values(_targetlistarms).includes(2) or Object.values(_targetlistarms).includes(3) or Object.values(_targetlistarms).includes(4) or Object.values(_targetlistarms).includes(5)>>/* placeholder for the future */
+				<<rightdefault>>
+				<<combatMasturbate "right">>
+				<<applyLube "right">>
+				<<rightclothesnew>>
+				<<rightFixAndCoverActions>>
+				<<rightCondom>>
+				<<removeButtplug "right">>
+				<<pickupSexToy "right">>
+			<</if>>
+		<<case "coverVagina">>
+			<<set _rightaction["Keep covering"] to "rightcovervagina">>
+			<<set _rightaction["Stop"] to "rightstopvagina">>
+		<<case "coverPenis">>
+			<<set _rightaction["Keep covering"] to "rightcoverpenis">>
+			<<set _rightaction["Stop"] to "rightstopcoverpenis">>
+		<<case "coverAss">>
+			<<set _rightaction["Keep covering"] to "rightcoveranus">>
+			<<set _rightaction["Stop"] to "rightstopanus">>
+		<<case "behind">>
+			<<set _rightaction["Keep behind"] to "behind">>
+			<<set _rightaction["Stop"] to "stopbehind">>
+		<<case "orgasm">>
+			<<set _rightaction["Fold"] to "rightfold">>
+			<<set _rightaction["Grip"] to "rightgrip">>
+		<<case "pain">>
+			<<set _rightaction["Struggle"] to "rightstruggleweak">>
+			<<set _rightaction["Protect"] to "rightprotect">>
+		<<case "unreal">>
+			<<set _rightaction["Poke yourself"] to "rightpoke">>
+			<<set _rightaction["Keep your arms out of the way"] to "rightcurl">>
+		<<case "heldSexToy">>
+			<<heldSexToy "right">>
+	<</switch>>
+<</widget>>
+
+<<widget "feetActionInitSelf">>
+	/* 北极星模组 */
+	<<if $dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined)>>
+	/* 北极星 */
+		<<if $feetuse is 0>>
+			<<if _targetYourself is true and _targetnumber gt 1>>
+				<<set _targetlistall["Yourself"] to "self">>
+			<</if>>
+			<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+				<<targetListBox "feet" _targetlistall>>
+			<</if>>
+			<<set _feetOptions to "free">>
+			<span @class="($lastOptions.feet isnot _feetOptions or _feetGold is true ?'gold':'')">Your feet are free.</span>
+			<<if $options.combatControls.includes("adio") and _targetnumber gt 1 and _feetOptions is "free">>
+				<br>
+				<<targetListBox "feet" _targetlistall>>
+			<</if>>
+			<<if _targetnumber is 1>>
+				<<set $feettarget to _firsttarget>>
+			<</if>>
+		<</if>>
+		<<if $lastOptions.feet isnot _feetOptions>>
+			<<set _feetGold to true>>
+		<</if>>
+		<<feetActionsSelf>>
+		<<if Object.keys(_feetaction).length gt 0>><<if $options.combatControls.includes("adio")>><br><</if>>
+			<<if Object.values(_feetaction).includes($feetactiondefault) is false or _args[0] is true or $feetactiondefault is "rest">>
+				<<set _defaultsCombatAction to "feetaction">>
+				<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+				<<set _pass to false>>
+				<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+					<<if Object.values(_feetaction).includes(_actionsSet[_set])>>
+						<<set $feetactiondefault to clone(_actionsSet[_set])>>
+						<<set _pass to true>>
+						<<break>>
+					<</if>>
+				<</for>>
+				<<if _pass is false>>
+					<<set $feetactiondefault to Object.values(_feetaction)[0]>>
+				<</if>>
+			<</if>>
+
+			<<set $feetaction to $feetactiondefault>>
+			<<set _textColor to combatListColor('feetaction', (Object.values(_feetaction).includes($feetaction) ? $feetaction : Object.values(_feetaction)[0]), "Self")>>
+			<<generateCombatActionOthers _feetaction "feetaction" _textColor $feetaction "Self">>
+
+			<<if $options.combatControls.includes("ists")>>
+				<div id="feetactionDifficulty">
+					<<feetactionDifficulty>>
+				</div>
+			<</if>><<if $options.combatControls.includes("adio")>><br><</if>>/* Seems to render no effect..? */
+		<</if>>
+		<<set $lastOptions.feet to clone(_feetOptions)>>
+	<<else>>
+		<<timed 100ms>>
+			<<run jQuery("#feetaction").remove();>>
+		<</timed>>
+	<</if>>
+<</widget>>
+
+<<widget "feetactionDifficultySelf">> /* Good thing I caught it before anyone else. */
+	<!-- Does nothing -->
+<</widget>>
+
+<<widget "feetActionsSelf">>
+	<<set _feetaction to {}>>
+	<<set _feetaction["Rest"] to "rest">>
+	<<if Object.values(_targetlistarms).includes("swarm")>>
+		<<if $water is 1 and $vorecreature is 0 and currentSkillValue('swimmingskill') gt 700 and $consensual isnot 1>>
+			<<set _feetaction["Swim to safety"] to "swim">>
+		<</if>>
+	<</if>>
+	<<if Object.values(_targetlistarms).includes("struggle")>>
+		<<set _feetaction["Dodge"] to "evade">>
+		<<set _feetaction["Plant"] to "plant">>
+	<</if>>
+	<<if $water isnot 1>>
+		<<feetshoes>>
+		<<feetsocks>>
+	<</if>>
+<</widget>>
+
+<<widget "generateCombatActionOthers">>
+	<<switch $options.combatControls>>
+		<<case "radio" "columnRadio">>
+			<<generateCombatActionOthersRadio _args[0] _args[1] _args[3] _args[4]>>
+		<<case "lists" "limitedLists">>
+			<<generateCombatActionOthersList _args[0] _args[1] _args[2] _args[4]>>
+	<</switch>>
+<</widget>>
+
+<<widget "generateCombatActionOthersRadio">>
+	<<for _labelC, _valueC range _args[0]>>
+		<label>
+			<<print '<<radiobutton "$'+_args[1]+'" "'+_valueC+'" ' + (_valueC is _args[2] ? "checked" : "") + '>>'>>
+			<span @class="combatListColor('', _valueC, _args[3])"><<print _labelC>></span>
+			<<print '<<'+_args[1]+'Difficulty'+_args[3]+' "'+_valueC+'">>'>><<if $options.combatControls is "radio">> |<</if>>
+		</label>
+	<</for>>
+<</widget>>
+
+<<widget "generateCombatActionOthersList">>
+	<<if _args[0]>>
+		<<set _options to _args[0]>>
+		<<set _name to _args[1]>>
+		<<set _typeOfCombat to _args[3]>>
+		<<capture _var _options _name>>
+			<span @id="_name + 'Select'" @class="_args[2] + 'List flavorText'">
+				<<listbox `"$"+_name` autoselect>>
+					<<optionsfrom _options>>
+				<</listbox>>
+			</span>
+			<<combatButtonAdjustments _name _typeOfCombat>>
+		<</capture>>
+	<</if>>
+<</widget>>
+
+/* To be used as an example of how to merge all combats in 1 */
+<<widget "actionsOmni">>
+	<<exposure>>
+
+	<<if $enemyno gte 2>>
+		<<set $pronoun to "n">>
+	<<else>>
+		<<if $NPCList[0].pronoun is "m">>
+			<<set $pronoun to "m">>
+		<</if>>
+		<<if $NPCList[0].pronoun is "f">>
+			<<set $pronoun to "f">>
+		<</if>>
+		<<if $NPCList[0].pronoun is "i">>
+			<<set $pronoun to "i">>
+		<</if>>
+		<<if $NPCList[0].pronoun is "n">>
+			<<set $pronoun to "n">>
+		<</if>>
+		<<if $NPCList[0].pronoun is "t">>
+			<<set $pronoun to "t">>
+		<</if>>
+	<</if>>
+
+	<<if $options.images is 1 and $options.combatImages is 1>>
+		<<if $position isnot "stalk">>
+			<<timed 100ms>>
+				<<combatimg>>
+				<br>
+			<</timed>>
+		<</if>>
+	<</if>>
+
+	<<if $traumafocus gte 1 and $traumafocusintro isnot 1>>
+		<<set $traumafocusintro to 1>>
+		<i>As you gain focus, you become more and more likely to escape your helpless state of dissociation.</i>
+		<br><br>
+	<</if>>
+
+	<<if $traumafocus gt random(1, 1000) and $dissociation gte 2 and $combat is 1>>
+		<<set $traumafocus to 0>><<set $trauma -= 1000>><<set $dissociation to 1>>
+		<span class="green">Your lucidity returns.</span>
+		<<ltrauma>>
+		<br>
+		<span class="red">The weight of reality crashes down on you.</span>
+		<br><br>
+	<</if>>
+
+	<<if $underwater isnot 1>>
+		<<oxygen 50>>
+	<</if>>
+
+	<<willpowerpain>>
+	<<willpowerorgasm>>
+	<<actioncarry>>
+	<<actioncarrydrop>>
+
+	<<combatstate>>
+	<<carryblock>>
+
+	<<if $trance lte 0 and $panicparalysis is 0 and ($panicviolence is 0 or $position is "stalk")>>
+		/* 北极星模组 */
+		<<if $dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined) and ["man", "plant", "beast"].includes($enemytype)>>
+		/* 北极星 */
+			<<if $options.images is 1 and $options.combatImages is 1 and $consensual is 1 and $position_lock isnot 1>>
+				<<if $position is "doggy">>
+					| <label>Roll over <<radiobutton "$bodyaction" "missionary">></label>
+				<<elseif $position is "missionary">>
+					| <label>Roll over <<radiobutton "$bodyaction" "doggy">></label>
+				<</if>>
+				<<if $position isnot "stalk">>
+					| <label>Rest <<radiobutton "$bodyaction" "rest" checked>></label>
+					<br>
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if $swarm and $swarm.name>>
+			<<set _swarmsteady to $swarm["steady"].toUpperFirst()>>
+			<<set _swarmamounts to $swarm.amount>>
+		<</if>>
+
+		<<generateActionsOmni>>
+
+		<br>
+	<</if>>
+
+	<<setupMidOrgasm>>
+	<br><br>
+<</widget>>
+
+/* To be used as an example of how to merge all combats in 1 */
+<<widget "generateActionsOmni">>
+	<<set $combat to 1>>
+	<<if _targetlist is undefined>>
+		<<getTargetList>>
+	<</if>>
+	<<if _targetnumber gte 1>>
+		<div id="listContainer">
+			<div id="leftaction" @class="$options.combatControls + 'Control'">
+				<<switch $lefttarget>>
+					<<case "self">>
+						<<leftActionInitSelf>>
+					<<case "tentacles">>
+						<<leftActionInitTentacle>>
+					<<case "vore">>
+						<<leftActionInitVore>>
+					<<case "swarm">>
+						<<leftActionInitSwarm>>
+					<<case "struggle">>
+						<<leftActionInitStruggle>>
+					<<case "machine">>
+						<<leftActionInitMachine>>
+					<<default>>
+						<<if Object.values(_targetlistarms)[0] is "tentacles">>
+							<<leftActionInitTentacle>>
+						<<elseif Object.values(_targetlistarms)[0] is "vore">>
+							<<leftActionInitVore>>
+						<<elseif Object.values(_targetlistarms)[0] is "swarm">>
+							<<leftActionInitSwarm>>
+						<<elseif Object.values(_targetlistarms)[0] is "struggle">>
+							<<leftActionInitStruggle>>
+						<<elseif Object.values(_targetlistarms)[0] is "machine">>
+							<<leftActionInitMachine>>
+						<<else>>
+							<<leftActionInit>>
+						<</if>>
+				<</switch>>
+			</div>
+
+			<div id="rightaction" @class="$options.combatControls + 'Control'">
+				<<switch $righttarget>>
+					<<case "self">>
+						<<rightActionInitSelf>>
+					<<case "tentacles">>
+						<<rightActionInitTentacle>>
+					<<case "vore">>
+						<<rightActionInitVore>>
+					<<case "swarm">>
+						<<rightActionInitSwarm>>
+					<<case "struggle">>
+						<<rightActionInitStruggle>>
+					<<case "machine">>
+						<<rightActionInitMachine>>
+					<<default>>
+						<<if Object.values(_targetlistarms)[0] is "tentacles">>
+							<<rightActionInitTentacle>>
+						<<elseif Object.values(_targetlistarms)[0] is "vore">>
+							<<rightActionInitVore>>
+						<<elseif Object.values(_targetlistarms)[0] is "swarm">>
+							<<rightActionInitSwarm>>
+						<<elseif Object.values(_targetlistarms)[0] is "struggle">>
+							<<rightActionInitStruggle>>
+						<<elseif Object.values(_targetlistarms)[0] is "machine">>
+							<<rightActionInitMachine>>
+						<<else>>
+							<<rightActionInit>>
+						<</if>>
+				<</switch>>
+			</div>
+
+			<<if Object.values(_targetlistall).length gte 1>>
+				<div id="feetaction" @class="$options.combatControls + 'Control'">
+					<<switch $feettarget>>
+						<<case "self">>
+							<<feetActionInitSelf>>
+						<<case "tentacles">>
+							<<feetActionInitTentacle>>
+						<<case "swarm">>
+							<<feetActionInitSwarm>>
+						<<case "struggle">>
+							<<feetActionInitStruggle>>
+						<<case "machine">>
+							<<feetActionInitMachine>>
+						<<default>>
+							<<if Object.values(_targetlistall)[0] is "tentacles">>
+								<<feetActionInitTentacle>>
+							<<elseif Object.values(_targetlistall)[0] is "swarm">>
+								<<feetActionInitSwarm>>
+							<<elseif Object.values(_targetlistall)[0] is "struggle">>
+								<<feetActionInitStruggle>>
+							<<elseif Object.values(_targetlistall)[0] is "machine">>
+								<<feetActionInitMachine>>
+							<<else>>
+								<<feetActionInit>>
+							<</if>>
+					<</switch>>
+				</div>
+			<</if>>
+            
+            /* 北极星模组 */
+            <<if $options.bjx_animal and Object.values(_targetlistall).length gte 1>>
+				<div id="tailaction" @class="$options.combatControls + 'Control'">
+					<<switch $tailtarget>>
+						<<case "swarm">>
+							<<tailActionInitSwarm>>
+						<<default>>
+							<<if Object.values(_targetlistall)[0] is "swarm">>
+								<<tailActionInitSwarm>>
+							<<else>>
+								<<tailActionInit>>
+							<</if>>
+					<</switch>>
+				</div>
+			<</if>>
+			/* 北极星 */
+			
+			<<if Object.values(_targetlist).length gte 1>>
+				<<switch $mouthtarget>>
+					<<case "tentacles">>
+						<div id="mouthaction" @class="$options.combatControls + 'Control'">
+							<<mouthActionInitTentacle>>
+						</div>
+					<<case "struggle">>
+						<div id="mouthaction" @class="$options.combatControls + 'Control'">
+							<<mouthActionInitStruggle>>
+						</div>
+					<<default>>
+						/* 北极星模组 */
+						<<if !($dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined))>>
+						/* 北极星 */
+							<div id="mouthaction" @class="$options.combatControls + 'Control'">
+								<<mouthActionInit>>
+							</div>
+						<<elseif Object.values(_targetlist)[0] isnot "tentacles" and Object.values(_targetlist)[0] isnot "struggle">>
+							<div id="mouthaction" @class="$options.combatControls + 'Control'">
+								<<mouthActionInit>>
+							</div>
+						<<else>>
+							<<if $mouthuse is "struggle" and $struggle.mouth.creature>>
+								<div id="mouthaction" @class="$options.combatControls + 'Control'">
+									<<mouthActionInitStruggle>>
+								</div>
+							<<elseif $mouthstate isnot 0>>
+								<div id="mouthaction" @class="$options.combatControls + 'Control'">
+									<<mouthActionInitTentacle>>
+								</div>
+							<</if>>
+						<</if>>
+				<</switch>>
+
+				<<if $player.penisExist or $worn.genitals.type.includes("strap-on") or playerHasStrapon()>>
+					<<switch $penistarget>>
+						<<case "tentacles">>
+							<div id="penisaction" @class="$options.combatControls + 'Control'">
+								<<penisActionInitTentacle>>
+							</div>
+						<<case "struggle">>
+							<div id="penisaction" @class="$options.combatControls + 'Control'">
+								<<penisActionInitStruggle>>
+							</div>
+						<<default>>
+							<<if Object.values(_targetlist)[0] isnot "tentacles" and Object.values(_targetlist)[0] isnot "struggle">>
+								<div id="penisaction" @class="$options.combatControls + 'Control'">
+									<<penisActionInit>>
+								</div>
+							<<else>>
+								<<if $penisuse is "struggle">>
+									<div id="penisaction" @class="$options.combatControls + 'Control'">
+										<<penisActionInitStruggle>>
+									</div>
+								<<elseif $penisstate isnot 0>>
+									<div id="penisaction" @class="$options.combatControls + 'Control'">
+										<<penisActionInitTentacle>>
+									</div>
+								<</if>>
+							<</if>>
+					<</switch>>
+				<</if>>
+
+				<<if $player.vaginaExist>>
+					<<switch $vaginatarget>>
+						<<case "tentacles">>
+							<div id="vaginaaction" @class="$options.combatControls + 'Control'">
+								<<vaginaActionInitTentacle>>
+							</div>
+						<<case "struggle">>
+							<div id="vaginaaction" @class="$options.combatControls + 'Control'">
+								<<vaginaActionInitStruggle>>
+							</div>
+						<<default>>
+							<<if Object.values(_targetlist)[0] isnot "tentacles" and Object.values(_targetlist)[0] isnot "struggle">>
+								<div id="vaginaaction" @class="$options.combatControls + 'Control'">
+									<<vaginaActionInit>>
+								</div>
+							<<else>>
+								<<if $vaginause is "struggle">>
+									<div id="vaginaaction" @class="$options.combatControls + 'Control'">
+										<<vaginaActionInitStruggle>>
+									</div>
+								<<elseif $vaginastate isnot 0>>
+									<div id="vaginaaction" @class="$options.combatControls + 'Control'">
+										<<vaginaActionInitTentacle>>
+									</div>
+								<</if>>
+							<</if>>
+					<</switch>>
+				<</if>>
+
+				<<switch $anustarget>>
+					<<case "tentacles">>
+						<div id="anusaction" @class="$options.combatControls + 'Control'">
+							<<anusActionInitTentacle>>
+						</div>
+					<<case "struggle">>
+						<div id="anusaction" @class="$options.combatControls + 'Control'">
+							<<anusActionInitStruggle>>
+						</div>
+					<<default>>
+						<<if Object.values(_targetlist)[0] isnot "tentacles" and Object.values(_targetlist)[0] isnot "struggle">>
+							<div id="anusaction" @class="$options.combatControls + 'Control'">
+								<<anusActionInit>>
+							</div>
+						<<else>>
+							<<if $anususe is "struggle">>
+								<div id="anusaction" @class="$options.combatControls + 'Control'">
+									<<anusActionInitStruggle>>
+								</div>
+							<<elseif $anusstate isnot 0>>
+								<div id="anusaction" @class="$options.combatControls + 'Control'">
+									<<anusActionInitTentacle>>
+								</div>
+							<</if>>
+						<</if>>
+				<</switch>>
+
+				<<if $chestuse isnot "struggle">>
+					<div id="chestaction" @class="$options.combatControls + 'Control'">
+						<<chestActionInitStruggle>>
+					</div>
+				<<elseif $chestuse is "tentaclerub">>
+					<div id="chestaction" @class="$options.combatControls + 'Control'">
+						<<chestActionInitTentacle>>
+					</div>
+				<<elseif $chestuse is "penis">>
+					<div id="chestaction" @class="$options.combatControls + 'Control'">
+						<<chestActionInit>>
+					</div>
+				<</if>>
+
+				<<if $thighuse isnot 0>>
+					<div id="thighaction" @class="$options.combatControls + 'Control'">
+						<<thighActionInit>>
+					</div>
+				<</if>>
+			<</if>>
+		</div>
+	<</if>>
+<</widget>>

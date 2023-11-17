@@ -1,0 +1,2987 @@
+<!-- Version 2.X.X - REV 190709 -->
+:: Brothel
+
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+<<unset $corruptionDancing>>
+
+<<if $brothelshowdata.intro is true>>
+	<<set $brothelshowdata.intro to 1>>
+<</if>>
+
+You are in the brothel. Several stages dot the crowded room. The staff look flustered and overworked.
+<br><br>
+<<if $stress gte $stressmax>>
+	<<passoutshop>>
+<<elseif $briarPunishment gte 1>>
+	<<set $briarPunishReason to "default">>
+	<<npc Briar>><<generate2>><<generate3>><<person1>>
+	Briar storms towards you as two of <<his>> thugs block the entrance. "I'm surprised you had the nerve to come back," <<he>> says. "Don't think I'm letting you off for what you did." <<He>> nods at <<his>> thugs and advances. If you want to escape, now's your only chance. There are three of them however.<<person1>>
+	<br><br>
+	<<link [[Go with them|Brothel Punishment 2]]>><</link>>
+	<br>
+	<<link [[Fight|Brothel Punishment Fight]]>><<set $fightstart to 1>><<def 3>><</link>>
+	<br>
+
+<<elseif $brothelshowdata.missed>>
+	<<set $brothelshowdata.missed to false>><<npcincr Briar love -1>>
+	<<npc Briar>><<generate2>><<generate3>><<person1>>Briar storms towards you as two of <<his>> thugs block the entrance. "Where were you?" <<he>> asks. "The crowd were expecting a show. It cost me, but you'll pay for it," <<he>> holds out <<his>> hand. "£1000. Now."
+	<br><br>
+	<<if $money gte 100000>>
+		<<link [[Pay (£1000)|Brothel Pay]]>><<npcincr Briar dom 1>><<set $money -= 100000>><<sub 1>><</link>>
+		<br>
+	<</if>>
+	<<link [["Say you can't afford it"|Brothel Pay Refuse]]>><</link>>
+	<br>
+	<<link [[Refuse|Brothel Pay Refuse]]>><<npcincr Briar dom -1>><<def 1>><</link>>
+	<br>
+
+<<elseif $brothel_escortjob and ($brothel_escortjob.missed is true or $brothel_escortjob.escape is true)>>
+	<<unset $brothel_escortjob>><<npcincr Briar love -1>>
+	<<npc Briar>><<generate2>><<generate3>><<person1>>Briar storms towards you as two of <<his>> thugs block the entrance. "Where were you?" <<he>> asks. "When my clients contact me, they expect the job to be done right. It cost me, but you'll pay for it." <<He>> holds out <<his>> hand. "<<printmoney 200000>>. Now."
+	<br><br>
+
+	<<if $money gte 200000>>
+		<<link [[Pay (£2000)|Brothel Pay]]>><<npcincr Briar dom 1>><<set $money -= 200000>><<sub 1>><</link>>
+		<br>
+	<</if>>
+	<<link [["Say you can't afford it"|Brothel Pay Refuse]]>><</link>>
+	<br>
+	<<link [[Refuse|Brothel Pay Refuse]]>><<npcincr Briar dom -1>><<def 1>><</link>>
+	<br>
+
+<<elseif $NPCName[$NPCNameList.indexOf("Leighton")].init is 1 and $leightonbrothel is undefined and $brotheljob is 1 and Time.weekDay gte 6 and $pillory_tenant.special.name isnot "Leighton">><<set $leightonbrothel to 1>>
+	<<npc Leighton>><<person1>>
+	"You look like one of my students," says an amused voice from your right. It's Leighton.
+	<<if playerBellyVisible()>>
+		"I was wondering how you got that baby bump," <<he>> continues, "Should have known it was from you working at a place like this."
+	<</if>>
+	<<He>> sits alone on a sofa, with <<his>> arms outstretched and resting on the back.
+	<br><br>
+
+	"I knew you were the type. Your boss is a friend of mine," <<he>> says. <<He>> pulls a wad of cash from <<his>> pocket and pats the seat beside <<him>>. "Best keep me happy."
+	<br><br>
+
+	<<link [[Sit (0:05)|Brothel Leighton Sit]]>><<npcincr Leighton love 1>><<npcincr Leighton dom 1>><<pass 5>><</link>>
+	<br>
+	<<link [[Get angry|Brothel Leighton Angry]]>><<npcincr Leighton love -1>><<npcincr Leighton dom -1>><<def 1>><<stress -6>><</link>><<lstress>>
+	<br>
+	<<link [[Refuse|Brothel Leighton Refuse]]>><</link>>
+	<br>
+
+<<else>>
+
+<<if $exposed gte 1>>
+	You feel exposed, despite not being the only one attired so lewdly.
+	<br><br>
+<</if>>
+
+<<if $arousal gte $arousalmax>>
+	<<orgasmLocation "brothel">>
+<</if>>
+
+<<if $brotheljob is 1 and $fame.prostitution gte 30 and not $brothelshowdata.intro>>
+	<<generate1>><<person1>>The <<person>> guarding the door rests a hand on your shoulder. <span class="gold">"Boss wants to see you."</span><<endevent>>
+	<br><br>
+
+<<elseif $brotheljob is 1 and $fame.prostitution gte 200 and $brothelshowdata.intro is 1>>
+	<<generate1>><<person1>>The <<person>> guarding the door rests a hand on your shoulder. <span class="gold">"Boss wants to see you again."</span><<endevent>>
+	<br><br>
+<</if>>
+
+<<if $brotheljob is 1>>
+
+<<stripclubicon>><<link [[Work as a dancer|Brothel Dance]]>><<set $dancestart to 1>><<stress -4>><<tiredness 4>><</link>><<lstress>><<gtiredness>>
+<br>
+	<<if $brothelshowdata.intro>>
+		<<brothelicon "stage">><<link [[Go behind the stage|Brothel Stage]]>><</link>>
+		<br>
+	<</if>>
+	<<if $weekly.leightonDanceRefused and $headblackmailed is 1 and $pillory_tenant.special.name isnot "Leighton">>
+		<<icon "adultclothing.png">><<link [[Dressing room (0:01)|Leighton Club Ignore]]>><<pass 1>><<set $weekly.leightonDanceRefused to false>><</link>>
+		<br>
+	<<else>>
+		<<icon "adultclothing.png">><<link [[Dressing room (0:01)|Brothel Dressing Room]]>><<pass 1>><</link>>
+		<br>
+	<</if>>
+	<<stairsicon "down">><<link [[Basement (0:01)|Brothel Basement]]>><<pass 1>><</link>>
+	<br>
+	<<bathroomicon "shower">><<link [[Bathroom and showers (0:01)|Brothel Bathroom]]>><<pass 1>><</link>>
+	<br>
+<</if>>
+
+<<officeicon>><<link [[Briar's office (0:03)|Briar's Office]]>><<pass 3>><</link>>
+<br><br>
+	<<if $exposed lte 0>>
+		<<harvesticon>><<link [[Leave (0:01)|Harvest Street]]>><<pass 1>><</link>>
+		<br>
+	<<elseif $exposed gte 2 and $exhibitionism gte 75 and Time.dayState isnot "night">>
+		<<harvesticon>><<link [[Leave (0:01)|Brothel Leave Naked Day]]>><<pass 1>><</link>><<if $daily.ex.brothel isnot 1>><<exhibitionist5>><</if>>
+		<br>
+	<<elseif $exposed gte 2 and $exhibitionism gte 55 and Time.dayState is "night">>
+		<<harvesticon>><<link [[Leave (0:01)|Brothel Leave Naked]]>><<pass 1>><</link>><<if $daily.ex.brothel isnot 1>><<exhibitionist4>><</if>>
+		<br>
+	<<elseif $exposed is 1 and $exhibitionism gte 35 and Time.dayState isnot "night">>
+		<<harvesticon>><<link [[Leave (0:01)|Brothel Leave Undies Day]]>><<pass 1>><</link>><<if $daily.ex.brothel isnot 1>><<exhibitionist3>><</if>>
+		<br>
+	<<elseif $exposed is 1 and $exhibitionism gte 15 and Time.dayState is "night">>
+		<<harvesticon>><<link [[Leave (0:01)|Brothel Leave Undies]]>><<pass 1>><</link>><<if $daily.ex.brothel isnot 1>><<exhibitionist2>><</if>>
+		<br>
+	<</if>>
+
+<</if>>
+
+
+:: Brothel Dressing Room
+<<effects>><<set $outside to 0>><<set $location to "brothel">>
+
+You are in the brothel's dressing room. There are a few mirrors, currently occupied by staff fixing their hair and makeup.
+<br><br>
+
+<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
+	<<undobindingsicon>><<link [[Undo your bindings (0:10)|Brothel Dressing Room]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
+	<br><br>
+<</if>>
+
+<<if $brothelVending>>
+	<<if $brothelVending.status is "asked" or $brothelVending.status is "sold">>
+		<<condomicon "machine">><span class="gold">You can buy a vending machine at the shopping center to set up here.</span>
+		<br><br>
+	<<elseif $brothelVending.status is "bought">>
+		<<condomicon "machine">> <<link [[Install the vending machine (0:30)|Brothel Dressing Room]]>><<set $brothelVending.status to "set">><<set $weekly.brothelVMCollect to true>><<pass 30>><</link>>
+		<br><br>
+	<<elseif $brothelVending.status is "set" and $brothelVending.weeksEmpty lt 4>>
+		<<if !($brothelVending.products % 2) and $condomLvl gte 1>>
+			<<condomicon>>You can talk with the <span class="gold">pharmacy nurse</span> about reselling condoms.
+			<br><br>
+		<</if>>
+		<<if $brothelVending.products lt 2 and $adultshopunlocked>>
+			<<sextoysicon "lube">>You can talk with <span class="gold">Sirris</span> about reselling lube.
+			<br><br>
+		<</if>>
+		<<if $brothelVending.products>>
+			You check the vending machine's stock.
+			<<if $brothelVending.products % 2>>
+				<<if $brothelVending.condoms lte 1>>
+					The condom dispenser is <span class="red">empty.</span> You can get them at the pharmacy.
+					<br><br>
+				<<else>>
+					<<if $brothelVending.condoms gte 200>>
+						The condom dispenser is <span class="green">full.</span>
+					<<else>>
+						<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
+						You count <<number $brothelVending.condoms>> <<print $brothelVending.condoms is 1 ? "pack" : "packs">> of condoms. There is room for <<number $brothelVending.condomsToRefill>> <<print $brothelVending.condomsToRefill is 1 ? "3-pack" : "3-packs">>. You can purchase condoms at the pharmacy.
+					<</if>>
+					<br>
+					You have set the price of the 3-condom packs to £80, while in the pharmacy, they cost £60.
+					<br>
+					<<condomicon>><<link [[Buy condoms (£80)|Brothel Vending Machine Buy]]>><<set $phase to 1>><</link>>
+					<br><br>
+				<</if>>
+			<</if>>
+			<<if $brothelVending.products gte 2>>
+				<<if $brothelVending.lube lte 1>>
+					The lube bottles dispenser is empty. You can get them at the adult shop.
+					<br><br>
+				<<else>>
+					<<if $brothelVending.lube gte 200>>
+						The lube bottles dispenser is <span class="green">full.</span>
+					<<else>>
+						<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
+						You count <<number $brothelVending.lube>> <<print $brothelVending.lube is 1 ? "bottle" : "bottles">> of lube. There is room for <<number $brothelVending.lubeToRefill>> <<print $brothelVending.lubeToRefill is 1 ? "bottle" : "bottles">>. You can purchase lube at the adult shop.
+					<</if>>
+					<br>
+					You have set the price of the lube to £30, while in the adult shop, it costs £20.
+					<br>
+					<<sextoysicon "lube">><<link [[Buy lube (£30)|Brothel Vending Machine Buy]]>><<set $phase to 2>><</link>>
+					<br><br>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</if>>
+
+<<wardrobeicon>><<link [[Wardrobe|Brothel Wardrobe]]>><</link>>
+<br>
+<<if playerHasSexToys()>>
+	<<sextoysicon>><<link [[Sex toys|Sextoys Inventory]]>><<set $sextoyInvReturnLink to $passage>><</link>>
+	<br>
+<</if>>
+<<mirroricon>><<link [[Mirror|Brothel Mirror]]>><<preMirror>><</link>>
+<br><br>
+
+<<if isPubfameTaskAccepted("briar") and $pubfame.briar.distract isnot 2>>
+	You notice a dancer packing clothes into a suitcase.
+	<br>
+	<<getinicon>><<link [[Approach|Brothel Distraction]]>><</link>>
+	<br><br>
+<</if>>
+
+<<getouticon>><<link [[Return to the club (0:01)|Brothel]]>><<pass 1>><</link>>
+<br><br>
+<<link [[Settings]]>><<set $settingsExitPassage to "Brothel Dressing Room">><</link>>
+<br>
+<<attitudesControlCheck>>
+<<if $attitudesControl.showGoldLink is true>>
+	<span class="goldLink"><<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>> </span><span class="red">!!</span>
+<<else>>
+	<<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+<</if>>
+<br><br>
+
+:: Brothel Mirror
+<<effects>>
+
+<<link [[Step away|Brothel Dressing Room]]>><<unset $mirrorMenu>><<unset $bodywritingSet>><<postMirror>><</link>>
+<br>
+
+<<mirror>>
+<br><br>
+
+
+
+:: Brothel Leave Naked Day
+<<effects>>
+
+Briar's goon keeps a close eye on you as you peek out the front exit. The street is busy with cars and other vehicles, and more than a few pedestrians walk the pavements. <<flaunting>> you step out onto the street.
+
+<<if $daily.ex.brothel isnot 1>>
+	<<set $daily.ex.brothel to 1>>
+	<<exhibitionism5>>
+<<else>>
+<br><br>
+<</if>>
+
+<<link [[Next|Harvest Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Brothel Leave Undies Day
+<<effects>>
+
+Briar's goon keeps a close eye on you as you peek out the front exit. The street is busy with cars and other vehicles, and more than a few pedestrians walk the pavements. <<flaunting>> you step out onto the street.
+
+<<if $daily.ex.brothel isnot 1>>
+	<<set $daily.ex.brothel to 1>>
+	<<exhibitionism3>>
+<<else>>
+<br><br>
+<</if>>
+
+<<link [[Next|Harvest Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Brothel Leave Naked
+<<effects>>
+
+Briar's goon keeps a close eye on you as you peek out the front exit. The street is dark, illuminated only by light from the occasional vehicle. <<flaunting>> you step out onto the street.
+
+<<if $daily.ex.brothel isnot 1>>
+	<<set $daily.ex.brothel to 1>>
+	<<exhibitionism4>>
+<<else>>
+<br><br>
+<</if>>
+
+<<link [[Next|Harvest Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Brothel Leave Undies
+<<effects>>
+
+Briar's goon keeps a close eye on you as you peek out the front exit. The street is dark, illuminated only by light from the occasional vehicle. <<flaunting>> you step out onto the street.
+
+<<if $daily.ex.brothel isnot 1>>
+	<<set $daily.ex.brothel to 1>>
+	<<exhibitionism2>>
+<<else>>
+<br><br>
+<</if>>
+
+<<link [[Next|Harvest Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Brothel Intro
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+You enter the building, not sure what to expect. <<generate1>><<person1>>A <<person>> stands at the end of an antechamber, guarding another set of doors. <<He>> smiles when <<he>> sees you. "You look lost, <<girl>>. What brings you here?"
+<br><br>
+
+"I was told to come here," you reply sheepishly.
+<br><br>
+
+<<His>> smile broadens. "Good. Wait just a moment." <<He>> presses a finger against <<his>> ear before speaking to the air. "We have a... That's right. Yes boss." <<He>> lowers <<his>> hand. "The boss'll be down shortly to meet you. You won't need to wait long."
+<br><br>
+
+<<He>> was right.<<endevent>><<npc Briar>><<person1>>
+
+<<if $pronoun is "m">>
+The doors open to reveal a man wearing a blue suit, minus a shirt, showing off <<his>> well-toned chest and abdomen. Long chestnut hair flows behind <<him>> as <<he>> enters.
+<<else>>
+The doors open to reveal a woman wearing an expensive-looking red gown with a plunging neckline, revealing a portion of <<his>> $NPCList[0].breastsdesc. Long chestnut hair flows behind <<him>> as <<he>> enters.
+<</if>>
+<br><br>
+<<He>> fixes you with hazel eyes, wordlessly grabs your wrist and pulls you through the doors.
+<br><br>
+
+You enter a large crowded room. The smell of sweat is palpable. Several stages dot the room, with dancers showing themselves off. Patrons ogle and cheer at them, waited on by other staff in various states of undress. You are led through the room and through an inconspicuous door. A flight of stairs later and you find yourself in a lavishly-decorated office.
+<br><br>
+
+<<He>> lies down on a velvet sofa in the middle of the room, props <<his>> head up with one arm and observes you. You look around for a place to sit but other than the sofa there's no seating. <<He>> interrupts your search. "My name is Briar. Welcome to my establishment."
+<br><br>
+
+<<link [[Next|Brothel Intro2]]>><</link>>
+<br>
+
+:: Brothel Intro2
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<if $phase is 0>>
+
+<<He>> eyes up your body as <<he>> speaks.
+
+"Nice. Very nice. Our clientele will love you.
+
+I'd like to offer you work looking after our guests. You saw how it works on the way up." <<He>> pauses before continuing. "Oh right, you probably want details. You can dress however you want, but you'll get more attention if you dress appropriately. Use a stage to show yourself off. You might make some change there, but your real aim should be to get hired for some private time. We provide rooms for that purpose."
+<br><br>
+
+"You'll be expected to take care of yourself. If someone tries to rape you just deal with it and don't bother me. I'm not your <<mummy>>."
+<br><br>
+
+"We take a 40% cut of anything you earn, and don't you dare think you can cheat us either. You'll have access to a dressing room, naturally. I think I've covered everything. So, interested?"
+<br><br>
+
+<<link [[Yes|Brothel Intro2]]>><<set $phase to 1>><<set $brotheljob to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
+<br>
+<<link [[No|Brothel Intro2]]>><<set $phase to 2>><</link>>
+<br>
+<<link [[I need more information|Brothel Intro2]]>><<set $phase to 3>><</link>>
+<br>
+
+<<elseif $phase is 1>>
+"Good! Come by whenever you feel like putting your body to work. I'll let the other staff know you're joining them." <<He>> rises to <<his>> feet and guides you to the top of the stairs.
+
+<<if $id is 0>>
+<<He>> speaks as you descend. "One more thing. If you're having trouble with your legal status we can fix you a fake ID. For a price, obviously." You turn to look at <<him>> but <<he>> is already gone.
+<<else>>
+<<He>> doesn't say anything as <<he>> leaves you to descend.
+<</if>>
+<br><br>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+<<elseif $phase is 2>>
+"That's a shame. Well, you know where to find us if you change your mind. A body like yours is sure to sell well." <<He>> rises to <<his>> feet and guides you to the top of the stairs.
+
+<<if $id is 0>>
+<<He>> speaks as you descend. "One more thing. If you're having trouble with your legal status we can fix you a fake ID. For a price, obviously." You turn to look at <<him>> but <<he>> is already gone.
+<<else>>
+<<He>> doesn't say anything as <<he>> leaves you to descend.
+<</if>>
+<br><br>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+
+<<elseif $phase is 3>>
+
+	<<He>> blinks, then laughs. "Don't be coy. You've seen what's going on downstairs, darling. I'm sure you can work out the rest on your own."
+	<br><br>
+
+<<link [["I'm interested"|Brothel Intro2]]>><<set $phase to 1>><<set $brotheljob to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
+<br>
+<<link [["I'm not interested"|Brothel Intro2]]>><<set $phase to 2>><</link>>
+<br>
+
+<</if>>
+
+:: Brothel Dance
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<if $dancestart is 1>>
+	<<unset $dancestart>>
+	<<danceinit>>
+	<<robinbrothelappear>>
+	<<set $dancing to 1>>
+	<<set $venuemod to 3>>
+	<<set $dancelocation to "brothel">>
+<</if>>
+
+<<danceeffects>>
+<<danceaudience>>
+<<danceactions>>
+
+<<if $corruptionDancing gt 0 and $danceevent is 0 and (($exhibitionism lte 74 and $exposed gte 2) or ($exhibitionism lte 34 and $exposed gte 1))>>
+	There's no way you could normally continue dancing while so exposed.
+<<elseif $danceevent is 0 and $exhibitionism lte 74 and $exposed gte 2>>
+	There's no way you can continue dancing while so exposed! Face reddening, you flee the scene.
+	<br><br>
+<<elseif $danceevent is 0 and $exhibitionism lte 34 and $exposed gte 1 and !$worn.under_lower.type.includes("dance")>>
+	There's no way you can continue dancing while so exposed! Face reddening, you flee the scene.
+	<br><br>
+<</if>>
+
+<<if $danceevent is "finish">>
+	<<unset $corruptionDancing>>
+	<<link [[Next|Brothel]]>><<clotheson>><<endevent>><</link>>
+<<elseif $danceevent is "private">>
+	<<if $corruptionDancing is 2>>
+		The slime wants you to have fun with more than an individual.
+	<<elseif $promiscuity gte 35>>
+		<<link [[Private room|Brothel Private]]>><<dance_private_init>><</link>><<promiscuous3>>
+	<<elseif $promiscuity lte 34 and $uncomfortable.prostituting is false>>
+		<<link [[Private room|Brothel Private]]>><<dance_private_init>><<set $desperateaction to 1>><</link>><<promiscuous3>>
+		<br>
+	<</if>>
+<<elseif $danceevent is "rape">>
+	<<link [[Next|Brothel Dance Rape]]>><<set $molestationstart to 1>><<unset $corruptionDancing>><</link>>
+<<elseif $danceevent is "leighton">>
+	<<if $corruptionDancing is 2>>
+		The slime wants you to have fun with more than an individual.
+	<<elseif $promiscuity gte 35>>
+		<<link [[Private room|Leighton Private]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>><<promiscuous3>>
+		<br>
+	<</if>>
+<<elseif $danceevent is "robin">>
+	<<if $corruptionDancing is 2>>
+		The slime wants you to have fun with more than an individual.
+	<<else>>
+		<<link [[Private room|Robin Brothel]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>>
+	<</if>>
+<<elseif $danceevent is "briarseduce">>
+	<<link [[Next|Briar Sex]]>><<endcombat>><<unset $corruptionDancing>><<npc Briar>><<person1>><<set $sexstart to 1>><</link>>
+	<br>
+<<elseif $danceevent is 0>>
+	<<if $corruptionDancing isnot undefined>>
+		The slime in your ear is forcing you.
+	<<elseif $exposed gte 2 and $exhibitionism lte 74>>
+		<<link [[Flee|Brothel Dressing Room]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>>
+	<<elseif $exposed gte 1 and $exhibitionism lte 34>>
+		<<link [[Flee|Brothel Dressing Room]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>>
+	<<else>>
+		<<link [[Stop|Brothel]]>><<clotheson>><<endevent>><<unset $corruptionDancing>><</link>>
+	<</if>>
+<</if>>
+
+:: Briar's Office
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<npc Briar>><<person1>>
+<<if $phase is 1>>
+	"Good! Come by whenever you feel like putting your body to work. I'll let the other staff know you're joining them." <<He>> rises to <<his>> feet and guides you to the top of the stairs. <<He>> doesn't say anything as <<he>> leaves you to descend.
+	<br><br>
+
+	<<link [[Next|Brothel]]>><<endevent>><</link>>
+
+<<elseif $brotheljob is 1 and $fame.prostitution gte 30 and not $brothelshowdata.intro>>
+	<<set $brothelshowdata.intro to 1>><<set $brothelshowdata.type to "none">>
+	Briar leans beside the window, staring out. "Glad you could join me," <<he>> says, not turning to look. "People have been asking for you. Seems you've made a name for yourself." <<He>> turns and sizes you up. "I'd like to hold a little show on <span class="gold">Fridays</span>. Get the punters in. How'd you like to be the star?"
+	<br><br>
+
+	<<He>> doesn't wait for a response. "Not your usual work I know, and I'll need time to prepare. Think about it, then come visit me and we'll talk specifics. And money."
+	<br><br>
+	<<endevent>>
+	<<link [[Next|Brothel]]>><</link>>
+	<br>
+
+<<elseif $brotheljob is 1 and $fame.prostitution gte 200 and $brothelshowdata.intro is 1>>
+	<<set $brothelshowdata.intro to 2>>
+	Briar sits at <<his>> desk, talking on the phone. <<He>> motions you to hold on for a second.
+	You wait as Briar ends the call. <<He>> turns to you, seemingly in good spirits.
+	<br><br>
+
+	"There's our little star," <<he>> says. Briar walks over to <<his>> sofa and sits down.
+	<br><br>
+
+	"It seems your performances made the rounds. You have admirers that would pay a fortune to spend some time with you." <<he>> says. <<He>> taps on the sofa, inviting you to sit next to <<him>>.
+	<br><br>
+
+	<<link [[Sit|Brothel Escort Job Intro]]>><<set $phase to 1>><</link>><<glove>><<npcincr Briar love 1>>
+	<br>
+	<<link [[Stand|Brothel Escort Job Intro]]>><<set $phase to 2>><</link>>
+
+<<elseif $brotheljob isnot 1>>
+
+	Briar sprawls on the sofa, holding a glass of wine. <<He>> looks up as you enter. "Have you reconsidered my offer?"
+	<br><br>
+
+	<<link [[Yes|"Briar's Office"]]>><<endevent>><<set $brotheljob to 1>><<set $phase to 1>><<set $wardrobes.brothel.unlocked to true>><</link>>
+	<br>
+	<<if $id is 0>>
+		<<link [[Inquire about ID card|"Briar's Office ID"]]>><</link>>
+		<br>
+	<</if>>
+	<<link [[Leave|Brothel]]>><<endevent>><</link>>
+	<br>
+
+<<else>>
+
+	Briar sprawls on the sofa, holding a glass of wine. <<He>> looks up as you enter. "Something I can do for you?"
+	<br><br>
+
+	<<if isPubfameTaskAccepted("briar")>>
+		<<His>> laptop is on the sofa next to <<him>>. 'Mickey' asked you to hack into Briar's computer.
+		<br>
+		You have
+		<<if $pubfame.briar.distract is 2>>
+			<span class="green">someone set to cause a distraction</span>,
+		<<else>>
+			<span class="pink">no distraction set</span>,
+		<</if>>
+		<<if $pubfame.briar.distract is 2 and ($pubfame.briar.escape is 2 or $cat gte 6) or $pubfame.briar.distract isnot 2 and $pubfame.briar.escape isnot 2 and $cat lt 6>>
+			and
+		<<else>>
+			but
+		<</if>>
+		<<if $pubfame.briar.escape is 2>>
+			<span class="green">an escape route planned</span>.
+		<<elseif $cat gte 6>>
+			you could easily escape through the window. <span class="green">Cats always land on their feet.</span>
+		<<else>>
+			<span class="pink">no escape route planned</span>.
+		<</if>>
+		<<if !$pubfame.briar.notice and $pubfame.briar.distract isnot 2>>
+			<<set $pubfame.briar.notice to true>>
+			<<if $cat gte 6>>
+				You could probably find a distraction by looking around the brothel.
+			<<else>>
+				You could probably find a distraction, and an escape route, by looking around the brothel.
+			<</if>>
+		<</if>>
+		<br>
+		<<link [[Distract Briar|Briar Hack]]>><</link>>
+		<br><br>
+	<</if>>
+	<<if $brothelVending>>
+		<<if $brothelVending.status is "idea">>
+			<<condomicon "machine">><<link [[Ask Briar to set up a vending machine (0:20)|Brothel VM ask]]>><<pass 20>><</link>>
+			<br>
+		<<elseif $brothelVending.products and $brothelVending.status is "set" and !$weekly.brothelVMCollect>>
+			<<highicon>><<link [[Collect money from the vending machine (0:10)|Brothel VM income]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $brothelshowdata.intro and $brothelshowdata.type is "none">>
+		<<brothelicon "stage">><<link [[Set up a show|"Briar's Office Show"]]>><</link>>
+		<br>
+	<</if>>
+	<<if $brothelshowdata.intro is 2>>
+		<<if $brothel_escortjob is undefined>>
+			<<ind>><<link [[Work for wealthy client|Brothel Escort Job Accept]]>><</link>>
+			<br>
+
+		<<elseif $brothel_escortjob.accept isnot true and $weekly.escortjob isnot 1>>
+			<<ind>><<link [[Work for wealthy client|Brothel Escort Job Accept]]>><</link>>
+			<br>
+
+		<</if>>
+	<</if>>
+	<<if $id is 0>>
+		<<askicon>><<link [[Inquire about ID card|"Briar's Office ID"]]>><</link>>
+		<br>
+	<</if>>
+	<<if $brothel_machine_repair is 1>>
+		<<askicon>><<link [[Ask Briar about the sex machine|Briar Machine Ask]]>><<set $brothel_machine_repair to 2>><</link>>
+		<br>
+	<<elseif $brothel_machine_repair is 3>>
+		<<ind>><<link [[Give Briar the gel|Briar Gel Give]]>><<set $brothel_machine_repair to 4>><</link>>
+		<br>
+	<</if>>
+	<br>
+	<<getouticon>><<link [[Leave|Brothel]]>><<endevent>><</link>>
+
+<</if>>
+
+
+:: Briar Machine Ask
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Th-there's a lewd machine," you say. "Behind the stage-"
+<<elseif $speech_attitude is "bratty">>
+	"There's a fuck machine," you say. "Behind the stage-"
+<<else>>
+	"There's a lewd machine," you say. "Behind the stage-"
+<</if>>
+<br><br>
+
+<<if $brothel_machine_science is 1>>
+	<<unset $brothel_machine_science>>
+	Briar laughs before you finish. "That old thing," <<he>> says. "Doesn't work. Was fun for a while, but it needs-"
+	<br><br>
+
+	"A special fuel." It's your turn to interrupt. Briar looks surprised. "It has no plugs," you shrug. "And it doesn't take batteries, so I suspected that was the problem."
+	<br><br>
+
+	"I should be careful where I let you snoop around," Briar laughs. "You're right. They make the fuel nearby, a pink gel, but refuse to sell it."<<gcontrol>><<control 10>><<glove>><<npcincr Briar love 1>><<npcincr Briar dom -1>>
+	<br><br>
+<<else>>
+	Briar laughs before you finish. "That old thing," <<he>> says. "Doesn't work. Was fun for a while, but it needs a special fuel. A pink gel. They make it nearby, but refuse to sell it."
+	<br><br>
+<</if>>
+
+<<link [[Next|Briar Machine Ask 2]]>><</link>>
+<br>
+
+
+:: Briar Machine Ask 2
+<<effects>>
+
+
+Briar walks across the room and leans beside the window, looking over the building opposite, at the industrial smokestacks beyond. <span class="gold">"They dump their waste in the landfill,"</span> <<he>> says. "I wouldn't be surprised if some gel found its way there."
+<br><br>
+
+"It's a pity they're not willing to sell," <<he>> continues. "I'd be willing to pay <span class="gold">£2000</span> for a canister."
+<br><br>
+
+<<He>> walks back to <<his>> seat. "Was there anything else?"
+<br><br>
+
+<<if currentSkillValue('skulduggery') gte 400>>
+	<i>A thought strikes you.</i> If they don't sell the fuel, how did Briar run it before?
+	<br><br>
+
+	<<link [[Ask|Briar Machine Ask 3]]>><<control 10>><</link>><<gcontrol>>
+	<br>
+	<<link [[Drop it|Brothel]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<link [[Leave|Brothel]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+
+
+:: Briar Machine Ask 3
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Y-you must have found some gel before," you say.
+<<elseif $speech_attitude is "bratty">>
+	"You used the machine before," you say. "But I imagine they don't sell that either, do they?"
+<<else>>
+	"You must have found some gel before," you say.
+<</if>>
+<br><br>
+
+Briar smiles again, caught off guard for just a moment. "You're inquisitive," <<he>> says. "And right, but no one's going to investigate a rogue fucktoy. Unless we make too much noise. The machine will be for VIPs only."
+<br><br>
+
+Briar reclines in <<his>> chair. "Anything else?"
+<br><br>
+
+<<link [[Leave|Brothel]]>><<endevent>><</link>>
+<br>
+
+
+:: Briar Gel Give
+<<effects>>
+
+<<earnFeat "Stolen Technology">>
+You hold out the canister, but Briar's more interested in examining you. "What a surprise," <<he>> says. <<He>> doesn't sound surprised. "£2000 was it? Here. Just leave it anywhere."
+<br><br>
+
+You've made <<moneyGain 2000>>.
+<br><br>
+
+<<He>> takes a sip of wine. "We'll soon have the machine running again. We just need someone willing to use it. That shouldn't be a problem." <<He>> smiles.
+<br><br>
+
+<<link [[Leave|Brothel]]>><<endevent>><</link>>
+<br>
+
+
+:: Briar's Office ID
+
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+<<if $phase is 1>>
+	"Excellent, you won't regret it." <<He>> walks over to <<his>> desk and presses a button concealed behind a painting. A bookcase parts to reveal a workshop manned <<generate2>><<person2>>by a <<person>> staring at bits of paper through a monocle.
+	<br><br>
+	"One ID." Briar says, giving your rear a little smack as you walk past.
+	<br><br>
+	The <<person>> asks you questions and photographs you. After twenty minutes you are in possession of your ID card.
+	<br><br>
+	<<link [[Next|Brothel]]>><<endevent>><</link>>
+<<else>>
+	"I can supply you with a fake ID. But I believe I mentioned it would be expensive, yes? £500 specifically. Don't balk at the cost, these things fool government scanners and border checks. You don't want to take the risk of being caught with a cheap one, believe me."
+	<br><br>
+	<<if $money gte 50000>>
+		<<link [[I'll buy one (0:20)|Briar's Office ID]]>><<set $phase to 1>><<set $id to 1>><<pass 20>><<set $money -= 50000>><</link>>
+		<br>
+	<</if>>
+	<<link [[Leave|Brothel]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Brothel Private
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<if $phase is 0>>
+
+<<set $tipmod to 3>><<tipset>>
+
+<<promiscuity3>>You lead the <<person>> into one of the back rooms. It's well-lit compared to the main room, it takes a moment for your eyes to adjust. There's a small stage with a pole in one corner. There's also a sofa, contoured to allow an extensive range of positions.
+<br><br>
+
+	<<if $rng gte 71>>
+Before you can turn around, the <<person>> has their hands wrapped around your waist and their mouth nuzzled against your neck.
+<br><br>
+
+	<<link [[Pull away|Brothel Private]]>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[Try to negotiate while being fondled|Brothel Private]]>><<arousal 300 "genitals">><<arousal 300 "breasts">><<set $phase to 2>><<submission 5>><<garousal>><</link>>
+	<br>
+
+	<<else>>
+The <<person>> stands sheepishly by the door, clearly waiting for you to initiate things.
+<br><br>
+<<rng>>
+
+		<<if $tipreaction is "low">>
+You take <<him>> by the hands and sit on the sofa. You negotiate a price of <<printmoney $tip>>, less than you'd hoped.
+<br><br>
+
+"I know it's not much," <<he>> exclaims, "but it's all I can afford and still eat tomorrow." <<He>> looks down at <<his>> feet.
+<br><br>
+
+			<<if $rng gte 51>>
+			"Also, if it's okay, I don't want any touching. Well, maybe some, but mainly I'd just like to talk."
+			<br><br>
+
+			<<link [[Accept (0:30)|Brothel Private]]>><<set $phase to 3>><<pass 30>><</link>>
+			<br>
+			<<link [[Refuse|Brothel Private]]>><<set $phase to 4>><</link>>
+			<br>
+			<<else>>
+			<<link [[Accept (0:30)|Brothel Private Sex]]>><<set $consensual to 1>><<pass 30>><<set $sexstart to 1>><</link>>
+			<br>
+			<<link [[Refuse|Brothel Private]]>><<set $phase to 4>><</link>>
+			<br>
+			<</if>>
+
+		<<elseif $tipreaction is "mid">>
+You take <<him>> by the hands and sit on the sofa. You negotiate a price of <<printmoney $tip>>, which seems reasonable.
+<br><br>
+
+			<<if $rng gte 51>>
+			<<He>> speaks softly, "If it's okay, I don't want any touching. Well, maybe some, but mainly I'd just like to talk."
+			<br><br>
+
+			<<link [[Accept (0:30)|Brothel Private]]>><<set $phase to 3>><<pass 30>><</link>>
+			<br>
+			<<link [[Refuse|Brothel Private]]>><<set $phase to 4>><</link>>
+			<br>
+			<<else>>
+			<<link [[Accept (0:30)|Brothel Private Sex]]>><<pass 30>><<set $consensual to 1>><<set $sexstart to 1>><</link>>
+			<br>
+			<<link [[Refuse|Brothel Private]]>><<set $phase to 4>><</link>>
+			<br>
+			<</if>>
+		<</if>>
+
+	<</if>>
+
+<<elseif $phase is 1>>
+	<<if $rng gte 21>>
+	You pull away from the <<person>>. <<He>> seems frustrated, but it can't be helped.
+	<<set $enemyanger += 20>>
+
+		<<if $tipreaction is "low">>
+	You negotiate a price of <<printmoney $tip>>, less than you'd hoped.
+	<br><br>
+
+	"You think you're worth more?" <<He>> laughs, "I can pick up sluts like you for free you know. This is charity, this is."
+	<br><br>
+
+			<<link [[Accept (0:30)|Brothel Private Sex]]>><<pass 30>><<set $consensual to 1>><<set $sexstart to 1>><</link>>
+			<br>
+			<<link [[Refuse|Brothel Private]]>><<set $phase to 5>><</link>>
+			<br>
+
+		<<elseif $tipreaction is "mid">>
+	You negotiate a price of <<printmoney $tip>>, which seems reasonable.
+	<br><br>
+
+			<<link [[Accept (0:30)|Brothel Private Sex]]>><<pass 30>><<set $consensual to 1>><<set $sexstart to 1>><</link>>
+			<br>
+			<<link [[Refuse|Brothel Private]]>><<set $phase to 5>><</link>>
+			<br>
+
+		<</if>>
+
+	<<else>>
+	You try to pull away from the <<his>> intruding hands, but <<he>> grapples your arms with one hand and clamps down on your mouth with the other.
+	<br><br>
+	<<set $enemyanger += 20>>
+
+	<<link [[Next|Brothel Private Sex]]>><<pass 30>><<set $molestationstart to 1>><</link>>
+	<br>
+
+	<</if>>
+
+<<elseif $phase is 2>>
+	<<if $tipreaction is "low">>
+Despite <<his>> unrelenting pawing, you manage to negotiate a price of <<printmoney $tip>>, less than you'd hoped.
+<br><br>
+	<<elseif $tipreaction is "mid">>
+Despite <<his>> unrelenting pawing, you manage to negotiate a price of <<printmoney $tip>>, which seems reasonable.
+<br><br>
+	<</if>>
+
+	<<link [[Accept (0:30)|Brothel Private Sex]]>><<set $consensual to 1>><<pass 30>><<set $sexstart to 1>><</link>>
+	<br>
+	<<link [[Refuse|Brothel Private]]>><<set $phase to 5>><</link>>
+	<br>
+
+<<elseif $phase is 3>>
+<<He>> rests <<his>> head on your lap and you gently stroke <<his>> hair. <<He>> talks about mundane topics while you lend a sympathetic ear. Despite the banality of the conversation <<he>> becomes tearful at one point, while mentioning how <<he>> doesn't feel able to open up to <<his>> spouse.
+<br><br>
+
+After <<his>> thirty minutes are up, <<he>> pays you the agreed fee and thanks you for you time. <<He>> seems genuinely grateful.
+<br><br>
+<<fameprostitution 1>>
+
+<<clotheson>>
+
+<<link [[Next|Brothel]]>><<set $money += $tip>><<endevent>><</link>>
+
+<<elseif $phase is 4>>
+<<He>> nods, eyes downcast. <<He>> doesn't waste any time leaving the room.
+<br><br>
+
+<<clotheson>>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+
+<<elseif $phase is 5>>
+<<rng>>
+	<<if $rng gte 21>>
+	<<He>> looks at you, as if unsure what to do. Finally, <<he>> says "You've probably got something contagious anyway." before leaving the room.
+	<br><br>
+
+<<clotheson>>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+
+	<<else>>
+<<He>> looks at you blankly for a moment, then laughs. "Good one, now get on your knees before I smack you down!" <<He>> assaults you!
+<br><br>
+
+<<link [[Next|Brothel Private Sex]]>><<pass 30>><<set $molestationstart to 1>><</link>>
+<br>
+
+	<</if>>
+<</if>>
+
+:: Brothel Private Sex
+<<if $molestationstart is 1>>
+<<set $molestationstart to 0>>
+<<controlloss>>
+<<violence 1>>
+<<neutral 1>>
+<<molested>>
+
+<<maninit>>
+	<<if $phase is 1>>
+<<set $NPCList[0].lefthand to "arms">>
+<<set $leftarm to "grappled">>
+<<set $rightarm to "grappled">>
+<<hand_gag 0 right>>
+	<<elseif $phase is 5>>
+<<set $enemyanger += 40>>
+	<</if>>
+
+<<elseif $sexstart is 1>>
+<<set $sexstart to 0>>
+<<set $consensual to 1>>
+<<neutral 1>>
+
+<<maninit>>
+<<set $enemytrust += 40>>
+	<<if $phase is 2>>
+"This better be worth it," <<he>> says.
+	<<else>>
+<<set $enemytrust += 40>>
+	<</if>>
+	<<if $phase is 1>>
+"This better be worth it," <<he>> says.
+	<<else>>
+<<set $enemytrust += 40>>
+	<</if>>
+
+<</if>>
+
+<<effects>>
+<<effectsman>><<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<set _chance to random(1, 200)>>
+/* 0.5% (1/200) chance per turn, only when crime is non-zero, when over 6 weeks into game, and gte 3 weeks from last raid*/
+<<if _chance is 13 and crimeSumCurrent() gte 500 and Time.days gte 42 and ((Time.days - $brothel_raid_day) gte 21)>>
+	<span id="next"><<link [[Next|Brothel Raid]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal lte $enemyarousalmax and $enemyhealth gte 0 and $finish is 0>>
+	<span id="next"><<link [[Next|Brothel Private Sex]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Private Sex Finish]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Private Sex Finish
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+<<if $stealtarget isnot "">><<set $brothel_thief += 1>><</if>>
+<<if $consensual is 1>>
+
+	<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>><<set $prostitutionstat += 1>><<fameprostitution 1>>
+		<<if $phase is 2>>
+	"Here's your pay, whore," the <<person>> gasps as <<he>> finishes off. <<He>> leaves the room without looking at you.
+	<br><br>
+	<<tipreceive>>
+		<<elseif $phase is 1>>
+	"Here's your pay, whore," the <<person>> gasps as <<he>> finishes off. <<He>> leaves the room without looking at you.
+	<br><br>
+	<<tipreceive>>
+		<<else>>
+		<<He>> smiles in contentment. "Thank you for your time. Here you go." <<He>> gives you a broad smile before leaving the room.
+		<br><br>
+	<<tipreceive>>
+		<</if>>
+
+	<<else>>
+		<<if $phase is 2>>
+		"Fine. I hope you don't expect payment." <<He>> looks at you with disgust before leaving the room.
+		<br><br>
+		<<elseif $phase is 1>>
+		"Fine. I hope you don't expect payment." <<He>> looks at you with disgust before leaving the room.
+		<br><br>
+		<<else>>
+		"Did I do something wrong? I'm sorry!" <<He>> runs from the room.
+		<br><br>
+		<</if>>
+
+	<</if>>
+
+<<else>>
+
+	<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>><<fameprostitution 1>>
+	"Here's your pay, whore," the <<person>> gasps as <<he>> finishes off. They leave the room without looking at you.
+	<br><br>
+	<<tipreceive>>
+	<<elseif $enemyhealth lte 0>>
+	You manage to knock the <<person>> backwards, giving you time to escape. <<tearful>> you flee into the busy main room.
+	<br><br>
+
+	<</if>>
+
+<</if>>
+<br><br>
+
+<<clotheson>>
+
+<<endcombat>>
+<<rng>>
+<<if crimeSumCurrent() gte 4500 and $brothel_raid gte 1 and $brothel_thief gte $rng>>
+/*If you're (a) very wanted and (b) Briar has been raided before, then the (c) chance of Briar selling you out increases the more you steal from their customers.*/
+	<<link [[Next|Brothel Arrest]]>><</link>>
+<<else>>
+	<<link [[Next|Brothel]]>><</link>>
+<</if>>
+
+:: Brothel Dance Rape
+
+<<if $corruptionDancing is 2>>
+	<<unset $corruptionDancing>>
+	<<set $molestationstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+<<elseif $molestationstart is 1>>
+	<<unset $corruptionDancing>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<br>
+	<<violence 1>>
+	<<neutral 1>>
+	<<maninit>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if $alarm is 1>>
+	<<if $rescue is 0>>
+		<<set $alarm to 0>>
+		<br><br>
+		<<if $enemyarousal gte $enemyarousalmax>>
+			<span id="next"><<link [[Next->Brothel Dance Rape Finish]]>><</link>></span><<nexttext>>
+		<<elseif $enemyhealth lte 0>>
+			<span id="next"><<link [[Next->Brothel Dance Rape Finish]]>><</link>></span><<nexttext>>
+		<<else>>
+			<span id="next"><<link [[Next->Brothel Dance Rape]]>><</link>></span><<nexttext>>
+		<</if>>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[Next->Brothel Dance Rape Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[Next->Brothel Dance Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next->Brothel Dance Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Dance Rape Finish
+
+<<effects>>
+<<if $enemyhealth lte 0>>
+	<<if Time.dayState isnot "night">>
+		<<He>> recoils in pain, giving you the chance you need. <<tearful>> you escape into the dressing room.
+		<br><br>
+	<<else>>
+		<<He>> recoils in pain, giving you the chance you need. <<tearful>> you escape into the dressing room.
+		<br><br>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Brothel Dressing Room]]>><</link>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<if $audience is 1>>
+		A cheer erupts from the crowd as the <<person1>><<person>> climaxes. <<tearful>> you manage to stagger away before anyone else gets ideas.
+	<<elseif $audience lte 6>>
+		The <<person1>><<person>> and <<person2>><<person>> high-five each other. <<tearful>> you manage to stagger away while the audience congratulates each other.
+	<<else>>
+		A cheer erupts from the crowd, seems they enjoyed the show. <<tearful>> you manage to stagger away before anyone else gets any ideas.
+	<</if>>
+	<br><br>
+	<<stealclothes>>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Brothel Dressing Room]]>><</link>>
+<</if>>
+
+:: Brothel Punishment
+
+<<set $outside to 1>><<set $location to "brothel">><<effects>>
+<<set $briarPunishReason to "whore">>
+You're sat down on a bench, and hear the engine start. The hood is pulled off you.<<npc Briar>><<generate2>><<generate3>>
+<<if $brothelintro is 1>>
+	On the seat opposite sits Briar, owner of the brothel. <<person1>><<Hes>> flanked by a <<person2>><<person>> and <<person3>><<person>>.<<person1>>
+	<br><br>
+<<else>>
+	<<set $brothelintro to 1>>
+	<<if $pronoun is "m">>
+		On the seat opposite sits a man wearing a blue suit, minus a shirt, showing off his well-toned chest and abdomen. His long chestnut hair hangs loose.
+	<<else>>
+		On the seat opposite sits a woman wearing an expensive-looking red gown with a plunging neckline, revealing a portion of her pert breasts. Her long chestnut hair hangs loose.
+	<</if>>
+	<br><br>
+	<<Hes>> flanked by a <<person2>><<person>> and <<person3>><<person>>.<<person1>> <<He>> stares at you with hazel eyes.
+	<br><br>
+	"So you're the waif that's been causing me problems. I'm Briar, owner of the finest establishment in town." <<He>> leans back on the bench.
+<</if>>
+"I hear you've been selling yourself in the pub. This is a problem. You see, I own all of the whores on this side of town. And what has your cheap ass been up to? Whoring, of course. That means I own you. And yet, I haven't received a penny. That changes now."
+<br><br>
+The van halts and the <<person2>><<person>> and <<person3>><<person>> haul you out. They lead you to a staircase beside a building, descending underground. If you want to escape, now's your only chance. There are three of them however.<<person1>>
+<br><br>
+<<link [[Go with them|Brothel Punishment 2]]>><</link>>
+<br>
+<<link [[Fight|Brothel Punishment Fight]]>><<set $fightstart to 1>><<def 3>><</link>>
+<br>
+
+:: Brothel Punishment 2
+
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+<<if $briarPunishment>>
+	<<set $punishmenthole to $briarPunishment>>
+	<<unset $briarPunishment>>
+<<else>>
+	<<set $punishmenthole to 5>>
+<</if>>
+You are led down a dim corridor. You can hear music playing somewhere above. The <<person2>><<person>> shoves you through a door into a tiny cell with a hole in the wall, then <<he>> and the <<person3>><<person>> start coiling rope around you. Once your arms and legs are held behind you in a hogtie, they hoist you into the air and tie you to the ceiling, leaving you suspended.
+<br><br>
+"There," says Briar. "Now you're ready to service our customers. Because I'm kind, you'll only need to help <<number $punishmenthole>> of them." <<person1>><<He>> ties your neck to a peg beneath the hole, leaving your mouth pressed against it. "Have fun!" <<he>> says as <<he>> shuts the door, leaving you in darkness.
+<br><br>
+<<set $leftarm to "bound">>
+<<set $rightarm to "bound">>
+<<set $head to "bound">>
+<<set $feetuse to "bound">>
+<<set $punishmentposition to "gloryhole">>
+<<set $punishmenthole to 5>>
+<<endevent>>
+<<link [[Next|Brothel Punishment Gloryhole]]>><</link>>
+<br>
+
+:: Brothel Punishment Fight
+
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+	At the first sign of resistance, Briar laughs. "Oh, foolish <<girl>>, you're not going anywhere."
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Brothel Punishment Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Punishment Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Punishment Fight Finish
+
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<unset $briarPunishment>>
+	<<ejaculation "short">>
+	"Don't let the <<girl>> escape!" shouts Briar to <<person1>><<his>> goons once <<he>> stops shuddering, but you're already gone. <<tearful>> you flee down the road.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<harvestquick>>
+<<elseif $enemyhealth lte 0>>
+	<<unset $briarPunishment>>
+	You knock the <<person2>><<person>> aside, giving you the chance you need. <<tearful>> you run through the gap created and flee down the road. You hear Briar shout at <<person1>><<his>> subordinates.
+	<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<harvestquick>>
+<<else>>
+	Briar laughs again. "Aww, is the <<girl>> hurt?" You're far too injured to resist any longer. The <<person2>><<person>> and <<person3>><<person>> drag you down the staircase.
+	<br><br>
+	<<link [[Next|Brothel Punishment 2]]>><</link>>
+	<br>
+<</if>>
+
+:: Brothel Punishment Gloryhole
+
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<if $punishmenthole lte 0>>
+
+	<<endevent>><<npc Briar>><<person1>>The cell door opens and Briar steps in, holding a knife. <<He>> severs the rope holding you to the ceiling and you fall to the ground. "Now we're even," <<he>> says as <<he>> cuts more rope.
+	<<if $briarPunishReason is "whore">>
+		"If you want to sell that body of yours in the future, you do so under my roof."
+	<<else>>
+		"Maybe now you'll think twice before crossing me."
+	<</if>>
+	<<unset $briarPunishReason>>
+	<<He>> finishes cutting and steps back. "Is that understood? Good." <<He>> steps aside and a <<generate2>><<person2>><<person>> enters the cell. <<He>> drags you out the way you came in and slams the door behind you. They left your arms bound.
+	<br><br>
+
+	<<if $brothelknown isnot 1>>
+		<<set $brothelknown to 1>><span class="gold">You can now access the Brothel on Harvest Street.</span>
+	<</if>>
+
+	<<clotheson>>
+	<<endevent>>
+
+	<<set $head to 0>>
+	<<set $feetuse to 0>>
+	<<set $punishmentposition to 0>>
+
+	<<link [[Next|Harvest Street]]>><</link>>
+	<br>
+<<elseif $punishmentposition is "wall">><!-- Wall outcome with $position = "wall" -->
+	You're suspended by rope in a cell, your legs, ass and <<genitals>> poking through a hole in the wall. Strain as you might, you can't move your body an inch.
+	<br><br>
+	<<set $punishmenthole -= 1>>
+
+	<<generate1>><<person1>>
+
+	<<switch random(1, 8)>>
+		<<case 1 2>>
+			Someone pinches your <<bottom>>.
+		<<case 3 4>>
+			You feel someone stroke your <<genitals>>.
+		<<case 5 6>>
+			You feel someone lick the back of your thighs.
+		<<default>>
+			Someone smacks you on your <<bottom>>.
+	<</switch>>
+	<br><br>
+
+	<<link [[Next|Brothel Punishment Molestation]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<<else>><!-- Gloryhole outcome with $punishmentposition = "gloryhole" -->
+	You're suspended by rope in a cell, your mouth held against a hole in the wall. Strain as you might, you can't move your body an inch.
+	<br><br>
+	<<set $punishmenthole -= 1>>
+
+	<<generate1>><<person1>>
+
+	<<if $NPCList[0].vagina is "clothed">>
+	Someone presses their pussy against the hole, and your lips.
+	<br><br>
+	<<else>>
+	Someone sticks their $NPCList[0].penisdesc through the hole, and against your lips.
+	<br><br>
+	<</if>>
+
+	<<link [[Next|Brothel Punishment Molestation]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Brothel Punishment Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<if $punishmentposition is "wall">>
+		<<set $position to "wall">>
+		<<set $enemyhealthmax to 1000>><<set $enemyhealth to 1000>>
+		<<else>><!-- Gloryhole outcome with $punishmentposition = "gloryhole" -->
+		<<npcoral>>
+		<<set $enemyhealthmax to 10>><<set $enemyhealth to 10>>
+		<<set $enemyarousal to $enemyarousalmax - 100>>
+		<<set $NPCList[0].lefthand to "none">>
+		<<set $position to "doggy">>
+		<<set $NPCList[0].righthand to "none">>
+		<<set $NPCList[0].mouth to "none">>
+	<</if>>
+<</if>>
+<<set $enemyarousal += 10>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or $penisbitten is 1>>
+	<span id="next"><<link [[Next|Brothel Punishment Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Punishment Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Punishment Molestation Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>><<set $forcedprostitutionstat += 1>><<set $gloryholestat += 1>>
+
+	<<tearful>> you mentally prepare for more abuse.
+	<br><br>
+
+	<<endcombat>>
+
+	<<link [[Next|Brothel Punishment Gloryhole]]>><</link>>
+<<else>>
+	The <<person>> recoils from the hole. You hear <<him>> shout at someone, then silence. <<endevent>><<npc Briar>><<person1>>A minute later Briar opens your cell. "I was so trying to be nice," <<he>> says. "But if you're going to behave so poorly, there's only one option." <<He>> unclips your neck, then pulls a lever at the base of the wall. The hole expands several times in size. <<He>> shoves you through the hole, leaving your legs and bottom exposed, before clipping you in place once more. "There. Now our customers get to enjoy a less violent part of you." <<He>> slams the door shut this time.
+	<br><br>
+	<<endcombat>>
+	<<set $punishmenthole += 1>><<pass 1>><<set $punishmentposition to "wall">>
+
+	<<link [[Next|Brothel Punishment Gloryhole]]>><</link>>
+	<br>
+<</if>>
+
+:: Briar's Office Show
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+"Good," Briar says.
+<<if Time.weekDay is 6>>
+	"There's not enough time to prepare for a show today, but we can hold one next week."
+<<else>>
+<</if>>
+
+<<brothelshowintro>>
+<br><br>
+
+Briar sips <<his>> wine. "So, what takes your fancy?"
+
+<<brothelshowoptions>>
+<br><br>
+
+<<if _askShow isnot 1>>
+	<<askicon>><<link [[Ask for more information about each show|Briar's Office Show Ask]]>><</link>>
+	<br><br>
+<</if>>
+<<getouticon>><<link [[Leave|Brothel]]>><<endevent>><</link>>
+
+:: Briar's Office Show Ask
+<<brothelshowintro>>
+<<brothelshowoptions>>
+<br><br>
+<<getouticon>><<link [[Leave|Brothel]]>><<endevent>><</link>>
+
+:: Briar's Office Show 2
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+<<if $brothelshowdata.type is "flirt">>
+	You agree to flirt with the audience and get fucked on stage. "Alright," <<he>> says. "Just act cute.
+<<elseif $brothelshowdata.type is "gangbang">>
+	You agree to roleplay as a school <<girl>> and get gangbanged on stage. "Don't be nervous about acting," <<he>> says as <<he>> stands up. "That's not what the audience will be there for.
+<<elseif $brothelshowdata.type is "pig">>
+	You agree to fuck a pig on stage. "You're a dirty one," <<he>> says as <<he>> stands up. "This is going to draw them in.
+<<elseif $brothelshowdata.type is "swarm">>
+	You agree to be submerged in a terrarium filled with small creatures on stage. "You're a kinky one," <<he>> says as <<he>> stands up. "I like that, and I'm sure the audience will like it too.
+<<elseif $brothelshowdata.type is "machine">>
+	You agree to use the repaired sex machine. Briar claps <<his>> hands together. "Excellent.
+<<elseif $brothelshowdata.type is "tentacles">>
+	You agree to use the repaired sex machine, in tentacle mode. Briar claps <<his>> hands together. "Excellent.
+<<elseif $brothelshowdata.type is "horse">>
+	You suggest performing with a horse.
+	<<if $brothelHorse isnot 1>>
+		<<set $brothelHorse to 1>>
+		Briar laughs. "That would be a show to remember," <<he>> says. "But I don't have access to a horse."
+		<br><br>
+		"I do," you say.
+		<br><br>
+	<</if>>
+		Briar claps <<his>> hands. "Excellent. You supply your co-performer.
+<<elseif $brothelshowdata.type is "bukkake">>
+	You suggest a game of sorts, allowing the audience to participate with their cum.
+	<<if $brothelBukkake isnot 1>>
+		<<set $brothelBukkake to 1>>
+		Briar strokes <<his>> chin in thought. "The audience would like it. There'll be quite a mess to clean up."
+		<br><br>
+		"Only if I don't catch it," you reply.
+		<br><br>
+	<<else>>
+		"The audience did enjoy it the last time you did it," Briar says. "There was quite a mess to clean up."
+		<br><br>
+		"I'll try and catch more of it this time," you reply.
+		<br><br>
+	<</if>>
+	Briar laughs. "We've got ourselves a show. <span class="gold">I'll pay you £50 per helping.</span>
+<</if>>
+
+I'll make sure everything's set up nicely.
+
+<<if Time.weekDay is 6>>
+	There's no time to set it up for today. <span class="gold">We'll be ready next Friday.</span>
+<</if>>
+
+I'm sure your fans will be excited." <<He>> escorts you to the top of the stairs. "Just make sure you show up. People are coming to see you. I can't placate them with some random whore."
+<br><br>
+
+<<link [[Leave|Brothel]]>><<endevent>><</link>>
+<br><br>
+
+:: Brothel Stage
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+You are behind the largest stage in the brothel. This is where the more involved performances are prepared.
+<br><br>
+
+<<if $brothel_machine_repair is undefined>>
+	A sex machine sits in the corner. A note has been stuck to the side. It reads: "Out of order."
+	<br><br>
+<</if>>
+
+<<if isPubfameTaskAccepted("briar") and !$pubfame.briar.escape and $cat lte 5>>
+	<<set $pubfame.briar.escape to 1>>
+	A curtain covering a window is partially open. It's directly below Briar's office on the second floor.
+	<br><br>
+
+	<span class="blue">An idea strikes you.</span> If you can get a ladder to face Briar's office, you could leave that way. There might be one in the alleyways nearby.
+	<br><br>
+<</if>>
+
+<<if $brothelshowdata.type isnot "none" and Time.weekDay is 6 and not $brothelshowdata.done>>
+	You see Briar talking to someone near the largest stage. You agreed to perform today.
+	<br><br>
+
+	<<if $brothelshowdata.type is "horse">>
+		<<if $farm.steed>>
+			<<if $bestialitydisable is "f" or $per_npc.saddled_steed.monster is "monster">>
+				Your $farm.steed steed awaits you.
+				<br><br>
+				<img class="icon" src="img/ui/gold_star.png"><<link [[Star in show|Brothel Show]]>><</link>>
+				<br>
+			<<else>>
+				The weight of what you've signed yourself up for sinks in, and you start to feel nauseous. <span class="red">You've lost the nerve to perform.</span>
+				<br>
+			<</if>>
+		<<else>>
+			<span class="blue">You're booked to star in a show with a horse, but you haven't saddled one!</span>
+			<br>
+		<</if>>
+	<<else>>
+		<img class="icon" src="img/ui/gold_star.png"><<link [[Star in show|Brothel Show]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+<<if $brothel_machine_repair is undefined>>
+	<<investigateicon>><<link [[Investigate the machine|Brothel Machine Investigate]]>><<set $brothel_machine_repair to 1>><</link>>
+	<br>
+<</if>>
+
+<<getouticon>><<link [[Leave|Brothel]]>><</link>>
+<br>
+
+:: Brothel Machine Investigate
+<<effects>>
+
+You examine the sex machine. A large phallus protrudes from the main body, beside a number of lights and dials. It's almost shaped like a gun. You can imagine what it was used for, <span class="gold">but Briar would know more.</span>
+<br><br>
+
+<<investigateicon>><<link [[Look closer|Brothel Machine Investigate 2]]>><</link>><<skill_difficulty `currentSkillValue("science")` "Science" 400 1000>>
+<br>
+<<getouticon>><<link [[Leave|Brothel Stage]]>><</link>>
+<br>
+
+
+:: Brothel Machine Investigate 2
+<<effects>>
+
+<<if currentSkillValue('science') gte random(400, 1000)>>
+	You open a hatch on the side of the machine, and peer inside. There's an empty glass tank behind a tangle of wires.
+	<br><br>
+
+	You look under the machine, and realise there are no sockets on the exterior. No way to connect to the mains. <span class="green">It must be powered some other way.</span>
+	<br><br>
+	<<set $brothel_machine_science to 1>>
+	You close the hatch, and step away.
+	<br><br>
+<<else>>
+	You open a hatch on the side of the machine, and peer inside. There's an empty glass tank behind a tangle of wires.
+	<br><br>
+
+	You look under the machine, <span class="red">but see nothing abnormal.</span>
+	<br><br>
+
+	You close the hatch, and step away.
+	<br><br>
+<</if>>
+
+<<link [[Next|Brothel Stage]]>><</link>>
+<br>
+
+
+:: Brothel Punishment Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<generate1>><<person1>><<maninit>><<set $position to "wall">><<set $head to "bound">>
+<</if>>
+
+<<set $position to "wall">>
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Brothel Punishment Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Punishment Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Punishment Rape Finish
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+<<ejaculation>>
+
+<<He>> gives you a last pinch, then leaves you alone.
+<br><br>
+
+<<endcombat>><<set $leftarm to "bound">><<set $rightarm to "bound">>
+
+<<else>>
+
+You kick the <<person>> away from you. You hear <<him>> grumble, but <<he>> leaves you alone.
+<br><br>
+
+<<endcombat>><<set $leftarm to "bound">><<set $rightarm to "bound">>
+
+<</if>>
+
+<<set $punishmenthole -= 1>>
+
+<<if $punishmenthole lte 0>>
+
+<<npc Briar>><<person1>>
+The door swings open. Briar walks in. "I hope you've had fun," <<he>> says. <<He>> pulls the lever and the grip around your waist lessens. You wiggle into the room and drop to the floor.
+<br><br>
+
+"You can show yourself out. Remember, your ass, and your assets, belongs to me."
+<br><br>
+<<unbind>>
+<<clotheson>>
+<<endevent>>
+
+<<link [[Next|Harvest Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+<<elseif $punishmenthole is 5>>
+<<npc Briar>><<person1>>
+The door swings open. Briar walks in and kneels in front of you, holding a card. It's a picture of your face, with your age and "£10" marked on it. "I thought you'd want to see how they see you," <<he>> says, nodding at the wall your <<bottom>> is stuck in. "If you don't want to be sold so cheap, stop being such a greedy <<girl>>." <<He>> rises to <<his>> feet. "Break's over." <<He>> slams the door shut on <<his>> way out.
+<br><br>
+<<endevent>>
+<<link [[Next|Brothel Punishment Rape]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+<<else>>
+<<tearful>> you prepare for more abuse. You don't need to wait long.
+<br><br>
+
+<<link [[Next|Brothel Punishment Rape]]>><<set $molestationstart to 1>><</link>>
+<br>
+<</if>>
+
+:: Brothel Pay
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+Briar counts the money. "Good," <<he>> says, nodding at <<his>> thugs, who stop blocking the door. "I don't care if you're kidnapped by fucking wolves; next time you'll be there." <<He>> returns to <<his>> office.
+<br><br>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+<br>
+
+:: Brothel Pay Refuse
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+Briar withdraws <<his>> hand. <<He>> nods at <<his>> thugs. "Fine," <<he>> says. "There are other ways you can pay."
+<br><br>
+
+<<link [[Next|Brothel Pay Strip]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Brothel Pay Strip
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>><<npcstrip>><<npcidlegenitals>>
+	<<set $enemyanger += 200>><<set $enemytrust -= 60>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Brothel Pay Strip Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Pay Strip]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Pay Strip Finish
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+<<ejaculation>>
+
+The crowd applauds, as if it were a show. Perhaps they think it was.
+<br><br>
+
+<<person1>>Briar steadies <<himself>> against a chair. <<He>> looks at the crowd gathered to watch the spectacle and smiles. "You do know how to get their attention," <<he>> says, barely audible over the sound of the music. "Just show up next time." <<He>> returns to <<his>> office.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Brothel]]>><</link>>
+<br>
+
+<<elseif $enemyhealth lte 0>>
+
+<<person1>>You knock Briar back into a table. <<He>> crashes through it, the drinks on it spilling everywhere. <<His>> thugs don't know what to do. The crowd applauds, as if it were a show. Perhaps they think it was.
+<br><br>
+
+Briar climbs to <<his>> feet and brushes <<himself>> down. <<He>> looks at the crowd gathered to watch the spectacle and smiles. "You do know how to get their attention," <<he>> says, barely audible over the sound of the music. "Just show up next time." <<He>> returns to <<his>> office.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Brothel]]>><</link>>
+<br>
+
+<<else>>
+
+<<person1>>You're too hurt to continue fighting, and fall to the ground in a heap. The crowd applauds, as if it were a show. Perhaps they think it is.
+<br><br>
+
+Briar bows to the audience. "Thank you, thank you," <<he>> says. "And now my friends, feel free to use this whore. On the house." Another cheer, then hands reach out from all around.
+<br><br>
+
+<<endcombat>>
+
+<<link [[Next|Brothel Pay Rape]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+<</if>>
+
+:: Brothel Pay Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<generate1>><<generate2>><<generate3>><<generate4>><<generate5>><<generate6>><<maninit>><<person1>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Brothel Pay Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Pay Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Pay Finish
+
+<<effects>>
+<<if $enemyhealth lte 0>>
+	Some of the <<group>> recoil in pain. You crawl through the gap created, and manage to make it to the dressing room unmolested.
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Brothel Dressing Room]]>><</link>>
+<<else>>
+	<<ejaculation>>
+	A cheer erupts from the crowd, seems they enjoyed the show. <<tearful>> you escape to the dressing room.
+	<br><br>
+	<<stealclothes>>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Brothel Dressing Room]]>><</link>>
+<</if>>
+
+:: Brothel Bathroom
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+You are in the bathroom at the brothel. There are communal showers for the dancers to use after and during work. They're not exactly clean, but you've seen worse. No one pays you much attention.
+<br><br>
+
+<<if $stress gte $stressmax>>
+<<passoutshop>>
+<<else>>
+	<<pregnancyTest "Brothel Bathroom">>
+	<<if $exhibitionism gte 35>>
+		<<bathroomicon "shower">><<link [[Have a shower (0:15)->Brothel Shower]]>><<strip>><<pass 15>><<stress -1>><<set $hygiene to 0>><</link>><<lstress>>
+		<br><br>
+		<<getouticon>><<link [[Brothel (0:01)->Brothel]]>><<pass 1>><</link>>
+		<br>
+	<<else>>
+		You can't bring yourself to use the communal showers.
+		<br><br>
+		<<getouticon>><<link [[Brothel (0:01)->Brothel]]>><<pass 1>><</link>>
+		<br>
+
+	<</if>>
+<</if>>
+
+:: Brothel Shower
+<<effects>><<set $location to "brothel">><<set $outside to 0>>
+
+<<if Time.dayState isnot "day" and Time.dayState isnot "dawn" and $rng % 3>>The brothel has been busy and so have the showers. The shower head blasts you with ice cold water that takes your breath away. You figure a cold shower is better than no shower, and make do.
+<<larousal>>
+<br><br>
+<<elseif Time.dayState isnot "night" and $rng % 2>>The shower head blasts you with ice cold water that takes your breath away. Seems like someone's used all the hot water. You figure a cold shower is better than no shower, and make do.
+<<larousal>>
+<br><br>
+<<else>>You're relieved to find there is still hot water.<</if>>
+
+You wash until you're squeaky clean.<<wash>>
+/* 北极星模组 */
+<<if $options.bjx_eventTF and $slime gt 0>>
+	<span class='red'>你忍受着刺痛。
+	<<violence 20>>
+	</span>
+<</if>>
+/* 北极星 */
+<br><br>
+
+<<ind>><<link [[Masturbate|Brothel Shower Masturbation]]>><<set $masturbationstart to 2>><</link>>
+<br>
+
+<<getouticon>><<link [[Get out->Brothel Bathroom]]>><<clotheson>><</link>>
+<br>
+
+:: Brothel Raid
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+/* Police raid in the middle of action */
+<<set $brothel_raid += 1>>
+<<set $brothel_raid_day to Time.days>>
+<span class="red">You hear a crash outside, followed by shouts and screams.</span> The <<person>> freezes.
+<<set $enemyarousal to 0>><<set $enemytrust to -200>>
+<<set $enemyhealth to ($enemyhealthmax / 5) * 4>><<set $enemyanger to ($enemyangermax / 5) * 2>>
+<<if $options.images is 1 and $options.combatImages is 1>>
+	<<timed 100ms>>
+		<br><br><br>
+		<<combatimg>>
+		<br>
+	<</timed>>
+<</if>>
+<<stateman>>
+<br><br>
+<span class="red">"Everyone stop. This is the Police. Stop right where you are."</span>
+<br><br>
+The <<person>> curses, extricates <<himself>> and clambers to dress.
+<br><br>
+<span id="next"><<link [[Straighten yourself up|Brothel Raid 2]]>><</link>></span><<nexttext>>
+
+:: Brothel Raid 2
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+/* Police raid the place */
+The <<person>> rushes out.
+<<clotheson>>
+<<endcombat>>
+
+You peek through the door. The corridor outside is still quiet, but not far away you hear shouting, crashes and chaos.
+<br><br>
+The police will soon be here.
+<br><br>
+<<if currentSkillValue('skulduggery') gte 200>>
+	<<set $skulduggerydifficulty to 800>><<link [[Attempt escape|Brothel Raid Escape]]>><</link>><<skulduggerydifficulty>>
+	<br>
+<<else>>
+	<span class="blue">You can't think of a way to escape.</span>
+	<br>
+<</if>>
+<<link [[Wait to be arrested|Brothel Raid Pre Arrest]]>><</link>>
+<br>
+
+:: Brothel Raid Escape
+
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+<<generate1>><<person1>>Creeping into the empty hallway, you can hear the chaos getting closer. There are several empty rooms you could hide in, but they will likely be searched.
+<br><br>
+A <<person>> bursts into the hallway and looks for somewhere to hide.
+"This can't be happening. What will <<if $pronoun is "m">>Mother say?<<else>>Father say?<</if>>"
+<br><br>
+"In here!" you say, pointing to an empty room. "Hide yourself here. And lock the door."
+<br><br>
+"W-what about you? What will you do?"
+<br><br>
+"You're a customer," you say firmly. "I'll stand right here and make sure the bastards never get to you."
+<br><br>
+<<skulduggerycheck>>
+<br><br>
+<<if $skulduggerysuccess is 1>>
+	<<His>> eyes light up. "Thank you!"
+	<br><br>
+	The door slams shut and the lock clicks into place. You scan the corridor and spot a pair of bright, <<print either("red","striped","yellow","pink","white")>> panties wedged under a nearby door. You hang them on the door-handle of the <<persons>> room before slipping into the empty room opposite.
+	You leave your door wide open so anyone can see into the empty room and tuck yourself behind the door.
+	<br><br>
+	A moment later, police charge the corridor.
+	<br><br>
+	"Oi oi! Look at that. The door handle."
+	<br>
+	"Subtle."
+	<br>
+	You hear them try the door opposite.
+	<br>
+	"Open up!" You hear a loud knocking. "Police. We know you're in there."
+	<br>
+	A floorboard creaks in front of you as someone looks into your room. You press back against the wall.
+	<br>
+	"Anyone in that one?"
+	<br>
+	"Empty," you hear just beyond the door in front of you. "They're probably already in the line up out front."
+	<br>
+	"Think this one's gonna need a kick."
+	<br>
+	"Okay," the floorboard creaks again as they move away.
+	<br><br>
+	A moment later you hear a loud crash, then a yell, then begging and whimpering as the <<person>> is hauled away.
+	<br><br>
+	<<skulduggeryuse>>
+	<<link [[Wait (1:00)|Brothel Raid Escape 2]]>><<pass 60>><<endevent>><<npc Briar>><<person1>><</link>>
+	<br>
+<<else>>
+	"You lying scumbag," <<he>> shouts, shoving you over a chair. Moments later hands drag you to your feet.
+	<br><br>
+	<span class="red">"You're under arrest."</span>
+	<br><br>
+	<<skulduggeryuse>>
+	<<link [[Next|Brothel Raid Arrest]]>><</link>>
+	<br>
+	<<endevent>>
+<</if>>
+
+:: Brothel Raid Escape 2
+
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+You hide out for a long time as the police gather people up. A while later, when things become quiet, you emerge.
+<br><br>
+You stroll from the private area, and find Briar righting a fallen chair. <<He>> chuckles when <<he>> sees you.
+<br><br>
+"How? Nicely done. They're still outside. Best wait there and have a drink. After all this, it's on me. Or help me straighten things out. They'll be a few quid in it for you. Your call."
+<br><br>
+<<link [[Help out (£5, 0:30)|Brothel]]>><<pass 30>><<set $money += 500>><<tiredness 2>><<endevent>><</link>><<gtiredness>>
+<br>
+<<link [[Wait to leave (0:30)|Harvest Street]]>><<pass 30>><<endevent>><</link>>
+<br>
+
+:: Brothel Raid Pre Arrest
+
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+A few police find you near the private rooms. One puts a hand on your shoulder.
+<br><br>
+<span class="red">"You're under arrest."</span>
+<br><br>
+<<link [[Next|Brothel Raid Arrest]]>><</link>>
+<br>
+<<endevent>>
+
+:: Brothel Raid Arrest
+
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+Two police officers lead you towards the main part of the brothel. They stop near a side exit.
+<<if crimeSumCurrent() lte 900>>
+	One opens the door.
+	<br><br>
+	"You seem like a decent fellow," he says. "No need for you to get caught up in this. Get out of here."
+	<<set _bribe to 0>>
+<<elseif crimeSumCurrent() lte 2000>><<set _bribe to 800>>
+	One puts a hand on the door handle.
+	<br><br>
+	"We know who you are," she says. "You don't want to get caught up in this. Make a charitable donation of £_bribe and we never saw you."
+<<elseif crimeSumCurrent() lte 4500>><<set _bribe to Math.trunc(crimeSumCurrent())>>
+	One stands in front of the door.
+	<br><br>
+	"If we take you in it's gonna go badly for you," one says. "£_bribe cash would be enough to distract us while we leave you unattended by this door."
+<<else>>
+<br><br>
+	"Ha! We've been after you for a while. You're not giving us the slip again."
+	<<set _bribe to 500000>>
+<</if>>
+<br><br>
+<<if _bribe is 0>>
+	<<link [[Leave|Brothel Raid Leave]]>><</link>>
+<<else>>
+	<<if _bribe lt 500000>>
+		<<if $money gte (_bribe * 100)>>
+			<<link [["Bribe (£" + _bribe + ")"|Brothel Raid Leave]]>><<set $money -= (_bribe * 100)>><</link>>
+			<br>
+		<<else>>
+			<span class="red">You'll need at least £_bribe to bribe the officers.</span>
+			<br>
+		<</if>>
+	<</if>>
+	<<if $promiscuity gte 35>>
+		<<link [[Offer your body|Brothel Raid Arrest Sex]]>><<set $sexstart to 1>><<generatePolice 1>><<generatePolice 2>><</link>><<promiscuous3>>
+		<br>
+	<</if>>
+
+	<<if $promiscuity lte 34 and $uncomfortable.prostituting is false>>
+		<<link [[Reluctantly offer your body|Brothel Raid Arrest Sex]]>><<set $sexstart to 1>><<generatePolice 1>><<generatePolice 2>><<set $desperateaction to 2>><</link>><<promiscuous3>>
+		<br>
+	<</if>>
+	<<link [[Get arrested|Brothel Raid Arrest 2]]>><</link>>
+<</if>>
+<br>
+
+:: Brothel Raid Leave
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+You pass through the opened door and quietly slip away through a couple of alleyways.
+<br><br>
+Due to the high police presence, you have a to wait for things to calm down before you can get back to the main street.
+<br><br>
+<<link [[Next (0:40)|Harvest Street]]>><<pass 40>><</link>>
+
+:: Brothel Raid Arrest Sex
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<maninit>>
+	<<set $enemytrust += 100>><<promiscuity5>>
+	You smile at them seductively.
+	<br><br>
+	"If you're nice to me and let me go," you say. "I can be very nice to you."
+	<br><br>
+
+	<<person1>>"Okay," the <<person>> says.
+	<br><br>
+	<<if crimeSumCurrent() gte 4500>>
+		<<person2>>"This one's slippery," says the <<person>>. "Cuff <<phim>> first so <<pshe>> doesn't try anything."
+		<br><br>
+		"Okay."
+		<<set $leftarm to "bound">><<set $rightarm to "bound">>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Brothel Raid Arrest Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Raid Arrest Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Raid Arrest Sex Finish
+
+<<set $outside to 0>><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	They straighten their clothes.
+	<br><br>
+	<<tearful>> you climb to your feet.
+	<br>
+	<<clotheson>>
+	<<if crimeSumCurrent() lte 4000 or $rng % 2>>
+		<br>One opens the door.
+		<br><br>
+		<span class="green">"Go on. Get out of here."</span>
+		<br><br>
+		<<endcombat>>
+		<<link [[Leave|Brothel Raid Leave]]>><</link>>
+	<<else>>
+		"Thanks for that, whore," says the <<person>>.
+		<br><br>
+		"Yeah, that was good," says the <<person1>><<person>>. <span class="red">"But you're still under arrest."</span>
+		<br><br>
+		<<endcombat>>
+		<<link [[Next|Brothel Raid Arrest 2]]>><</link>>
+	<</if>>
+<<elseif $enemyhealth lte 0>>
+	You shove open the door to the alleyways as they stagger away from you.
+	<br><br>
+	<<tearful>> you escape.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Brothel Raid Leave]]>><</link>>
+<<else>>
+	"Okay. Well whatever, you're still under arrest."
+	<br><br>
+	A hand clamps on your shoulder. "This way."
+	<br><br>
+	<<tearful>> you recover.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Brothel Raid Arrest 2]]>><</link>>
+<</if>>
+
+:: Brothel Raid Arrest 2
+<<set $outside to 0>><<set $location to "town">><<effects>>
+<<set $leftarm to "bound">><<set $rightarm to "bound">>
+<<pass 45>>
+You are led out front where brothel staff are being cuffed and lined up against a wall. A crowd of passers-by gawk.
+<br><br>
+You are left standing there for nearly an hour while the police process customers. The crowd jeer and wolf-whistle.
+<br><br>
+<<famesex 2>><<fameprostitution 2>>
+<br><br>
+<<link [[Next|Brothel Raid Arrest 3]]>><</link>>
+
+:: Brothel Raid Arrest 3
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+A sinister convoy of police vans arrive, and you are herded into one with the others. The police take you to the station and put you in a holding cell.
+<br><br>
+"With so many in today, this might take some time," the guard tells you. "They'll get to you. Sit tight."
+<br><br>
+
+<<link [[Next (2:00)|Police Cell]]>><<pass 2 hour>><</link>>
+
+:: Brothel Arrest
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+<<set $brothel_thief to 0>>
+You walk out <span class="red">into the waiting arms of two police officers.</span>
+Briar stands beside them.
+<br><br>
+The police push you against the wall, pinning your arms. "They wanted to raid me again," Briar explains. "Looking for you. They really want you this time."
+<br><br>
+Armlocked, the police drag you deeper into the brothel. Briar strolls alongside. "Raids cost a lot," Briar goes on. "Not just money either. Reputation. I was still ready to protect you. I look out for mine. I was ready to take the hit."
+<br><br>
+"Until," Briar growls. "I heard you've been stealing from my customers. Hurting the reputation of my establishment. Driving away my customers."
+<br><br>
+<<npc Briar>><<person1>>
+Briar throws open a secluded delivery door in the rear, well out of sight of customers. <<He>> leads the police out. An unmarked car awaits you.
+<br><br>
+<<endevent>>
+"There's a saying about the wisdom of shitting where you eat," Briar says. The police throw you over the bonnet.
+<br><br>
+<<generate1>><<generate2>>
+<<link [[Next|Hospital Arrest Journey]]>><</link>>
+
+:: Brothel Exposed
+<<effects>>
+
+You sneak up to the brothel, unmarked and near-indistinguishable from the buildings around it. You won't be able to hide once inside, but at least you won't be the only one so exposed.
+<br><br>
+
+You enter the brothel, passing Briar's goon, who leers at you but says nothing.
+<br><br>
+<<if $rng gte 81>>
+	<<generate1>><<person1>>
+	A <<person>> staggers over to you as you enter the main room. <<covered>> "Nice," <<he>> says. Without asking for permission, <<he>> reaches out and fondles your <<breasts>>.
+	<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+	<br><br>
+
+	<<link [[Endure (0:03)|Brothel Exposed Endure]]>><<pass 3>><<sub 1>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>>
+	<br>
+	<<link [[Get angry|Brothel Exposed Angry]]>><<def 1>><<pain 6>><<trauma -6>><</link>><<ltrauma>><<gpain>>
+	<br>
+	<<if $submissive lte 500>>
+		<<link [[Intimidate|Brothel Exposed Intimidate]]>><<trauma -6>><<stress -6>><</link>><<defianttext>><<ltrauma>><<lstress>>
+		<br>
+	<<elseif $submissive gte 1500>>
+		<<link [[Plead|Brothel Exposed Plead]]>><<trauma -6>><<stress -6>><</link>><<submissivetext>><<ltrauma>><<lstress>>
+		<br>
+	<</if>>
+<<else>>
+	<<link [[Next|Brothel]]>><</link>>
+	<br>
+<</if>>
+
+:: Brothel Exposed Endure
+<<effects>>
+
+You stand still and wait for the <<person1>><<person>> to get bored, enduring <<his>> clumsy fondling. At last, one of the dancers catches <<his>> eye, and <<he>> leaves you be.
+<br><br>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+<br>
+
+:: Brothel Exposed Angry
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"D-Don't," you say. "You shouldn't touch people without permission."
+<<elseif $speech_attitude is "bratty">>
+	"Keep your hands to yourself," you say. "Creep."
+<<else>>
+	"I didn't say you could touch me," you say. "Stop."
+<</if>>
+<br><br>
+
+The <<person>> gives your <<nipples>> a final, painful pinch, but then leaves you be.
+<br><br>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+<br>
+
+:: Brothel Exposed Intimidate
+<<effects>>
+
+"Keep your disgusting hands away from me," you say. "Or I'll rip them off."
+<br><br>
+
+<<He>> steps back. "I'm only having some fun," <<he>> says. "That's what you're here for, right?"
+<br><br>
+
+You stare at each other. <<He>> breaks <<his>> gaze first, and turns to find someone else to bother.
+<br><br>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+<br>
+
+:: Brothel Exposed Plead
+<<effects>>
+
+"S-someone h-help," you say. "P-please."
+<br><br>
+
+The <<person1>><<person>> withdraws <<his>> probing hands. "Easy <<girl>>," <<he>> says. "Don't cry. Look, I'm sorry okay? Don't go telling anyone."
+<br><br>
+
+<<He>> turns away to find someone else to bother.
+<br><br>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+<br>
+
+:: Briar Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 30>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<audience>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if _combatend>>
+	<span id="next"><<link [[Next|Briar Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Briar Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Briar Sex Finish
+<<set $outside to 0>><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	Briar slides off the stage. "A round of applause for our performer!" <<he>> shouts, gesturing at you. The cry goes up, and cash litters the stage.<<set _rng to random(30, 100)>>You gain <<moneyGain _rng>>.
+	<br><br>
+	<<tearful>> you gather the money, and drop from the stage.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyhealth lte 0>>
+	Briar falls from the stage, but manages to land on <<his>> feet and right <<himself>> with dignity. The crowd cheers the spectacle, and cash litters the stage.<<set _rng to random(30, 100)>>You gain <<moneyGain _rng>>.
+	<br><br>
+	<<tearful>> you gather the money, and drop to the floor.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<else>>
+	Briar climbs from the stage, and walks towards another, bobbing with the music.
+	<br><br>
+	<<tearful>> you drop to the floor yourself.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+
+<<link [[Next|Brothel]]>><</link>>
+<br>
+
+:: Brothel Distraction
+<<effects>>
+<<if $pubfame.briar.distract is 1>>
+	<<loadNPC 0 "pubfame_distract">><<person1>>
+
+	You approach the <<person>>. <<He>> pretends not to notice you.
+	<br><br>
+
+	<<link [[Ask to help you|Brothel Distraction 2]]>><</link>><<englishdifficulty 400 1000>>
+	<br>
+	<<link [[Leave|Brothel Dressing Room]]>><<endevent>><</link>>
+<<else>>
+	<<set $pubfame.briar.distract to 1>>
+	<<generateRole 0 0 "dancer">><<saveNPC 0 "pubfame_distract">><<person1>>
+
+	You approach the <<personsimple "normal">>, a <<person>>. <<He>> frowns as you approach <<him>>. "Don't try changing my mind. I'm done with this stupid place and I'm done with this lifestyle. Leave me alone."
+	<br><br>
+
+	<<He>> turns back to <<his>> suitcase. "I'm skipping town. Somewhere Briar won't ever find me. I'd love to pay <<nnpc_him "Briar">> back for everything I endured here, but I can't think of anything I could do... not to someone like <<nnpc_him "Briar">>."
+	<br><br>
+
+	<span class="blue">An idea strikes you.</span> <<He>> could be a good way to distract Briar, and <<he>> clearly has a bone to pick.
+	<br><br>
+
+	<<link [[Ask to help you|Brothel Distraction 2]]>><</link>><<englishdifficulty 400 1000>>
+	<br>
+	<<link [[Leave|Brothel Dressing Room]]>><<endevent>><</link>>
+<</if>>
+
+:: Brothel Distraction 2
+<<effects>>
+You ask the <<person>> to help distract Briar.
+<<if $englishSuccess>>
+	<<set $pubfame.briar.distract to 2>>
+	<span class="green">You manage to appeal to <<his>> logic</span>, telling <<him>> that <<he>>'ll be able to get away long before Briar notices anything is truly wrong. "I like the way you think," the <<person>> admits. "So, what's the plan?"
+	<br><br>
+
+	<<His>> part is relatively simple. <<He>> finishes packing <<his>> suitcase, then nods to you. "You better succeed at whatever nonsense you're pulling. Good luck." <span class="green">You now have an effective distraction.</span>
+	<br><br>
+
+	<<link [[Next|Brothel Dressing Room]]>><<endevent>><</link>>
+<<else>>
+	<span class="red">You put too much emphasis on how much it'll affect Briar.</span> "No way I'm getting involved in something that big," <<he>> scoffs. "Good luck with your death wish."
+	<br><br>
+
+	<<link [[Next|Brothel Dressing Room]]>><<endevent>><</link>>
+<</if>>
+
+:: Briar Hack
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Y-you might want to take a look downstairs," you say. "I heard there was going to be a p-police raid."
+<<elseif $speech_attitude is "bratty">>
+	"Heads up," you say, jerking your head toward the stairs. "The fuzz are gonna be here any minute. You're welcome for the advance warning."
+<<else>>
+	"I heard some cops say they were going to raid here," you say. "What do you think we should do?"
+<</if>>
+<br><br>
+
+Briar chuckles, and lifts <<himself>> up off the sofa. "Don't you worry your little head.
+<<if $pubfame.briar.distract is 2>>
+	<<loadNPC 1 "pubfame_distract">><<clearNPC "pubfame_distract">>
+	I'll take-"
+	<br><br>
+
+	From downstairs, you hear the sound of shattering glass. "This is the police!" you hear the <<person2>><<person>> shout. "Everyone on the ground, now!"
+	<br><br>
+
+	Briar grimaces. Without another glance at you, <<person1>><<he>> makes for the stairs.
+<<else>>
+	I'll take care of this." <<He>> walks, almost leisurely, to the stairs.
+<</if>>
+<<His>> laptop remains open.
+<br><br>
+
+You wait until you're sure Briar is gone, then rush to the laptop. You plug the USB in. You can't see anything happening on the screen, but you assume it's doing something.
+<br><br>
+
+<<link [[Next|Briar Hack 2]]>><<pass 1>><</link>>
+
+:: Briar Hack 2
+<<effects>>
+
+<<if $pubfame.briar.distract is 2>>
+	After enough time passes, you remove the USB. You hope it was done with whatever it was doing.
+	<br><br>
+
+	<<if $pubfame.briar.escape is 2>>
+		You make your way over to the window and climb onto the ladder. You close the window, climb down, and remove the ladder from the building. Briar won't know you did a thing.
+		<br><br>
+
+		The <<person2>><<person>> waves at you from a nearby car, before pulling out and driving out of town.
+		<br><br>
+
+		<<pubfameComplete "briar">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<<elseif $cat gte 6>>
+		<<set $pubfame.detail to "briarWindow">>
+		You make your way over to the window and slip out. You grab onto the handle and let it slide shut, before dropping to the ground. Briar won't know you did a thing.
+		<br><br>
+
+		The <<person2>><<person>> waves at you from a nearby car, before pulling out and driving out of town.
+		<br><br>
+
+		<<pubfameComplete "briar">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<<else>>
+		<<set $briarPunishment to 3>>
+		You walk down the staircase, emerging in the main room of the brothel. The dancers are slowly returning to the stage, and the customers are chattering at the bar. You notice one of the windows being replaced.
+		<br><br>
+
+		Briar is standing by the window, and notices you. You run out the door before <<he>> can ask any questions.
+		<<npcincr Briar love -3>><<lllove>>
+		<br><br>
+
+		The <<person2>><<person>> waves at you from a nearby car, before pulling out and driving out of town.
+		<br><br>
+
+		<<pubfameComplete "briar" "punish">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<</if>>
+<<else>>
+	<span class="red">"Yeah, that's what I thought you were doing."</span> Briar strolls back into the office, guards following behind <<him>>. You can't count how many there are. "I had a feeling there was no police raid. I didn't want to assume, though. It makes an ass out of you and me." <<He>> takes a sip of <<his>> wine. "Of course, from where I'm standing, the only ass here is you."
+	<<npcincr Briar love -3>><<lllove>>
+	<br><br>
+
+	You quickly pull the USB out of the laptop, and Briar chuckles. "I couldn't care less what you just did. But the fact that you thought you could get away with it is what rankles me. That needs to be fixed."
+	<br><br>
+
+	<<if $pubfame.briar.escape is 2>>
+		<<set $briarPunishment to 5>>
+		The guards advance on you, and you run to the window. "That's a two storey drop," <<he>> laughs. "Go ahead, though. It might still be better than what I've in mind."
+		<br><br>
+
+		You slide the window open, and hurriedly climb down the ladder. Briar gasps and runs to the window, but you reach the bottom and remove the ladder before <<he>> or any of the guards can climb down as well. "There will be hell to pay," <<he>> calls down, before closing the window.
+		<br><br>
+
+		<<pubfameComplete "briar" "punish">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<<elseif $cat gte 6>>
+		<<set $briarPunishment to 5>><<set $pubfame.detail to "briarWindow">>
+		The guards advance on you, and you run to the window. "That's a two storey drop," <<he>> laughs. "Go ahead, though. It might still be better than what I've in mind."
+		<br><br>
+
+		You slide the window open, and nimbly hop out. You land on your feet, barely making a sound, before looking back up. Briar stares out the window, shocked. "There will be hell to pay," <<he>> calls down, before closing the window.
+		<br><br>
+
+		<<pubfameComplete "briar" "punish">>
+
+		<<link [[Next|Harvest Street]]>><<endevent>><</link>>
+	<<else>>
+		The guards advance on you, and you run to the window. "That's a two storey drop," <<he>> laughs. "Go ahead, though. It might still be better than what I've in mind."
+		/* 北极星模组 */
+		<<if !$options.bjx_animal and ($harpy gte 6 or $angel gte 6 or $demon gte 6 or $fallenangel gte 2) or $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" or $transformationParts.dragon.wings isnot "disabled" or $transformationParts.angel.wings isnot "disabled" or $transformationParts.fallenAngel.wings isnot "disabled" or $transformationParts.demon.wings isnot "disabled" or $transformationParts.bee.wings isnot "disabled")>>
+		/* 北极星 */
+			The ground is far, but still too close for your wings to slow your descent enough to give you a safe landing.
+		<</if>>
+		<br><br>
+
+		You try to fight back against the guards, but they just keep coming. Eventually, one gets a lucky hit and sends you to the ground. The rest pile onto you.
+		<<pain 40>><<trauma 6>><<ggpain>><<gtrauma>>
+		<br><br>
+
+		<<pubfameComplete "briar" "failure">>
+
+		<<link [[Next|Briar Hack Fail]]>><<pass 10>><</link>>
+	<</if>>
+<</if>>
+
+:: Briar Hack Fail
+<<set $outside to 1>><<set $location to "alley">><<effects>><<set $bus to "industrial">>
+
+Briar whispers into one of the guard's ears, and <<he>> nods. You're quickly blindfolded and brought down the stairs, through a hallway.
+<br><br>
+
+You feel the <<if $weather is "overcast" or $weather is "clear">>wind<<else>>$weather<</if>> on your face. You're outside. You're quickly shoved into a car, which takes off after a few seconds.
+<br><br>
+
+After about ten minutes of silence, Briar speaks. You weren't aware <<he>> was even in the car with you. "When I let someone under my roof, it's me extending my trust. Do you know what I mean? There's an unspoken agreement that I provide for you, and you don't mess things up for me. So when that trust is broken, it hurts."
+<br><br>
+
+<<He>> lets out a deep breath. "What I'm saying is, you hurt me. And it's hard to get past that. I don't forgive you... but I will. Just as soon as they're done with you."
+<br><br>
+
+The car comes to a stop, and Briar pulls you out. "I like avoiding this place. It's too..." <<he>> searches for a word. "Unprofitable, for my tastes. But for cases like these, it's well worth it." Another pair of hands grabs you and pulls you through a doorway, removing your blindfold. You hear, and see, the car pull away before the door closes.
+<br><br>
+
+<<link [[Next|Underground Intro]]>><<generate2>><<generate3>><</link>>
+
+:: Brothel VM income
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+You ask Briar if <<he>> has already checked your vending machine's stock and collected the money this week.
+<br><br>
+<<if $brothelVending.weeksEmpty gte 4>>
+	Briar snorts. "Your vending machine was cleared out for $brothelVending.weeksEmpty. I told you if it was empty for three weeks in a row, I was going to throw it away. You have no vending machine anymore."
+	<br><br>
+	You try to explain why you haven't been able to refill the machine for so long, but Briar cuts you off.
+	<br><br>
+	"I don't give a shit about your life, your time, or your money. To do business, you need time, money, both things, or luck. If you don't have time to buy products every week, you need money to refill the machine with a lot of them. If you don't have enough money to fully restock the machine, you need the time to top it off a little bit every week." Briar takes some bills out of a drawer. "But you were lucky. A friend of mine needed a vending machine for the school toilets because someone broke one there. I sold yours to <<nnpc_him Leighton>> instead of throwing it away. Here, £1,000 for you. Now, if you want, <span class="gold"> you can buy a new vending machine and set it up in the dressing rooms</span>, but be sure to keep it filled this time. Same rules as before."
+	<br><br>
+	<<set $money += 100000>>
+	<<set $brothelVending.status to "sold">>
+	<<if $brothelVending.condomsSold + $brothelVending.lubeSold>>
+		Briar pauses. "You never collected on your last sales before it was emptied.
+	<</if>>
+<<else>>
+	"Yes, I did.
+<</if>>
+<<if $brothelVending.condomsSold + $brothelVending.lubeSold>>
+	<<set _productsSold = []>>
+	<<set _productCost = ($brothelVending.condomsSold * 6000)+($brothelVending.lubeSold * 2000)>>
+	<<set _productProfit = ($brothelVending.condomsSold * 2000 + $brothelVending.lubeSold * 1000)>>
+	<<if $brothelVending.condomsSold >>
+		<<run _productsSold.push(`$brothelVending.condomsSold condom<<if $brothelVending.condomsSold gt 1>>s<</if>>`)>>
+	<</if>>
+	<<if $brothelVending.lubeSold>>
+		<<run _productsSold.push(`$brothelVending.lubeSold bottle<<if $brothelVending.lubeSold gt 1>>s<</if>> of lube`)>>
+	<</if>>
+	You sold <<print _productsSold.join(" and ")>> over the past <<print $brothelVending.weeksRent is 1 ? "week" : $brothelVending.weeksRent + " weeks">>. I've already set aside the weekly rent deposit
+	<<set _productProfit to Math.max(0, _productProfit - $brothelVending.weeksRent * 5000)>>
+	<<if _productProfit>>
+		<<set _pcProfit to _productProfit * .4>>
+		and my 60% cut. Here's your profit of <span class="green"><<formatmoney _pcProfit>>_printmoney</span>, plus the <span class="blue"><<formatmoney _productCost>>_printmoney</span> you spent stocking the machine." <<He>> hands you your earnings. You make <<printmoney `_productCost + _pcProfit`>>. "Pleasure doing business with you."
+		<<famebusiness 2>>
+		<<set $money += _pcProfit>>
+	<<else>>
+		but unfortunately, that eats up the rest of the profits. All you're getting back is the money you spent stocking the machine." <<He>> hands you your earnings. You make <<printmoney _productCost>>. "Try stocking more products next time, if you want to do more than break even."
+	<</if>>
+	<<set $money += _productCost>>
+	<<set $brothelVending.condomsToRefill to 200 - $brothelVending.condoms>>
+	<<set $brothelVending.condomsSold to 0>>
+	<<set $brothelVending.lubeToRefill to 200 - $brothelVending.lube>>
+	<<set $brothelVending.lubeSold to 0>>
+	<<set $brothelVending.weeksRent to 0>>
+	<<set $weekly.brothelVMCollect to true>>
+<</if>>
+<br><br>
+<<link [[Next|"Briar's Office"]]>><</link>>
+
+:: Brothel VM ask
+<<effects>>
+You tell Briar about your idea for a vending machine in the brothel restrooms, explaining that it would be a convenient method for the workers to get what they need for their jobs.
+
+Briar's grin is somewhere between disgusted and amused. "I've already told you, I'm not anybody's <<mummy>>. If any of my whores need <<if $condomLvl gte 1>>rubbers<</if>><<if $condomLvl gte 1 and $adultshopunlocked>> or <</if>><<if $adultshopunlocked>>lube<</if>>, they know where they can find some. It's not my job to supply them, it's their obligation. So, no, I will not be funding your little venture."
+<br><br>
+<<link [[Insist (0:10)|Brothel VM insist]]>><<pass 10>><</link>>
+<br>
+<<link [[Walk away|Brothel VM desist]]>><<pass 1>><</link>>
+
+:: Brothel VM insist
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+"It doesn't have to be your money," you start. "Just let me handle it. I can get the machine, I can buy the products, we can split the profits. You won't have to worry about a thing."
+
+Briar fixes you with an intense gaze, before barking a laugh that flashes you all <<his>> teeth. "I like your business acumen. But this will be on my terms. You can buy the machine, you can stock it. You'll put it in the dressing rooms. We'll split the profits 60 to 40, plus <span class="blue">£50</span> a week for renting the space. <span class="blue">Fail to keep it stocked for three weeks straight, and your little business plan gets thrown out with the rubbish.</span> This is my one and only offer."
+<br><br>
+<<link [[Accept|Brothel VM Accept]]>><<set $brothelVending.status to "asked">><</link>>
+<br>
+<<link [[Decline|Brothel VM decline]]>><</link>>
+<br>
+
+:: Brothel VM desist
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+You turn to leave Briar's office, but before you can grab the doorknob, <<he>> calls you back.
+<br><br>
+"Listen, if you'd like to do this, I won't stop you. But it'll be on my terms. You can buy the machine, you can stock it. You'll put it in the dressing rooms. We'll split the profits 60 to 40, plus <span class="blue">£50</span> a week for renting the space. <span class="blue">Fail to keep it stocked for three weeks straight, and your little business plan gets thrown out with the rubbish.</span> This is my one and only offer."
+<br><br>
+<<link [[Accept|Brothel VM Accept]]>><<set $brothelVending.status to "asked">><</link>>
+<br>
+<<link [[Decline|Brothel VM decline]]>><</link>>
+<br>
+
+:: Brothel VM Accept
+<<effects>>
+You accept Briar's conditions and tell <<him>> you will buy the vending machine and keep it well-stocked.
+<br><br>
+<<link [[Next|"Briar's Office"]]>><</link>>
+
+:: Brothel VM decline
+<<effects>>
+You tell Briar you are not interested in <<his>> conditions.
+<br><br>
+"Suit yourself. I'm not going to change my mind,” <<he>> returns to sipping <<his>> wine.
+<br><br>
+<<link [[Next|"Briar's Office"]]>><</link>>
+
+:: Brothel Vending Machine Buy
+<<effects>>
+<<if $phase is 1>>
+	You insert the money into the machine and a 3-pack of condoms slides into a drawer. You take them.
+	<<set $money -= 8000>>
+	<<gcondoms 3>>
+	<<set $brothelVending.condoms -=1>>
+	<<set $brothelVending.condomsSold +=1>>
+	<br><br>
+	<<link [[Back|Brothel Dressing Room]]>><<endevent>><</link>>
+<<else>>
+	You insert the money into the machine and a bottle of lube slides into a drawer. You take it.
+	<<set $money -= 3000>>
+	<<run window.sexShopOnBuyClick(8, false, false, false)>>
+	<<set $brothelVending.lube -=1>>
+	<<set $brothelVending.lubeSold +=1>>
+	<br><br>
+	<<link [[Back|Brothel Dressing Room]]>><<endevent>><</link>>
+<</if>>
+
+:: Brothel Escort Job Intro
+<<effects>>
+
+<<if $phase is 1>>
+	You take up the invitation and sit down next to Briar. <<He>> gives you a content smile and rests a hand on your thigh.
+	<br>
+
+	"Of course, this is not the usual work," <<he>> continues. "Clients that pay a lot also expect a lot. I wonder if you're up for it?"
+	<br><br>
+
+<<else>>
+	"Suit yourself," <<he>> says. "The work I am offering is very lucrative. Remember those clients are paying a lot, and I will not tolerate any disobedience."
+	<br><br>
+
+<</if>>
+
+<<He>> opens up a bottle of wine.
+<br><br>
+
+"Talk to me anytime you want to make a fortune," <<he>> says as <<he>> pours the contents of the bottle into a glass for <<himself>>.
+<br><br>
+
+<<link [[Next|Brothel]]>><<endevent>><</link>>
+
+:: Brothel Escort Job Accept
+<<effects>>
+
+"I had a feeling you'd be here," Briar says. "Here's what I've got so far." <<He>> sifts through some scattered papers on <<his>> desk.
+<br><br>
+
+"There's a client on <span class="gold">Danube</span> who wants someone for a party," <<he>> says. "You're to be the piñata. You don't need any particular talents for this; I take it they're more interested in a body than anything. They're known for being rough, and it might be difficult to struggle. You'd get <<printmoney 200000>> for this."
+<br><br>
+
+<<link [[Accept|Brothel Escort Job Accept 2]]>><</link>>
+<br>
+<<link [[Leave|Brothel]]>><<endevent>><</link>>
+
+:: Brothel Escort Job Accept 2
+<<effects>>
+
+<<set $brothel_escortjob to {}>>
+
+<<script>>
+	const date = new DateTime(Time.date);
+	date.addDays(random(1,7));
+	date.addHours(random(0,23));
+	V.brothel_escortjob.date = date.timeStamp;
+<</script>>
+
+<<set _date to new DateTime($brothel_escortjob.date)>>
+
+"I will make the arrangements. A driver will pick you up on <span class="gold">_date.weekDayName</span> in front of my establishment at <span class="gold"><<ampm _date.hour>></span>," Briar says. "You better show up on time and remember: I expect you to be on your best behaviour."
+<br><br>
+
+<<link [[Next|Brothel]]>><<endevent>><<set $brothel_escortjob.accept to true>><</link>>
+
+:: Brothel Escort Job Ride
+<<effects>>
+
+An uneventful trip leads you to a nice looking house close to Danube Street.
+<br><br>
+
+The limousine parks in front. You notice festive decorations. Colourful balloons and streamers adorn the house front.
+<br><br>
+
+You go to the front entrance and ring the doorbell.
+<br><br>
+
+<<link [[Next|Brothel Escort Job Ride 2]]>><</link>>
+
+:: Brothel Escort Job Ride 2
+<<effects>>
+<<generate1>><<generate2>>
+
+You can make out loud music and ruckus partying. It sounds like a lot of fun.
+<br><br>
+
+A <<person1>><<person>> opens the door and greets you with a smile. "Please come in."
+
+While the party is going on elsewhere in the house, you are led into a secluded room where a <<person2>><<person>> is already waiting.
+<br><br>
+
+"Our darling is celebrating a grand achievement," the <<person1>><<person>> explains with a smile. "We thought we would have you entertain <<person2>><<him>> and <<his>> friends."
+<br><br>
+
+You notice ropes and chains lying on the floor, giving you an anxious feeling.
+<br><br>
+
+"Please undress. We'll look after your clothing until you're done," the <<person2>><<person>> interjects.
+<br><br>
+
+<<if $exhibitionism gte 75>>
+	<<link [[Undress|Brothel Escort Job Undress]]>><<set $phase to 1>><</link>><<exhibitionist5>>
+<<else>>
+	<<link [[Undress reluctantly|Brothel Escort Job Undress]]>><<set $phase to 1>><</link>><<ggstress>><<ggtrauma>><<stress 12>><<trauma 4>>
+<</if>>
+<br>
+<<link [[Try to escape|Brothel Escort Job Escape]]>><</link>><<athleticsdifficulty 1 600>>
+
+:: Brothel Escort Job Undress
+<<effects>><<undress "escort_job">>
+
+<<set $leftarm to "bound">><<set $rightarm to "bound">><<shackle_feet>>
+
+<<if $phase is 1>>
+	The <<person1>><<person>> and the <<person2>><<person>> give you lustful looks as you take off your clothing. They shove you to the middle of the room.
+	<br><br>
+<</if>>
+
+"Get on your knees," the <<person1>><<person>> demands.
+<br><br>
+
+They start to wrap the ropes around your body, tying your arms to your back and wrapping rope around your chest like a harness. They attach chains to your legs and neck as well, taking care to spread your legs apart.
+<br><br>
+
+It doesn't take long until you are bound and unable to move. They hook up the chains and lift you up to waist height with a winch. Your private parts are completely exposed.
+<br><br>
+
+"Splendid," the <<person1>><<person>> exclaims with a beaming smile. "I'm sure you'll be the star of the party!"
+<br><br>
+
+<<if $phase is 1>>
+	The <<person1>><<person>> puts a bed sheet over you while the <<person2>><<person>> leaves the room, presumably to get the partying guests.
+	<br><br>
+
+<<else>>
+	The <<person2>><<person>> gives you one more slap to the face before the <<person1>><<person>> puts a bed sheet over you.<<gpain>><<violence 3>>
+	<br><br>
+
+	Finally the <<person1>><<person>> leaves to fetch the partying guests.
+	<br><br>
+
+<</if>>
+
+<<link [[Next|Brothel Escort Job]]>><</link>>
+
+:: Brothel Escort Job
+<<effects>>
+
+You are bound and suspended, unable to move or see. Laughter and lively chatter are heard from the hallway, coming closer. The partying guests come in and gather around you. Conversations are calming down and a sense of suspense hangs in the air.
+<br><br>
+
+"Surprise!" the <<person1>><<person>> cheers as <<he>> pulls the sheet off you, revealing you to the entire audience. Some stare in awe, mouth agape, while others cheer and holler.<<garousal>><<gstress>><<arousal 600>><<stress 6>>
+<br><br>
+
+<<link [[Endure|Brothel Escort Job 2]]>><<set $phase to 1>><<endevent "phaseless">><<stress 6>><<trauma 1>><</link>><<gstress>><<gtrauma>>
+<br>
+
+<<if $submissive gte 1150>>
+    <<link [[Be obedient|Brothel Escort Job 2]]>><<set $phase to 2>><<set $brothel_escortjob.sub to 1>><<endevent "phaseless">><</link>><<submissivetext>>
+<<elseif $submissive lte 850>>
+    <<link [[Be defiant|Brothel Escort Job 2]]>><<set $phase to 3>><<endevent "phaseless">><</link>><<defianttext>>
+<</if>>
+<br>
+
+<<if $promiscuity gte 55>>
+	<<link [[Be eager|Brothel Escort Job 2]]>><<set $phase to 4>><<endevent "phaseless">><</link>><<promiscuous4>>
+<</if>>
+
+:: Brothel Escort Job 2
+<<effects>><<generate1>>
+
+A <<person1>><<person>> steps forward and runs <<his>> hands over your exposed skin.
+
+<<if $phase is 1>>
+	You grit your teeth and try to make a brave face.
+	<br><br>
+
+	The <<person1>><<person>> looks at you with lust in <<his>> eyes. <<He>> smacks your <<bottom>>.<<gpain>><<violence 3>>
+	<br><br>
+
+	"I will enjoy this," <<he>> says before revealing <<his>> <<if $NPCList[0].vagina is "none">>$NPCList[0].penisdesc<<else>>vagina<</if>>.
+	<br><br>
+
+	<<link [[Next|Brothel Escort Job Sex]]>><<set $molestationstart to 1>><</link>>
+
+<<elseif $phase is 2>>
+	"P-Please enjoy your surprise," you mutter with feigned embarrassment.
+	<br><br>
+
+	The <<person1>><<person>> gives you a content smile. <<He>> massages your <<bottom>>.<<garousal>><<arousal 600>>
+	<br><br>
+
+	"I always wanted a toy like you," <<he>> says before revealing <<his>> <<if $NPCList[0].vagina is "none">>$NPCList[0].penisdesc<<else>>vagina<</if>>.
+	<br><br>
+
+	<<link [[Next|Brothel Escort Job Sex]]>><<set $sexstart to 1>><</link>>
+
+<<elseif $phase is 3>>
+	"Don't touch me, you pervert," you spit.
+	<br><br>
+
+	The <<person1>><<person>> shies back, unsure, but the crowd cheers <<him>> on.
+	<br><br>
+
+	"Pretty brave for a helpless little toy, aren't we?" <<he>> says, trying to cover up <<his>> insecurity. <<He>> reveals <<his>> <<if $NPCList[0].vagina is "none">>$NPCList[0].penisdesc<<else>>vagina<</if>>.
+	<br><br>
+
+	<<link [[Next|Brothel Escort Job Sex]]>><<set $molestationstart to 1>><</link>>
+
+<<else>>
+	"Just like that," you moan, leaning into <<his>> touch as best you can. "I can't wait for this."
+	<br><br>
+
+	"That makes two of us," the <<person1>><<person>> says, tracing a finger down your body. <<He>> reveals <<his>> <<if $NPCList[0].vagina is "none">>$NPCList[0].penisdesc<<else>>vagina<</if>>.
+	<br><br>
+
+	<<link [[Next|Brothel Escort Job Sex]]>><<set $sexstart to 1>><</link>>
+<</if>>
+
+<<unset $phase>>
+
+:: Brothel Escort Job Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 100>>
+	<<set $position to "doggy">>
+
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<set $position to "doggy">>
+
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Brothel Escort Job Sex End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Escort Job Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Escort Job Sex End
+<<effects>>
+
+<<if $phase isnot 5>>
+	<<if $enemyarousal gte $enemyarousalmax>>
+		<<ejaculation>>
+		Satisfied, the <<person1>><<person>> gives you a final smack on the bum.<<gpain>><<violence 3>>
+		<br><br>
+
+		"That was fun," <<he>> says before turning to the guests. "Come on, guys. This is a party. Everyone should have some fun!"
+		<br><br>
+
+	<<else>>
+		The <<person1>><<person>> staggers back, wincing.
+		<br><br>
+
+		"We'll see how long you can keep that up," <<he>> whispers before turning to the guests. "<<pShes>> a feisty one. Let's make this a game. Who here thinks they can break <<pher>>?"
+		<br><br>
+
+	<</if>>
+
+	The crowd cheers. Two more people step forward to have some fun with you.
+	<br><br>
+
+	<<link [[Next|Brothel Escort Job Sex]]>><<set $molestationstart to 1>><<set $phase to 5>><<generate2>><<generate3>><</link>>
+
+<<else>>
+	<<ejaculation>>
+
+	<<link [[Next|Brothel Escort Job End]]>><</link>>
+
+<</if>>
+
+:: Brothel Escort Job End
+<<effects>>
+
+You are at the end of your strength. Luckily the guests seem to be pretty satisfied.
+Some leave the room and the crowd slowly disperses.
+<br><br>
+
+The <<person1>><<person>> grabs you by the chin and lifts your head to get a good look at your face.
+<br><br>
+
+<<if $submissive gte 1150>>
+    <<link [[Be submissive|Brothel Escort Job End 2]]>><<set $phase to 1>><<set $brothel_escortjob.sub += 1>><</link>><<submissivetext>>
+<<elseif $submissive lte 850>>
+    <<link [[Look into their eyes|Brothel Escort Job End 2]]>><<set $phase to 2>><</link>><<defianttext>>
+<</if>>
+<br>
+
+<<link [[Avert your eyes|Brothel Escort Job End 2]]>><<set $phase to 3>><</link>>
+
+:: Brothel Escort Job End 2
+<<effects>>
+
+<<if $phase is 1>>
+	You meet <<his>> gaze with a lewd look. "P-please, give me more..." you say. <<He>> is clearly excited from your submissive behavior.
+	<br><br>
+
+	"One day I will come and buy you!" <<he>> exclaims.
+	<br><Br>
+
+	The <<person1>><<person>> lays a hand on <<his>> shoulder and steers <<him>> out of the room.
+	<br><br>
+
+<<elseif $phase is 2>>
+	You meet <<his>> gaze head on. Your determination seems to unsettle <<him>>.
+	<br><br>
+
+	"I had a lot of fun," <<he>> says, avoiding your look. "Thank you."<<llstress>><<stress - 12>>
+	<br><br>
+
+	<<He>> turns and leaves the room.
+	<br><br>
+
+<<else>>
+	Ashamed, you avert your eyes. <<His>> stare is intense. Suddenly <<he>> slaps you across the face.<<gpain>><<violence 3>>
+	<br><br>
+
+	"You were a wonderful present," <<he>> says in a mocking tone. "I'd go for another round, but you reek. I wonder how long it will take to wash this stink away."
+	<br><br>
+
+	<<He>> turns and finally leaves the room.
+	<br><br>
+
+<</if>>
+
+<<link [[Next|Brothel Escort Job End 3]]>><</link>>
+
+:: Brothel Escort Job End 3
+<<effects>><<generate4>>
+
+Finally you are let down and are unbound by the <<person4>><<person>>.
+You get on your feet but are still shaky. It takes a while for all your limbs to regain proper feeling.
+<br><br>
+
+<<if $brothel_escortjob.sub is 2>>
+	"You made quite an impression," the <<person4>><<person>> says.
+	<br><br>
+
+	You get dressed. The <<person4>><<person>> leads you to the door.
+	<br><br>
+
+	"You better stay away from our <<if $NPCList[0].pronoun is "f">>girl<<else>>boy<</if>>. We don't want <<person1>><<him>> to fall for a whore," <<he>> says in a condescending tone. <<He>> throws you <<moneyGain 2000>>.
+	<br><br>
+
+<<else>>
+	"That was wonderful," the <<person2>><<person>> says. "You really made this party a success."
+	<br><br>
+
+	You get dressed. The <<person>> leads you to the door.
+	<br><br>
+
+	"We will ask for you again in the future," <<he>> promises with a smile. <<He>> hands you <<moneyGain 2000>>.
+	<br><br>
+
+<</if>>
+
+Relieved that it's finally over, you leave the house.
+<br><br>
+
+<<link [[Next|Brothel Escort Job End 4]]>><<unbind>><<remove_shackle>><<storeon "escort_job">><</link>>
+
+:: Brothel Escort Job End 4
+<<effects>>
+
+You are walking down the driveway when you're suddenly stopped by the <<person3>><<person>>.
+<br><br>
+
+"Wait," <<he>> says, out of breath. "Your acting was incredible. Here. Please have this!"
+<br><br>
+
+With a smile <<he>> hands you another <<moneyGain 200>>.
+<br><br>
+
+<<link [[Smooch|Brothel Escort Job End 5]]>><<set $phase to 1>><</link>>
+<br>
+<<link [[Take the money|Brothel Escort Job End 5]]>><<set $phase to 2>><</link>>
+<br>
+<<link [[Refuse to take the money|Brothel Escort Job End 5]]>><<set $phase to 3>><</link>>
+
+:: Brothel Escort Job End 5
+<<effects>>
+
+<<if $phase is 1>>
+	As a parting gift you kiss <<his>> cheek before you take the money. <<He>> blushes.
+	<br><br>
+
+	"Thank you," you say.
+	<br><br>
+
+	That said you leave <<him>> standing there, gazing after you.
+	<br><br>
+
+<<elseif $phase is 2>>
+	"Thank you," you say, taking the money from <<his>> hand.
+	<br><br>
+
+	<<He>> looks at you expectantly, but you simply leave.
+	<br><br>
+
+<<else>>
+	"I already got paid," you say surprised.
+	<br><br>
+
+	"Sorry, I just wanted to give you something extra," <<he>> stammers. <<He>> looks at the money in <<his>> hand, before shaking <<his>> head and walking back inside.
+	<br><br>
+
+	You leave <<him>> be and move on.
+	<br><br>
+
+	<<set $money -= 200>>
+
+<</if>>
+
+<<link [[Next|Danube Street]]>><<endevent>><<set $weekly.escortjob to 1>><<endcombat>><<unset $brothel_escortjob>><<stress -200>><<pass 60>><</link>>
+
+:: Brothel Escort Job Escape
+<<effects>>
+
+<<if $athleticsSuccess>>
+	The whole situation frightens you. Without warning you turn and push through the <<person1>><<person>> and the <<person2>><<person>>.
+	<br><br>
+
+	<span class="green">Surprised they fail to stop you.</span> Your heart races as you run out of the estate as fast your legs can carry you.
+	<br><br>
+
+	When you stop to rest you find yourself in the residential district.
+	You may have escaped the situation, but you shudder at the thought how Briar might react.<<ggstress>><<stress 12>>
+	<br><br>
+
+	<<link [[Next|Domus Street]]>><<endevent>><<set $weekly.escortjob to 1>><<run delete $brothel_escortjob.accept>><<set $brothel_escortjob.escape to true>><</link>>
+
+<<else>>
+	You turn and try to push past the <<person1>><<person>> and <<person2>><<person>>, <span class = "red">but they stand firm and block you from leaving</span>.
+	<br><br>
+
+	<<link [[Next|Brothel Escort Job Escape Fight]]>><<set $molestationstart to 1>><</link>>
+
+<</if>>
+
+:: Brothel Escort Job Escape Fight
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Brothel Escort Job Escape Fight End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Escort Job Escape Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Escort Job Escape Fight End
+<<effects>>
+
+<<if $enemyhealth lte 0 or $enemyarousal gte $enemyarousalmax>>
+
+	<<if $enemyarousal gte $enemyarousalmax>>
+		<<ejaculate>>
+	<</if>>
+
+	You can push the two off for a moment, giving you enough room to make a mad dash for the exit.
+	Your heart races as you run out of the estate as fast your legs can carry you.
+	<br><br>
+
+	When you stop to rest you find yourself in the residential district.
+	You may have escaped the situation, but you shudder at the thought how Briar might react.<<ggstress>><<stress 12>>
+	<br><br>
+
+	<<link [[Next|Domus Street]]>><<endevent>><<set $weekly.escortjob to 1>><<run delete $brothel_escortjob.accept>><<set $brothel_escortjob.escape to true>><</link>>
+
+<<else>>
+	You fall down to the ground, too bruised and battered to resist.
+	<br><br>
+
+	"You'll not ruin this party you ungrateful bitch," the <<person2>> spits in anger.
+	<br><br>
+
+	They start to rip the clothes off your body and shove you to the middle of the room.
+	<br><br>
+<</if>>

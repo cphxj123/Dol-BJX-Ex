@@ -1,0 +1,2764 @@
+:: Moor Bird Still
+<<effects>>
+
+You remain still, rooted to the spot. The <<beasttype>>'s claws open, and grasp your shoulders.<<if $monster is 1>> "Caught you," <<bhe>> says as the wings on <<bhis>> back beat furiously.<</if>> You leave the ground far behind.
+<br><br>
+<<set $moor_hunt to 0>>
+<<link [[Next|Bird Capture]]>><</link>>
+<br>
+
+:: Moor Bird Resist
+<<effects>>
+
+<<if $willpowerSuccess is 1>>
+	You tear free of the <<beasttype>>'s gaze, <span class="green">and leap aside.</span> Talons grasp empty air,
+	<<if $rng gte 51>>
+		and the creature takes to the air once more. You're in the clear for now.
+		<br><br>
+		<<set $moor_hunt to 5>>
+
+		<<link [[Next|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		<<if $monster is 1>>
+			then pierce the earth as <<bhe>> lands. <<bHe>> slowly stands upright, flaring out the wings on <<bhis>> back.
+		<<else>>
+			then pierce the earth as the creature lands. <<bHe>> <<if $monster is 1>>turns<<else>>hops<</if>> around to face you, wings outstretched.
+		<</if>>
+		<br><br>
+
+		<<link [[Next|Moor Bird Fight]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<span class="red">You can't tear your eyes away.</span> You remain rooted as <<bhis>> claws grasp your shoulders.<<if $monster is 1>> "Caught you," <<bhe>> says as the wings on <<bhis>> back beat furiously.<</if>> You leave the ground far behind.<<willpower 3>><<gwillpower>>
+	<br><br>
+	<<set $moor_hunt to 0>>
+	<<link [[Next|Bird Capture]]>><</link>>
+	<br>
+<</if>>
+
+
+:: Moor Bird Fight
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<set $enemyhealthmax to 600>>
+	<<set $enemyhealth to 600>>
+	<<if $monster isnot 1>>
+		<<set $position to "doggy">>
+		<<set $NPCList[0].stance to "top">>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br><br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Moor Bird Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Moor Bird Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Moor Bird Fight Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<beastejaculation>>
+
+	Tired, the <<beasttype>> takes to the air. <span class="red"><<bHe>> circles overhead.</span>
+	<br><br>
+	<<set $moor_hunt to 5>>
+
+	<<tearful>> you continue your journey.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
+	<br>
+
+<<elseif $enemyhealth lte 0>>
+
+	You stagger backwards as the <<beasttype>> beats <<bhis>> wings, and takes to the air. <<bHe>> swoops behind a hillock, and out of sight. <span class="green">You're in the clear.</span> For now.
+	<br><br>
+	<<unset $moor_hunt>>
+	<<tearful>> you continue your journey.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
+	<br>
+
+<<else>>
+	You fall to the ground, too hurt to keep fighting.
+	<br><br>
+
+	The <<beasttype>>'s claws grasp your shoulders.<<if $monster is 1>> "You have a fighting spirit. You've impressed me," <<bhe>> says as the wings on <<bhis>> back beat furiously.<</if>> You leave the ground far behind.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<npc "Great Hawk">>
+
+	<<link [[Next|Bird Capture]]>><</link>>
+	<br>
+
+<</if>>
+
+
+:: Bird Capture
+<<set $outside to 0>><<set $location to "tower">><<effects>>
+<<unset $moor_hunt>>
+
+
+Your stomach lurches as the <<beasttype>> soars higher, until
+
+<<if Time.dayState is "night">>
+	you see lights on the horizon.
+<<else>>
+	you see the town on the horizon.
+<</if>>
+You dangle, helpless, as you are carried deeper into the moor. <<if $monster is 1>>"Worry not, I never drop my catches."<</if>>
+<br><br>
+
+The <<beasttype>> flies above the ruins of a castle, and begins a circling descent. One stone tower rises above the others. <<bHe>> enters through a shattered wall, and waits until your feet are planted before releasing your shoulders.
+<br><br>
+
+<<link [[Next|Bird Capture 2]]>><</link>>
+<br>
+
+
+
+:: Bird Capture 2
+<<effects>>
+
+
+<<if $bird.state is undefined>>
+You look around the circular room. Small bones litter the ground. There's no way out, other than the broken wall. There's a large pool formed from broken masonry, exposed to the sky and full of rainwater. A nest sits on the other side of the room near the precipice, made from small logs and twigs. You see a large wooden trap door at the back of the room, but it's sealed by a rusted iron lock.
+<br><br>
+	<<bird_init>>
+	<<set $hunger to 1800>>
+	<<if $monster is 1>>
+		The harpy stands between you and the exit. <<bHis>> massive wings stretch from <<bhis>> shoulders. <<bHe>> watches you.
+		<br><br>
+		"I am Great Hawk," <<bhe>> says, puffing out <<bhis>> plumes. "I found <<wife>>."
+		<br><br>
+	<<else>>
+		The colossal hawk stands between you and the exit, <<bhis>> dark eyes regarding you.
+	<</if>>
+<<else>>
+	You're back in the circular room at the top of the tower. Small bones still litter the ground. The <<beasttype>> watches you.
+<</if>>
+<br><br>
+
+<<if ($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
+	<<bHe>> looks at your bindings curiously, before sharply kicking <<bhis>> talons towards you. You flinch, but when you look down, <span class="green">your bindings are in tatters at your feet.</span>
+	<<unbind>>
+	<br><br>
+<</if>>
+
+
+<<set $bird.state to "hunting">>
+<<set $bird.timer to 20>>
+
+
+
+<<link [[Ask for mercy|Bird Capture Say]]>><<sub 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>>
+<br>
+<<if $leftarm isnot "bound" or $rightarm isnot "bound">>
+	<<link [[Punch|Bird Capture Punch]]>><<def 1>><<npcincr "Great Hawk" love -1>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>><<llove>>
+	<br>
+<</if>>
+<<link [[Wait|Bird Capture Wait]]>><</link>>
+<br>
+
+:: Bird Capture Say
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"L-Let me go," you say.
+<<elseif $speech_attitude is "bratty">>
+	"Get me down from this tower," you say. "Or else."
+<<else>>
+	"Let me go," you say.
+<</if>>
+<br><br>
+
+The <<beasttype>> watches you a moment longer, then beats <<bhis>> wings and leaps from the tower. <<bHe>> flies over the rest of the ruin, and the mire beyond. You're left alone in the tower.
+<br><br>
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+
+:: Bird Capture Punch
+<<effects>>
+
+You step forward, and slam a fist into the <<beasttype>>'s wing. <<bHe>> shrieks and <<if $monster is 1>>jumps<<else>>hops<</if>> away, before turning and leaping from the tower. <<bHe>> flies over the rest of the ruin, and the mire beyond. You're left alone in the tower.
+<br><br>
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Capture Wait
+<<effects>>
+
+You remain still. The <<beasttype>> watches you a moment longer, then beats <<bhis>> wings and leaps from the tower. <<bHe>> flies over the rest of the ruin, and the mire beyond. You're left alone in the tower.
+<br><br>
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Moor Bird Wake
+<<effects>>
+
+<<if $syndromebird gte 1>>
+	<<npc "Great Hawk">>
+	You awaken in a stone room, a sheet of feathers covering you. It's a wing.
+	<<if $monster is 1>>
+		The <<beasttype>> chirps beside you.
+	<<else>>
+		"I'm glad you're well," the <<beasttype>> says. "Spotted you asleep. Very dangerous. You should be careful. Come to nest when tired."
+	<</if>>
+	<br><br>
+
+	<<bHis>> wing tightens around you for a moment, before giving you more space.
+	<br><br>
+
+	<<if ($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
+		<<bHe>> looks at your bindings curiously, before sharply kicking <<bhis>> talons towards you. <span class="green">Your bindings fall to tatters at your feet.</span>
+		<<unbind>>
+		<br><br>
+	<</if>>
+
+	<<set $bird.timer to 60>>
+	<<set $bird.state to "home">>
+
+	<<link [[Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<npc "Great Hawk">>
+	You float in the air as the wind blows by. Claws clutch your shoulders. You're high in the air. You look up. A <<beasttype>> carries you, <<bhis>> feathered wings beating.
+	<br><br>
+
+	<<link [[Next|Bird Capture]]>><</link>>
+	<br>
+<</if>>
+
+:: Bird Tower
+<<set $outside to 0>><<set $location to "tower">><<effects>><<getTarget true>>
+<<if $bird.state is undefined>>
+	<<bird_init>>/*Fixes rare broken save issue*/
+<</if>>
+<<bird_schedule>>
+
+You are inside a ruined tower, deep in the moor.
+<<if $syndromebird isnot 1>><<hunger_description>><</if>>
+<br><br>
+
+<<npc "Great Hawk">>
+<<if $bird.state is "home">>
+	<<switch $bird.activity>>
+	<<case "sing">>
+		The <<beasttype>> is singing at the edge of the tower.
+	<<case "bathe">>
+		The <<beasttype>> is bathing in the rainwater pool.
+	<<case "groom">>
+		The <<beasttype>> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
+	<<case "build">>
+		The <<beasttype>> is adding to the nest.
+	<<default>>
+		The <<beasttype>> rests in <<bhis>> nest.
+		<<set $birdSleep to 1>>
+	<</switch>>
+<<else>>
+	The <<beasttype>> is out hunting.
+<</if>>
+<<if $exposed gte 1>>
+	<<if $syndromebird is 1>>
+		<<if $arousal gte $arousalmax / 2 and $bird.state isnot "home">>
+			You find yourself craving your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>>'s wings to keep you warm.
+		<</if>>
+	<<else>>
+		<<if $bird.state isnot "home">>
+			You feel relieved to have some privacy in your exposed state.
+		<<else>>
+			You feel embarrassed to be exposed around the <<beasttype>>.
+		<</if>>
+	<</if>>
+<</if>>
+<<endevent>>
+<br><br>
+
+<<if isPlayerNonparasitePregnancyEnding() and !$possessed>>
+	<<pregnancyWatersBrokenPassout "castle">>
+<<elseif $bird.state is "hunting" and $bird.timer lte 0 and !$possessed>>
+	<<npc "Great Hawk">>
+	You hear the flap of wings as the <<beasttype>> returns.
+
+	<<bHe>> lands and <<if $monster is 1>>walks<<else>>hops<</if>> over to you.
+	<<bird_hunt_return>>
+<<elseif $bird.state is "home" and Time.dayState isnot "night" and $bird.timer lte 0 and !$possessed>>
+	<<npc "Great Hawk">>
+	<<if $monster is 1>>
+		The <<beasttype>> rises from
+		<<if $bird.activity is "build" or $bird.activity is "sleep">>
+			<<bhis>> nest.
+		<<elseif $bird.activity is "bathe">>
+			the rainwater pool, and shakes <<bhis>> wings dry.
+		<<else>>
+			<<bhis>> spot on the perch.
+		<</if>>
+		"<<print either(
+			"I crave a hunt.",
+			"The wild beckons me.",
+			"My talons itch for prey.",
+			"The winds call me.",
+			"I must stretch my wings."
+		)>> I will return with a gift." <<bHe>> spreads <<bhis>> wings, and launches from the tower.
+	<<else>>
+		The <<beasttype>> rises from
+		<<if $bird.activity is "build" or $bird.activity is "sleep">>
+			<<bhis>> nest,
+		<<elseif $bird.activity is "bathe">>
+			the rainwater pool,
+		<<else>>
+			<<bhis>> spot on the perch,
+		<</if>>
+		spreads <<bhis>> wings, and launches from the tower.
+	<</if>>
+	<br><br>
+	<<set $bird.timer to random(30, 60)>>
+	<<set $bird.state to "hunting">>
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<elseif $bird.state is "home" and $bird.lock is 1 and $syndromebird is 1 and !$possessed>>
+	<<npc "Great Hawk">>
+	The <<beasttype>> <<if $monster is 1>>walks<<else>>hops<</if>> deeper into the room. <<bHe>> pauses beside the trap door, and holds the rusted lock between <<bhis>> talons. <<bHe>> crushes it in one swift movement, grasps the remaining metal, and throws open the door. <<bHe>> jumps away from the cloud of dust.
+	<br><br>
+
+	<<if $monster is 1>>
+		"Easier for you to leave," <<bhe>> says. "If I'm out. Just don't be gone long, <<wife>>. The nest is cold without you."
+	<<else>>
+		<<bHe>> nods towards the hole, then back to the nest, and chirps.
+	<</if>>
+	<br><br>
+
+	You peer into the gloom. A flight of stone stairs spirals into the dark.
+	<br><br>
+	<<set $bird.lock to undefined>>
+
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<elseif $bird.mirror is 1 and $bird.mirror_unknown is 1 and $bird.state is "home" and !$possessed>>
+	<<set $bird.mirror_unknown to undefined>>
+	<<npc "Great Hawk">>
+	You hear a screech. The <<beasttype>> hovers in the air, talons outstretched, gaze fixed on the new mirror, on <<bhis>> reflection.
+	<br><br>
+
+	<<if $speech_attitude is "meek">>
+		"I-It's just a mirror," you say. "I wanted one for our home."
+	<<elseif $speech_attitude is "bratty">>
+		"Quit whining," you say. "It's just a mirror."
+	<<else>>
+		"What's wrong?" you ask. "It's just a mirror."
+	<</if>>
+	<br><br>
+	<<if $monster gte 1>>
+		The <<beasttype>> lands. "I hate it," <<bhe>> says. <<bHis>> talons bite into the stone. "Dangerous. But if you like it-" <<bHe>> grimaces. "Put something over it when you're not using it."
+	<<else>>
+		<<bHe>> chirps, and <<bhis>> talons bite into the stone. <<bHe>> flies off for a moment, returning with a large, torn piece of fabric, and drops it on the mirror.
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<elseif $bird.syndrome gte 20 and $syndromebird isnot 1 and $bird.state is "home" and $bird.activity isnot "sleep" and !$possessed>>
+	<<npc "Great Hawk">>
+	You watch the <<beasttype>> stare over the moor, the light catching in <<bhis>> majestic feathers. <span class="red">It's not <<bhis>> fault. <<bHe>> only wants a mate.
+	<br>
+	You've gained the Stockholm Syndrome:
+	<<if $monster is 1>>
+		Great Harpy
+	<<else>>
+		Great Hawk
+	<</if>>
+	trait.</span>
+	<br><br>
+	<<if $loveInterest.primary is "None">>
+		<<set $loveInterest.primary to "Great Hawk">>
+		<span class = "gold">The Great Hawk is now your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.</span>
+		<br><br>
+	<<else>>
+		<span class = "gold">The Great Hawk can now be claimed as your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.<br>You can change your love interest in the "Attitudes" menu.</span>
+		<br><br>
+	<</if>>
+	<<set $syndromebird to 1>>
+	<<set $bird.syndrome to undefined>>
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
+		<<if $possessed>>
+			You stare down at your bindings. You pull, and they fall apart, unable to hold against you.
+			<br><br>
+			<<unbind>>
+		<<else>>
+			<<undobindingsicon>><<link [[Undo your bindings (0:10)|Bird Tower Unbind]]>><<bird_pass 10>><<unbind>><</link>>
+			<br><br>
+		<</if>>
+	<</if>>
+	<<mooricon "perch">><<link [[Approach the perch|Bird Tower Perch]]>><</link>>
+	<br>
+	<<mooricon "rainwater">><<link [[Sit by the rainwater pool|Bird Tower Rainwater Pool]]>><</link>>
+	<br>
+	<<if $syndromebird isnot 1>>
+		<<crimeicon "mark">><<link [[Look out the tower (0:05)|Bird Tower Look]]>><<bird_pass 5>><</link>>
+		<br>
+	<</if>>
+	<<if $bird.lock is 1>>
+		<<investigateicon>><<link [[Examine the trap door (0:05)|Bird Tower Door]]>><<bird_pass 5>><</link>>
+		<br>
+	<<else>>
+		<<getouticon "hole">><<link [[Enter the trap door (0:05)|Bird Tower Base Descend]]>><<bird_pass 5>><</link>>
+		<br>
+	<</if>>
+	<br>
+	<<if $syndromebird isnot 1>>
+		<<investigateicon>><<link [[Search for materials (1:00)|Bird Tower Search]]>><<bird_pass 60>><</link>>
+		<br>
+	<</if>>
+	<<if $estate_fence is "quest" and $syndromebird is 1 and $bird.state is "home" and $bird.activity isnot "sleep">>
+		<<askicon>><<link [[Ask for help breaking into the Remy Estate|Bird Tower Estate]]>><</link>>
+		<br>
+	<</if>>
+	<<mooricon "nest">><<link [[Sleep in the nest|Bird Tower Bed]]>><</link>>
+	<br>
+	<<bedicon "zzz">><<link [[Sleep elsewhere|Bird Tower Bed Alone]]>><<bird_stockholm -2>><</link>><<if $syndromebird isnot 1>><<lstockholm>><</if>>
+	<<if $bird.mirror is 1>>
+		<br>
+		<<if $nextPassageCheck is "Bird Tower Mirror">>
+			<span class="nextLink"><<mirroricon>><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>></span>
+		<<else>>
+			<<mirroricon>><<link [[Mirror|Bird Tower Mirror]]>><<preMirror>><</link>>
+		<</if>>
+	<</if>>
+		<br>
+	<<if $syndromebird is 1>>
+		<br>
+		<<link [[Settings]]>><<set $settingsExitPassage to "Bird Tower">><</link>>
+		<br>
+		<<attitudesControlCheck>>
+		<<if $attitudesControl.showGoldLink is true>>
+			<span class="goldLink"><<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>> </span><span class="red">!!</span>
+		<<else>>
+			<<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+		<</if>>
+		<br><br>
+	<</if>>
+
+<</if>>
+
+:: Bird Tower Estate
+<<effects>>
+
+<<npc "Great Hawk">>
+<<if $monster is 1>>
+	The <<beasttype>> stares north as <<bhe>> listens. "I avoid that place," <<bhe>> says. "Dangerous. The landbound leader nests there. But I will help." <<bHe>> leans closer, and kisses your forehead.
+	<br><br>
+
+	<<bHis>> wings flare. "I will find you a gift on my way back." <<bHe>> launches from the perch.
+	<br><br>
+<<else>>
+	The <<beasttype>> stares north as <<bhe>> listens, or appears to listen. <<bHis>> wings flare, and <<bhe>> launches from the tower. You're not sure if <<bhe>> understood.
+	<br><br>
+<</if>>
+
+<<set $bird.timer to random(120, 150)>>
+<<set $bird.state to "hunting">>
+<<set $estate_fence to "bird">>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Search
+<<effects>>
+
+You rifle through the wood and detritus, searching for anything that could help you escape.
+
+<<if $rng gte 66>>
+	You find a torn but strong piece of fabric. It could be used for a rope.<<set $bird.fabric += 1>><<gfabric>>
+<<else>>
+	You don't find anything.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Base Descend
+<<effects>>
+
+You test each step as you descend into the dark.
+<br><br>
+
+You arrive at the bottom. There's a slit in the wall, leading outside. You should be able to squeeze through, though there's a small drop on the other side.
+<br><br>
+
+<<link [[Next|Bird Tower Base]]>><</link>>
+<br>
+
+:: Bird Tower Base Climb
+<<effects>>
+
+You climb the stone steps, keeping your feet steady, and body close to the wall.
+<br><br>
+
+You emerge through the open trap door.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Base
+<<effects>>
+
+You are in the base of the ruined tower, deep in the moor. There's a slit in the wall, leading outside, and a staircase leading higher.
+<br><br>
+
+<<if $bird.mirror isnot 1>>
+	<<if $bird.mirror_unknown is 1>>
+		A mirror stands in the middle of the room, covered by a dusty sheet.
+		<br><br>
+		<<link [[Carry the mirror upstairs (0:15)|Bird Tower Base Carry]]>><<set $bird.mirror to 1>><<bird_pass 15>><<tiredness 3>><</link>>
+		<br>
+	<<else>>
+		A tall piece of furniture stands in the middle of the room, covered by a dusty sheet.
+		<br><br>
+		<<link [[Examine the furniture|Bird Tower Base Mirror]]>><<set $bird.mirror_unknown to 1>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+<<stairsicon "up">><<link [[Climb the stairs (0:05)|Bird Tower Base Climb]]>><<bird_pass 5>><</link>>
+<br>
+<<getouticon>><<link [[Leave the tower|Bird Tower Base Leave]]>><</link>>
+<br>
+
+
+:: Bird Tower Base Mirror
+<<effects>>
+
+You lift the sheet, revealing a standing mirror. You can make out your reflection in the dim light. It's still in one piece.
+<br><br>
+
+<<link [[Carry it upstairs (0:15)|Bird Tower Base Carry]]>><<set $bird.mirror to 1>><<bird_pass 15>><<tiredness 3>><</link>>
+<br>
+<<link [[Leave it alone|Bird Tower Base]]>><</link>>
+<br>
+
+
+:: Bird Tower Base Carry
+<<effects>>
+<<earnFeat "High Reflection">>
+You carry the mirror up the tower, careful with each step, and resting it on the ground now and then. It's a steep climb, but you emerge at the top.
+<br><br>
+
+You find a nice spot for your new furniture opposite the nest.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+
+
+:: Bird Tower Base Leave
+<<effects>>
+
+You squeeze through the slit, and tumble to the ground outside. You're in the castle courtyard.
+<br><br>
+
+<<link [[Next|Castle]]>><</link>>
+<br>
+
+
+:: Bird Tower Look
+<<effects>>
+
+The wind snatches your hair as you peer over the edge. It's a long way down.
+<br><br>
+
+You have <<number $bird.fabric>> spare material<<if $bird.fabric gt 1>>s<</if>>.
+<<if $syndromebird isnot 1>>
+	You could tear up your clothes for more.
+<</if>>
+<br>
+
+<<if $syndromebird isnot 1>>
+	<<if $worn.upper.name isnot "naked" and $worn.upper.cursed isnot 1>>
+		Tear up your <<link [[$worn.upper.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<upperruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.lower.name isnot "naked" and $worn.lower.cursed isnot 1>>
+		Tear up your <<link [[$worn.lower.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<lowerruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.under_upper.name isnot "naked" and $worn.under_upper.cursed isnot 1>>
+		Tear up your <<link [[$worn.under_upper.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<underupperruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.under_lower.name isnot "naked" and $worn.under_lower.cursed isnot 1>>
+		Tear up your <<link [[$worn.under_lower.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<underlowerruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.over_upper.name isnot "naked" and $worn.over_upper.cursed isnot 1>>
+		Tear up your <<link [[$worn.over_upper.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<overupperruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.over_lower.name isnot "naked" and $worn.over_lower.cursed isnot 1>>
+		Tear up your <<link [[$worn.over_lower.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<overlowerruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.over_head.name isnot "naked" and $worn.over_head.cursed isnot 1>>
+		Tear up your <<link [[$worn.over_head.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<overheadruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.head.name isnot "naked" and $worn.head.cursed isnot 1>>
+		Tear up your <<link [[$worn.head.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<headruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.face.name isnot "naked" and $worn.face.cursed isnot 1>>
+		Tear up your <<link [[$worn.face.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<faceruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.neck.name isnot "naked" and $worn.neck.cursed isnot 1>>
+		Tear up your <<link [[$worn.neck.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<neckruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.hands.name isnot "naked" and $worn.hands.cursed isnot 1>>
+		Tear up your <<link [[$worn.hands.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<handsruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.legs.name isnot "naked" and $worn.legs.cursed isnot 1>>
+		Tear up your <<link [[$worn.legs.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<legsruined>><</link>>
+		<br>
+	<</if>>
+	<<if $worn.feet.name isnot "naked" and $worn.feet.cursed isnot 1>>
+		Tear up your <<link [[$worn.feet.name|Bird Tower Rope Clothes]]>><<set $bird.fabric += 1>><<feetruined>><</link>>
+		<br>
+	<</if>>
+	<br>
+<</if>>
+
+/* 北极星模组 */
+<<if !$options.bjx_animal and $harpy gte 6 or $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" or $transformationParts.dragon.wings isnot "disabled")>>
+	<!-- Redirects the player to the Perch, where flight can happen. Moved everything to widgets.twee in the "bird_fly_options" widget.-->
+	如果你有更好的起跳点，风可以让你飞得很远。<span class="blue">这个栖木也许是个完美的起跳点。</span>
+	<br><br>
+<<elseif !$options.bjx_animal and ($angel gte 6 or $demon gte 6 or $fallenangel gte 2) or $options.bjx_animal and ($transformationParts.angel.wings isnot "disabled" or $transformationParts.fallenAngel.wings isnot "disabled" or $transformationParts.demon.wings isnot "disabled" or $transformationParts.bee.wings isnot "disabled")>>
+	<<if $pain gte 20>>
+		你的翅膀应该会让你安稳落地，<span class="purple">但你伤得实在是太重了，无法冒着风险就这么跃下。</span>
+	<<else>>
+		如果你有更好的起跳点，你的翅膀可以让你降落。<span class="blue">这个栖木也许是个完美的起跳点。</span>
+	<</if>>
+<</if>>
+/* 北极星 */
+<br>
+<<if $bird.rope lt 7>>
+	<<if $bird.fabric gte 1>>
+		<<if $bird.rope is 0>>
+			<<link [[Make a rope (0:30)|Bird Tower Rope]]>><<set $bird.fabric -= 1>><<set $bird.rope += 1>><<bird_pass 30>><</link>>
+			<br>
+		<<else>>
+			<<link [[Make a rope (0:30)|Bird Tower Rope Add]]>><<set $bird.fabric -= 1>><<bird_pass 30>><<set $bird.rope += 1>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<span class="grey">More fabric is required to build a rope.</span>
+		<br><br>
+
+	<</if>>
+<<else>>
+	<<link [[Escape (0:05)|Bird Tower Rope Escape]]>><<bird_pass 5>><</link>>
+	<br>
+<</if>>
+<<link [[Step away|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Rope Clothes
+<<effects>>
+
+You tear off your clothing, giving yourself more raw material to work with.
+<<if $exposed gte 1>>
+	You shiver in the breeze.
+<</if>>
+<<covered>>
+<br><br>
+
+<<link [[Next|Bird Tower Look]]>><</link>>
+<br>
+
+
+:: Bird Tower Rope
+<<effects>>
+
+You tear and tie together fabric and other materials, creating the beginnings of a rope. You'll need more material to make it down.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+:: Bird Tower Rope Add
+<<effects>>
+
+You tear and tie together fabric and other materials, adding to your rope.
+<<if $bird.rope gte 7>>
+	<span class="green">It should reach the bottom.</span>
+<<elseif $bird.rope gte 6>>
+	<span class="teal">It's almost long enough.</span>
+<<elseif $bird.rope gte 4>>
+	<span class="lblue">It should reach half the way down.</span>
+<<else>>
+	<span class="blue">There's a long way to go.</span>
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><</link>>
+<br>
+
+
+:: Bird Tower Rope Escape
+<<effects>>
+
+You tie one end of your rope around a chunk of upward-pointing stone, and throw the other off the edge. It almost reaches the bottom. It's enough.
+<br><br>
+
+<<if $syndromebird isnot 1>>
+	<<set $bird.rope to 1>>
+<</if>>
+
+<<if $bird.state is "home" and $syndromebird isnot 1>>
+	<<npc "Great Hawk">>
+	You glance at the <<beasttype>>. <<bHe>> is not paying attention. You take the rope in both hands, turn around, and ease yourself down the tower wall.
+	<br><br>
+	You drop the last few feet, landing in the castle courtyard.
+
+	<<if $bird.activity isnot "sleep">>
+		<<set $moor_hunt to 9>>
+
+		<span class="red"> You hear a terrible shriek.</span> It didn't take long for the <<beasttype>> to notice your escape.
+	<<elseif $bird.activity is "sleep" and $rng lte 70>>
+		<<set $moor_hunt to 9>>
+
+		<span class="red"> You hear a terrible shriek.</span> It didn't take long for the <<beasttype>> to notice your escape.
+	<</if>>
+
+	<br><br>
+
+	<<endevent>>
+
+<<else>>
+	You take the rope in both hands, turn around, and ease yourself down the tower wall. You drop the last few feet, landing in the castle courtyard.
+	<br><br>
+<</if>>
+<<link [[Next|Castle]]>><<set $moor to 100>><</link>>
+<br>
+
+:: Bird Tower Glide Attempt
+<<effects>>
+You start to walk closer to the edge. You can't help but be amazed at the view from this height.
+<<if $willpowerSuccess>>
+	<<set $birdGlide to 1>>
+	<span class="green">You continue, despite the pit forming in your stomach.</span><<gwillpower>><<willpower 1>>
+	<br><br>
+	<<link [[Glide down|Bird Tower Glide]]>><<endevent>><</link>><<flight_text>>
+<<else>>
+	<<set $daily.glideScared to true>>
+	<span class="red">You stop, and back away from the edge in fear.</span> It's probably not a good idea to get too close.
+	<br>
+<</if>>
+<br>
+<<link [[Back away|Bird Tower Perch]]>><<endevent>><</link>>
+
+:: Bird Tower Glide
+<<effects>>
+<<if $bird.activity is "sing" and $bird.state is "home">>
+	<<npc "Great Hawk">>
+	<<if $monster is 1>>
+		"Please return soon, <<wife>>," <<bhe>> says as you approach the edge of the perch. "I love you."
+	<<else>>
+		<<bHe>> squawks at you as you approach the edge of the perch, beckoning you to return soon.
+	<</if>>
+	<<endevent>>
+<</if>>
+You jump, falling several feet before the wind catches you. You gently drift down, landing in the ruined courtyard.
+<br><br>
+
+<<if $bird.state is "home" and $syndromebird isnot 1>>
+	<<npc "Great Hawk">>
+	<span class="red">You hear a terrible shriek.</span> It didn't take long for the <<beasttype>> to notice your flight.
+	<br><br>
+	<<set $moor_hunt to 9>>
+	<<endevent>>
+<</if>>
+<<link [[Next|Castle]]>><<set $moor to 100>><</link>>
+<br>
+
+:: Bird Tower Glide 2
+<<effects>>
+<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
+	<<npc "Great Hawk">>
+	<<if $monster is 1>>
+		<<if $weather is "rain">>"Beware the angry skies<<else>>"Please return soon<</if>>, <<wife>>," <<bhe>> says as you approach the edge of the perch. "I love you."
+	<<else>>
+		<<bHe>> squawks at you as you approach the edge of the perch, beckoning you to return soon.
+	<</if>>
+	<<endevent>>
+<</if>>
+You leap from the tower, letting the wind catch you. You swoop to the ruined courtyard.
+<br><br>
+
+<<link [[Next|Castle]]>><<set $moor to 100>><</link>>
+<br>
+
+:: Bird Tower Farmlands
+<<effects>><<flight_effects>>
+<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
+	<<npc "Great Hawk">>
+	<<if $monster is 1>>
+		<<if $weather is "rain">>"Beware the angry skies<<else>>"Please return soon<</if>>, <<wife>>," <<bhe>> says as you approach the edge of the perch. "I love you."
+	<<else>>
+		<<bHe>> squawks at you as you approach the edge of the perch, beckoning you to return soon.
+	<</if>>
+	<<endevent>>
+<</if>>
+You leap from the tower. A strong current catches you, and you begin to glide. The wind bears you over the moor. The journey takes some time, leaving you alone with your thoughts as you soar through the sky.
+<br><br>
+
+The wind does most of the work, but your wings still tire as you arrive at the farmlands. <<physique 3>><<athletics 3>>
+<br><br>
+<<unset $moor_hunt>>
+<<link [[Next|Farmland]]>><<set $moor to 0>><</link>>
+<br>
+
+:: Bird Tower Town
+<<effects>><<flight_effects>>
+<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
+	<<npc "Great Hawk">>
+	<<if $monster is 1>>
+		<<if $weather is "rain">>"Beware the angry skies<<else>>"Please return soon<</if>>, <<wife>>," <<bhe>> says as you approach the edge of the perch. "I love you."
+	<<else>>
+		<<bHe>> squawks at you as you approach the edge of the perch, beckoning you to return soon.
+	<</if>>
+	<<endevent>>
+<</if>>
+You leap from the tower. A strong current catches you, and you begin to glide. The wind bears you over the moor. The journey takes some time, leaving you alone with your thoughts as you soar through the sky.
+<br><br>
+
+The wind does most of the work, but your wings still tire as you soar over the rooftops. You land in the park. You don't think anyone saw you. <<physique 3>><<athletics 3>>
+<br><br>
+<<unset $moor_hunt>>
+<<link [[Next|Park]]>><<set $moor to 0>><</link>>
+<br>
+
+
+:: Bird Tower Forest
+<<effects>><<flight_effects>>
+<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
+	<<npc "Great Hawk">>
+	<<if $monster is 1>>
+		<<if $weather is "rain">>"Beware the angry skies<<else>>"Please return soon<</if>>, <<wife>>," <<bhe>> says as you approach the edge of the perch. "I love you."
+	<<else>>
+		<<bHe>> squawks at you as you approach the edge of the perch, beckoning you to return soon.
+	<</if>>
+	<<endevent>>
+<</if>>
+You leap from the tower. A strong current catches you, and you begin to glide. The wind bears you over the moor. The journey takes some time, leaving you alone with your thoughts as you soar through the sky.
+<br><br>
+
+The wind does most of the work, but your wings still tire as you soar over the treetops. You land in a clearing. <<physique 3>><<athletics 3>>
+<br><br>
+<<unset $moor_hunt>>
+<<link [[Next|Forest]]>><<set $forest to 50>><<set $forestmove to 0>><<set $moor to 0>><</link>>
+<br>
+
+
+:: Bird Tower Door
+<<effects>>
+
+/* 北极星模组 */
+你跪在活板门旁边。木材年代久远，但干燥且保存完好。你拉开了门，但锁却锁得很牢。你往里面看，看到一堆生锈的东西。你无法辨认是什么。
+<br><br>
+
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class='wraith'>你集中注意力，使自己无形化。</span>你把自己的脑袋穿过活板门，短暂的穿透刚好能让你看见你先前无法进入的楼梯。在光线如此薄弱的情况下有点难看清，但你应该能够在某一时刻直接离开这鸟地方。
+	<br><br>
+	<<link [[穿过活板门|Bird Tower Ghost Descend]]>><</link>>
+	<br>
+<</if>>
+
+<<link [[返回|Bird Tower]]>><</link>>
+<br>
+/* 北极星 */
+
+
+:: Bird Tower Lurker
+<<effects>>
+
+<<if $syndromebird gte 1>>
+	You devour the lurker, tearing out chunks of chewy matter with your teeth. <<if $monster is 1>><<bHe>> smiles at you.<<else>>The <<beasttype>> looks satisfied.<</if>>
+<<else>>
+	You close your eyes as you take a bite, and pretend you're eating something more palatable. It's chewy, but doesn't taste of much at all.
+<</if>>
+It fills you with a strange warmth.<<drugs 60>>
+<br><br>
+
+<i><<bHe>> will be more likely to bring you lurkers in the future, rather than other items.</i>
+<br><br>
+
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Lurker Scold
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"I-I'm sure it's very nice," you say. "But I can't eat this."
+<<elseif $speech_attitude is "bratty">>
+	"This food is unfit for a
+	<<if $player.gender_appearance is "m">>
+		gentleman
+	<<else>>
+		lady
+	<</if>>
+	like myself," you say, lifting the lurker and flinging it at a wall.
+<<else>>
+	"I can't eat this," you say, raising your voice. You kick the lurker away for good measure.
+<</if>>
+<br><br>
+
+<<if $monster is 1>>
+	<<bHis>> wings hang limp as <<bhe>> frowns. "I'm sorry, <<wife>>. Will find better meat next hunt." <<bHe>> lifts the lurker, and walks away with it.
+<<else>>
+	The <<beasttype>>'s feathers lie flat. <<bHe>> lifts the lurker, and hops away with it.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> less likely to bring you lurkers in the future. <<bHe>> will bring other items instead.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Lurker Nothing
+<<effects>>
+
+You remain still.
+<<if $monster is 1>>
+	<<bHis>> feathers lie flat as <<bhis>> wings hang limp. "Will find better meat next hunt." <<bHe>> lifts the lurker, and walks away with it.
+<<else>>
+	The <<beasttype>>'s feathers lie flat. <<bhe>> lifts the lurker, and hops away with it.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be less likely to bring you lurkers in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Trash
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Th-thank you," you say, lifting the rubbish. "It's a treasure."
+<<elseif $speech_attitude is "bratty">>
+	"Nice and shiny," you say, lifting the rubbish. "Thanks, featherhead."
+<<else>>
+	"Thank you," you say, lifting the rubbish.
+<</if>>
+<br><br>
+
+	The <<beasttype>> puffs <<bhis>> plumes, and <<if $monster is 1>>walks<<else>>hops<</if>> away.
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> more likely to bring you rubbish in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Trash Scold
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"It's very pretty," you say. "But could you bring me something useful next time?"
+<<elseif $speech_attitude is "bratty">>
+	"What am I supposed to do with this?" you say, chucking the rubbish from the tower. "Bring me something useful next time."
+<<else>>
+	"This is just rubbish," you say. "Bring me something useful next time."
+<</if>>
+<br><br>
+
+<<if $monster is 1>>
+	<<bHis>> wings hang limp as <<bhe>> frowns. "I'm sorry. Value of landbound trinkets is hard to understand. Will bring something more shiny next time."
+<<else>>
+	The <<beasttype>>'s feathers lie flat, and <<bhe>> hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> less likely to bring you rubbish in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Trash Nothing
+<<effects>>
+
+<<if $monster is 1>>
+	<<bHis>> wings hang limp. "Will bring something more shiny to impress you. Next time."
+<<else>>
+	The <<beasttype>>'s feathers lie flat, and <<bhe>> hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be less likely to bring you rubbish in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Watch
+<<effects>>
+
+You lift the watch.
+
+<<if $rng gte 81>>
+	The precious metals alone look valuable. Someone comfortable with stolen goods might buy it.<<set $blackmoney += 200>>
+<<elseif $rng gte 61>>
+	It looks well-made. Someone comfortable with stolen goods might buy it.<<set $blackmoney += 100>>
+<<elseif $rng gte 41>>
+	It's made by a well-known company. Someone comfortable with stolen goods might buy it.<<set $blackmoney += 50>>
+<<elseif $rng gte 21>>
+	It's still working, but doesn't look expensive. It probably isn't worth anything.
+<<else>>
+	It's old and broken, and probably isn't worth anything.
+<</if>>
+<br><br>
+
+<<if $monster is 1>>
+	"Sound it makes is pleasing, just like <<wife>>," <<bhe>> coos.
+<<else>>
+	The <<beasttype>> puffs <<bhis>> plumes, and hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> more likely to steal things for you in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Ring
+<<effects>>
+
+You lift the ring.
+<<if $rng gte 81>>
+	It looks like gold, and could be quite valuable to a fence.<<set $blackmoney += 300>>
+<<elseif $rng gte 61>>
+	It looks like platinum. It could be worth something to a fence.<<set $blackmoney += 200>>
+<<elseif $rng gte 41>>
+	It looks like it's made of a gold alloy, and studded with jewels. It could be worth something to a fence.<<set $blackmoney += 150>>
+<<elseif $rng gte 21>>
+	It looks like silver, and could be worth something to a fence.<<set $blackmoney += 50>>
+<<else>>
+	It looks like steel. You don't think it'll be worth enough for a fence to bother with it.
+<</if>>
+<br><br>
+
+<<if $monster is 1>>
+	"Wingless give rings to mates, yes? I will find all rings and build a nest of them for you," <<bhe>> says, giving you a peck on the cheek before walking away.
+<<else>>
+	The <<beasttype>> puffs <<bhis>> plumes, and hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> more likely to steal things for you in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Necklace
+<<effects>>
+
+You lift the necklace.
+<<if $rng gte 81>>
+	It's an exquisite piece, and made by an expensive brand. It would be worth something to a fence.<<set $blackmoney += 300>>
+<<elseif $rng gte 61>>
+	It looks like rose gold, and might be worth something to a fence.<<set $blackmoney += 200>>
+<<elseif $rng gte 41>>
+	It looks like silver, and might be worth something to a fence.<<set $blackmoney += 50>>
+<<elseif $rng gte 21>>
+	It's gold plated, and might be worth a little to a fence.<<set $blackmoney += 20>>
+<<else>>
+	It's made of copper, and probably not worth enough for a fence to bother with it.
+<</if>>
+<br><br>
+
+<<if $monster is 1>>
+	"Shiny catches eye easily, just like <<wife>>," <<bhe>> says, staring at you a moment, before walking away.
+<<else>>
+	The <<beasttype>> puffs <<bhis>> plumes, and hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> more likely to steal things for you in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Wallet
+<<effects>>
+
+You turn the container upside down.
+<<if $rng gte 81>>
+	<<moneyGain 200 true false>> in cash falls out.
+<<elseif $rng gte 61>>
+	A credit card falls out. It might be worth something to a fence.<<set $blackmoney += 120>>
+<<elseif $rng gte 41>>
+	<<moneyGain 80 true false>> in cash falls out.
+<<elseif $rng gte 21>>
+	<<moneyGain 40 true false>> in cash falls out.
+<<else>>
+	It's empty.
+<</if>>
+<br><br>
+
+<<if $monster is 1>>
+	"Wingless always have these, and show them to impress others, yes? I hope <<wife>> is impressed," <<bhe>> says, puffing out <<bhis>> plume.
+<<else>>
+	The <<beasttype>> puffs <<bhis>> plumes, and hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> more likely to steal things for you in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Valuables Scold
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"I-is it stolen?" you ask. "You shouldn't steal!"
+<<elseif $speech_attitude is "bratty">>
+	"I'm not accepting stolen goods," you say, kicking it away. "Bring me something practical."
+<<else>>
+	"I won't accept stolen goods," you say.
+<</if>>
+<br><br>
+<<if $monster is 1>>
+	"Stolen? Don't know what stolen is, but I'm sorry I upset <<wife>>." <<bHe>> looks down in shame, and walks away.
+<<else>>
+	The <<beasttype>>'s feathers lie flat, and <<bhe>> hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> less likely to bring you stolen goods in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Valuables Nothing
+<<effects>>
+
+<<if $monster is 1>>
+	"<<Wife>> doesn't want landbound treasures?" <<bHe>> cocks <<bhis>> head to the side in thought before walking away.
+<<else>>
+	You don't move. The <<beasttype>>'s feathers lie flat, and <<bhe>> hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be less likely to bring you stolen goods in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Food
+<<effects>>
+
+<<switch $bird_food>>
+<<case "pasty">>
+	You devour the pasty with gusto. It leaves a warm feeling.
+	<<hunger -400>>
+<<case "donut">>
+	You devour the donut, enjoying such a sweet treat.
+	<<hunger -300>>
+<<case "nuts">>
+	You tear open the packet, and begin munching nuts. They're soon gone.
+	<<hunger -600>>
+<<case "crisps">>
+	You tear open the packet, and shovel crisps into your mouth. They're soon gone.
+	<<hunger -200>>
+<<case "chocolate">>
+	You tear open the wrapper, and take a bite of chocolate. It melts in your mouth. You savour the sweetness.
+	<<hunger -1000>>
+<<case "apple">>
+	You bite into the crisp apple. It's juicy.
+	<<hunger -100>>
+<<case "carrot">>
+	You bite into the crisp carrot. It's crunchy.
+	<<hunger -100>>
+<<case "beans">>
+	You bash the tin against the wall, and pry it the rest of the way using a spike of ruined masonry. The beans would be nicer warm, but they fill you all the same.
+	<<hunger -400>>
+<<case "tuna">>
+	You bash the tin against the wall, and pry it the rest of the way using a spike of ruined masonry. The tuna is tasty, if salty.
+	<<hunger -200>>
+<<default>>
+	You bash the tin against the wall, and pry it the rest of the way using a spike of ruined masonry. Cold custard on its own isn't the best treat, but you enjoy the sweetness.
+	<<hunger -400>>
+<</switch>>
+<br><br>
+<<unset $bird_food>>
+<<if $monster is 1>>
+	<<bHe>> watches you eat, and smiles at you.
+<<else>>
+	The <<beasttype>> watches you eat. <<bHe>> seems satisfied.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> more likely to bring you human food in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Food Scold
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"I-I'm not hungry," you say.
+<<elseif $speech_attitude is "bratty">>
+	"I'm not hungry," you say, kicking the food away.
+<<else>>
+	"I'm not hungry," you say.
+<</if>>
+<br><br>
+<<unset $bird_food>>
+
+<<if $monster is 1>>
+	<<bHe>> frowns. "Will find better food next hunt. Maybe eat same thing as me?" <<bHe>> looks at you hopefully before walking away.
+<<else>>
+	The <<beasttype>>'s feathers lie flat, and <<bhe>> hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> less likely to bring you food in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Food Nothing
+<<effects>>
+
+You don't move.
+<<if $monster is 1>>
+	"No hunger? <<Wife>> should eat to stay strong." <<bHe>> looks at you ponderously before walking away.
+<<else>>
+	The <<beasttype>>'s feathers lie flat, and <<bhe>> hops away.
+<</if>>
+<br><br>
+<<unset $bird_food>>
+
+<i><<bHe>> will be less likely to bring you food in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Clothes
+<<effects>>
+
+You wear the new item.
+<<if $monster is 1>>
+	"<<Wife>> always looks pleasing." <<bHe>> gives you a peck on the cheek before walking away.
+<<else>>
+	The <<beasttype>> puffs <<bhis>> plumes, and hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> more likely to bring you clothes and fabric in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+
+:: Bird Tower Fabric
+<<effects>>
+
+You thank the <<beasttype>>. You won't wear it, but the material might be useful.
+<br><br>
+
+<<if $monster is 1>>
+	"Wingless plumes feel nice, I hope it brings you comfort." <<bHe>> outstretches <<bhis>> wings before walking away.
+<<else>>
+	The <<beasttype>> puffs <<bhis>> plumes, and hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> more likely to bring you clothes and fabric in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Clothes Scold
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Th-this doesn't suit me," you say.
+<<elseif $speech_attitude is "bratty">>
+	"You've no fashion sense," you say, kicking the garment away.
+<<else>>
+	"I'm not wearing this," you say.
+<</if>>
+
+<<if $monster is 1>>
+	"Sorry, <<wife>>, should have known you would prefer own plumage." <<bHe>> slinks away.
+<<else>>
+	The <<beasttype>>'s feathers lie flat, and <<bhe>> hops away.
+<</if>>
+<br><br>
+
+<i><<bHe>> will be <span class="blue">much</span> less likely to bring you clothes and fabric in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Clothes Nothing
+<<effects>>
+
+You don't move.
+<<if $monster is 1>>
+	"Pretty things don't impress <<wife>>?" <<bHe>> looks dejected for a moment, and walks away.
+<<else>>
+	The <<beasttype>>'s feathers lie flat, and <<bhe>> hops away.
+<</if>>
+<br><br>
+<<unset $bird_food>>
+
+<i><<bHe>> will be less likely to bring you clothes and fabric in the future.</i>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Bed
+<<effects>>
+
+<<if $syndromebird is 1 or $harpy gte 6>>
+	You lie in the nest<<if $bird.activity is "sleep" and $bird.state is "home">><<npc "Great Hawk">><<set $bedGuest to "Great Hawk">> with the <<beasttype>><</if>>.
+<<else>>
+	You lie on the nest. It's hard to get comfortable.
+<</if>>
+<<endevent>>
+<<if $wraith.state and $wraithPrison and $bird.mirror is 1 and ($moonstate is "evening" or $moonstate is _nightstate)>>
+	You feel anxious, and your eyes dart over to the mirror.
+<</if>>
+<br><br>
+
+<<if $syndromebird is 1 and $bird.activity is "sleep" and $bird.state is "home" and !$bird.satisfied>>
+	<<link [[Rub lewdly|Bird Tower Nest Rub]]>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -1>><<set $phase to 1>><</link>><<glove>><<npc "Great Hawk">><<person1>><<ldom>><<endevent>><<deviant1>>
+	<br>
+	<<if $deviancy gte 55>>
+		<<link [[Wake for sex|Bird Tower Nest Rub]]>><<transform bird 1>><<npcincr "Great Hawk" love 3>><<npcincr "Great Hawk" dom 1>><<set $phase to 2>><</link>><<gglove>><<gdom "Great Hawk">><<deviant4>>
+		<br>
+	<</if>>
+	<br>
+<<endevent>>
+<</if>>
+
+<<nightmareCheck "Bird Tower Sleep">>
+
+<<generateSleepLinks "Bird Tower Sleep">>
+<<link [[Climb out of bed|Bird Tower]]>><<loadTempHairStyle>><<unset $bedGuest>><</link>>
+<br><br>
+
+:: Bird Tower Bed Alone
+<<effects>>
+You lie in a covered corner of the tower. It's hard to get comfortable.
+<<endevent>>
+<br><br>
+
+<<nightmareCheck "Bird Tower Sleep">>
+
+<<generateSleepLinks "Bird Tower Sleep Alone">>
+<<link [[Climb out of bed|Bird Tower]]>><<loadTempHairStyle>><</link>>
+<br><br>
+
+:: Bird Tower Rainwater Pool
+<<effects>><<set $outside to 0>>
+You sit by the rainwater pool.
+<<npc "Great Hawk">>
+<<if $bird.state is "home">>
+	<<switch $bird.activity>>
+	<<case "sing">>
+		The <<beasttype>> is singing at the edge of the tower.
+	<<case "bathe">>
+		<<print either(
+			"The <<beasttype>> playfully splashes at you.",
+			"The <<beasttype>> beckons for you to join <<bhim>>.",
+			"The <<beasttype>> continues bathing.",
+			"The <<beasttype>> shakes <<bhis>> wings off, flinging some water your way.",
+		)>>
+	<<case "groom">>
+		The <<beasttype>> sits on <<bhis>> perch, cleaning <<bhis>> feathers.
+	<<case "build">>
+		The <<beasttype>> is adding to the nest.
+	<<default>>
+		The <<beasttype>> rests in <<bhis>> nest.
+		<<set $birdSleep to 1>>
+	<</switch>>
+<<else>>
+	The <<beasttype>> is out hunting.
+<</if>>
+<<if $syndromebird is 1>>
+	<<storeon "birdtower" "check">>
+	<<if _store_check is 1>>
+		Your clothes sit atop a slab of stone.
+	<<else>>
+		There's a massive slab of stone nearby that you could keep your clothes on.
+	<</if>>
+	<br>
+	<<storeactions "birdtower">>
+<<else>>
+	<br><br>
+<</if>>
+<<endevent>>
+<<if $bird.activity is "bathe" and $bird.state is "home">>
+	<<link [[Wash (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><</link>>
+	<br>
+<<else>>
+	<<link [[Wash (0:30)|Bird Tower Bathe]]>><<bird_pass 30>><</link>>
+	<br>
+<</if>>
+<<link [[Get up|Bird Tower]]>><</link>>
+
+:: Bird Tower Sleep
+<<set _autosavehere to true>>
+<<sleep>>
+<<if _dreaming>>
+	/* <<earSlimeFocusChoice>> or similar widgets are running */
+<<else>>
+	<<effects>>
+
+	<<if $wraith.nightmare is 2 and isBloodmoon()>>
+		<<sleepeffects>>
+		You dream of a beautiful figure, cloaked in white, standing under the red moon. It has its arms spread out to you in a welcoming gesture. You can feel its gaze boring into your mind as you step closer.
+		<br><br>
+		It's surrounded by trees, all bending inwards, and floating above a lake. Everything moves around you, and you find yourself hanging above a large ruin. You can't breathe.
+		<br><br>
+		You slowly open your eyes, and sluggishly stand from the bed.<<if $bird.activity is "sleep">> You make sure not to wake the Great Hawk.<</if>> Your ears are ringing.
+		<br><br>
+		<<wraithPossess "tower">>
+		<span class="nextLink"><<link [[Walk.|Bird Tower]]>><<rainWraith>><</link>></span>
+		<br>
+	<<else>>
+
+		<<wakingEffects $sleepHoursTotal>>
+		<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
+			You slept soundly, but now feel a little rough.
+			<br><br>
+		<<elseif $nightmares gte 1 and $controlled is 0>>
+			You <<if _wakingEffect>>dreamed of<<else>>dream you are<</if>> being hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
+		<<else>>
+			<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte ($arousalmax / 10) * 9>>
+				Your sleep <<if _wakingEffect>>was<<else>>is<</if>> plagued by dirty dreams.
+				<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+				<<arousal `100 * $sleepHoursTotal`>>
+				<<if $arousal gte $arousalmax>>
+					They push you over the edge.
+					<<orgasm>><<set _orgasm to true>>
+				<<else>>
+					<br><br>
+				<</if>>
+			<<elseif !_wakingEffect>>
+				You sleep soundly.
+				<br><br>
+			<<else>>
+				<br><br>
+			<</if>>
+		<</if>>
+
+		<<sleepeffects>>
+
+		<<if $bird.syndrome gte 15 and $syndromebird isnot 1>>
+			<<npc "Great Hawk">>
+			You awaken, warm and comfy. The <<beasttype>> sits beside you, eyes closed, shielding you from the elements with <<bhis>> wing.
+			<br><br>
+			<span class="red">It's not <<bhis>> fault. <<bHe>> only wants a mate.
+			<br>
+			You've gained the Stockholm Syndrome:
+			<<if $monster is 1>>
+				Great Harpy
+			<<else>>
+				Great Hawk
+			<</if>>
+			trait.</span>
+			<br><br>
+			<<if $loveInterest.primary is "None">>
+				<<set $loveInterest.primary to "Great Hawk">>
+				<span class = "gold">The Great Hawk is now your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.</span>
+				<br><br>
+			<<else>>
+				<span class = "gold">The Great Hawk can now be claimed as your love interest! This isn't how you expected to find a spouse, but you feel uplifted all the same.<br>You can change your love interest in the "Attitudes" menu.</span>
+				<br><br>
+			<</if>>
+			<<set $syndromebird to 1>>
+			<<set $bird.syndrome to undefined>>
+			<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+			<br>
+		<<elseif _sleepinterrupt>>
+			<<if $bird.state is "hunting">>
+				<<npc "Great Hawk">>
+				<<if $monster is 1>>
+					You slowly wake, hearing the harpy's voice. "<<Wife>>?"
+					<br><br>
+				<<else>>
+					You're nudged awake by the <<beasttype>>.
+				<</if>>
+				<<bird_hunt_return>>
+			<<else>>
+				<<npc "Great Hawk">>
+				<<if $monster is 1>>
+					You feel the warmth of a massive pair of wings closing around you. The <<beasttype>> embraces you.
+				<<else>>
+					Wings flap on either side as the <<beasttype>> tries to mount you.
+				<</if>>
+				<br><br>
+
+				<<link [[Let it happen|Bird Tower Sleep Sex]]>><<set $sexstart to 1>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<bird_stockholm 1>><</link>><<deviant1>><<gbirdstockholm>><<glove>><<gdom>>
+				<br>
+				<<link [[Push away|Bird Tower Sleep Push]]>><<npcincr "Great Hawk" dom -1>><<def 1>><</link>><<ldom>>
+				<br>
+			<</if>>
+		<<else>>
+			<br><br>
+
+			<<link [[Climb from the nest|Bird Tower]]>><</link>>
+			<br><br>
+		<</if>>
+	<</if>>
+<</if>>
+
+:: Bird Tower Sleep Alone
+<<set _autosavehere to true>>
+<<sleep>>
+<<if _dreaming>>
+	/* <<earSlimeFocusChoice>> or similar widgets are running */
+<<else>>
+	<<effects>>
+
+	<<if $wraith.nightmare is 2 and isBloodmoon()>>
+		<<sleepeffects>>
+		You dream of a beautiful figure, cloaked in white, standing under the red moon. It has its arms spread out to you in a welcoming gesture. You can feel its gaze boring into your mind as you step closer.
+		<br><br>
+		It's surrounded by trees, all bending inwards, and floating above a lake. Everything moves around you, and you find yourself hanging above a large ruin. You can't breathe.
+		<br><br>
+		You slowly open your eyes, and sluggishly stand from the bed.<<if $bird.activity is "sleep">> You make sure not to wake the Great Hawk.<</if>> Your ears are ringing.
+		<br><br>
+		<<wraithPossess "tower">>
+		<span class="nextLink"><<link [[Walk.|Bird Tower]]>><<rainWraith>><</link>></span>
+		<br>
+	<<else>>
+		<<if $nightmares gte 1 and $controlled is 0>>
+			You dream you are being hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
+		<<else>>
+			<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte ($arousalmax / 10) * 9>>
+				Your sleep is plagued by dirty dreams.
+				<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+				<<arousal `100 * $sleepHoursTotal`>>
+				<<if $arousal gte $arousalmax>>
+					They push you over the edge.
+					<<orgasm>><<set _orgasm to true>>
+				<<else>>
+					<br><br>
+				<</if>>
+			<<else>>
+				You sleep as soundly as you can on a stone floor.
+			<</if>>
+		<</if>>
+
+		<<sleepeffects>>
+
+
+		<<if _sleepinterrupt>>
+			<<if $bird.state is "hunting">>
+				<<npc "Great Hawk">>
+				<<if $monster is 1>>
+					You slowly wake, hearing the harpy's voice. "<<Wife>>?"
+					<br><br>
+				<<else>>
+					You're nudged awake by the <<beasttype>>.
+				<</if>>
+				<<bird_hunt_return>>
+			<<elseif random(1,4) is 1>>
+				<<npc "Great Hawk">>
+				<<if $monster is 1>>
+					You feel a massive pair of wings closing around you. The <<beasttype>> embraces you.
+				<<else>>
+					Wings flap on either side as the <<beasttype>> tries to mount you.
+				<</if>>
+				<br><br>
+
+				<<link [[Let it happen|Bird Tower Sleep Sex]]>><<set $sexstart to 1>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><<bird_stockholm 1>><</link>><<deviant1>><<gbirdstockholm>><<glove>><<gdom>>
+				<br>
+				<<link [[Push away|Bird Tower Sleep Push]]>><<npcincr "Great Hawk" dom -1>><<def 1>><</link>><<ldom>>
+				<br>
+			<<else>>
+				<br><br>
+
+				<<link [[Climb from the nest|Bird Tower]]>><</link>>
+				<br><br>
+			<</if>>
+		<<else>>
+			<br><br>
+
+			<<link [[Climb from the nest|Bird Tower]]>><</link>>
+			<br><br>
+		<</if>>
+	<</if>>
+<</if>>
+
+:: Bird Tower Nest Rub
+<<effects>><<npc "Great Hawk">>
+You slowly run your hands down the <<beasttypes>> feathers, towards <<bhis>> <<nnpc_genitals "Great Hawk">>.
+<<bHis>> eyes flutter open as you begin to rub.
+<<if $phase is 1>>
+	<<deviancy1>>
+	<<if $monster is 1>>"<<Wife>> doesn't need to do this for me," <<bhe>> says as <<bhe>> rubs the tiredness from <<bhis>> eyes. "But I can't say no."<</if>>
+<<else>>
+	<<if $speech_attitude is "meek">>
+		You face your <<bottom>> towards <<bhim>> and give it a shake, looking over your shoulder at <<bhim>> with pleading eyes.
+	<<elseif $speech_attitude is "bratty">>
+		You throw one leg over <<bhim>>, giving <<bhim>> little choice.
+	<<else>>
+		You sit up and spread your legs, gesturing towards your <<genitals>> with a smile.
+	<</if>>
+	<<deviancy4>>
+	<<if $monster is 1>>
+		"<<Wife>> is ready to mate?" <<bHis>> eyes light up. "Anything for you."
+	<<else>>
+		Wings flap on either side as the <<beasttype>> tries to mount you.
+	<</if>>
+<</if>>
+<br><br>
+<<link [[Next|Bird Tower Sleep Sex]]>><<set $sexstart to 1>><<transform bird 1>><</link>><br>
+
+:: Bird Tower Sleep Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<set $enemytrust += 200>>
+	<<set $enemyhealthmax to 600>>
+	<<set $enemyhealth to 600>>
+	<<if $monster isnot 1>>
+		<<set $position to "doggy">>
+		<<set $NPCList[0].stance to "top">>
+	<</if>>
+	<<if $phase is 1>>
+		<<npchand>>
+	<<elseif $phase is 2>>
+		<<npc_attempt_sex>>
+	<<else>>
+		<<deviancy1>>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Bird Tower Sleep Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Tower Sleep Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Tower Sleep Sex Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<beastejaculation>>
+	<<set $bird.satisfied to true>>
+	<<if $monster is 1>>"Will love <<wife>> forever." <</if>>The <<beasttype>> ruffles <<bhis>> feathers, and curls up.
+	<br><br>
+
+	<<tearful>> you curl up yourself.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Bird Tower Bed]]>><</link>>
+
+<<elseif $enemyhealth lte 0>>
+
+	The <<beasttype>> shrieks and beats <<bhis>> wings, hopping back to the far side of the nest. <<if $monster is 1>>"<<Wife>>'s fighting spirit is untempered."<</if>>
+	<<bHe>> keeps a wary eye on you as <<bhe>> curls up.
+	<<set $bird.satisfied to true>>
+	<br><br>
+
+	<<tearful>> you curl up yourself.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Bird Tower Bed]]>><</link>>
+
+<<else>>
+
+	<<if $monster is 1>>
+		"Hm. Okay, your comfort is important." <<bHe>> curls up next to you.
+	<<else>>
+		The <<beasttype>> hops away from you, and curls up.
+	<</if>>
+	<br><br>
+
+	<<tearful>> you curl up yourself.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Bird Tower Bed]]>><</link>>
+
+<</if>>
+
+
+:: Bird Tower Sleep Push
+<<effects>>
+
+<<if $monster is 1>>
+	<<if $speech_attitude is "meek">>
+		"N...no, please,"
+	<<elseif $speech_attitude is "bratty">>
+		"Knock it off, featherhead,"
+	<<else>>
+		"I'm not in the mood,"
+	<</if>>
+	you say as you try to push <<bhim>> away. <<bHis>> wings beat in frustration, and <<bhe>> squeezes you tightly for a moment before letting you go. <<bHe>> curls up next to you without further fuss.
+<<else>>
+	You shove the <<beasttype>> away from you. <<bHe>> flaps <<bhis>> wings in frustration, then curls up without further fuss.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Tower Bed]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Tower Mirror
+<<effects>>
+
+<<link [[Step away|Bird Tower]]>><<unset $mirrorMenu>><<unset $bodywritingSet>><<postMirror>><</link>>
+<br>
+
+<<mirror>>
+<br><br>
+
+:: Bird Tower Bathe
+<<effects>>
+
+<<strip>>
+<<wash>>
+<<noClothingCheck>>
+You <<if _nude is false>>remove your clothing, and <</if>>slip into the water. It's cold, but you get used to it.
+<br><br>
+
+You're soon squeaky clean.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><<clotheson>><</link>>
+<br>
+
+:: Bird Tower Bathe Bird
+<<effects>>
+
+<<npc "Great Hawk">>
+<<if $monster is 1 and $phase is 1>>
+	You take the <<beasttypes>> hand, and <<bhe>> leads you to the bathing pool. <<takeHandholdingVirginity "Great Hawk" "romantic">>
+<</if>>
+<<strip>>
+<<wash>>
+You remove your clothing. The <<beasttype>> swims to the other side of the pool, making room for you. You slip into the water. It's cold, but you soon get used to it.
+<br><br>
+
+<<if $daily.birdWash is undefined>>
+	<<set $daily.birdWash to 1>>
+	<<if $monster is 1>>
+		The <<beasttype>> floats back over, and slips behind you. <<bHis>> wings spread to either side as <<bhe>> takes your <<breasts>> in <<bhis>> hands. "Help you wash?"
+	<<else>>
+		The <<beasttype>> floats back over, and splashes water over you with <<bhis>> wing. <<bHe>> is trying to help wash you.
+	<</if>>
+	<br><br>
+
+	<<link [[Accept|Bird Tower Bathe Bird Accept]]>><<if $monster is 1>><<arousal 1800>><</if>><<transform bird 1>><</link>><<if $monster is 1>><<ggarousal>><<deviant1>><</if>>
+	<br>
+	<<link [[Refuse|Bird Tower Bathe Bird Refuse]]>><</link>>
+	<br>
+<<else>>
+	You're soon squeaky clean.
+	<br><br>
+
+	<<link [[Next|Bird Tower]]>><<endevent>><<clotheson>><</link>>
+	<br>
+<</if>>
+
+:: Bird Tower Bathe Bird Accept
+<<effects>>
+
+<<if $monster is 1>>
+	The <<beasttype>> continues to grope your <<breasts>> with one hand, while rubbing your back with the other. <<bHis>> wings splash more water over you.
+	<br><br>
+	<<bHe>> is fixated on your chest, and continues to tease. <<bHe>> acts innocent, but you can tell <<bhe>> enjoys the effect <<bhe>> has on you. <<deviancy1>>
+	<<if $arousal gte $arousalmax>>
+		Your knees buckle as the wave hits. <<orgasm>>
+
+		"Healthy response," the <<beasttype>> laughs. <<bHe>> sounds pleased with <<bhimself>>.
+		<br><br>
+	<</if>>
+<<else>>
+	The <<beasttype>> splashes water over you, and rubs <<bhis>> beak against your back.
+	<br><br>
+<</if>>
+
+You're soon squeaky clean.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><<clotheson>><</link>>
+<br>
+
+
+:: Bird Tower Bathe Bird Refuse
+<<effects>>
+
+<<if $monster gte 1>>
+	You move away from the <<beasttype>>. "No?" <<bhe>> asks. "That's okay. Here if you need me."
+<<else>>
+	You move away from the <<beasttype>>, and <<bhe>> takes the hint.
+<</if>>
+<br><br>
+
+You're soon squeaky clean.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><<clotheson>><</link>>
+<br>
+
+
+:: Bird Tower Groom
+<<effects>>
+
+<<npc "Great Hawk">>
+
+<<if $speech_attitude is "meek">>
+	"I-I can help," you say, climbing into the nest.
+<<elseif $speech_attitude is "bratty">>
+	"You're doing it all wrong," you say, climbing into the nest. "Let me help."
+<<else>>
+	"Let me help," you say, climbing into the nest.
+<</if>>
+<br><br>
+
+The <<beasttype>> shakes <<bhis>> feathers, and lets you stroke <<bhis>> wings.
+
+:: Bird Tower Perch
+<<effects>><<npc "Great Hawk">>
+<<bird_schedule>>
+<<if $bird.activity is "bathe" and $bird.state is "home" and $birdPerch isnot undefined>>
+	<<unset $birdPerch>>
+	<<if $monster is 1>>
+		The <<beasttype>> begins to stand, offering <<bhis>> hand to you. "Must get clean. Come."
+	<<else>>
+		The <<beasttype>> shakes <<bhis>> wings. <<bHe>> backs up from the perch, and walks towards the bathing pool.
+	<</if>>
+	<br><br>
+	<<link [[Follow (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><<endevent>><<set $phase to 1>><</link>><<if $monster is 1>><<handholdingvirginitywarning>><<NPCvirginitywarning "Great Hawk" "handholding">><</if>><br>
+	<<link [[Stay|Bird Tower Perch]]>><<endevent>><</link>><br>
+<<elseif ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
+	<<if $birdPerch is undefined>>
+		<<set $birdPerch to 1>>
+		You join the <<beasttype>> on <<bhis>> perch.
+		<<if $syndromebird isnot 1>>
+			<<bird_greeting>>
+			<<bHe>> opens <<bhis>> wings, but you're unsure of what <<bhe>>'s trying to do.
+			<<if $bird.activity is "sing" and $bird.state is "home">>
+				After a moment, <<bhis>> wings lower and <<bhis>> song continues.
+			<<else>>
+				After a moment, <<bhis>> wings lower and <<bhe>> continues grooming.
+			<</if>>
+			<br><br>
+		<<else>>
+			<<bird_greeting>>
+			<<if $monster is 1>>
+				<<bHe>> opens <<bhis>> wings, inviting you to sit on <<bhis>> lap.
+			<<else>>
+				<<bHe>> opens <<bhis>> wings, offering to shelter you from the wind.
+			<</if>>
+			<br><br>
+		<</if>>
+	<<elseif $birdBask is 0>>
+		<<unset $birdBask>>
+		The <<beasttype>> lifts <<bhis>> wings, allowing you to stand.
+		<br><br>
+	<<else>>
+		You are on the <<beasttypes>> perch. <<bHe>> sings into the air. The moor stretches out before you.
+		<br><br>
+	<</if>>
+	<<bird_perch_options>>
+
+<<else>>
+	You stand on the <<beasttypes>> perch. The moor stretches out before you.
+	<br><br>
+	<<bird_perch_options>>
+<</if>>
+
+:: Bird Tower Bask
+<!-- This passage is only accessible to a player that already has stockholm syndrome. -->
+<<effects>><<rng>>
+<<npc "Great Hawk">>
+<<if $birdBask is undefined>>
+	<<set $birdBask to 1>>
+	<<if $monster is 1>>
+		You sit on the <<beasttype>>'s lap, and <<bhe>> wraps <<bhis>> wings around you, shielding you from the <<if Time.dayState is "dawn">>morning chill<<elseif Time.dayState is "dusk">>evening chill<<else>>wind<</if>>.
+	<<else>>
+		You sit under the <<beasttype>>, letting <<bhim>> wrap <<bhis>> wings around you.
+	<</if>>
+<</if>>
+<<bird_schedule>>
+<<if $bird.activity is "bathe" and $bird.state is "home">>
+	<<unset $birdBask>><<unset $birdPerch>>
+	<<if $monster is 1>>
+		The <<beasttype>> begins to stand, offering <<bhis>> hand to you. "Must get clean. Come."
+	<<else>>
+		The <<beasttype>> shakes <<bhis>> wings. <<bHe>> backs up from the perch, and walks towards the bathing pool.
+	<</if>>
+	<br><br>
+	<<link [[Follow (0:30)|Bird Tower Bathe Bird]]>><<bird_pass 30>><<endevent>><<set $phase to 1>><</link>><<if $monster is 1>><<handholdingvirginitywarning>><<NPCvirginitywarning "Great Hawk" "handholding">><</if>><br>
+	<<link [[Stay|Bird Tower Perch]]>><<endevent>><</link>><br>
+<<elseif $rng gte 91>>
+	<<if $harpy gte 6>>
+		The <<beasttype>> pauses <<bhis>> song for a moment, and <<bhe>> begins to gently groom your wings.
+		<<if $monster is 1>>
+			<<bHis>> touch is delicate but deliberate, and the feeling of <<bhis>> hands running through your feathers sends waves of pleasure through your body. <<arousal 1000>><<garousal>>
+		<<else>>
+			<<bHe>> gently runs <<bhis>> beak through your feathers, sending waves of pleasure through your body. <<arousal 1000>><<garousal>>
+		<</if>>
+		<<transform bird 1>>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>>
+			<<if $monster is 1>>
+				You arch your back in <<bhis>> arms, letting out a cry of pleasure into the <<if Time.dayState is "dawn">>morning air<<elseif Time.dayState is "dusk">>evening air<<else>>wind<</if>>. <<bHe>> holds you closely. "Your mating song is pleasing. We will clean together soon."
+				You lightly tremble, and <<bhe>> begins cooing quietly to you.
+			<<else>>
+				You arch your back, causing <<bhim>> to wrap <<bhis>> wings around you to keep you from falling. <<bHe>> coos quietly to you.
+			<</if>>
+			<<npcincr "Great Hawk" dom 5>><<ggdom>>
+			<br><br>
+			<<if $bird.activity is "sing" or $bird.activity is "groom">>
+				<<link [[Reward|Bird Tower Perch Sex]]>><<set $sexstart to 1>><<set $phase to 1>><<transform bird 1>><<npcincr "Great Hawk" love 1>><</link>><<deviant1>><<glove>><br>
+			<</if>>
+			<<bird_perch_options>>
+		<<else>>
+			<br><br>
+
+			<<link [[Enjoy it (0:05)|Bird Tower Bask Groom]]>><<bird_pass 5>><<stress -3>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><</link>><<lstress>><<glove>><<gdom>><br>
+			<<link [[Push away|Bird Tower Bask Groom Push]]>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>><br>
+		<</if>>
+	/* 北极星模组 */
+	<<elseif $dragon gte 6>>
+		<<beasttype>>短暂地停下了歌声，望向了你的翅膀。
+		<<if $monster is 1>>
+			<<bHis>>轻柔地触摸着你，你的身体从<<bhis>>双手抚摸你翅膀的动作中得到了快感。<<arousal 1000>><<garousal>>
+		<<else>>
+			<<bHe>>开始用自己的羽翼按摩你的翅膀，在你的身体里掀起快感的浪潮。<<arousal 1000>><<garousal>>
+		<</if>>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>>
+			<<if $monster is 1>>
+				你在<<bhis>>的怀抱中弓起背，对着<<if $daystate is "dawn">>清晨的空气<<elseif $daystate is "dusk">>傍晚的空气<<else>>风<</if>>发出快乐的呼喊。<<bHe>>将你抱得更紧了。"你的交配之歌很动听，我们很快就能互相梳洗了。"
+				你轻轻地颤抖，然后<<bhe>>开始悄悄地对你咕咕叫起来。
+			<<else>>
+				你弓起背部，<<bhim>>将<<bhis>>的翅膀包裹在你周围，以防止你摔倒。<<bHe>>悄悄地对你嘀嘀咕咕。
+			<</if>>
+			<<npcincr "Great Hawk" dom 5>><<ggdom>>
+			<br><br>
+			<<if $bird.activity is "sing" or $bird.activity is "groom">>
+				<<link [[回报|Bird Tower Perch Sex]]>><<set $sexstart to 1>><<set $phase to 1>><<npcincr "Great Hawk" love 1>><</link>><<deviant1>><<glove>><br>
+			<</if>>
+			<<bird_perch_options>>
+		<<else>>
+			<br><br>
+			<<link [[享受 (0:05)|Bird Tower Bask Groom Dragon]]>><<bird_pass 5>><<stress -3>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom 1>><</link>><<lstress>><<glove>><<gdom>><br>
+			<<link [[推开|Bird Tower Bask Groom Push]]>><<npcincr "Great Hawk" dom -1>><</link>><<ldom>><br>
+		<</if>>
+	<<elseif $angel gte 6 or $demon gte 6 or $fallenangel gte 2 or $bee gte 6>>
+	/* 北极星 */
+		The <<beasttype>> pauses <<bhis>> song for a moment, inspecting your wings.
+		<<if $monster is 1>>
+			"So strange. Not like mine. But they belong to you, so they're still beautiful."
+		<<else>>
+			<<bHe>> looks at them ponderously, occasionally prodding them. <<bHe>> is likely wondering why they don't look like <<bhis>> own.
+		<</if>>
+		<<bHe>> resumes <<bhis>> song after some time.
+		<br><br>
+		<<bird_perch_options>>
+	<<else>>
+		The <<beasttype>> stares down at your back. <<bHe>> rubs it with <<bhis>> wing.
+		<<if $monster is 1>>
+			"Don't worry. I'm sure yours will grow in soon. Then we can fly together." <<if $NPCName[$NPCNameList.indexOf("Great Hawk")].love gte 50>>You turn your head to face <<bhim>>. "I'll be happy. The sky is so empty without you in it."<</if>>
+		<</if>>
+			<<bHe>> resumes <<bhis>> song after some time.
+		<br><br>
+		<<bird_perch_options>>
+	<</if>>
+<<elseif $rng gte 81>>
+	<<switch $weather>>
+		<<case "clear">>
+			The <<if Time.dayState is "dawn">>rising<<elseif Time.dayState is "dusk">>setting<</if>> sun's radiance warms your face as you sit in the <<beasttypes>> embrace. You feel serene. <<stress -12>><<trauma -3>><<lstress>><<ltrauma>>
+		<<case "overcast">>
+			The grey skies above almost seem to call out to you, begging you to join them. <<stress -3>><<lstress>>
+		<<case "rain">>
+			The faint smell of damp grass, and the chorus of raindrops on the stone mixed with the <<beasttypes>> song briefly lull you to sleep. <<tiredness -20>><<ltiredness>>
+		<<case "snow">>
+			Despite the frigid air and the shine of distant fresh snow, you feel completely warm in the <<beasttypes>> embrace. <<stress -6>><<trauma -3>><<lstress>><<ltrauma>>
+		<<default>>
+			You sit snugly in the <<beasttypes>> embrace.
+	<</switch>>
+	<br><br>
+	<<bird_perch_options>>
+<<elseif $rng gte 71>>
+<<run statusCheck("Kylar")>>
+	Your thoughts turn to
+	<<if random(1,2) is 1>>
+		<<switch $loveInterest.primary>>
+			<<case "Robin">>
+				Robin.
+				<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 50>>
+					Your heart sinks as you remember how you left <<nnpc_him "Robin">>. <<stress 12>><<ggstress>>
+				<<elseif $NPCName[$NPCNameList.indexOf("Robin")].dom gte 50>>
+					You wonder if <<nnpc_he "Robin">> will come looking for you.
+				<<else>>
+					You feel a brief sting of guilt as you wonder how <<nnpc_he "Robin">>'s doing.
+				<</if>>
+			<<case "Kylar">>
+				Kylar.
+				<<if _kylarStatus.includes("Rage")>>
+					You wonder if <<nnpc_he "Kylar">> will come looking for you. After mulling it over, you realise that "if" should be replaced with "when". <<stress 3>><<gstress>>
+				<<else>>
+					You hope <<nnpc_he "Kylar">> isn't being bullied in your absence.
+				<</if>>
+			<<case "Whitney">>
+				Whitney. You can only imagine what <<nnpc_he "Whitney">> would do if <<nnpc_he "Whitney">> found out about all this.
+			<<case "Sydney">>
+				Sydney.
+				<<if Time.weekDay is 1>>
+					<<nnpc_He "Sydney">>'s probably hard at work at the temple right now.
+				<<else>>
+					The thought of <<nnpc_his "Sydney">> smile makes you feel warm.
+				<</if>>
+			<<case "Eden">>
+				Eden. <<nnpc_He "Eden">> would probably hunt the Great Hawk for sport, especially if <<nnpc_he "Eden">> found out about what you've been doing.
+			<<case "Avery">>
+				Avery.
+				<<if Time.weekDay is 7 and $averyseen isnot 1>>
+					<<nnpc_He "Avery">>'s probably looking for you at this very moment, to ask you on another date.
+				<<elseif $averydate is 1>>
+					You have a date later, after all.
+				<<elseif $NPCName[$NPCNameList.indexOf("Avery")].rage gte 20 and $averyragerevealed is 1>>
+					You're glad to be so far away, at least until <<nnpc_he "Avery">> calms down.
+				<<else>>
+					You laugh, picturing <<nnpc_him "Avery">> trying to save face explaining your current situation.
+				<</if>>
+			<<case "Alex">>
+				Alex, and the farm.
+				<<if $farm.aggro gte 60>>
+					You hope Remy's not causing <<nnpc_him "Alex">> too much trouble.
+				<<elseif $farm.tower_guard_unpaid gte 1>>
+					$farm.tower_guard hasn't been paid yet. You hope it's not a dealbreaker.
+				<<else>>
+					You hope the harvest is good.
+				<</if>>
+			<<case "Black Wolf">>
+				the forest, and your pack. You wonder if they miss you.
+			<<default>>
+				all the troubles you've faced, and how they can't reach you here. For the moment, wrapped in the wings of your
+				<<if $monster is 1>>
+					<<nnpc_wife "Great Hawk">>
+				<<else>>
+					Great Hawk,
+				<</if>>
+				you feel untouchable. <<trauma -10>><<lltrauma>>
+		<</switch>>
+	<<elseif $loveInterest.secondary isnot "None">>
+		<<switch $loveInterest.secondary>>
+			<<case "Robin">>
+				Robin.
+				<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 50>>
+					Your heart sinks as you remember how you left <<nnpc_him "Robin">>. <<stress 12>><<ggstress>>
+				<<elseif $NPCName[$NPCNameList.indexOf("Robin")].dom gte 50>>
+					You wonder if <<nnpc_he "Robin">> will come looking for you.
+				<<else>>
+					You feel a brief sting of guilt as you wonder how <<nnpc_he "Robin">>'s doing.
+				<</if>>
+			<<case "Kylar">>
+				Kylar.
+				<<if _kylarStatus.includes("Rage")>>
+					You wonder if <<nnpc_he "Kylar">> will come looking for you. After mulling it over, you realise that "if" should be replaced with "when". <<stress 3>><<gstress>>
+				<<else>>
+					You hope <<nnpc_he "Kylar">> isn't being bullied in your absence.
+				<</if>>
+			<<case "Whitney">>
+				Whitney. You can only imagine what <<nnpc_he "Whitney">> would do if <<nnpc_he "Whitney">> found out about all this.
+			<<case "Sydney">>
+				Sydney.
+				<<if Time.weekDay is 1>>
+					<<nnpc_He "Sydney">>'s probably hard at work at the temple right now.
+				<<else>>
+					The thought of <<nnpc_his "Sydney">> smile makes you feel warm.
+				<</if>>
+			<<case "Eden">>
+				Eden. <<nnpc_he "Eden">> would probably hunt the Great Hawk for sport, especially if <<nnpc_he "Eden">> found out about what you've been doing.
+			<<case "Avery">>
+				Avery.
+				<<if Time.weekDay is 7 and $averyseen isnot 1>>
+					<<nnpc_he "Avery">>'s probably looking for you at this very moment, to ask you on another date.
+				<<elseif $averydate is 1>>
+					You have a date later, after all.
+				<<elseif $NPCName[$NPCNameList.indexOf("Avery")].rage gte 20 and $averyragerevealed is 1>>
+					You're glad to be so far away, at least until <<nnpc_he "Avery">> calms down.
+				<<else>>
+					You laugh, picturing <<nnpc_him "Avery">> trying to save face explaining your current situation.
+				<</if>>
+			<<case "Alex">>
+				Alex, and the farm.
+				<<if $farm.aggro gte 60>>
+					You hope Remy's not causing <<nnpc_him "Alex">> too much trouble.
+				<<elseif $farm.tower_guard_unpaid gte 1>>
+					$farm.tower_guard hasn't been paid yet. You hope it's not a dealbreaker.
+				<<else>>
+					You hope the harvest is good.
+				<</if>>
+			<<case "Black Wolf">>
+				the forest, and your pack. You wonder if they miss you.
+			<<default>>
+				all the troubles you've faced, and how they can't reach you here. For the moment, wrapped in the wings of your
+				<<if $monster is 1>>
+					<<nnpc_wife "Great Hawk">>,
+				<<else>>
+					Great Hawk,
+				<</if>>
+				you feel untouchable. <<trauma -10>><<lltrauma>>
+		<</switch>>
+	<<else>>
+		all the troubles you've faced, and how they can't reach you here. For the moment, wrapped in the wings of your
+		<<if $monster is 1>>
+			<<nnpc_wife "Great Hawk">>,
+		<<else>>
+			Great Hawk,
+		<</if>>
+		you feel untouchable. <<trauma -10>><<lltrauma>>
+	<</if>>
+	<br><br>
+	<<bird_perch_options>>
+<<elseif $rng gte 61>>
+	The <<beasttype>> stops singing and rapidly turns <<bhis>> head, fixing <<bhis>> gaze on something out in the moor.
+	<<if $monster is 1>>
+		"See something. There." <<bHe>> points to something in the distance.
+	<<else>>
+		<<bHe>> must see something.
+	<</if>>
+	<<if $transformationParts.traits.sharpEyes isnot "disabled">>
+		Thanks to your superior eyesight, you see it too.
+		<<switch random(1,6)>>
+			<<case 1>>
+				<<endevent>><<beastNEWinit 3 fox>>
+				A trio of <<beastsplural>> tumble over and wrestle with each other on top of a hillock.
+				<<endevent>><<npc "Great Hawk">>
+				<<if $monster is 1>>
+					The <<beasttype>> lets out a small chuckle,
+				<<else>>
+					The <<beasttype>> shakes <<bhis>> head,
+				<</if>>
+				and returns to singing.
+			<<case 2>>
+				A large group of people are just barely visible on the horizon, headed towards the direction of the town.
+				<<if $monster is 1>>
+					"Wingless like groups. I prefer just <<wife>>," <<bhe>> says,
+				<<else>>
+					<<bHe>> nuzzles your cheek,
+				<</if>>
+				and returns to singing.
+			<<case 3>>
+				<<if $hallucinations gte 2 and $tentacledisable is "f">>
+					A small, purple tentacle slithers from the ground a great distance away. Just as quickly as it showed up, it disappears back into the earth.
+					<<if $monster is 1>>
+						"Don't like those. Make vision all fuzzy."
+					<<else>>
+						The <<beasttype>> lets out a brief screech.
+					<</if>>
+					<<bHe>> goes back to singing after a few minutes.
+				<<else>>
+					At least, you thought you did. You swear something was there, but you must have just missed it.
+					<<if $monster is 1>>
+						"Did you see it? Small, purple slimy thing. I hate them." <<bHe>> holds you a little tighter,
+					<<else>>
+						The <<beasttype>> lets out a brief screech,
+					<</if>>
+					and goes back to singing after a few minutes.
+				<</if>>
+			<<case 4>>
+				You see a shifty-looking person wearing all black with a hood, waiting behind a hillock. You blink a few times, and aren't sure when they disappeared. The <<beasttype>> resumes <<bhis>> song.
+			<<case 5>>
+				You see a glint in the distance, something very shiny. After a moment, you realise it's a reflective piece of rubbish.
+				<<if $monster is 1>>
+					"Dangerous."
+				<<else>>
+					The <<beasttype>> probably sees <<bhis>> reflection in it.
+				<</if>>
+				<<endevent>><<beastNEWinit 1 fox>>
+				It's quickly picked up by a passing <<beasttype>>, which runs out of sight.
+				<<endevent>><<npc "Great Hawk">>
+				<<if $monster is 1>>
+					"They know, those little ones know and do this to torment me." <<bHe>> pouts,
+				<<else>>
+					The <<beasttype>> shrieks,
+				<</if>>
+				but resumes <<bhis>> song anyways.
+			<<case 6>>
+				You see a person in the distance, completely naked.
+				<<if $tentacledisable is "f" and $plantdisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+					<<Plant_details>> are scattered throughout their hair, and writhing vines surround them. At first, you think they're being attacked, but they seem to be in control of them.
+					<br><br>
+					<<if $monster is 1>>
+						"Odd creatures," the <<beasttype>> says. "As much moor as they are wingless. Perhaps more."
+					<<else>>
+						The <<beasttype>> shakes <<bhis>> head quizzically.
+					<</if>>
+				<<else>>
+					They don't seem bothered by their exposure<<if $weather is "rain" or $weather is "snow">>, nor the $weather<</if>>.
+					<<if $monster is 1>>
+						"Odd wingless," the <<beasttype>> says. "Most prefer garments."
+					<<else>>
+						The <<beasttype>> shakes <<bhis>> head quizzically.
+					<</if>>
+				<</if>>
+				<<bHe>> resumes <<his>> song after a few seconds.
+			<<default>>
+		<</switch>>
+	<<else>>
+		You can't quite make out whatever it is. After some time, <<bhe>> calms down, and resumes <<bhis>> song.
+	<</if>>
+	<br><br>
+	<<bird_perch_options>>
+<<elseif $rng gte 51>>
+	The <<beasttype>> continues singing, taking pauses every few minutes.
+	<<if $rng is 51>>
+		At one point, <<bhe>> seems to have trouble starting again.
+		<<if $monster is 1>>
+			<<bHe>> coughs briefly to clear <<bhis>> throat, and resumes without any further issue.
+		<<else>>
+			<<bHe>> starts moving <<bhis>> head back and forth, and disgorges what appears to be a small bone from <<bhis>> throat. <<bHe>> resumes singing without any further issues.
+		<</if>>
+	<</if>>
+	<br><br>
+	<<bird_perch_options>>
+<<elseif $rng gte 41>>
+	The <<beasttype>> stops singing, and
+	<<if $monster is 1>>
+		wraps <<bhis>> arms around you.
+		"<<print either(
+			"I love you.",
+			"Thank you for staying with me.",
+			"Used to be afraid of being alone. Never have to fear again.",
+			"You are perfect.",
+			"Mine."
+		)>>"
+		<br><br>
+		<<if $bird.activity is "sing" or $bird.activity is "groom">>
+			<<link [[Kiss|Bird Perch Monster Kiss]]>><<npcincr "Great Hawk" love 1>><</link>><<glove>><<kissvirginitywarning>><<NPCvirginitywarning "Great Hawk" "kiss">><br>
+		<</if>>
+		<<bird_perch_options>>
+	<<else>>
+		rests <<bhis>> head on your shoulder.
+		<br><br>
+		<<bird_perch_options>>
+	<</if>>
+<<elseif $rng gte 31>>
+	The <<beasttype>>'s voice greets the moor, as a hearty <<if Time.dayState is "dawn">>good morning<<elseif Time.dayState is "dusk">>good evening<<else>>greeting<</if>> call to all of its denizens. Or maybe <<bhe>>'s just bragging about you.
+	<br><br>
+	<<bird_perch_options>>
+<<elseif $rng gte 21>>
+	The <<beasttype>>'s song continues. From a great distance, <<bhe>> receives a reply song. The two sing back and forth to each other, until the other voice goes silent.
+	<<if $monster is 1>>
+		"<<print either(
+			"Shared knowledge of the skies and clouds. Always valuable.",
+			"Had to tell them I was already taken.",
+			"Told tales of our best hunts.",
+			"Stories from others, they always excite me.",
+			"Searching for their mate. We should look out."
+		)>>"
+	<</if>>
+	<br><br>
+	<<bird_perch_options>>
+<<elseif $rng gte 11>>
+	The moor lies silent, with only the <<beasttypes>> song breaking through.
+	<br><br>
+	<<bird_perch_options>>
+<<elseif $rng gte 1>>
+	The <<beasttype>> rests <<bhis>> voice.
+	<br><br>
+	<<bird_perch_options>>
+<<else>>
+	<span class="teal">There's something familiar about the <<beasttypes>> melody,</span> but you can't quite put your <<if $harpy gte 6>>wing<<else>>finger<</if>> on it.
+	<br><br>
+	<<bird_perch_options>>
+<</if>>
+
+:: Bird Tower Bask Leave
+<<effects>>
+<<npc "Great Hawk">>
+The <<beasttype>> lifts <<bhis>> wings, allowing you to get up. <<bHe>> resumes <<bhis>> song.
+<br><br>
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Bask Groom
+<<effects>>
+You release all the tension in your body and allow <<bhim>> to work. <<bHe>> continues to preen your feathers for some time. <<lstress>>
+<<if $monster is 1>>
+	"Your wings... so beautiful. But I would love <<wife>> even without them."
+<</if>>
+Eventually, <<bhe>> settles back in place with you.
+<br><br>
+
+<<bird_perch_options>>
+<br>
+
+:: Bird Tower Bask Groom Push
+<<effects>>
+You push your wings back into <<bhis>> face, and <<bhe>> releases them.
+<br><br>
+
+<<bird_perch_options>>
+<br>
+
+
+:: Bird Tower Perch Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<if $phase is 1>>
+		You quickly turn,
+		<<if $monster is 1>>
+			pushing the <<beasttype>> over and planting a kiss on <<bhis>> lips. <<takeKissVirginity "Great Hawk" `($syndromebird is 1?"loveInterest":"romantic")`>>
+			<br><br>
+			<<bHis>> wings wrap around you tightly.
+		<<else>>
+			taking the <<beasttype>> off guard.
+		<</if>>
+		<<deviancy1>>
+	<<else>>
+		<<deviancy2>>
+	<</if>>
+	<<set $enemytrust += 200>>
+	<<set $enemyhealthmax to 600>>
+	<<set $enemyhealth to 600>>
+	<<if $monster isnot 1>>
+		<<set $position to "doggy">>
+		<<set $NPCList[0].stance to "top">>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Bird Tower Perch Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Tower Perch Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Tower Perch Sex Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<beastejaculation>>
+	<<set $bird.satisfied to true>>
+	<<if $monster is 1>>"<<Wife>> was pent up <<if Time.dayState is "dawn">>this morning<<elseif Time.dayState is "dusk">>this evening<<else>>today<</if>>..." <</if>>The <<beasttype>> nuzzles your cheek<<if $monster is 1>>, smiling<</if>>.
+	<br><br>
+
+	<<tearful>> you return to <<bhis>> feathery embrace, watching the moor from <<bhis>> perch.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<bird_perch_options>>
+
+<<elseif $enemyhealth lte 0>>
+
+	The <<beasttype>> shrieks briefly, before returning to <<bhis>> previous position. <<if $monster is 1>>"Could just ask next time."<</if>>
+	<<set $bird.satisfied to true>>
+	<br><br>
+
+	<<tearful>> you retreat to the nest.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Bird Tower]]>><</link>>
+
+<<else>>
+
+	<<if $monster is 1>>
+		"Had enough?" <<bhe>> says, opening <<bhis>> wings again.
+	<<else>>
+		The <<beasttype>> shakes <<bhim>>self off, then returns to <<bhis>> position on the perch.
+	<</if>>
+	<br><br>
+
+	<<tearful>> you return to <<bhis>> feathery embrace.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<bird_perch_options>>
+
+<</if>>
+
+:: Bird Perch Monster Kiss
+<<effects>>
+You bring <<bhis>> head close to yours, and turn to kiss <<bhim>>. <<takeKissVirginity "Great Hawk" `($syndromebird is 1?"loveInterest":"romantic")`>>
+<br><br>
+You lose track of the time as you hold each other. "Landbound displays of affection, so strange," <<bhe>> says suddenly. "Would only accept it from <<wife>>." <<glove>>
+<br><br>
+<<bird_perch_options>>
+
+:: Bird Tower Sing
+<<effects>><<npc "Great Hawk">>
+<<bird_schedule>>
+<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
+
+	<<transform bird 1>><<npcincr "Great Hawk" love 1>>
+	<<if $birdSingAbsent>>
+		<span class="teal">The <<beasttype>> joins you on the perch.</span>
+	<</if>>
+	<<if $birdSingIntro isnot 1>>
+		<<set $birdSingIntro to 1>>
+		You try your best to mimic the <<beasttypes>> singing. <<bHe>> looks <<if $birdBask is 1>>down <</if>>to you with surprise.
+		<<if $monster is 1>>
+			"You wish to sing with me?" <<bHe>> looks overjoyed. "Our voices will dominate the sky."
+		<</if>>
+	<</if>>
+	<<switch random(1,3)>>
+		<<case 1>>
+			<<if $birdBask is 1>>
+				You join in the <<beasttypes>> singing from the comfort of <<bhis>> wings.
+			<<else>>
+				You join in the <<beasttypes>> singing.
+			<</if>>
+		<<case 2>>
+			<<if $birdBask is 1>>
+				The <<beasttype>> continues to embrace you as you join in.
+			<<else>>
+				You throw your head back and sing into the air.
+			<</if>>
+		<<default>>
+			You pick up the <<beasttypes>> song from where <<bhe>> left off.
+	<</switch>>
+	<<if $harpy gte 6 and $syndromebird is 1>>
+		<span class="green"><<print either(
+			"Your combined voices are a masterful symphony that rips through the moor.",
+			"The two of you weave a verse worthy of being spoken about in history books.",
+			"Beasts all around the moor stop to listen to your beautiful voices.",
+			"The winds themselves seem to yield to your voices."
+		)>></span><<trauma -6>><<ltrauma>>
+	<<elseif $harpy gte 4>>
+		<span class="blue"><<print either(
+			"Your duet inspires wariness in any that hear it.",
+			"The two of you greet the moor with a harmonious song.",
+			"Your combined song sends prey animals running."
+		)>></span>
+	<<elseif $harpy gte 2>>
+		<span class="pink"><<print either(
+			"<<bHe>> manages to pick up your slack when you fall off key.",
+			"<<bHe>> gives you an encouraging nudge as you sing.",
+			"You're not the best, but not the worst. <<bHis>> voice largely drowns out your own."
+		)>></span>
+	<<else>>
+		<span class="red"><<print either(
+			"Your voice clashes with <<bhis>> own. <<bHe>> continues unabated.",
+			"Your voice turns <<bhis>> song into a cacophony.",
+			"You can't even hope to match <<bhis>> song."
+		)>></span>
+	<<glove>>
+	<</if>>
+	<br><br>
+	<<bird_perch_options>>
+<<else>>
+	<<if $harpy gte 6>>
+		<<if $syndromebird is 1 and $bird.state is "hunting">>
+			<span class="green">You sing a beautiful song of longing for your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>>.</span>
+		<<elseif $syndromebird is 1>>
+			<span class="green">You sing an unmatched song.</span> You can faintly hear the <<beasttype>> sing back to you. <<stress -3>><<lstress>>
+		<<else>>
+			<span class="green">Your voice is immaculate,</span> but without a partner to pick up your song, it feels hollow.
+		<</if>>
+	<<elseif $harpy gte 4>>
+		<<if $syndromebird is 1>>
+			<span class="blue">You sing to the moor.</span> You crave a partner to sing with.
+		<<else>>
+			<span class="blue">You sing into the air.</span> Nothing answers you.
+		<</if>>
+	<<elseif $harpy gte 2>>
+		<<if $syndromebird is 1>>
+			<span class="pink">You sing,</span> and find yourself craving a partner to help you.
+		<<else>>
+			<span class="pink">You sing.</span> You hope nothing hears it.
+		<</if>>
+	<<else>>
+		You try to sing like a bird. <span class="red">You have mixed results.</span>
+	<</if>>
+	<br><br>
+	<<bird_perch_options>>
+<</if>>
+
+:: Bird Tower Fly Intro
+<<effects>>
+You sit next to the <<beasttype>>. <<bHe>> stops singing as you catch <<bhis>> attention.
+<<if $speech_attitude is "meek">>
+	"Could you... please... teach me how to fly?"
+<<elseif $speech_attitude is "bratty">>
+	"I want you to teach me how to fly like you do,"
+<<else>>
+	"I want to learn to fly,"
+<</if>>
+you say, flaring out your wings.
+<<if $monster is 1>>
+	<<if $bird.lock isnot 1>>
+		<<bHe>> turns to face you, looking overjoyed. "Of course, <<wife>>! The sky will be so much prettier with you in it."
+		<br><br>
+		<<link [[Next|Bird Tower Fly Intro 2]]>><</link>>
+	<<else>>
+		<<bHe>> turns to face you, looking overjoyed, but stops <<bhim>>self. <<bHe>> looks conflicted. "I... I want to. But I'm afraid <<wife>> won't come back." <<bHe>> shakes <<bhis>> head.
+		<br><br>
+		<i><span class="blue">Maybe <<bhe>> would teach you if <<bhe>> trusted you more.</span></i>
+		<br><br>
+		<<bird_perch_options>>
+	<</if>>
+<<else>>
+	<<if $bird.lock isnot 1>>
+		<<bHe>> turns to face you, looking excited. <<bHe>> hops in place, then begins nudging you.
+		<br><br>
+		<<link [[Next|Bird Tower Fly Intro 2]]>><</link>>
+	<<else>>
+		<<bHe>> turns to face you, looking excited, but stops <<bhim>>self. <<bHe>> looks conflicted. After a moment, <<bhe>> sits back down.
+		<br><br>
+		<i><span class="blue">Maybe <<bhe>> would teach you if <<bhe>> trusted you more.</span></i>
+		<br><br>
+		<<bird_perch_options>>
+	<</if>>
+<</if>>
+<br>
+
+:: Bird Tower Fly Intro 2
+<<set $birdFly to 1>><<bird_pass 10>><<set $outside to 1>>
+<<bHe>> spends some time helping you preen your wings.
+<<if $monster is 1>>
+	<br><br>
+	"Always take care of feathers. Want to catch the wind as fast as possible," <<bhe>> says.
+	<br>
+	"You're not going to push me, are you?" you ask.
+	<br>
+	"Not if you're expecting it," <<bhe>> shoots back with a smile.
+	<<stress 3>><<gstress>>
+	<br><br>
+	<<bHe>> walks behind you, and begins to knead and gently raise and lower your wings with <<bhis>> hands.
+	"Not much muscle. Very new. You will have trouble flying. But you should glide well."
+<<else>>
+	At first, you worry that <<bhe>>'s going to push you.
+<</if>>
+Your worries dissipate as <<bhe>> <<if $monster is 1>>walks<<else>>hops<</if>> towards the edge of the perch.
+<<bHe>> begins to stretch <<bhis>> wings, and nods for you to do the same. You think you get the gist of it.
+<br><br>
+<<if $monster is 1>>
+	"You are ready. Come."
+<</if>>
+<<bHe>> motions you towards the ledge.
+You approach, and your stomach begins to tie itself in a knot. You knew you were up high, but the idea of actually jumping is catching up to you.
+Your vision begins to blur, and the ground looks to be getting further and further away despite you moving forward.
+<<if $monster is 1>>
+	You feel a hand on your shoulder. "I believe in you, <<wife>>."
+<<else>>
+	You feel feathers against your skin. <<bHe>> is watching you closely.
+<</if>>
+<br><br>
+And then, you're pushed.
+<br><br>
+<<link [[Next|Bird Tower Fly Intro 3]]>><</link>>
+<br>
+
+:: Bird Tower Fly Intro 3
+<<bird_pass 10>>
+The air rushing by your head is deafening. The ground slowly gets closer and closer. You feel the urge to scream, but it gets caught in your throat.
+Your arms and legs begin to feel numb, and the edges of your vision begin to darken. Soon, the only things you can feel are your racing heart and your beating wings. <<ggstress>>
+<br><br>
+You don't even know when your wings started moving, but they're beating furiously. They're moving out of sync and in different directions, leaving feathers in the air behind you.
+It feels like hours have passed since you were pushed over. You manage to look behind you, and see the Great Hawk rapidly descending towards you. Everything fades to black. <<stress 1000>><<gggstress>>
+<br><br>
+When your eyes open again, the ground is barely any closer. In fact, it almost looks like it's getting further away.
+Your ears briefly ring, but you can hear an intense wind. You feel it, too. It's carrying you.
+<br><br>
+You open your wings as wide as you can, and you catch the wind.
+<br><br>
+<<link [[Fly|Bird Tower Fly Intro 4]]>><</link>><br>
+
+:: Bird Tower Fly Intro 4
+<<bird_pass 10>>
+The wind pushes you higher and higher into the air. You level out your body and angle your wings.
+You drop briefly, causing a jolt of nausea to shoot through you, but you manage to hold. Before you know it, you're gliding forwards.
+<br><br>
+The deafening wind grows quiet, and you start to regain feeling in your limbs and head. The ground no longer looks like certain death.
+You hear the beating of another pair of wings behind you.
+<br><br>
+<<if $monster is 1>>
+	The Great Hawk catches up to you, arms stretched to either side as <<bhe>> rears <<bhis>> wings to match your speed.
+	<<bHe>> drifts closer to you, and you feel one of <<bhis>> hands wrap around yours. <<takeHandholdingVirginity "Great Hawk" "romantic">>
+	<br><br>
+	"I knew you could do it."
+<<else>>
+	The Great Hawk catches up to you, and begins to circle you in altitude. <<bHe>> lets out a screech of pride into the sky, daring the world to watch your triumph.
+<</if>>
+<br><br>
+<<link [[Fly|Bird Tower Fly Intro 5]]>><</link>><br>
+
+:: Bird Tower Fly Intro 5
+<<bird_pass 10>><<set $outside to 0>>
+<<willpower 20>>
+The two of you drift on for a great distance. You can hardly even see the castle anymore, and <<bhe>> can see the exhaustion taking its toll on you. <<tiredness 60>><<gggtiredness>>
+<<if $monster is 1>>
+	You feel <<bhis>> hands wrap around your waist. "You can relax now. I'll carry us home." You fold your wings, and <<bhe>> changes course.
+<<else>>
+	You feel <<bhis>> talons gently grasp you, and start to steer you in a different direction. After a moment, <<bhe>> lifts you, and starts flying back towards the castle.
+<</if>>
+You can do little but enjoy the view.
+<br><br>
+When you reach the perch, you can't feel your legs touch solid ground. You collapse as soon as <<bhe>> lets you go, but <<bhe>> catches you.
+<<if $monster is 1>>
+	The two of you hold each other at the top of the castle. Soon enough, <<bhe>> carries you back to the nest. "I could not ask for better <<wife>>." <<bhe>> gives you a peck on the cheek, and walks away.
+<<else>>
+	<<bHe>> carries you back to the nest, and gives you a loving nuzzle before hopping away.
+<</if>>
+<br><br>
+You wonder if anything you just experienced was real for a moment. The vertigo and dread certainly were. <<gggwillpower>><<willpower 24>>
+<br><br>
+<<earnFeat "Catch the Wind">>
+<<link [[Next|Bird Tower Bed]]>><<endevent>><<unset $birdPerch>><</link>>
+<br>
+
+:: Bird Tower Perch Nest
+<<effects>>
+
+<<if $monster is 1>>
+	The <<beasttype>> lays you in the nest, and lies down beside you. <<bHe>> rests a wing over you.
+<<else>>
+	You lie in the nest. The <<beasttype>> shuffles beside you, and covers you with a wing.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Tower Bed]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Unbind
+<<effects>>
+<<if $bird.state is "home">>
+	<<npc "Great Hawk">>
+	You begin to rub away at the material binding you. The <<beasttype>> turns <<bhis>> head at the sound.
+	<<if $monster is 1>>
+		<<bHe>> stops what <<bhe>>'s doing, and walks over to you. "Your wings will never stay clipped." <<bHe>> effortlessly breaks your bindings.
+	<<else>>
+		<<bHe>> hops over and sharply kicks <<bhis>> talons at you. Your bindings fall at your feet.
+	<</if>>
+<<else>>
+	You rub your bindings against some jagged stone. It takes some effort, but eventually the material yields, freeing your limbs.
+	<br><br>
+<</if>>
+<br><br>
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>

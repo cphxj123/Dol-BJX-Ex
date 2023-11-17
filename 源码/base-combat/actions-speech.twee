@@ -1,0 +1,186 @@
+:: Widgets Actions Speak [widget]
+<<widget "speak">>
+    /* 北极星模组 */
+	<<if $underwater lte 0 or $options.bjx_animal and $fish gte 6 or $options.bjx_eventTF and $ghost is 4>>
+	/* 北极星 */
+		<<if $enemyno gte 2>>
+			<<set _pron to "them">>
+		<<else>>
+			<<switch $pronoun>>
+				<<case "m">><<set _pron to "him">>
+				<<case "f">><<set _pron to "her">>
+				<<case "i">><<set _pron to "it">>
+			<</switch>>
+		<</if>>
+		<<set _askActions to {"Nothing":"rest"}>>
+		<<if !$gloryhole and $gamemode isnot "soft">>
+			<<seductiondifficulty true>>
+			<<set _diffText to " " + clone(_text_output)>>
+		<<else>>
+			<<set _diffText to "">>
+		<</if>>
+		<<if $consensual is 1>>
+		    /* 北极星模组 */
+			<<if $wolfgirl gte 6 or (!$options.bjx_animal and $wolfgirl gte 2)>>
+				<<set _mouthaction["咆哮"] to "growl">>
+			<</if>>
+			<<if $options.bjx_animal and $harpy gte 6>>
+				<<set _mouthaction["唱歌"] to "sing">>
+			<</if>>
+			<<if $options.bjx_animal and $fox gte 6>>
+				<<set _mouthaction["撒娇"] to "coquetry">>
+			<</if>>
+			/* 北极星 */
+			<<if $noFinish isnot 1>>
+				<<set _askActions["to stop" + _diffText] to "finish">>
+			<</if>>
+			<<if $enemytype is "man" and !$npcSub>>
+				<<if $player.vaginaExist and $vaginalchastity is 0 and $novaginal is 0>>
+					<<if $vaginastate is "penetrated" or $vaginastate is "doublepenetrated">>
+						<<set _askActions["to pull out of your pussy immediately" + _diffText] to "novaginal">>
+					<<else>>
+						<<set _askActions["to not put anything in your pussy" + _diffText] to "novaginal">>
+					<</if>>
+				<</if>>
+				<<if $player.penisExist and $penilechastity is 0 and $nopenile is 0>>
+					<<if $penisstate is "penetrated">>
+						<<set _askActions["to withdraw your penis immediately" + _diffText] to "nopenile">>
+					<<else>>
+						<<set _askActions["to not put your penis in anything" + _diffText] to "nopenile">>
+					<</if>>
+				<</if>>
+				<<if $analchastity is 0 and $noanal is 0>>
+					<<if $anusstate is "penetrated" or $anusstate is "doublepenetrated">>
+						<<set _askActions["to pull out of your anus immediately" + _diffText] to "noanal">>
+					<<else>>
+						<<set _askActions["to not put anything in your anus" + _diffText] to "noanal">>
+					<</if>>
+				<</if>>
+				<<if $asphyxiaLvl gte 1 and $nochoke isnot 1 and !$gloryhole>>
+					<<set _askActions["to not choke you" + _diffText] to "nochoke">>
+				<</if>>
+			<</if>>
+
+			<<set $_npcname to $npc[$npcrow.indexOf($mouthtarget)]>>
+			<<if ["Robin","Kylar","Alex","Avery","Whitney","Eden","Sydney"].includes($_npcname) and !npcHasStrapon($mouthtarget)
+				and [0, "clothed"].includes($NPCList[$mouthtarget].vagina)>>
+				<<if ["Avery","Whitney"].includes($_npcname) or $npc[$npcrow.indexOf($mouthtarget)] is $_npcname and checkIfNPCHasCategorySextoy($_npcname,"strap-on").length > 0>>
+					<<set _askActions["to wear a strap-on"] to "wearStrapon">>
+				<</if>>
+			<</if>>
+			<<if npcHasStrapon($mouthtarget) and $NPCList[$mouthtarget].penis is 0>>
+				<<set _askActions["to remove "+$NPCList[$mouthtarget].pronouns.his+" strap-on"] to "removeStrapon">>
+			<</if>>
+
+		<<else>>
+			<<set _mouthaction["Scream"] to "scream">>
+			<<set _mouthaction["Plead"] to "plead">>
+			<<if $wolfgirl gte 2>>
+				<<set _mouthaction["Growl"] to "growl">>
+			<</if>>
+			<<if $angel gte 6 and $angelforgive isnot 1>>
+				<<set _mouthaction["Forgive"] to "forgive">>
+			<</if>>
+			/* 北极星模组 */
+			<<if $fallenangel gte 2 and $fallenangelretribution isnot 1>>
+				<<set _mouthaction["报应"] to "retribution">>
+			<</if>>
+			<<if $demonhunter gte 5 and $demonhunterhypnosis isnot 1>>
+				<<set _mouthaction["催眠"] to "hypnosis">>
+			<</if>>
+			<<if $demon gte 6 and $demonseduce isnot 1>>
+				<<set _mouthaction["诱惑"] to "seduce">>
+			<</if>>
+			/* 北极星 */
+			<<if $submissive lte 850>>
+				<<if $fightTargets is undefined>>
+					<<set _mouthaction["Demand"] to "demand">>
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if $worn.over_upper.name isnot "naked" and $worn.over_upper.cursed isnot 1 or $worn.upper.name isnot "naked" and $worn.upper.cursed isnot 1 or $worn.under_upper.name isnot "naked" and $worn.under_upper.cursed isnot 1>>
+			<<if $noupper isnot 1 and $noupperasked isnot 1 and $enemytype is "man" and !$npcSub and !$gloryhole>>
+				<<set _askActions["to leave your top on" + _diffText] to "noupper">>
+			<</if>>
+		<</if>>
+		<<if $submissive gte 1150 and !$robinRentEvent>>
+			<<set _mouthaction["Moan"] to "moan">>
+		<</if>>
+		<<if !$npcSub and $asphyxiaLvl gte 1 and $consensual is 1 and $enemytype is "man" and ($choketrait or ($chokeorgasm gte 1 and $submissive gt 850) or ($awarelevel gte 2 and $submissive gte 1150)) and !$gloryhole>>
+			<<set _askActions["to choke you"] to "askchoke">>
+		<</if>>
+		<<if $consensual is 1 and $masochism_level gte 1 or $masochism_level gte 3>>
+			<<set _askActions["to be more rough"] to "askrough">>
+		<</if>>
+		<<if $enemytype is "man" and !$NPCList[$mouthtarget].condomAsk and $condomLvl gte 1 and !$abomination and $NPCList[$mouthtarget].fullDescription isnot "Ivory Wraith">>
+			<<if ($NPCList[$mouthtarget].penis is "none" or $NPCList[$mouthtarget].penisdesc.includes("strap-on")) and (!$player.penisExist or $crossdressing gte 1)>>
+				/*Prevent condoms in situations where none can be equipped*/
+			<<else>>
+				<<if !wearingCondom($mouthtarget)>>
+					<<set _askActions["to use a condom"] to "condoms">>
+				<</if>>
+				<<set _askActions["to not use a condom"] to "noCondoms">>
+			<</if>>
+		<</if>>
+		<<if $enemytype is "man" and !$pullOutAsk and !$NPCList[$mouthtarget].condom and !$abomination and $NPCList[$mouthtarget].fullDescription isnot "Ivory Wraith">>
+			<<if $NPCList[$mouthtarget].penis.toString().includes("vagina") or $NPCList[$mouthtarget].penis.toString().includes("anus")>>
+				<<set _askActions["to pull out before finishing"] to "askPullOut">>
+			<</if>>
+		<</if>>
+		<<if $robinRentEvent is 1 and $combatPhase is "pay">>
+			<<if $money gte $rentmoney + ($babyRent or 0)>>
+				<<set _mouthaction["Pay Bailey"] to "pay">>
+			<<else>>
+				<<set _mouthaction["Tell Bailey you can't afford it"] to "pay">>
+			<</if>>
+		<</if>>
+		<<if $worn.face.name isnot "naked" and $worn.face.type.includes("mask") and $consensual is 1 and $enemytype is "man" and !$npcSub and !$gloryhole>>
+				<<set _askActions["to leave your mask on" + _diffText] to "nomask">>
+		<</if>>
+		<<if Object.keys(_askActions).length gt 0>>
+			<<set _mouthaction["Ask "+_pron+""] to "ask">>
+			<<set _defaultsCombatAction to "askActions">>
+			<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+			<<set _pass to false>>
+			<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+				<<if Object.values(_askActions).includes(_actionsSet[_set])>>
+					<<set $askAction to clone(_actionsSet[_set])>>
+					<<set _pass to true>>
+					<<break>>
+				<</if>>
+			<</for>>
+			<<if _pass is false>>
+				<<set $askAction to Object.values(_askActions)[0]>>
+			<</if>>
+			<<switch $askAction>>
+				<<case "askchoke" "condoms" "noCondoms">><<set $askActionColour to "sub">>
+				<<default>><<set $askActionColour to "brat">>
+			<</switch>>
+		<</if>>
+		<<if $awarelevel gte 2 and $enemytype is "man">>
+			<<if $consensual is 1>>
+				<<set _mouthaction["Tease " + $NPCList[$mouthtarget].pronouns.his] to "mock">>
+			<<else>>
+				<<set _mouthaction["Mock " + $NPCList[$mouthtarget].pronouns.his] to "mock">>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "replaceAskColour">>
+	<<switch $askAction>>
+		<<case "askchoke" "condoms" "noCondoms">>
+			<<if $options.combatControls.includes("adio")>>
+				<<addclass "#askLabel" "sub">><<removeclass "#askLabel" "brat">>
+			<<else>>
+				<<addclass "#askDifficulty" "subList">><<removeclass "#askDifficulty" "bratList">>
+			<</if>>
+		<<case "askchoke" "askPullOut">>
+		<<default>>
+			<<if $options.combatControls.includes("adio")>>
+				<<addclass "#askLabel" "brat">><<removeclass "#askLabel" "sub">>
+			<<else>>
+				<<addclass "#askDifficulty" "bratList">><<removeclass "#askDifficulty" "subList">>
+			<</if>>
+	<</switch>>
+<</widget>>

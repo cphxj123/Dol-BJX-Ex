@@ -1,0 +1,243 @@
+:: Clothing Shop [exitCheckBypass]
+<div id="clothingShop-div" class="main-shop-div">
+	<<clothingShop-main>>
+</div>
+
+:: Clothing Shop Widgets [widget]
+
+<<widget "clothingShop-main">>
+	<<if $tryOn.autoReset isnot false>><<tryOnReset>><</if>><<unset $tempDisable>>
+	<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+	<<set $shopName = "clothing">>
+
+	You are in the clothing shop. It has a large selection of ordinary clothes, but you'll need to go elsewhere if you're looking for something exotic.
+	<br><br>
+
+	<<if $stress gte $stressmax>>
+	<<passoutshop>>
+	<<else>>
+		<<if Time.hour is 21>>
+			It's closing time. Security is herding everyone outside. <<if $exposed gte 1>>Panic swells within you as you realise how exposed you'll be should security find you in this state of dress.<</if>>
+			<br><br>
+
+			<<if $exposed lte 0>>
+				<<highicon>><<link [[Go outside|High Street]]>><</link>>
+				<br>
+			<<else>>
+				<<link [["Hide until it's over (1:00)"|Clothing Shop]]>><<pass 1 hour>><</link>>
+			<</if>>
+		<<else>>
+			<div id="tryonstats-div"><<tryOnStats>></div>
+			<<unset $shopListStartCount>>
+			<<unset $clothes_choice>>
+			<<set $shopPage = 0>>
+
+			<<if Time.dayState is "night">>
+				You are alone in the darkness.
+				<br><br>
+			<<elseif $exposed gte 1>>
+				You are hiding within a clothing stand to protect your dignity.
+				<br><br>
+			<</if>>
+
+			<span>Warmth:</span>
+			<<warmthscale>>
+			<div id="warmth-description">
+				<<warmth_description>>
+			</div>
+			<br><br>
+			<<clothingcategoryicon "all">>
+			<<link "View All">><<replace "#clothingShop-div">><<AllShop>><</replace>><</link>>
+			<br><br>
+			/* 北极星模组 */
+			<<if $options.bjx_clothes>>
+				<<clothingcategoryicon "overoutfit">>
+				<<link "查看外套">><<replace "#clothingShop-div">><<OverOutfitShop>><</replace>><</link>>
+				<br><br>
+				<<clothingcategoryicon "head">>
+				<<link "查看头套">><<replace "#clothingShop-div">><<OverTopShop>><</replace>><</link>>
+				<br><br>
+			<</if>>
+			/* 北极星 */
+			<<clothingcategoryicon "outfit">>
+			<<link "View Outfits">><<replace "#clothingShop-div">><<OutfitShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "upper">>
+			<<link "View Tops">><<replace "#clothingShop-div">><<TopShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "lower">>
+			<<link "View Bottoms">><<replace "#clothingShop-div">><<BottomShop>><</replace>><</link>>
+			<br><br>
+			<<clothingcategoryicon "underoutfit">>
+			<<link "View Under Outfits">><<replace "#clothingShop-div">><<UnderOutfitShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "underupper">>
+			<<link "View Under Tops">><<replace "#clothingShop-div">><<UnderTopShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "underlower">>
+			<<link "View Under Bottoms">><<replace "#clothingShop-div">><<UnderBottomShop>><</replace>><</link>>
+			<br><br>
+			<<clothingcategoryicon "head">>
+			<<link "View Head Accessories">><<replace "#clothingShop-div">><<HeadShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "face">>
+			<<link "View Face Accessories">><<replace "#clothingShop-div">><<FaceShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "neck">>
+			<<link "View Neck Accessories">><<replace "#clothingShop-div">><<NeckShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "hand">>
+			<<link "View Hand Accessories">><<replace "#clothingShop-div">><<HandsShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "legs">>
+			<<link "View Legwear">><<replace "#clothingShop-div">><<LegsShop>><</replace>><</link>>
+			<br>
+			<<clothingcategoryicon "feet">>
+			<<link "View Shoes">><<replace "#clothingShop-div">><<FeetShop>><</replace>><</link>>
+			/*<br>
+			*<<clothingcategoryicon "strapon">> <!-- disable for now-->
+			*<<link "View Genital Wear">><<replace "#clothingShop-div">><<GenitalShop>><</replace>><</link>>*/
+			<br><br>
+			<<run linkifyDivs('.button-back-to-shop')>>
+
+			<<if $clothingrebuy is 1>>
+				<<rebuyicon "disable">><<link [[Disable automatic clothing rebuy|Rebuy Shop]]>><</link>>
+				<br>
+			<<else>>
+				<<rebuyicon "enable">><<link [[Enable automatic clothing rebuy|Rebuy Shop]]>><</link>>
+				<br>
+			<</if>>
+
+			<<if Time.dayState is "night" and Time.hour isnot $closinghour and !$weekly.theft.clothingShop>>
+				<<shopicon "register">><<link [[Examine the cash register|Clothing Shop Register]]>><</link>>
+				<br>
+			<</if>>
+
+			<br>
+
+			<<if Time.dayState is "night" or $tryOn.value is 0>>
+				<<if Time.dayState is "night" and $clothingShop.spotted is true and $clothingShop.stolenClothes gt 0>>
+					<<getouticon>>
+					<<link [[Leave|Clothing Shop Night Guard Found]]>>
+						<<shopClothingFilterReset>>
+						<<ShowUnderEquip "normal">>
+						<<ShowUnderEquip "over">>
+						<<set $tryOn.autoReset to true>>
+						<<crimeUp `$tryOn.value / 100` "thievery">>
+						<<shopHoodCheck>>
+					<</link>>
+				<<else>>
+					<<getouticon>>
+					<<link [[Leave|Shopping Centre Top]]>>
+						<<shopClothingFilterReset>>
+						<<ShowUnderEquip "normal">>
+						<<ShowUnderEquip "over">>
+						<<set $tryOn.autoReset to true>>
+						<<crimeUp `$tryOn.value / 100` "thievery">>
+						<<shopHoodCheck>>
+					<</link>>
+				<</if>>
+				<<if $tryOn.value gt 0>>
+					<<crime "thievery">>
+				<</if>>
+				<br><br>
+			<<elseif $tryOn.value gt 0>>
+				<<ind>><<link "Return clothes">><<clothingReset>>
+					<<updatesidebarimg>>
+					<<updatesidebardescription>>
+					<<updateallure>>
+					<<updatewarmthscale>>
+					<<updatewarmthdescription>>
+					<<updateclothingshop>>
+					<<run updateMoment()>>
+				<</link>>
+				<br>
+				<<if $tryOn.value lt $money>>
+					<<sendItemsToDropdown>>
+					<<ind>><<link "Buy clothes">><<buyTryOnClothes "wear">><<updateclothingshop>><</link>>
+					<br>
+					<<ind>><<link "Buy clothes and send to wardrobe">>
+						<<buyTryOnClothes "wardrobe">>
+						<<updatesidebarmoney>>
+						<<updatesidebarimg>>
+						<<updatesidebardescription>>
+						<<updateallure>>
+						<<updatewarmthscale>>
+						<<updatewarmthdescription>>
+						<<updateclothingshop>>
+						<<run updateMoment()>>
+					<</link>>
+					<br>
+				<</if>>
+				<<getouticon>><<link [[Leave with stolen clothes|Stolen Clothing Shop Result]]>><<shopClothingFilterReset>><<shopHoodCheck>><</link>><<crime "thievery">>
+				<br>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "clothingcategoryicon">>
+	<<icon `"clothes/categories/" + _args[0] + ".png"`>>
+<</widget>>
+
+:: Clothing Shop Sneak
+<<set $outside to 0>><<effects>><<set $lock to 0>>
+
+	<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<lockpickicon>>
+	<<link [[Pick it (0:10)|Clothing Shop]]>>
+		<<pass 10>><<crimeUp 5 "trespassing">>
+		<<if $clothingShop.ban gt 0 or crimeSumCurrent() gte 50000 or $clothingShop.rng gte $skulduggery>>
+			<<set $clothingShop.spotted to true>>
+		<</if>>
+		<<set $clothingShop.rng to random(0,1000)>>
+	<</link>><<crime "trespassing">>
+	<br>
+	<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span>
+	<<skulduggeryrequired>>
+	<br><br>
+	<</if>>
+	/* 北极星模组 */
+    <<set $ghostIn to false>>
+    <<if $options.bjx_eventTF and $ghost gte 1>>
+    	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+    	<br>
+    	<<link [[穿越 (0:01)|Clothing Shop]]>><<set $ghostIn to true>><<pass 1>><</link>>
+    	<br>
+    <</if>>
+    /* 北极星 */
+
+<<getouticon>><<link [[Leave|Shopping Centre Top]]>><</link>>
+<br>
+
+:: Rebuy Shop
+<<set $outside to 0>><<effects>>
+
+<<if $clothingrebuy is 1>>
+
+Disabling clothing rebuy will deactivate the chips in all your clothing. They will no longer attempt to buy replacements when destroyed, and will not charge you anything.
+<br><br>
+
+Would you like to disable automatic clothing rebuy?
+<br><br>
+
+<<link [[Yes|Clothing Shop]]>><<set $clothingrebuy to 0>><</link>>
+<br>
+
+<<else>>
+
+Enabling clothing rebuy will activate chips in all your clothing. When damaged beyond repair, the clothes automatically order a replacement. The cost is the price of the garment, plus an additional 50% service fee. This will not work if you don't have enough money, which will be deducted immediately.
+<br><br>
+
+Would you like to enable this?
+<br><br>
+
+<<link [[Yes|Clothing Shop]]>><<set $clothingrebuy to 1>><</link>>
+<br>
+
+<</if>>
+<<link [[No|Clothing Shop]]>><</link>>
+<br>

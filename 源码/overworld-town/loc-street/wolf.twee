@@ -1,0 +1,101 @@
+:: Wolf Street
+
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "wolf">><<getTarget true>>
+You are on Wolf Street. The nearby forest bleeds into the town here, particularly where the temple sits.
+<<if Time.dayState is "day">>
+	<<if $weather is "rain">>
+		The trees sway in the wind.
+	<<elseif $weather is "snow">>
+		The trees sway in the wind, dislodging snow from their branches.
+	<<else>>
+		It's one of the quieter parts of town.
+	<</if>>
+<<elseif Time.dayState is "dawn">>
+	<<if $weather is "rain">>
+		You hear chanting from within, clear above the rain.
+	<<elseif $weather is "snow">>
+		You hear chanting from within, muffled by the snow.
+	<<else>>
+		You hear chanting from within.
+	<</if>>
+<<elseif Time.dayState is "dusk">>
+	<<if $weather is "rain">>
+		It strikes a forbidding silhouette against the dark rain.
+	<<elseif $weather is "snow">>
+		The coating of snow does not detract from its forbidding silhouette.
+	<<else>>
+		It strikes a forbidding silhouette against the darkening sky.
+	<</if>>
+<<elseif Time.dayState is "night">>
+	<<if $weather is "rain">>
+		You can't even make out its silhouette behind the curtains of rain.
+		<<if $hallucinations gte 2>>
+			But you feel it watching.
+		<</if>>
+	<<elseif $weather is "snow">>
+		It's almost pitch-black.
+	<<else>>
+		It's almost pitch-black.
+	<</if>>
+<</if>>
+<<streeteffects>>
+<br><br>
+<<if $exposed gte 1>>
+	<<exhibitionism "street">>
+<</if>>
+<<if $arousal gte $arousalmax>>
+	<<orgasmstreet>>
+<</if>>
+<<if $stress gte $stressmax and !$possessed>>
+	<<passoutstreet>>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
+		<<eventsstreet>>
+	<<else>>
+		<<if $options.mapTop is true>>
+			<<map "wolf">>
+			<br>
+		<</if>>
+		Places of interest
+		<br>
+		<<wolficon>><<link [[Temple (0:01)|Temple]]>><<pass 1>><</link>>
+		<br>
+			<<if $soup_kitchen_known is 1 and $exposed lte 0>>
+				<<if Time.hour gte 18 and Time.hour lte 20>>
+					<<soupkitchenicon>><<link [[Soup kitchen (0:01)|Soup Kitchen]]>><<pass 1>><</link>>
+				<<else>>
+					<<soupkitchenicon>><<link [[Soup kitchen (0:01)|Soup Kitchen Closed]]>><<pass 1>><</link>>
+				<</if>>
+			<br>
+			<</if>>
+		<<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><<set $forest to 0>><<set $eventskip to 1>><</link>>
+		<br><br>
+		<<if $exposed gte 1 and Time.dayState isnot "night">>
+		<<else>>
+			<<add_link "Travel<br>">><<hideDisplay>>
+			<<danube>>
+			<<nightingale>>
+			<<connudatus>>
+			<<high>>
+			<<if $exposed lte 0>>
+				<<buswait>>
+			<</if>>
+			/* 北极星模组 */
+			<<if $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+				<<flywait>>
+			<</if>>
+			/* 北极星 */
+			<<loiter>>
+		<</if>>
+		<<add_link "<br>Alternate routes<br>">><<hideDisplay>>
+		<<commercial>>
+		<<stormdrain>>
+		<<displayLinks>>
+		<<if $options.mapTop isnot true>>
+			<br>
+			<<map "wolf">>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>

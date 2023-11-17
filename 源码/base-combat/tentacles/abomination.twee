@@ -1,0 +1,262 @@
+:: Widgets Abomination [widget]
+
+/* Turn NPC into Abomination. Only works if only one NPC generated for now. Can be used mid-combat. */
+<<widget "makeAbomination">>
+	<<if $enemyno isnot 1>>
+		<span class="red">ERROR: Only one NPC may be present to turn into an Abomination.</span>
+	<<else>>
+		<<set $abomination to 1>>
+		<<set _tentacleNumber to (_args[0] ? _args[0] : random(2,8))>>
+		<<set _tentacleHealth to (_args[1] ? _args[1] : 15)>>
+		<<set _tentacleType to (_args[2] ? _args[2] : undefined)>>
+		<<set _tentacleVariant to (_args[3] ? _args[3] : undefined)>>
+		<<set _tentacleVarDesc to (_args[4] ? _args[4] : undefined)>>
+		<<tentaclestart _tentacleNumber _tentacleHealth _tentacleType _tentacleVariant _tentacleVarDesc>>
+		<<for _i to 0; _i lt $tentacles.active; _i++>>
+			<<set $enemyhealthmax += $tentacles[_i].tentaclehealth>>
+			<<set $enemyhealth += $tentacles[_i].tentaclehealth>>
+			<<set $enemyarousalmax += $tentacles[_i].tentaclehealth>>
+		<</for>>
+	<</if>>
+<</widget>>
+
+<<widget "effectsabomination">>
+	<<effectsman>>
+	<div @class="($debugLines ? 'debugLines-effectstentacleadv' : '')">
+		<<for _i to 0; _i lt $tentacles.max; _i++>>
+			<<if $tentacles[_i] isnot undefined>>
+				<<set _tentacle to $tentacles[_i]>>
+				<<effectstentacleadv _tentacle>>
+			<</if>>
+		<</for>>
+	</div>
+<</widget>>
+
+<<widget "abomination">>
+	<<if !$enemytype or ["man","plant"].includes($enemytype)>>
+		<<man>>
+	<<else>>
+		<<beast $enemyno>>
+	<</if>>
+	<<for _i to 0; _i lt $tentacles.max; _i++>>
+		<<set _tentacle to $tentacles[_i]>>
+		<<if _tentacle isnot undefined>>
+			<<tentacleadv _tentacle>>
+			<<set _tentacle.tentaclehealth -= 0.2>>
+			<<set $enemyarousal += 2>>
+		<</if>>
+	<</for>>
+<</widget>>
+
+<<widget "stateabomination">>
+	<<statetentacles>>
+	<<stateman>>
+<</widget>>
+
+<<widget "actionsabomination">>
+	<div @class="($debugLines ? 'debugLines-actionsman' : '')">
+		<<exposure>>
+		<<set $face to 0>>
+
+		<<if $enemyno gte 2>>
+			<<set $pronoun to "n">>
+		<<else>>
+			<<if $NPCList[0].pronoun is "m">>
+				<<set $pronoun to "m">>
+			<</if>>
+			<<if $NPCList[0].pronoun is "f">>
+				<<set $pronoun to "f">>
+			<</if>>
+			<<if $NPCList[0].pronoun is "i">>
+				<<set $pronoun to "i">>
+			<</if>>
+			<<if $NPCList[0].pronoun is "n">>
+				<<set $pronoun to "n">>
+			<</if>>
+			<<if $NPCList[0].pronoun is "t">>
+				<<set $pronoun to "t">>
+			<</if>>
+		<</if>>
+
+		<<if $options.images is 1 and $options.combatImages is 1>>
+			<<if $position isnot "stalk">>
+				<<timed 100ms>>
+					<<combatimg>>
+					<br>
+				<</timed>>
+			<</if>>
+		<</if>>
+
+		<<if $traumafocus gte 1 and $traumafocusintro isnot 1>>
+			<<set $traumafocusintro to 1>>
+			<i>As you gain focus, you become more and more likely to escape your helpless state of dissociation.</i>
+			<br><br>
+		<</if>>
+
+		<<if $traumafocus gt random(1, 1000) and $dissociation gte 2 and $combat is 1>>
+			<<set $traumafocus to 0>><<set $trauma -= 1000>><<set $dissociation to 1>>
+			<span class="green">Your lucidity returns.</span>
+			<<ltrauma>>
+			<br>
+			<span class="red">The weight of reality crashes down on you.</span>
+			<br><br>
+		<</if>>
+
+		<<oxygen 50>>
+
+		<<willpowerpain>>
+		<<willpowerorgasm>>
+		<<actioncarry>>
+		<<actioncarrydrop>>
+
+		<<combatstate>>
+		<<carryblock>>
+
+		<<if $trance lte 0 and $panicparalysis is 0 and ($panicviolence is 0 or $position is "stalk")>>
+			/* 北极星模组 */
+			<<if ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined) and $dissociation lte 1>>
+			/* 北极星 */
+				<<if $options.images is 1 and $options.combatImages is 1 and $consensual is 1 and $position_lock isnot 1>>
+					<<if $position is "doggy">>
+						| <label>Roll over <<radiobutton "$bodyaction" "missionary">></label>
+					<<elseif $position is "missionary">>
+						| <label>Roll over <<radiobutton "$bodyaction" "doggy">></label>
+					<</if>>
+					<<if $position isnot "stalk">>
+						| <label>Rest <<radiobutton "$bodyaction" "rest" checked>></label>
+						<br>
+					<</if>>
+				<</if>>
+			<</if>>
+
+			<<if $options.combatControls isnot "disabled">>
+				<<generateActionsAbomination>>
+			<</if>>
+			<br>
+		<</if>>
+
+		<br><br>
+		<<set $face to 0>>
+	</div>
+
+	/*Due to how combat is setup, this is the best location for it*/
+	<<setupMidOrgasm>>
+
+	<<set _combatend to
+		($alarm is 1 and $rescue gte 1) or
+		($enemyhealth lte 0) or
+		($enemyarousal gte $enemyarousalmax) or
+		($finish is 1)
+	>>
+
+	<<if $debug is 1>>
+		__Debug__
+		<br>
+		<<for _i to 0; _i lt $enemynomax; _i++>>
+			<<print _i>> $NPCList[_i].fullDescription: Head Location: $NPCList[_i].location.head --- Genitals Location: $NPCList[_i].location.genitals
+			<br>
+			Penis: $NPCList[_i].penis --- Vagina: $NPCList[_i].vagina --- Mouth: $NPCList[_i].mouth --- Anus: $NPCList[_i].anus
+			<br><br>
+		<</for>>
+	<</if>>
+
+	<br><br>
+<</widget>>
+
+<<widget "generateActionsAbomination">>
+	<<set $combat to 1>>
+	<<if _targetlist is undefined>>
+		<<getTargetList>>
+	<</if>>
+	<div id="listContainer">
+		<div id="leftaction" @class="$options.combatControls + 'Control'">
+			<<if $lefttarget is "self">>
+				<<leftActionInitSelf>>
+			<<elseif $lefttarget is "tentacles" and Object.values(_targetlistarms).includes("tentacles")>>
+				<<leftActionInitTentacle>>
+			<<else>>
+				<<leftActionInit>>
+			<</if>>
+		</div>
+
+		<div id="rightaction" @class="$options.combatControls + 'Control'">
+			<<if $righttarget is "self">>
+				<<rightActionInitSelf>>
+			<<elseif $righttarget is "tentacles" and Object.values(_targetlistarms).includes("tentacles")>>
+				<<rightActionInitTentacle>>
+			<<else>>
+				<<rightActionInit>>
+			<</if>>
+		</div>
+
+		<div id="feetaction" @class="$options.combatControls + 'Control'">
+			<<if $feettarget is "self">>
+				<<feetActionInitSelf>>
+			<<elseif $feettarget is "tentacles" and Object.values(_targetlistall).includes("tentacles")>>
+				<<feetActionInitTentacle>>
+			<<else>>
+				<<feetActionInit>>
+			<</if>>
+		</div>
+		
+		/* 北极星模组 */
+		<<if $options.bjx_animal>>
+    		<div id="tailaction" @class="$options.combatControls + 'Control'">
+    			<<tailActionInit>>
+    		</div>
+		<</if>>
+		/* 北极星 */
+
+		<div id="mouthaction" @class="$options.combatControls + 'Control'">
+			<<if $mouthtarget is "tentacles" and Object.values(_targetlistall).includes("tentacles")>>
+				<<mouthActionInitTentacle>>
+			<<else>>
+				<<mouthActionInit>>
+			<</if>>
+		</div>
+
+		<<if $player.penisExist>>
+			<div id="penisaction" @class="$options.combatControls + 'Control'">
+				<<if $penistarget is "tentacles" and Object.values(_targetlistall).includes("tentacles")>>
+					<<penisActionInitTentacle>>
+				<<else>>
+					<<penisActionInit>>
+				<</if>>
+			</div>
+		<</if>>
+
+		<<if $player.vaginaExist>>
+			<div id="vaginaaction" @class="$options.combatControls + 'Control'">
+				<<if $vaginatarget is "tentacles" and Object.values(_targetlistall).includes("tentacles")>>
+					<<vaginaActionInitTentacle>>
+				<<else>>
+					<<vaginaActionInit>>
+				<</if>>
+			</div>
+		<</if>>
+
+		<div id="anusaction" @class="$options.combatControls + 'Control'">
+			<<if $anustarget is "tentacles" and Object.values(_targetlistall).includes("tentacles")>>
+				<<anusActionInitTentacle>>
+			<<else>>
+				<<anusActionInit>>
+			<</if>>
+		</div>
+
+		<<if $chestuse is "tentaclerub">>
+			<div id="chestaction" @class="$options.combatControls + 'Control'">
+				<<chestActionInitTentacle>>
+			</div>
+		<<elseif $chestuse is "penis">>
+			<div id="chestaction" @class="$options.combatControls + 'Control'">
+				<<chestActionInit>>
+			</div>
+		<</if>>
+
+		<<if $thighuse isnot 0>>
+			<div id="thighaction" @class="$options.combatControls + 'Control'">
+				<<thighActionInit>>
+			</div>
+		<</if>>
+	</div>
+<</widget>>

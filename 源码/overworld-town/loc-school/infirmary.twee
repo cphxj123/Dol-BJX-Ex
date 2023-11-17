@@ -1,0 +1,1507 @@
+:: School Infirmary
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if Time.schoolDay and !["early","late"].includes($schoolstate)>>
+	<<if $per_npc.school_nurse>>
+		You are in the school infirmary. The cabinets are filled with drugs and medical supplies. The beds are unoccupied.
+		<br><br>
+
+		<<if $phase is 1>>
+			The nurse writes in <<his>> journal, stopping every now and then to glance at you.
+		<<else>>
+			<<loadNPC 0 school_nurse>><<person1>>
+			The nurse stops writing in <<his>> journal and looks up at you. "Is there something I can help you with?"
+			<<set $phase to 1>>
+		<</if>>
+	<<else>>
+		<<generate1>><<saveNPC 0 school_nurse>>
+		You enter the school infirmary. The interior is the same as you remember it. It's small and clean, lined with cabinets full with drugs and medical supplies. A couple of beds sit near the back of the room, hidden behind curtains. Students who feel unwell come here to rest.
+		<br><br>
+
+		The nurse, a <<person1>><<person>>, sits at <<his>> desk and writes in <<his>> journal. <<He>> stops to look up when <<he>> hears you enter. "Can I help you?"
+	<</if>>
+	<br><br>
+
+	<<school_infirmary_options>>
+<<else>>
+	You are alone in the school infirmary. The cabinets are filled with drugs and medical supplies.
+	<br>
+	The beds are unoccupied, but trying to sleep in them now might be a bad idea. You'll get in trouble if you're caught.
+	<br><br>
+
+	<<if $weekly.theft.infirmaryDrugs is "stolen">>
+		<span class="blue">You've already stolen some drugs. You should wait for a restock before taking any more.</span>
+	<<elseif $weekly.theft.infirmaryDrugs is "failed">>
+		<span class="purple">The lock on the cabinet is broken. You won't be able to break in until it's fixed.</span>
+	<<else>>
+		<<schoolicon "infirmary">><<link [[Rummage through the cabinets|School Infirmary Drugs]]>><</link>>
+	<</if>>
+	<br>
+	<<getouticon>><<link [[Leave|Hallways]]>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Ask Painkiller
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $speech_attitude is "meek">>
+	"I-I don't feel so good," you say, your gaze downcast. "May I have something to help with the pain, please?"
+<<elseif $speech_attitude is "bratty">>
+	"Can't you see I'm in pain?" you ask impatiently. "I need pills or something."
+<<else>>
+	"I'm in pain. Is there anything that could help me?" you ask.
+<</if>>
+<br><br>
+
+<<if $daily.infirmaryPainkiller is 1>>
+	"Still sore? But I already gave you a pill." <<He>> shakes <<his>> head. "Sorry, <<girl>>. I'm not allowed to prescribe you any more."
+	<br><br>
+
+	<<school_infirmary_options>>
+<<else>>
+	The nurse beckons for you to come closer. You do so. <<He>> swivels <<his>> chair to face you and cups a hand under your chin, tilting your head this way and that as <<he>> examines you from top to toe.
+	<br><br>
+
+	<<if $pain gte 40>>
+		<<He>> frowns and nods. "Yeah, I can tell you've had it rough."
+		<br><br>
+
+		<<He>> walks over to the cabinet, unlocking it with a click. <<He>> rummages around until <<he>> pulls out a small glass bottle. <<He>> pops it open and shakes it. A white pill falls into <<his>> palm.
+		<br><br>
+
+		"This should make the pain go away. You might feel a little drowsy, though. Do you think you can handle it?"
+		<br><br>
+
+		<<link [[Take it|School Infirmary Painkiller Take]]>><<tiredness 18>><<pain -20>><<set $daily.infirmaryPainkiller to 1>><</link>><<lllpain>><<ggtiredness>>
+		<br>
+		<<link [[Decline|School Infirmary Painkiller Decline]]>><</link>>
+		<br>
+	<<else>>
+		<<He>> furrows <<his>> brow. "You don't look like you're in pain." You open your mouth to protest, but <<he>> holds up <<his>> hand dismissively. "Come back when you really have it bad. It's not a good idea to stuff your body with drugs."
+		<br><br>
+
+		<<school_infirmary_options>>
+	<</if>>
+<</if>>
+
+:: School Infirmary Painkiller Take
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+The nurse hands you the pill, along with a cup of water. You down them both. Almost immediately you feel a great relief, though your eyelids feel a bit heavier.
+<br><br>
+
+The nurse watches you for a moment, then jots something down in <<his>> journal. <<He>> returns to <<his>> desk without another word.
+<br><br>
+
+<<school_infirmary_options>>
+<br>
+
+:: School Infirmary Painkiller Decline
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+The nurse shrugs. "Suit yourself." <<He>> places the bottle back in the cabinet, locking it shut before returning to <<his>> work.
+<br><br>
+
+<<school_infirmary_options>>
+
+:: School Infirmary Ask Bed
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $speech_attitude is "meek">>
+	"May I take a nap here?" you ask. "I feel so tired..."
+<<elseif $speech_attitude is "bratty">>
+	You approach one of the beds and yank back the curtain. "I'm here to sleep."
+<<else>>
+	"Can I take a nap here?" you ask.
+<</if>>
+<br><br>
+
+<<if ["first","second","third","fourth","fifth"].includes($schoolstate)>>
+	<<if $daily.infirmaryBed is 1>>
+		The nurse shakes <<his>> head. "Leighton would have my head if I let you stay any longer." <<He>> turns away. "You're just gonna have to tough it out, sweetheart. Sorry."
+		<br><br>
+
+		<<school_infirmary_options>>
+	<<else>>
+		The nurse gets up from <<his>> desk and walks over to you. <<He>> cups a hand under your chin, tilting your head upwards. <<He>> narrows <<his>> eyes, <<his>> gaze boring into you as <<he>> scrutinises your expression.
+		<br><br>
+
+		<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+			Finally, <<he>> steps away from you and sighs. "You folks should sleep at night instead of partying. Alright. I can see you're tired." <<He>> glances at <<his>> watch. "I'll wake you up in half an hour. That ought to get you through the rest of the school day."
+			<br><br>
+
+			<<link [[Accept (0:30)|School Infirmary Bed]]>><<set $phase to 1>><</link>><<ltiredness>><<gdelinquency>>
+			<br>
+			<<link [[Decline|School Infirmary Bed Decline]]>><</link>>
+			<br>
+		<<else>>
+			Finally, <<he>> steps away from you and shakes <<his>> head. "You don't look tired. Looks more like you're just fishing for an excuse to skip class."
+			<br><br>
+
+			<<He>> sits back at <<his>> desk, dismissing your protests with a wave over <<his>> shoulder. "Go back to class before you get in any more trouble, and quit wasting my time."
+			<br><br>
+
+			<<school_infirmary_options>>
+			<br>
+		<</if>>
+	<</if>>
+<<elseif $schoolstate is "morning">>
+	"You're tired already?" the nurse asks in disbelief. "Did you get any sleep last night?"
+	<br><br>
+
+	<<He>> starts to lecture you, but <<he>> soon gives up with a sigh. <<He>> glances at <<his>> watch.
+	<br><br>
+
+	<<if Time.hour is 8 and Time.minute gte 30>>
+		"Class is supposed to start soon, isn't it? Pop by if you're still feeling tuckered out by then. But you best believe I'm not letting you sleep through class before the school day's even started, young <<if $player.gender_appearance is "m">>man<<else>>lady<</if>>."
+		<br><br>
+
+		<<He>> returns to <<his>> work. <<His>> tone offers no room for argument.
+		<br><br>
+
+		<<school_infirmary_options>>
+		<br>
+	<<else>>
+		"I'll give you thirty minutes. That should be enough to get you through the day."
+		<br><br>
+
+		<<link [[Accept (0:30)|School Infirmary Bed]]>><<set $phase to 0>><</link>><<ltiredness>>
+		<br>
+		<<link [[Decline|School Infirmary Bed Decline]]>><</link>>
+		<br>
+	<</if>>
+<<elseif $schoolstate is "lunch">>
+	The nurse looks at <<his>> watch,
+	<<if Time.minute gte 30>>
+		and frowns. "You'd be late to class."
+		<<if $daily.infirmaryBed is 1>>
+			<<He>> gives you a stern look. "I already bent the rules for you once today. You'll just have to tough it out, <<girl>>."
+			<br><br>
+
+			<<school_infirmary_options>>
+		<<else>>
+			<<He>> looks up at you. "Hold still."
+			<br><br>
+
+			The nurse rises from <<his>> desk and walks over to you. <<He>> cups a hand under your chin and tilts your head upwards. <<He>> narrows <<his>> eyes, staring deeply into yours.
+			<br><br>
+
+			<<if $tiredness gte (C.tiredness.max / 5) * 3>>
+				Finally, <<he>> steps away from you and sighs. "You folks should spend less time partying. Alright. I can see you're tired." <<He>> glances at <<his>> watch. "I'll wake you up in half an hour. That ought to get you through the rest of the school day."
+				<br><br>
+
+				<<link [[Accept (0:30)|School Infirmary Bed]]>><<set $phase to 1>><</link>><<ltiredness>><<gdelinquency>>
+				<br>
+				<<link [[Decline|School Infirmary Bed Decline]]>><</link>>
+				<br>
+			<<else>>
+				Finally, <<he>> steps away from you and shakes <<his>> head. "You don't look tired. Looks more like you're just fishing for an excuse to skip class." <<He>> sits back at <<his>> desk, dismissing your protests with a wave over <<his>> shoulder. "Go get yourself ready for class, and quit wasting my time."
+				<br><br>
+
+				<<school_infirmary_options>>
+			<</if>>
+		<</if>>
+	<<else>>
+		and nods. "Fine. I'll wake you up in half an hour."
+		<br><br>
+
+		<<link [[Accept (0:30)|School Infirmary Bed]]>><<set $phase to 0>><</link>><<ltiredness>>
+		<br>
+		<<link [[Decline|School Infirmary Bed Decline]]>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	The nurse rolls <<his>> eyes. "This isn't a daycare. Go home if you need a rest." <<He>> returns to <<his>> work, shaking <<his>> head.
+	<br><br>
+
+	<<school_infirmary_options>>
+<</if>>
+
+:: School Infirmary Bed
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+<<pass 30>><<tiredness -12>>
+
+You lie down on a spare bed. The mattress is too firm and the blanket is too thin, but it's better than nothing.
+<br><br>
+
+The nurse makes a note in <<his>> journal.
+<<if $phase is 1>><<set $daily.infirmaryBed to 1>>
+	"I'll have to inform the teaching staff about your visit," <<he>> says. "It'll still count as truancy, but at least they'll know where you were."
+<<else>>
+	"Alright, <<girl>>," <<he>> says. "Sleep tight."
+<</if>>
+<<He>> draws the curtain shut around you. You close your eyes and rest.
+<br><br>
+
+As promised, the nurse wakes you up after thirty minutes of much needed rest. <<He>> also gives you a pill to keep you on your toes for some time.
+<br><br>
+
+<<school_infirmary_options>>
+
+:: School Infirmary Bed Decline
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+The nurse nods. "If you say so. Just don't push yourself, <<girl>>."
+<br><br>
+
+<<He>> returns to <<his>> work.
+<br><br>
+
+<<school_infirmary_options>>
+
+:: School Infirmary Cabinet
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+You walk up to one of the glass cabinets. Countless bottles of pills and assorted medication line the shelves.
+<<if $skulduggery gte 100 and !$weekly.theft.infirmaryDrugs>>
+	<span class="blue">If you were alone, you might be able to snatch some for yourself.</span>
+<</if>>
+<br><br>
+
+<<if $delinquency gte 200 or $weekly.theft.infirmaryDrugs>>
+	The sound of the nurse clearing <<his>> throat behind you snaps you back to reality. <<He>> watches you with a glare, <<his>> arms crossed. You sheepishly back away from the cabinet.
+	<br><br>
+
+	<<if $weekly.theft.infirmaryDrugs is "failed">>
+		"Some punk tried breaking in. Broke the lock, too," <<he>> explains. "Sorry if I'm a little on edge."<<stress 2>><<gstress>>
+	<<elseif $weekly.theft.infirmaryDrugs is "stolen">>
+		"Some punk broke in and got ahold of some drugs," <<he>> huffs. "I'm not keen on getting another earful from the <<nnpc_title "Leighton">>, so keep your mitts away from that cabinet."
+	<<else>>
+		"Don't even think about it," <<he>> warns in a deadpan tone. "It's locked for a reason."
+	<</if>>
+	<br><br>
+
+	<<He>> goes back to work, keeping a watchful eye on you.
+<<else>>
+	The nurse doesn't pay you any mind as you back away from the cabinet.
+<</if>>
+<br><br>
+
+<<school_infirmary_options>>
+
+:: School Infirmary Drugs
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+You approach the cabinets. They're locked up tight. Behind the glass, you see several bottles of pills stacked on top of each other.
+<br><br>
+
+<<set $skulduggerydifficulty to 400>>
+/* 北极星模组 */
+<<schoolicon "infirmary">><<link [[闯入 (0:01)|School Infirmary Steal Drugs]]>><<pass 1>><<set $skulduggeryhands to 1>><</link>><<skulduggerydifficulty>><<crime "trespassing">>
+/* 北极星 */
+<br>
+<<getouticon>><<link [[Leave it alone|School Infirmary]]>><</link>>
+<br>
+
+:: School Infirmary Steal Drugs
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
+	<span class="green">You break into the cabient with ease.</span> You scan the contents for anything worth taking.
+	<br><br>
+
+	<<if ($sciencetrait gte 3 and random(1, 5) is 5) or random(1, 10) is 10>>
+		Your eyes are drawn to a pink glass bottle, hidden at the back of a shelf. There's no label. The pills don't look like any you've seen before.
+		<<set $blackmoney += 300>><<crimeUp 300 "thievery">>
+	<<elseif $sciencetrait gte 2 and random(1, 10) gte 6>>
+		A bottle on the top shelf catches your eye. It's unremarkable, but you recognise the drugs for their hallucinogenic properties. Someone on the black market may be interested.
+		<<set $blackmoney += 300>><<crimeUp 300 "thievery">>
+	<<elseif $sciencetrait gte 1 and random(1, 10) gte 6>>
+		You grab a box of a specialised allergy medicine. Not the kind you can pick up at a pharmacy. Someone may be willing to pay for them.
+		<<set $blackmoney += 200>><<crimeUp 200 "thievery">>
+	<<elseif $sciencetrait gte 1>>
+		You settle on some bottles of high-quality painkillers from a recognised brand. Someone may be willing to pay for them.
+		<<set $blackmoney += 150>><<crimeUp 150 "thievery">>
+	<<else>>
+		You're unfamilar with most of the products, so you grab a handful of medication. Someone may be willing to pay for them.
+		<<set $blackmoney += 100>><<crimeUp 100 "thievery">>
+	<</if>>
+	<br><br>
+
+	Satisfied with your haul, you close the cabinet door. It clicks shut.
+	<<set $weekly.theft.infirmaryDrugs to "stolen">>
+<<else>>
+	You try to pry open the cabinets, <span class="red">but the lock proves too complex for you.</span> Worse yet, you hear a snap within the mechanism. You must've broken something.<<stress 2>><<gstress>><<crimeUp 50 "destruction">><<crime "destruction">>
+	<<set $weekly.theft.infirmaryDrugs to "failed">>
+<</if>>
+<br><br>
+
+<<if $skulduggery lte ($skulduggerydifficulty + 100)>>
+	<<skulduggeryskilluse>>
+<<else>>
+	<span class="blue">That was too easy. You didn't learn anything.</span>
+	<br><br>
+<</if>>
+
+<<link [[Next|School Infirmary]]>><</link>>
+<br>
+
+:: School Passout Infirmary
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+You wake up in an unfamiliar bed. Thin curtains surround you, hiding the rest of the room. You must have been taken to the school infirmary.
+<br><br>
+
+<<if $trauma lt ($traumamax / 10) * 9>>
+	Heaving a sigh of relief, you close your eyes and let your body rest.
+	<br><br>
+
+	<<link [[Sleep|School Infirmary Wakeup]]>><</link>>
+	<br>
+<<else>>
+	You try to sit up, but your body stays glued to the bed. Beyond the curtains, you hear a voice.
+
+	<<if $per_npc.school_nurse>>
+		It sounds like the school nurse.
+	<</if>>
+
+	Slipping in and out of consciousness, you only catch snippets of what's being said.
+	<br><br>
+
+	"... please, the <<girl>>'s showing clear signs of..."
+	<br>
+	"... 'unprofessional?' Oh, blow it out your..."
+	<br>
+	"... just send someone to pick <<phim>> up as soon..."
+	<br><br>
+
+	You try to listen on, but you can feel your mind giving out. You fall back into a deep sleep.
+	<br><br>
+
+	<<link [[Sleep|School Infirmary Asylum]]>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Wakeup
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+/* overrides random outcome if it's too late for anyone else to be at school, or if the pc meets conditions for unlocking Harper's therapy but hasn't yet done so */
+<<if Time.hour gte 17 or ($trauma gt ($traumamax / 10) * 2 and $psych is 0 and !$schoolPsych)>>
+	<<set _infirmaryVisitor to "nurse">>
+<<else>>
+	<<set _possibleVisitors to []>>
+	<<set _possibleVisitors.push("none")>>
+	<<set _possibleVisitors.push("nurse")>>
+
+	<<if $dorenintro gte 1 and ["morning","lunch","third","afternoon"].includes($schoolstate)>>
+		<<set _possibleVisitors.push("Doren")>>
+	<</if>>
+	<<if $soup_kitchen_init gte 1 and ["morning","lunch","second","afternoon"].includes($schoolstate)>>
+		<<set _possibleVisitors.push("River")>>
+	<</if>>
+	<<if $museumhorseintro gte 1 and ["morning","lunch","fourth","afternoon"].includes($schoolstate)>>
+		<<set _possibleVisitors.push("Winter")>>
+	<</if>>
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $NPCName[$NPCNameList.indexOf("Robin")].trauma lte 10>>
+		<<set _possibleVisitors.push("Robin")>>
+	<</if>>
+	<<if $kylarenglish gte 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison">>
+		<<set _possibleVisitors.push("Kylar")>>
+	<</if>>
+	<<if $NPCName[$NPCNameList.indexOf("Whitney")].init is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon">>
+		<<set _possibleVisitors.push("Whitney")>>
+	<</if>>
+
+	<<set _infirmaryVisitor to _possibleVisitors.random()>>
+<</if>>
+
+You don't know how much time has passed by the time you wake up, but your head feels clearer. You draw the curtain aside and get out of the bed.
+<br><br>
+
+<<switch _infirmaryVisitor>>
+	<<case "nurse">>
+		<<if $per_npc.school_nurse>>
+			<<loadNPC 0 school_nurse>><<person1>>
+
+			The nurse sits at <<his>> desk, reading something.
+		<<else>>
+			<<generate1>><<person1>>
+			<<saveNPC 0 school_nurse>>
+
+			A <<person>> sits at the front desk, reading something. It's the school nurse.
+		<</if>>
+
+		<<He>> puts down <<his>> printouts when <<he>> realises you're awake.
+		<br><br>
+
+		"Easy there, <<girl>>," <<he>> says. "Take your time if you're still giddy."
+		<br><br>
+
+		You have a short conversation. The nurse enquires about the reason for your breakdown, so you feed <<him>> generic excuses of being too tired and stressed about school.
+		<<if $trauma lte ($traumamax / 10) * 2>>
+			It's enough to satisfy <<him>>. <<He>> makes a quick note in <<his>> journal, then tucks it in <<his>> pocket.
+		<<else>>
+			<br><br>
+			The nurse jots something down in <<his>> journal, brow furrowed. "Sounds like you've been having a rough time, sweetheart."
+
+			<<if $psych is 0 and !$schoolPsych>><<set $schoolPsych to 1>>
+				<br><br>
+				<<He>> rummages through <<his>> desk drawer, then hands you a small card. "Doctor Harper - Psychiatric Specialist" is emblazoned across the top in crisp letters. Underneath is an address to the civic hospital on Nightingale Street.
+				<br><br>
+
+				"<span class="gold"><<nnpc_He "Harper">> holds private therapy sessions every Friday</span>," the nurse explains. "Do yourself a favour and give <<nnpc_him "Harper">> a visit <<if Time.weekDay is 6>>later<<else>>sometime<</if>>, okay?"
+			<<else>>
+				<<He>> sighs. "Can't be helped, I guess. Just try not to push yourself, okay?"
+			<</if>>
+		<</if>>
+		<br><br>
+		<<if Time.hour gte 17>>
+			<<He>> glances at <<his>> watch. "Right, you ought to hurry on home." <<He>> looks back to you. "It wouldn't do to let you out by yourself after your episode. How about a ride?"
+			<br><br>
+
+			<<link [[Accept|School Infirmary Nurse Accept]]>><</link>>
+			<br>
+			<<link [[Refuse|School Infirmary Nurse Refuse]]>><</link>>
+			<br>
+		<<else>>
+			"Alright then," <<he>> says.
+
+			<<if ["first","second","third","fourth","fifth"].includes($schoolstate)>>
+				"Best not keep your teachers waiting, <<girl>>. Off to class."
+			<<else>>
+				"Off you get. I'm busy."
+			<</if>>
+			<br><br>
+
+			<<He>> ushers you out of the infirmary and into the hall.
+			<br><br>
+
+			<<link [[Leave|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+			<br>
+		<</if>>
+	<<case "Doren">>
+		<<npc Doren>><<person1>>
+
+		A tall figure stands in front of the bed. <<His>> back is turned, but the red mane tumbling past <<his>> shoulders is unmistakable. It's Doren. <<He>> turns at the sound of you stirring, then kneels beside you.
+		<br><br>
+
+		"You got us all startled, <<lass>>. Are you feeling better? Should I contact the orphanage?"
+		<br><br>
+
+		You tell Doren you're fine. <<He>> looks relieved. Before <<he>> can ask any more questions, you excuse yourself and slip out of the infirmary.
+		<br><br>
+		<<if $schoolstate is "third">>
+			You hear Doren call your name from behind. <<Hes>> caught up before you have a chance to turn.
+			<br>
+			"We can still make it back to class if we hurry." <<He>> pauses. "If you feel up to it, that is."
+			<br><br>
+
+			<<link [[Go to class|School Infirmary Doren]]>><<set $phase to 0>><</link>>
+			<br>
+			<<link [[Just leave|School Infirmary Doren]]>><<set $phase to 1>><<npcincr Doren dom -1>><</link>>
+			<br>
+		<<else>>
+			<<link [[Leave|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+			<br>
+		<</if>>
+	<<case "River">>
+		<<npc River>><<person1>>
+
+		River sits at the nurse's desk, drumming <<his>> fingers along the desktop. <<He>> turns to face you, <<his>> gaze as stern as ever.
+		<br><br>
+
+		"Up all night partying, were we?" <<He>> shakes <<his>> head disapprovingly. "To the point of collapsing in broad daylight."
+		<br><br>
+
+		You tell River that you must have spent too much time studying. <<His>> expression leaves you wondering if <<he>> really believes you.
+		<br><br>
+
+		<<if $schoolstate is "second">>
+			River follows you out into the hall, and waves you towards the maths room. "Come on, now. If we're lucky, the class will still be in one piece."
+			<br><br>
+
+			<<link [[Go with River|School Infirmary River]]>><<set $phase to 1>><</link>>
+			<br>
+			<<link [[Just leave|School Infirmary River]]>><<set $phase to 0>><<npcincr River dom -1>><<detention 1>><</link>><<gdelinquency>>
+			<br>
+		<<else>>
+			Not wanting to answer any questions, you quietly excuse yourself.
+			<br><br>
+
+			<<link [[Leave|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+			<br>
+		<</if>>
+	<<case "Winter">>
+		<<npc Winter>><<person1>>
+
+		Winter stands in front of the nurse's desk. <<He>> speaks in a quiet, explicative voice. <<He>> stops talking as soon as <<he>> sees you awake.
+		<br><br>
+
+		"Good to see you up and running. I wouldn't appreciate my assistant falling ill."
+		<br><br>
+
+		You endure Winter's mild scolding and promise to take better care of yourself.
+		<br><br>
+
+		<<if $schoolstate is "fourth">>
+			<<He>> scrutinises you. <<He>> looks like <<hes>> about to say something, but settles for a sigh. <<He>> nods at the nurse, then ushers you out the door.
+			<br><br>
+
+			"Poor health is no excuse to neglect your studies," <<he>> says once you're alone. <<He>> starts towards <<his>> classroom, beckoning for you to follow. "Come along."
+			<br><br>
+
+			<<link [[Go with Winter|School Infirmary Winter]]>><<set $phase to 1>><</link>>
+			<br>
+			<<link [[Just leave|School Infirmary Winter]]>><<set $phase to 0>><<npcincr Winter dom -1>><<detention 1>><</link>><<gdelinquency>>
+			<br>
+		<<else>>
+			<<He>> reminds that you're always welcome at the museum, then resumes <<his>> conversation with the nurse. You take the opportunity to slip out of the infirmary.
+			<br><br>
+
+			<<link [[Leave|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+			<br>
+		<</if>>
+	<<case "Robin">>
+		<<npc Robin>><<person1>>
+
+		You see Robin gazing out a window. <<He>> rushes towards you the moment <<he>> realises you're awake.
+		<br><br>
+
+		<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 20>>
+			"You got me scared, you know." <<He>> takes your hand in <<his>> own and gives it a gentle squeeze. <<takeHandholdingVirginity "Robin" `($robinromance is 1 ?'romantic':'consensual')`>>
+		<<else>>
+			"Thank goodness you're okay," <<he>> sighs, resting <<if $robinromance is 1>><<his>> head<<else>>a hand<</if>> on your shoulder.
+		<</if>>
+		"What happened?"
+		<br><br>
+
+		You assure <<him>> that you must have fainted from a lack of sleep. <<He>> seems to believe you, though <<his>> eyes are full of genuine concern.
+		<br><br>
+
+		<<if ["morning","lunch","afternoon"].includes($schoolstate) or $NPCName[$NPCNameList.indexOf("Robin")].dom gte 20>>
+			<<He>> suggests you both should go back to the orphanage together.
+			<br><br>
+
+			<<if ["morning","lunch"].includes($schoolstate)>>
+				"I can get back in time for class," <<he>> reassures you. "But you need to rest."
+				<br><br>
+			<<elseif $schoolstate isnot "afternoon">>
+				"I don't mind missing class," <<he>> says. "This is more important."
+				<br><br>
+			<</if>>
+
+			<<link [[Go home with Robin (0:25)|School Infirmary Robin Accept]]>><<pass 25>><<npcincr Robin love 1>><<npcincr Robin dom 1>><</link>><<glove>><<gdom>>
+			<br>
+			<<link [[Refuse|School Infirmary Robin Refuse]]>><</link>>
+			<br>
+		<<else>>
+			<<He>> looks at the clock and frowns.
+			<br><br>
+
+			<<if $schoolstate is "fourth">>
+				"We should get to class." <<He>> gives you a concerned look. "Do you think you can make it?"
+				<br><br>
+
+				<<link [[Go to class with Robin|School Infirmary Robin History]]>><<set $phase to 1>><</link>>
+				<br>
+				<<link [[Stay here|School Infirmary Robin History]]>><<set $phase to 0>><</link>>
+				<br>
+			<<else>>
+				"I need to get back to class," <<he>> says. "Are you gonna be okay?"
+				<br><br>
+
+				You tell Robin you'll be fine. <<He>> nods and gives you a hug before leaving. You stay in bed a little longer before doing the same.
+				<br><br>
+
+				<<link [[Leave|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+			<</if>>
+		<</if>>
+	<<case "Kylar">>
+		<<npc Kylar>><<person1>>
+		<<run statusCheck("Kylar")>>
+		You almost trip over something. As you right yourself, Kylar pops up from the floor, <<his>> sketchbook tucked under <<his>> arm. You gasp in surprise.
+		<br><br>
+
+		<<if _kylarStatus.includes("Rage")>>
+			"What happened? Who were you with? Did they do this to you? Who was it?"
+			<br>
+			<<His>> breaths are heavy, and <<he>> inches closer with each question. The nurse has to forcibly separate <<him>> from you. <<Hes>> told to wait outside. Reluctantly, <<he>> complies.
+			<br><br>
+
+			The nurse has a short talk with you, then leads you out into the hallway. The moment you're alone, Kylar's back on you.
+			<br><br>
+
+			"We've been away from each other for so long, it's gotten you all worried. That's it, right?" <<He>> holds your arm tight and tries to drag you down the hallway. "C-come on. Let's go for a walk."
+			<<if $schoolstate isnot "afternoon">>
+				<br>
+				You mention that you'll be late for class. The only acknowledgement Kylar gives is a giggle.
+			<</if>>
+			<br><br>
+
+			<<link [[Go with Kylar (0:30)|School Infirmary Kylar Accept]]>><<pass 30>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><</link>><<glove>><<lksuspicion>>
+			<br>
+			<<link [[Resist|School Infirmary Kylar Refuse]]>><<npcincr Kylar rage 3>><</link>><<gksuspicion>>
+			<br>
+		<<elseif _kylarStatus.includes("Sus")>>
+			"D-don't worry! It's just me!" <<he>> exclaims, before looking away with a sour expression. "Or would you prefer someone else with you, watching you sleep..."
+			<br><br>
+
+			The nurse gently questions you on your health. Kylar looks irritated, but keeps quiet in a corner of the room. Soon enough, the nurse discharges you from the infirmary.
+			<br><br>
+
+			"They shouldn't ask such personal questions," Kylar mutters once you're outside. <<He>> grabs your arm and nods down the hallway. "L-let's go for a walk. Just me and you. That'll make you feel better, won't it?"
+			<<if $schoolstate isnot "afternoon">>
+				<br>
+				You mention that you'll be late for class. Kylar's smile doesn't falter. "They won't notice we're gone." <<He>> tugs on your arm.
+			<</if>>
+			<br><br>
+
+			<<link [[Go with Kylar (0:30)|School Infirmary Kylar Accept]]>><<pass 30>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><</link>><<glove>><<lksuspicion>>
+			<br>
+			<<link [[Refuse|School Infirmary Kylar Refuse]]>><<npcincr Kylar rage 3>><</link>><<gksuspicion>>
+			<br>
+		<<else>>
+			"S-sorry! I was just passing by when I heard you were here," <<he>> explains. "I wanted to check up on you."
+			<br><br>
+
+			The nurse questions you on your health. Kylar listens anxiously from a corner of the room. Soon enough, you're discharged from the infirmary.
+			<br><br>
+
+			"I'm glad you're okay," Kylar says once you're outside. "If something happened to you..."
+			<br>
+			<<He>> clings to your arm, resting <<his>> head on your shoulder. <<He>> suggests the two of you take a walk.
+			<br><br>
+			<<if $schoolstate is "afternoon">>
+				<<link [[Go with Kylar (0:30)|School Infirmary Kylar Accept]]>><<pass 30>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><</link>><<glove>><<lksuspicion>>
+				<br>
+				<<link [[Resist|School Infirmary Kylar Refuse]]>><<npcincr Kylar rage 3>><</link>><<gksuspicion>>
+				<br>
+			<<else>>
+				You remind <<him>> that you'll be late for class. Kylar's smile fades, and <<he>> withdraws <<his>> hand. "Oh... right."
+				<<if $schoolstate is "third">>
+					A quick look at <<his>> watch, and <<he>> perks back up. "D-do you want to walk to class together?"
+					<br><br>
+
+					<<link [[Go with Kylar|School Infirmary Kylar English]]>><<set $phase to 0>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><</link>><<glove>><<lksuspicion>>
+					<br>
+					<<link [[Refuse|School Infirmary Kylar English]]>><<set $phase to 1>><<npcincr Kylar love -1>><<npcincr Kylar rage 1>><</link>><<llove>><<gksuspicion>>
+					<br>
+				<<else>>
+					<<He>> bids you a sheepish goodbye. You watch <<him>> depart down a corridor, stealing glances at you over <<his>> shoulder.
+					<br><br>
+
+					<<link [[Next|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+					<br>
+				<</if>>
+			<</if>>
+		<</if>>
+	<<case "Whitney">>
+		<<npc Whitney>><<person1>>
+
+		<<if ($whitneyromance is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].dom gte 15) or $whitneyromance isnot 1>>
+			The smell of smoke taints the room's antiseptic atmosphere. Whitney sits atop the nurse's desk, surrounded by <<his>> cronies.
+			<br><br>
+
+			"Well well, look who's up." <<He>> crunches <<his>> cigarette against the desk and swaggers towards you. "Listen up, slut. You put that pretty mouth of yours to good use now or else." <<He>> places a hand on <<his>> crotch and palms it.
+			<br><br>
+
+			<<if $promiscuity gte 75>>
+				<<link [[Suggest fucking with the curtains open|School Infirmary Whitney Sex Open]]>><<set $sexstart to 1>><<trauma 3>><<npcincr Whitney love 1>><<npcincr Whitney dom 1>><</link>><<promiscuous5>><<gtrauma>><<glove>><<gdom>>
+				<br>
+			<</if>>
+			<<if $promiscuity gte 55>>
+				<<link [[Suggest fucking behind the curtains|School Infirmary Whitney Sex Closed]]>><<set $sexstart to 1>><<npcincr Whitney dom 1>><</link>><<promiscuous4>><<gdom>>
+				<br>
+			<</if>>
+			<<if $whitneyromance is 1>>
+				<<link [[Comply lovingly|School Infirmary Whitney Oral]]>><<set $sexstart to 1>><<npcincr Whitney love 1>><<npcincr Whitney dom 1>><</link>><<promiscuous1>><<glove>><<gdom>>
+				<br>
+			<</if>>
+			<<link [[Comply grudgingly|School Infirmary Whitney Oral]]>><<set $molestationstart to 1>><<trauma 6>><<stress 6>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<gdom>>
+			<br>
+			<<link [[Refuse|School Infirmary Whitney Refuse]]>><<npcincr Whitney dom -1>><</link>><<ldom>>
+			<br>
+		<<else>>
+			You see Whitney pacing back and forth across the room. The nurse keeps a constant eye on <<him>>. Once <<he>> realises that you're awake, <<he>> rushes to your side.
+			<br><br>
+
+			"What the fuck happened to you, slu..."
+			<br>
+			"Language!" the nurse scolds <<him>>. Whitney rolls <<his>> eyes.
+			<br><br>
+
+			You tell Whitney that you must have blacked out due to exhaustion, or maybe stress. <<He>> studies you from head to toe. <<He>> grumbles under <<his>> breath, then storms out of the infirmary. After a quick chat with the nurse, you do the same.
+			<br><br>
+
+			<<link [[Leave|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+			<br>
+		<</if>>
+	<<default>>
+		There's nobody here.
+		<br><br>
+
+		Not wanting to explain the circumstances of your passing out to the nurse, you quietly leave.
+		<br><br>
+
+		<<link [[Leave|Hallways]]>><<infirmary_excused>><</link>>
+		<br>
+<</switch>>
+
+:: School Infirmary Doren
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $phase is 1>>
+	Doren keeps you close as <<he>> walks you to class. <<He>> tells you to visit <<him>> after school if you need to talk, before gently pushing you through the door.
+	<br><br>
+
+	<<if $NPCName[$NPCNameList.indexOf("Kylar")].state is "active" and $kylarenglish is 1>>
+		You spot Kylar sat near the back of the class. <<nnpc_His "Kylar">> eyes go wide when <<nnpc_he "Kylar">> sees you. Smiling, <<nnpc_he "Kylar">> beckons for you to sit next to <<nnpc_him "Kylar">>.
+		<br><br>
+
+		<<link [[Sit next to Kylar|School Infirmary Doren 2]]>><<set $kylarenglishstate to "active">><<set $phase to 0>><<npcincr Kylar love 1>><<npcincr Kylar rage -1>><</link>><<glove>><<lksuspicion>>
+		<br>
+		<<link [[Sit somewhere else|School Infirmary Doren 2]]>><<set $kylarenglishstate to "watching">><<set $phase to 1>><<npcincr Kylar love -5>><<npcincr Kylar rage 5>><</link>><<lllove>><<ggksuspicion>>
+		<br>
+	<<else>>
+		You find an open desk and take a seat.
+		<br><br>
+
+		<<link [[Next|English Lesson]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	You tell Doren you don't think you can make it to class. <<He>> nods.
+	<br><br>
+
+	"That's alright. Best not to work yourself to the bone." <<He>> pats you on the back before leaving.
+	<br><br>
+
+	<<link [[Leave|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Doren 2
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $phase is 1>>
+	You ignore Kylar and find a seat far away from <<nnpc_his "Kylar">>. You can't see <<nnpc_him "Kylar">> from this angle, but you know <<nnpc_he "Kylar">>'s staring.<<stress 2>><<gstress>>
+<<else>>
+	<<run statusCheck("Kylar")>>
+	You take a seat next to Kylar.
+	<<if _kylarStatus.includes("Rage")>>
+		<<nnpc_He "Kylar">> immediately bombards you with questions. Where you were, why you were late, who you were with. Before you can answer, Doren gets into a lecture, drawing your attention to the front of the class.
+		<br><br>
+
+		Kylar keeps a critical eye on you. You pretend not to notice.<<stress 2>><<gstress>>
+	<<else>>
+		<<nnpc_He "Kylar">> smiles and scoots closer to you as Doren begins <<his>> lecture.
+	<</if>>
+<</if>>
+<br><br>
+
+<<link [[Next|English Lesson]]>><<endevent>><</link>>
+<br>
+
+:: School Infirmary River
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $phase is 1>>
+	River doesn't say a word until you arrive outside the maths room. You hear rowdy voices on the other side of the door. River sighs and shakes <<his>> head before entering. The class falls silent.
+	<br><br>
+
+	<<silently>><<mathsWhitneyAttendChance>><</silently>>
+
+	<<if $whitneymaths is "seat">>
+		You walk the aisles in search of an open desk. Before you can find one, someone grabs your arm and forces you into the seat next to them. It's Whitney. <<nnpc_He "Whitney">> winks at you.
+	<<else>>
+		You find an open desk and take a seat.
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Maths Lesson]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You ignore River and bolt in the opposite direction. <<He>> calls after you, but you pay <<him>> no mind. <<He>> doesn't pursue.
+	<br><br>
+
+	<<link [[Leave|Hallways]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Winter
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<run statusCheck("Robin")>>
+
+<<if $phase is 1>>
+	Winter has a quiet chat with you during your walk to the classroom. <<He>> does most of the talking. Once you arrive, <<he>> holds the door open and motions for you to enter.
+	<br><br>
+
+	<<if _robin_location is "school">>
+		You spot Robin sat near the front of the class. <<nnpc_His "Robin">> eyes light up as you take a seat beside <<nnpc_him "Robin">>. <<nnpc_He "Robin">> opens <<nnpc_his "Robin">> mouth to speak, but the sound of Winter's voice silences <<nnpc_him "Robin">>.
+		<<set $robinhistory to "seat">>
+	<<else>>
+		You find an open desk and take a seat.
+	<</if>>
+	<br><br>
+
+	<<link [[Next|History Lesson]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You ignore Winter and bolt in the opposite direction. By the time <<he>> notices your absence, you're long gone.
+	<br><br>
+
+	<<link [[Leave|Hallways]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Robin Accept
+<<set $outside to 1>><<set $location to "town">><<schooleffects>><<effects>>
+
+You leave school and walk through the town with Robin<<if $robinromance is 1>>, <<his>> arm hooked around yours<</if>>.
+<br><br>
+
+<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 40>>
+	<<Hes>> lively today, constantly trying to make you smile over the course of your journey. More often than not, <<he>> succeeds.
+<<else>>
+	<<He>> casts a glance at you every now and then, but otherwise seems content to walk with you in comfortable silence.
+<</if>>
+<<trauma -6>><<stress -6>><<ltrauma>><<lstress>>
+<br><br>
+
+Once you're home, Robin leads you straight to your room.
+<<if ["afternoon","late"].includes($schoolstate)>>
+	<<He>> reminds you to visit <<him>> if you need to talk, before heading to <<his>> own room.
+<<else>>
+	"I should get back to class." <<He>> hugs you. "We'll talk later.
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 20>>
+		You get some rest, okay?"
+	<<else>>
+		I hope you feel better by then."
+	<</if>>
+	<br><br>
+
+	<<He>> gently shuts the door behind <<him>> as <<he>> leaves.
+<</if>>
+<br><br>
+
+<<link [[Next|Bedroom]]>><<endevent>><<infirmary_excused>><</link>>
+<br>
+
+:: School Infirmary Robin Refuse
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $schoolstate isnot "afternoon">>
+	<<if $delinquency lte 0 and $NPCName[$NPCNameList.indexOf("Robin")].dom gte 10>>
+		Robin giggles. "You're such a model student," <<he>> teases. "You wouldn't miss class if your life depended on it, would you?"
+	<<else>>
+		Robin nods. "I understand. You could get in trouble for skipping class."
+	<</if>>
+	<br><br>
+
+	<<He>> helps you out of bed and sees you out the infirmary. <<He>> gives you a parting hug and a wave as <<he>> disappears down the hallway.
+	<br><br>
+
+	<<link [[Next|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+	<br>
+<<else>>
+	Robin nods. "That's okay. Just get some rest. You'll come see me when you get home, right?"
+	<br><br>
+
+	<<He>> gives you a hug, then leaves. You stay in bed a little longer before stepping out into the hallway.
+	<br><br>
+
+	<<link [[Next|Hallways]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Robin History
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $phase is 1>>
+	Robin helps you to your feet and leads you out of the infirmary. <<He>> holds your arm tight as you walk down the hallway together.
+	<br><br>
+
+	Winter doesn't look up when you enter. <<He>> wordlessly motions for you both to sit down. You take a seat beside to Robin as Winter continues <<nnpc_his "Winter">> lecture.
+	<br><br>
+
+	<<link [[Next|History Lesson]]>><<endevent>><<set $robinhistory to "seat">><</link>>
+	<br>
+<<else>>
+	Robin nods. "That's okay. I'll tell Winter you're feeling sick." <<He>> frowns. "I hope you don't get in trouble..."
+	<br><br>
+
+	<<He>> gives you a hug, then bids you farewell. You stay in bed a little longer before stepping out into the hallway.
+	<br><br>
+
+	<<link [[Leave|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Kylar Accept
+<<set $outside to 1>><<set $location to "town">><<schooleffects>><<effects>>
+<<run statusCheck("Kylar")>>
+
+<<if $speech_attitude is "meek">>
+	You smile. "I'd love to-"
+<<elseif $speech_attitude is "bratty">>
+	You shrug. "I guess I could-"
+<<else>>
+	You nod. "Yeah, let's-"
+<</if>>
+<br><br>
+
+Before you can finish, Kylar takes your arm and starts down the hallway. You're still woozy, so <<he>> practically drags you along. You stumble to keep up.
+<br><br>
+
+<<if _kylarStatus.includes("MaxRage")>>
+	<<His>> grip on your arm is almost painful as <<he>> leads you through the town. <<He>> looks ready to lash out at any moment. Passersby give the two of you a wide berth, shooting concerned glances your way.<<stress 6>><<gstress>>
+<<elseif _kylarStatus.includes("Rage")>>
+	<<His>> grip on your arm is almost painful as <<he>> leads you through the town. <<His>> eyes dart about the streets nervously. "Too many people," <<he>> mutters. <<He>> drags you between alleys, away from their gazes.<<stress 4>><<gstress>>
+<<elseif _kylarStatus.includes("Sus")>>
+	<<Hes>> happy to walk with you, but <<he>> tenses up at any passersby. <<He>> mutters something under <<his>> breath, but you can't make it out.<<stress 2>><<gstress>>
+<<else>>
+	<<Hes>> happy to walk with you, rubbing up against your arm as you walk.
+	<br><br>
+
+	At one point, <<his>> hand begins to dip downwards, inching close to your hand. You feel <<his>> fingers brush against your palm. <<He>> gasps and retracts <<his>> arm, whispering an apology.
+	<br><br>
+
+	<<set _kylarWalkHandhold to true>>
+	<<link [[Take Kylar's hand|School Infirmary Kylar Walk]]>><<set $phase to 1>><<npcincr Kylar love 1>><<npcincr Kylar lust 1>><<npcincr Kylar rage -3>><</link>><<glove>><<glust>><<lksuspicion>><<handholdingvirginitywarning>><<NPCvirginitywarning "Kylar" "handholding">>
+	<br>
+	<<link [[Just keep walking|School Infirmary Kylar Walk]]>><<set $phase to 0>><</link>>
+	<br>
+<</if>>
+
+<<if !_kylarWalkHandhold>>
+	<br><br>
+
+	<<link [[Next|School Infirmary Kylar Walk]]>><<set $phase to 0>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Kylar Walk
+<<set $outside to 1>><<schooleffects>><<effects>><<run statusCheck("Kylar")>>
+
+<<if $phase is 1>>
+	You entwine your arm around Kylar's and grasp <<his>> hand. It clenches tight around yours.
+	<<takeHandholdingVirginity "Kylar" "romantic">>
+	You glance at <<him>>. <<Hes>> looking away from you, but <<hes>> smiling.
+	<br><br>
+<</if>>
+
+<<if Time.hour gte 17>>
+	You don't stray far from school, opting for a quiet stroll down Oxford Street. After some time, Kylar checks <<his>> watch.
+	<br><br>
+
+	"S-sorry. I have to go." <<He>> pulls away from you and hurries down a corner, leaving you alone outside the school.
+	<br><br>
+
+	<<link [[Next|Oxford Street]]>><<endevent>><</link>>
+	<br>
+<<elseif $schoolstate is "afternoon">>
+	<<if ["rain","snow"].includes($weather)>>
+		<<set $location to "arcade">><<set $bus to "starfish">>
+		Kylar leads you through town, sticking to back alleys to avoid the <<print $weather>>. You soon arrive at the arcade.
+		<br><br>
+
+		"I like it here," <<he>> says. "Everyone's too distracted to bother you."
+		<br><br>
+
+		You're pulled inside, past the bustle of patrons, to a secluded cabinet in the corner of the room. Kylar pops a coin in the slot.
+		<br><br>
+
+		<<kylaroptions>>
+	<<else>>
+		<<set $location to "park">><<set $bus to "park">>
+		Your walk with Kylar is short and quiet. You soon arrive at the park.
+		<br><br>
+
+		"I like coming here to get away from everyone," <<he>> says. <<He>> gives your arm a tug. "Come on."
+		<br><br>
+
+		<<He>> leads you to a bench, where the two of you take a seat. <<He>> rests <<his>> head on your shoulder.
+		<br><br>
+
+		<<kylaroptions>>
+	<</if>>
+<<else>>
+	You don't stray far from school, opting for a quiet stroll down Oxford Street. After some time, Kylar checks <<his>> watch.
+	<br><br>
+
+	"We should get back." <<He>> looks sad. "I wish we could just be alone forever..."
+	<br><br>
+
+	<<He>> disappears beyond the front gate,
+	<<if _kylarStatus.includes("Rage")>>
+		muttering under <<his>> breath
+	<<elseif _kylarStatus.includes("Sus")>>
+		gazing over <<his>> shoulder
+	<<else>>
+		waving at you
+	<</if>>
+	as <<he>> goes.
+	<br><br>
+
+	<<link [[Next|School Front Courtyard]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Kylar Refuse
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+<<run statusCheck("Kylar")>>
+
+
+<<if _kylarStatus.includes("Rage")>>
+	Kylar's eyes narrow. <<He>> takes a step closer. You're backed up against the wall. "Come on," <<he>> repeats. "Let's go for a walk."<<stress 2>><<gstress>>
+	<br><br>
+
+	You
+	<<if $speech_attitude is "meek">>
+		look down
+	<<elseif $speech_attitude is "bratty">>
+		cross your arms
+	<<else>>
+		swallow nervously
+	<</if>>
+	and tell <<him>> that
+	<<if $schoolstate is "afternoon">>
+		you're busy.
+	<<else>>
+		you can't skip class.
+	<</if>>
+	Kylar doesn't say anything. <<He>> reaches into <<his>> pocket, but <<he>> stops at the sound of footsteps coming down the hallway. <<He>> mumbles incoherently before scurrying down the hall.
+	<br><br>
+
+	You quickly depart in the other direction.
+<<elseif _kylarStatus.includes("Sus")>>
+	Kylar pouts, but refrains from making a scene. "Okay," <<he>> says, <<his>> tone bitter. "Maybe another time."
+	<br><br>
+
+	<<He>> shuffles down the hallway, giving you strange looks over <<his>> shoulder.
+<<else>>
+	Kylar smiles. It looks strained. "Th-that's okay," <<he>> says. "Maybe another time."
+	<br><br>
+
+	<<He>> disappears down the hallway, <<his>> gaze glued to the floor.
+<</if>>
+<br><br>
+
+<<link [[Leave|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+<br>
+
+:: School Infirmary Kylar English
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $phase is 1>>
+	Kylar tenses, but nods.
+	<br><br>
+
+	"Another time," you hear <<him>> mumble as <<he>> walks away.
+	<br><br>
+
+	<<link [[Next|Hallways]]>><<endevent>><<infirmary_excused>><</link>>
+	<br>
+<<else>>
+	Kylar smiles as <<he>> leads you down the hallway. <<Hes>> cheerful, making small talk as you go, your breakdown all but forgotten.
+	<br><br>
+
+	You soon arrive at Doren's class. <<nnpc_He "Doren">> greets you with a gentle hand on your shoulder. "Got a call from the nurse," <<nnpc_he "Doren">> says. "Hope you're feeling better, <<lass>>."
+	<br><br>
+
+	Kylar ignores <<nnpc_him "Doren">> and leads you towards the back of the class. You find a pair of empty desks and take a seat next with Kylar.
+	<br><br>
+
+	<<link [[Next|English Lesson]]>><<endevent>><<set $kylarenglishstate to "active">><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Whitney Refuse
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+You refuse to comply with Whitney's whims. A cruel spark lights up in <<his>> eyes. The atmosphere is heavy, and it feels like <<he>> is going to force <<himself>> on you.
+
+<<if $whitneyromance is 1>>
+	Instead, <<he>> sighs indignantly and shows <<his>> squad to get out of the infirmary.
+	<br><br>
+
+	"Consider yourself lucky. If we weren't going out, I'd rape your ass without giving it a second thought," <<he>> whispers in your ear and forces a kiss on your lips before you can react. It tastes like tobacco<<if isLoveInterest("Whitney")>>, but you don't mind in the slightest.<<arousal 100 "mouth">><<garousal>><<else>>.<<stress 2>><<gstress>><</if>>
+	<br><br>
+
+	Whitney follows <<his>> friends outside. Before long, you leave the infirmary, too.
+	<br><br>
+
+	<<link [[Leave (0:01)|Hallways]]>><<endevent>><<pass 1>><<infirmary_excused>><</link>>
+	<br>
+<<else>>
+	Without so much as a moment's hesitation, <<he>> pins you to the bed.
+	<br><br>
+
+	<<link [[Next|School Infirmary Whitney Sex Open]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: School Infirmary Whitney Sex Open
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+
+	<<enable_rescue>>
+	<<maninit>>
+	<<set $enemyanger += 100>>
+<<elseif $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<enable_rescue>>
+	<<maninit>>
+
+	<<if $speech_attitude is "meek">>
+		"W-well, I don't mind going even f-further..." you stutter while opening your legs a tad more.
+	<<elseif $speech_attitude is "bratty">>
+		"What a shame. And here I was hoping for something more than just that." You lick your upper lip and spread your legs.
+	<<else>>
+		"You sure my mouth will suffice?" you ask in a coquettish tone, opening your legs a bit.
+	<</if>>
+	<<promiscuity5>>
+
+	Whitney breaks into a broad smile and joins you on the bed. The thought of having sex in front of <<his>> friends makes your heart flutter with anticipation.
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|School Infirmary Whitney Sex Open Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|School Infirmary Whitney Sex Open]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: School Infirmary Whitney Sex Open Finish
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $alarm is 1 and $rescue is 1>>
+	<<set $rescued += 1>>
+	You hear footsteps approaching from outside the infirmary. Whitney curls <<his>> lip and shoves off of you.
+	<br><br>
+
+	"This isn't over, slut," <<he>> spits. <<He>> storms out of the room with <<his>> friends. Shortly after, the nurse appears in the doorway.
+	<br><br>
+
+	<<tearful>> you dismiss the nurse's concerns, hoping to put the experience behind you. You're soon led out into the hallway.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	<<if $consensual is 1>>
+		"You were made for this, slut," <<he>> says. <<He>> gives your <<bottom>> a loud smack, eliciting a chuckle from the crowd.<<llust>><<npcincr Whitney lust -20>>
+		<br><br>
+
+		After a brief respite, <<he>> gets up from the bed and leaves the infirmary with <<his>> friends without even looking back at you.
+	<<else>>
+		Whitney lies on top of your pliant body for a moment, basking in the afterglow of <<his>> orgasm. Once <<his>> breathing evens out, <<he>> stands up.<<llust>><<npcincr Whitney lust -20>>
+		<br><br>
+
+		"Warned you, stupid whore."
+		<br><br>
+
+		With that, <<he>> leaves the infirmary with a sneer across <<his>> face. <<His>> friends follow suit.
+	<</if>>
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+
+	You decide to leave before the nurse gets back.
+<<elseif $enemyhealth lte 0>>
+	You heave Whitney away, <<his>> head clanging against the metal bedframe. <<He>> curses loudly.<<npcincr Whitney dom -1>><<ldom>>
+
+	Whitney rises to <<his>> feet, sporting a cocky smirk. "This bitch is rabid," <<he>> says to <<his>> friends. "Bet <<pshes>> here to get <<pher>> shots. Let's get out of here before we catch something." They leave the room, laughing.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	Seeing the disheveled state you've left the room in, you decide to leave before you have to explain it to the nurse.
+<<else>>
+	Whitney shoves you off with a sigh.
+	<br><br>
+
+	"Whatever, slut." <<He>> saunters away, glaring over <<his>> shoulder. "Keep acting like a tease. See where it gets you." <<He>> departs with <<his>> cronies, leaving you alone in the infirmary.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	You decide to leave before the nurse gets back.
+<</if>>
+<br><br>
+
+<<link [[Leave (0:01)|Hallways]]>><<pass 1>><<infirmary_excused>><</link>>
+<br>
+
+:: School Infirmary Whitney Sex Closed
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<enable_rescue>>
+	<<maninit>>
+
+	<<if $speech_attitude is "meek">>
+		"I can do more than that, if we're behind the curtains..." you mumble.
+	<<elseif $speech_attitude is "bratty">>
+		"I have a better idea." You beckon to <<him>>. "Come here and close the curtains, if you're interested."
+	<<else>>
+		"Let's close the curtains, and I'll show you a much better time," you say.
+	<</if>>
+	<<promiscuity4>>
+
+	Whitney breaks into a smile and joins you on the bed. Once hidden behind the curtains, the two of you get down to the main course.
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|School Infirmary Whitney Sex Closed Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|School Infirmary Whitney Sex Closed]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: School Infirmary Whitney Sex Closed Finish
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $alarm is 1 and $rescue is 1>>
+	<<set $rescued += 1>>
+	You hear footsteps approaching from outside the infirmary. Whitney curls <<his>> lip and shoves off of you.
+	<br><br>
+
+	"This isn't over, slut." <<He>> throws the curtain open and storms out of the room with <<his>> friends. Shortly after, the nurse appears in the doorway.
+	<br><br>
+
+	<<tearful>> you dismiss the nurse's concerns, hoping to put the experience behind you. You're soon led out into the hallway.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"Fuck, that was good," <<he>> sighs, stroking your thigh in a gentle fashion.<<llust>><<npcincr Whitney lust -20>>
+	<br><br>
+
+	After a brief respite, <<he>> opens a curtain, gets up from the bed and leaves the infirmary with <<his>> friends without even looking back at you.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	You decide to leave before the nurse gets back.
+<<elseif $enemyhealth lte 0>>
+	You heave Whitney away, sending <<him>> stumbling through the curtain. <<His>> friends watch in bemusement.<<npcincr Whitney dom -1>><<ldom>>
+	<br><br>
+
+	Whitney rises to <<his>> feet, sporting a cocky smirk. "This bitch is rabid," <<he>> says to <<his>> friends. "Bet <<pshes>> here to get <<pher>> shots. Let's get out of here before we catch something." They leave the room, laughing.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	Seeing the disheveled state you've left the room in, you decide to leave before you have to explain it to the nurse.
+<<else>>
+	Whitney shoves you off with a sigh.
+	<br><br>
+
+	"Whatever, slut." <<He>> yanks the curtain open and stomps away, glaring over <<his>> shoulder. "Keep acting like a tease. See where it gets you." <<He>> departs with <<his>> cronies, leaving you alone in the infirmary.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	You decide to leave before the nurse gets back.
+<</if>>
+
+<<link [[Leave (0:01)|Hallways]]>><<pass 1>><<infirmary_excused>><</link>>
+<br>
+
+:: School Infirmary Whitney Oral
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+
+	<<enable_rescue>>
+	<<maninit>>
+
+	You hang your head and nod. Satisfied with your response, Whitney comes closer and grasps the back of your head. <<He>> forces your face against <<his>> crotch.
+	<br><br>
+
+	<<npcoral>><<set $NPCList[0].lefthand to "hair">><<set $enemyanger += 70>>
+<<elseif $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<enable_rescue>>
+	<<maninit>>
+
+	You give Whitney a sultry smile and show <<him>> your tongue, ready for servicing. <<promiscuity1>>
+
+	Pleased by your response, Whitney comes closer and guides your head towards <<his>> crotch.
+	<br><br>
+
+	<<npcoral>><<set $NPCList[0].lefthand to "hair">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|School Infirmary Whitney Oral Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|School Infirmary Whitney Oral]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: School Infirmary Whitney Oral Finish
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
+
+<<if $alarm is 1 and $rescue is 1>>
+	<<set $rescued += 1>>
+	You hear footsteps approaching from outside the infirmary. Whitney curls <<his>> lip and shoves off of you.
+	<br><br>
+
+	"This isn't over, slut," <<he>> spits. <<He>> storms out of the room with <<his>> friends. Shortly after, the nurse appears in the doorway.
+	<br><br>
+
+	<<tearful>> you dismiss the nurse's concerns, hoping to put the experience behind you. You're soon led out into the hallway.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>> <<He>> grips at your hair and tries to catch <<his>> breath. Once <<his>> breathing becomes steady, <<he>> lets go of you.<<llust>><<npcincr Whitney lust -20>>
+	<br><br>
+
+	"Good fucking job, slut.
+	<<if $whitneyromance is 1>>
+		See you next time."
+	<<else>>
+		We're doing this again real soon."
+	<</if>>
+	<br><br>
+
+	With that, <<he>> turns around and leaves the infirmary. <<His>> friends follow suit.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> you leave before the nurse gets back.
+<<elseif $enemyhealth lte 0>>
+	You heave Whitney away, <<his>> head clanging against the metal bedframe. <<He>> curses loudly.<<npcincr Whitney dom -1>><<ldom>>
+	<br><br>
+
+	Whitney rises to <<his>> feet, sporting a cocky smirk. "This bitch is rabid," <<he>> says to <<his>> friends. "Bet <<pshes>> here to get <<pher>> shots. Let's get out of here before we catch something." They leave the room, laughing.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	Seeing the disheveled state you've left the room in, you decide to leave before you have to explain it to the nurse.
+<<else>>
+	Whitney shoves you off with a sigh.
+	<br><br>
+
+	"Whatever, slut." <<He>> yanks the curtain open and stomps away, glaring over <<his>> shoulder. "Keep acting like a tease. See where it gets you." <<He>> departs with <<his>> cronies, leaving you alone in the infirmary.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<tearful>> leave before the nurse gets back.
+<</if>>
+<br><br>
+
+<<link [[Leave (0:01)|Hallways]]>><<pass 1>><<infirmary_excused>><</link>>
+<br>
+
+:: School Infirmary Nurse Accept
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+The nurse nods, leading you outside. You climb into the passenger seat of <<his>> car.
+<br><br>
+
+The ride passes in silence. <<He>> doesn't need directions to the orphanage. After a short drive, <<he>> parks outside.
+<br><br>
+
+"Here you are," <<he>> says, unlocking the door. You hop out onto the sidewalk. The nurse calls after you. "Remember, take it easy."
+<br><br>
+
+<<He>> waits until you reach the doorstep before driving off.
+<br><br>
+
+<<link [[Next|Orphanage]]>><<endevent>><</link>>
+<br>
+
+:: School Infirmary Nurse Refuse
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+The nurse frowns, then shrugs. "Suit yourself. I can't just leave you here, though." <<He>> grabs your arm and pulls you from the bed. "Up you get."
+<br><br>
+
+<<He>> leads you out towards the front gate, locking it shut behind <<him>>. "Remember, take it easy."
+<br><br>
+
+You're left alone outside the school.
+<br><br>
+
+<<link [[Next|Oxford Street]]>><<endevent>><</link>>
+<br>
+
+:: School Infirmary Asylum
+<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<npc Harper>><<person1>>
+
+When you wake up, you're somewhere new, in a different bed. It looks like a hospital room.
+<br><br>
+
+Beside the bed stands a person in a white coat, speaking with another blurry figure. Your head is still cloudly, and you can't make out what they're saying.
+<br><br>
+
+The two of them talk for some time, until one leaves, and the other turns around. Your vision starts to clear, giving you a good look at the <<personsimple>>.
+
+<<if $hospitalintro is 0>><<set $hospitalintro to 1>>
+	<br><br>
+	<<He>> smiles at you. "Hello, I'm Doctor Harper." <<He>> takes a seat by your bedside and pulls <<his>> blond fringe away from <<his>> eyes. <<He>> looks young, can't be older than 25. <<He>> holds a clipboard in <<his>> hands.
+<<else>>
+	It's Doctor Harper. <<He>> smiles as <<he>> pulls out <<his>> clipboard.
+<</if>>
+<br><br>
+
+"You blacked out at school, I'm told," <<he>> starts. "I'm sure it's nothing to worry about, but I'd like to ask you a few questions."
+<br><br>
+
+<<link [[Next|Hospital Bed Examination]]>><</link>>
+<br>

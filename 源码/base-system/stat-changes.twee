@@ -1,0 +1,990 @@
+:: Widgets Stats [widget]
+
+<<widget "trauma">>
+	<<if _args[0] or _args[1]>>
+		<<if _args[0] gte 0>>
+			<<set _trauma_mod to 1>>
+			<<if $rapetrait gte 1>>
+				<<set _trauma_mod *= 0.7>>
+			<</if>>
+			<<if $bestialitytrait gte 1 and $enemytype is "beast">>
+				<<set _trauma_mod *= 0.7>>
+			<</if>>
+			<<if $tentacletrait gte 1 and $enemytype is "tentacles">>
+				<<set _trauma_mod *= 0.7>>
+			<</if>>
+			<<set $trauma += Math.trunc(((_args[0] * 3) - ((_args[0] * 1.5) * ($control / $controlmax))) * _trauma_mod)>>
+		<<else>>
+			<<set $trauma += Math.trunc((_args[0] * 3) + ((_args[0] * 1.5) * ($control / $controlmax)))>>
+		<</if>>
+	<</if>>
+	/* 北极星模组 */
+	<<traumaclamp>>
+	/* 北极星 */
+	<<if $trauma gte 1>>
+		<<set $sleeptrouble to 1>>
+	<<else>>
+		<<set $sleeptrouble to 0>>
+	<</if>>
+
+	<<if $trauma gte ($traumamax / 10) * 1>>
+		<<set $nightmares to 1>>
+	<<else>>
+		<<set $nightmares to 0>>
+	<</if>>
+
+	<<if $trauma gte ($traumamax / 10) * 7>>
+		<<set $anxiety to 2>>
+	<<elseif $trauma gte ($traumamax / 10) * 2>>
+		<<set $anxiety to 1>>
+	<<else>>
+		<<set $anxiety to 0>>
+	<</if>>
+
+	<<if $trauma gte ($traumamax / 10) * 8>>
+		<<set $flashbacks to 1>>
+	<<else>>
+		<<set $flashbacks to 0>>
+	<</if>>
+
+	<<if $trauma gte ($traumamax / 10) * 6>>
+		<<set $panicattacks to 2>>
+	<<elseif $trauma gte ($traumamax / 10) * 4>>
+		<<set $panicattacks to 1>>
+	<<else>>
+		<<set $panicattacks to 0>>
+	<</if>>
+
+	<<updateHallucinations>>
+
+	<<if $trauma gte $traumamax>>
+		<<set $dissociation to 2>>
+	<<elseif $trauma gte ($traumamax / 10) * 9>>
+		<<set $dissociation to 1>>
+	<<else>>
+		<<set $dissociation to 0>>
+	<</if>>
+
+	<<traumaclamp>>
+<</widget>>
+
+<<widget "combattrauma">>
+	<<if _args[0]>>
+		<<if _args[0] gte 0>>
+			<<set _trauma_mod to 1>>
+			<<if $rapetrait gte 1>>
+				<<set _trauma_mod *= 0.7>>
+			<</if>>
+			<<if $bestialitytrait gte 1 and $enemytype is "beast">>
+				<<set _trauma_mod *= 0.7>>
+			<</if>>
+			<<if $tentacletrait gte 1 and $enemytype is "tentacles">>
+				<<set _trauma_mod *= 0.7>>
+			<</if>>
+			<<set $trauma += Math.trunc(((_args[0] * 1) - ((_args[0] * 0.5) * ($control / $controlmax))) * _trauma_mod)>>
+		<<else>>
+			<<set $trauma += Math.trunc((_args[0] * 1) + ((_args[0] * 0.5) * ($control / $controlmax)))>>
+		<</if>>
+		<<traumaclamp>>
+	<</if>>
+<</widget>>
+
+<<widget "straighttrauma">>
+	<<if _args[0]>>
+		<<set $trauma += (_args[0] * 1)>>
+		<<traumaclamp>>
+	<</if>>
+<</widget>>
+
+<<widget "updateHallucinations">>
+	<<if $trauma gte ($traumamax / 10) * 5 or $awareness gte 400 or $hallucinogen gt 0 or isBloodmoon() or $worn.face.type.includes("esoteric")>>
+		<<set $hallucinations to 2>>
+	<<elseif $trauma gte ($traumamax / 10) * 3 or $awareness gte 300>>
+		<<set $hallucinations to 1>>
+	<<else>>
+		<<set $hallucinations to 0>>
+	<</if>>
+<</widget>>
+
+<<widget "control">>
+	<<if _args[0]>>
+		<<set $control += (_args[0] * 10)>>
+		<!--
+		<<if _args[0] gte 1>>
+			<<set $controlstart += (_args[0] * 10)>>
+		<</if>>
+		-->
+		<<if $control gte ($controlmax / 5) * 2>>
+			<<set $controlled to 1>>
+		<<else>>
+			<<set $controlled to 0>>
+		<</if>>
+	<</if>>
+	<<if $gamemode is "soft">>
+		<<set $control = Math.clamp($control, 1000, $controlmax)>>
+	<<else>>
+		<<set $control = Math.clamp($control, 0, $controlmax)>>
+	<</if>>
+<</widget>>
+
+<<widget "combatcontrol">>
+	<<if _args[0]>>
+		<<set $control += (_args[0] * 10)>>
+		<<if $control gte $controlstart>>
+			<<set $control to $controlstart>>
+		<</if>>
+		<<if $control gte ($controlmax / 5) * 2>>
+			<<set $controlled to 1>>
+		<<else>>
+			<<set $controlled to 0>>
+		<</if>>
+	<</if>>
+	<<if $gamemode is "soft">>
+		<<set $control = Math.clamp($control, 1000, $controlmax)>>
+	<<else>>
+		<<set $control = Math.clamp($control, 0, $controlmax)>>
+	<</if>>
+<</widget>>
+
+<<widget "corruption">>
+	<<if _args[0]>>
+		<<set $earSlime.corruption += _args[0]>>
+		<<if _args[0] gt 0 and $earSlime.growth gt 50>>
+			<<sub 1>>
+		<</if>>
+		<<set $earSlime.corruption = Math.clamp($earSlime.corruption, 0, 100)>>
+	<</if>>
+<</widget>>
+
+<<widget "semenvolume">>
+	<<if isNaN(_args[0])>>
+		<<run throw new Error("The semenvolume widget was passed a non-numeric argument (or none at all)!")>>
+	<<elseif $player.penisExist>>
+		<<set $_volume_increase to _args[0] * 3>>
+		<<if $cow gte 6>>
+			<<set $_volume_increase *= 2>>
+		<</if>>
+		/*Prevents those who can only have "female climax" increase their cum volume*/
+		<<if $player.penissize gt -2 or $_volume_increase <= 0>>
+			<<set $semen_volume += $_volume_increase>>
+		<</if>>
+		<<set $semen_volume to Math.clamp($semen_volume, 0, $semen_max)>>
+	<</if>>
+<</widget>>
+
+<<widget "semen_amount">>
+	<<if _args[0]>>
+		<<set $semen_amount += _args[0]>>
+		<<set $semen_amount = Math.clamp($semen_amount, 0, $semen_volume)>>
+	<</if>>
+<</widget>>
+
+<<widget "milkvolume">>
+	<<if isNaN(_args[0])>>
+		<<run throw new Error("The milkvolume widget was passed a non-numeric argument (or none at all)!")>>
+	<<else>>
+		<<if _args[0] gt 0>>
+			<<if $cow gte 6>>
+				<<lactation_pressure 2>>
+			<<else>>
+				<<lactation_pressure 1>>
+			<</if>>
+		<</if>>
+		<<if $lactating is 1>>
+			<<set $_volume_increase to (_args[0] * 2)>>
+			<<if $cow gte 6>>
+				<<set $_volume_increase *= 2>>
+			<</if>>
+			<<set $milk_volume += $_volume_increase>>
+			<<set $milk_volume to Math.clamp($milk_volume, 24, $milk_max)>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "milk_amount">>
+	<<if _args[0]>>
+		<<set $milk_amount += _args[0]>>
+		<<set $milk_amount = Math.clamp($milk_amount, 0, $milk_volume)>>
+	<</if>>
+	<<if !$milkFullPain>>
+	<<elseif $milkFullPain and between($milk_amount / $milk_volume, 0, 0.8)>>
+		<<set $milkFullPain to 0>>
+	<<elseif $milkFullPain gt 225 and between($milk_amount / $milk_volume, 0.85, 0.9)>>
+		<<set $milkFullPain to 225>>
+	<<elseif $milkFullPain gt 250 and between($milk_amount / $milk_volume, 0.9, 0.95)>>
+		<<set $milkFullPain to 250>>
+	<<elseif $milkFullPain gt 275 and between($milk_amount / $milk_volume, 0.95, 0.98)>>
+		<<set $milkFullPain to 275>>
+	<</if>>
+<</widget>>
+
+<<widget "lactation_pressure">>
+	<<if _args[0]>>
+		<<set $lactation_pressure += _args[0]>>
+		<<set $lactation_pressure = Math.clamp($lactation_pressure, 0, 100)>>
+	<</if>>
+<</widget>>
+
+<<widget "stress">>
+	<!-- args[0] is the "base" amount of stress, and is required. must be a non-zero number. -->
+	<!-- args[1] is optional, use it you want to override the calculated stress multiplier -->
+	<<if _args[0] and typeof _args[0] is "number">>
+		<<if _args[1] and typeof _args[1] is "number">>
+			<<set $stress += (_args[0] * _args[1])>>
+		<<elseif _args[0] lte 0>> <!-- if stress is being lowered, and a custom multiplier was not provided, multiply it by 80 -->
+			<<set $stress += (_args[0] * 80)>>
+		<<else>>
+			<<if $drunk lte 0>>
+				<<set _stress_mod to 40>>
+			<<else>>
+				<<set _drunk_mod to Math.clamp(Math.floor($drunk / 120), 0, 4)>>
+				<<set _stress_mod to 30 - _drunk_mod * 5>>
+			<</if>>
+
+			/* 北极星模组 */
+			<<if $options.bjx_eventTF and $body_temperature is "cold" and $ghost is 2>>
+                <<set _stress_mod *= 0.0>>
+			<<elseif $options.bjx_eventTF and $body_temperature is "chilly" and $ghost is 2>>
+			    <<set _stress_mod *= 0.5>>
+			<<elseif $options.bjx_eventTF and $body_temperature is "cold" and $ghost is 3>>
+				<<set _stress_mod *= 1.5>>
+			<<elseif $options.bjx_eventTF and $body_temperature is "chilly" and $ghost is 3>>
+				<<set _stress_mod *= 1>>	
+			<<elseif $body_temperature is "cold">>
+				<<set _stress_mod *= 3.0>>
+			<<elseif $body_temperature is "chilly">>
+				<<set _stress_mod *= 1.5>>
+			<</if>>
+			/* 北极星 */
+
+			<<set $stress += (_args[0] * _stress_mod)>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "arousal">>
+	<!-- args[0] must be a number indicating the base increase or decrease of the arousal. -->
+	<!-- args[1] indicates the source of the stimulus. -->
+	<!-- first check to protect against strings and nans -->
+	<<if Number.isFinite(_args[0])>>
+		<<set _gain to _args[0]>>
+		<<set _mod to 1>>
+
+		<!-- Trait checks & effects below -->
+		<<if $orgasmtrait gte 1 and _gain gt 0>>
+		    /* 北极星模组 */
+		    <<if $demonhunter gte 2>>
+		        <<set _mod *= 1.4>>
+		    <<else>>
+			    <<set _mod *= 0.6>>
+			<</if>>
+			/* 北极星 */
+		<</if>>
+		<<if $choketrait gte 1>>
+			<!-- adds up to +1 to the  arousal modifier when suffocating -->
+			<<set _mod += ($oxygenmax - $oxygen) / $oxygenmax>>
+		<</if>>
+		<<if $drugged gt 0>>
+			<!-- Multiplies the modifier by up to 2x at full bar -->
+			<!-- Comment Akoz: I chose to make it multiply, rather than add to the modifier -->
+			<!-- so that the aphrodisiacs become quite threatening during nonconsensual use, -->
+			<!-- and more thrilling when used intentionally -->
+			<<set _mod *= 1 + ($drugged / 1000)>>
+		<</if>>
+
+		<!-- Apply effect according to args[1] -->
+		<<set _noSens to _mod>>
+		<<switch _args[1]>>
+			<<case undefined "masturbation">>
+				<!-- No modifier. The usual behaviour for this widget -->
+			<<case "mouth" "oral" "lips" "masturbationMouth" "masturbationOral">>
+				<<set $_arousalPart to $mouthsensitivity>>
+			<<case "breast" "breasts" "chest" "nipple" "nipples" "masturbationBreasts" "masturbationNipples">>
+				<<set $_arousalPart to $breastsensitivity>>
+				<<if playerIsPregnant()>>
+					<<set $_arousalPart += 0.5>>
+				<</if>>
+			<<case "bottom" "anus" "anal" "ass" "butt" "masturbationAnal" "masturbationAss">>
+				<<set $_arousalPart to $bottomsensitivity>>
+			<<case "genital" "genitals" "penis" "penile" "pussy" "vaginal" "vagina" "masturbationGenital" "masturbationPenis" "masturbationVagina">>
+				<<set $_arousalPart to $genitalsensitivity>>
+				<<if playerIsPregnant()>>
+					<<set $_arousalPart += 0.5>>
+				<</if>>
+			<<case "maso">>
+				<<set $arousalmasochism += _gain * _mod>>
+			<<case "time">>
+				<<set _arousal to Math.clamp($arousal + _gain * _mod, 0, $arousalmax)>>
+				<<if $trackedArousal.length gt 4>>
+					<<run $trackedArousal.deleteAt(0)>>
+					<!--add current arousal level to previous hour, low arousal level matters less-->
+					<<set $trackedArousal[$trackedArousal.length - 1] += (_arousal * _arousal / ($arousalmax * 0.8))>>
+				<</if>>
+				<<run $trackedArousal.push(0)>>
+			<<default>>
+				<!-- Unexpected modifier was received. Throw error/exception -->
+				<<error {
+					message : `Unexpected value \"${_args[1]}\" for second parameter`,
+					source : "Called from " + Utils.GetStack()
+				}>>
+		<</switch>>
+
+		<<if _args[1] and _args[1].includes('masturbation')>>
+			<<set $_masturbationReduction to 1 - (Math.clamp(playerHeatMinArousal() + playerRutMinArousal(),0,4000) / 5000)>>
+		<</if>>
+
+		<!-- Adjusts modifier for body part sensitivity, if applicable -->
+		<<if $_arousalPart gte 2>>
+			<<set _mod += (($_arousalPart - 1) * 0.5)>>
+		<<elseif $_arousalPart>>
+			<<set _mod += ($_arousalPart - 1)>>
+		<</if>>
+
+		<!-- do not apply sensitivity boosts during chef job -->
+		<!-- todo: rebalance chef job better -->
+		<<if $masturbation_bowl is 1>>
+			<<set _mod to _noSens>>
+		<</if>>
+		<!-- Now we apply the arousal gain -->
+		<<set $arousal to $arousal + _gain * _mod * ($_masturbationReduction or 1)>>
+
+		<!-- Now we apply the arousal clamp -->
+		<<arousalclamp>>
+
+		<!-- And add the increase to the tracker -->
+		<<if _args[0] gte 0>>
+			<!-- Adds the current increase to the latest tracked hour -->
+			<<set $trackedArousal[$trackedArousal.length - 1] += _gain * _mod * ($_masturbationReduction or 1)>>
+			<<if _args[0] gt 0>>
+				<<set $timeSinceArousal to 0>>
+			<</if>>
+		<</if>>
+
+	<<else>>
+		<<error {
+			message : `Unexpected value ${_args[0]} for first parameter`,
+			source : "Called from " + Utils.GetStack()
+		}>>
+	<</if>>
+<</widget>>
+
+<<widget "arousalError">>
+	<<if $arousalError is undefined>>
+		<<set $arousalError to [[_args[0], _args[1]]]>>
+	<<elseif $arousalError.length gte 50>>
+		<<set $arousalError to [[_args[0], _args[1]]]>>
+	<<else>>
+		<<set $arousalError.push([_args[0], _args[1]])>>
+	<</if>>
+<</widget>>
+
+<<widget "breastarousal">>
+	<<arousal _args[0] "breasts">>
+<</widget>>
+
+<<widget "genitalarousal">>
+	<<arousal _args[0] "genitals">>
+<</widget>>
+
+<<widget "tiredness">>
+	<<set _tiredness_mod to 1>>
+	/* 北极星模组 */
+	<<if $options.bjx_animal and $transformationParts.traits.vigorous is "default">>
+		<<set _tiredness_mod -= 0.5>>
+	<</if>>
+
+	<<if $options.bjx_eventTF and $body_temperature is "hot" and $ghost is 3>>
+		<<set _tiredness_mod -= 2>>
+	<<elseif $options.bjx_eventTF and $body_temperature is "warm" and $ghost is 3>>
+		<<set _tiredness_mod -= 0.5>>
+	<<elseif $body_temperature is "hot">>
+		<<set _tiredness_mod += 2>>
+	<<elseif $body_temperature is "warm">>
+		<<set _tiredness_mod += 0.5>>
+	<</if>>
+	/* 北极星 */
+	
+	<<if _args[0]>>
+		<<if _args[1] is "pass">>
+		    /* 北极星模组 */
+		    <<if _args[0] gt 0>>
+				<<set $tiredness += (_args[0] * _tiredness_mod)>>
+			<<else>>
+				<<set $tiredness += _args[0]>>
+			<</if>>
+			/* 北极星 */
+		<<else>>
+			<<if _args[0] gt 0>>
+				<<set $tiredness += (_args[0] * 15 * _tiredness_mod)>>
+			<<else>>
+			    /* 北极星模组 */
+				<<set $tiredness += (_args[0] * 20)>>
+				/* 北极星 */
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "pain">> <!-- _args[0] is value, _args[1] is optional modifier, default 4 -->
+	<<if _args[0] and typeof _args[0] is "number">>
+		<<set $_pain to _args[0]>>
+		<<set $_mod to 4>>
+		<<if _args[1] and typeof _args[1] is "number">>
+			<<set $_mod to _args[1]>>
+		<</if>>
+		<<set _pain to $_pain * $_mod>>
+		<!-- apply science reduction -->
+		<<if _pain gte 0>>
+			<<set _pain *= 1 - ($sciencetrait / 10)>>
+			<!-- Including masochism effect for all pain NG v2.7 -->
+			<<if $masochism gte 100>>
+				<<set _pain *= 1 - $masochism / 1200>>
+				<<set _arousal to _args[0] * $masochism / 6>>
+				<<if _arousal gte 0>>
+					<<arousal _arousal "maso">>
+				<</if>>
+			<</if>>
+		<</if>>
+
+		<<set $pain += _pain>>
+	<</if>>
+	<<painclamp>>
+<</widget>>
+
+<<widget "masopain">>
+	<<if _args[0]>>
+		<<set $pain += ((_args[0] * (1 - ($masochism / 1200))) * 4)>>
+		<<set _arousal to ((_args[0] * (0 + ($masochism / 18))) * 4)>>
+		<<arousal _arousal>>
+		<<painclamp>>
+	<</if>>
+<</widget>>
+
+<<widget "detention">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<if _args[0] gt 0>>
+			<<set $detention += (_args[0] * 10)>>
+		<</if>>
+		<<set $delinquency += (_args[0] * 4)>>
+		<<set $delinquency to Math.clamp($delinquency, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "delinquency">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $delinquency += (_args[0] * 4)>>
+		<<set $delinquency to Math.clamp($delinquency, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "status">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<if _args[0] gt 0>>
+			<<set $cool += (_args[0] * 1)>>
+			<!-- find how many visible clothes have "cool" in their type (if they have type), and add 1 -->
+			<<set $_mult to getVisibleClothesList().reduce((mult, slot) => mult + (slot.type && slot.type.includes("cool")), 1)>>
+			<<set $cool += (_args[0] * $_mult)>>
+		<<elseif _args[0] lt 0>>
+			<<set $cool *= (1 + (_args[0] / 100))>>
+			<<set $cool -= 1>>
+		<</if>>
+		<<set $cool to Math.clamp($cool, 0, $coolmax)>>
+	<</if>>
+<</widget>>
+
+<<widget "spray">>
+	<<if _args[0]>>
+		<<if _args[0] gte 0>>
+			<<set $spray += _args[0]>>
+			<<set $spray to Math.clamp($spray, 0, $spraymax)>>
+		<<else>>
+			<<if $infinitespray is 1>>
+			<<else>>
+				<<if $prof.spray gte random(1, 5000)>>
+					<<set $effectsmessage to 1>>
+					<<set $prof_spray_message to 1>>
+				<<else>>
+					<<set $spray += _args[0]>>
+					<<set $spray to Math.clamp($spray, 0, $spraymax)>>
+					<<prof spray `((_args[0] * -1) * 5)`>>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "awareness">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $awareness += (_args[0])>>
+		<<for _active_clothes range Object.keys($worn)>>
+			<<if $worn[_active_clothes].type.includes("dark")>>
+				<<set $awareness += (_args[0])>>
+			<</if>>
+		<</for>>
+		<<set $awareness = Math.clamp($awareness, -200, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "purity">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $purity += (_args[0])>>
+		<<for _active_clothes range Object.keys($worn)>>
+			<<if $worn[_active_clothes].type.includes("holy")>>
+				<<set $purity += (_args[0])>>
+			<</if>>
+		<</for>>
+		<<if $virginityProtected is true>>
+			<<set $purity = Math.clamp($purity, 0, 1000)>>
+		<<elseif $player.virginity.vaginal is true and $player.virginity.penile is true>>
+			<<set $purity = Math.clamp($purity, 0, 1000)>>
+		<<else>>
+			<<set $purity = Math.clamp($purity, 0, 999)>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "suspicion">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $suspicion += (_args[0])>>
+	<</if>>
+<</widget>>
+
+<<widget "asylumstatus">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $asylumstatus += (_args[0] * 1)>>
+	<</if>>
+<</widget>>
+
+<<widget "humiliation10">>
+	<<set $stress += 40>>
+	<<trauma 1>>
+<</widget>>
+
+<<widget "wolfpacktrust">>
+	<<set $wolfpacktrust += 1>>
+	<<if $statdisable is "f">>
+		<span class="green">The pack trusts you a little more.</span>
+	<</if>>
+<</widget>>
+
+<<widget "wolfpackfear">>
+	<<set $wolfpackfear += 1>>
+	<<if $statdisable is "f">>
+		<span class="green">The pack fears you a little more.</span>
+	<</if>>
+<</widget>>
+
+<<widget "gferocity">>
+	<<set $wolfpackferocity += 1>>
+	<<if $statdisable is "f">> |
+		<span class="blue">+ Ferocity</span>
+	<</if>>
+<</widget>>
+
+<<widget "gharmony">>
+	<<set $wolfpackharmony += 1>>
+	<<if $statdisable is "f">> |
+		<span class="lblue">+ Harmony</span>
+	<</if>>
+<</widget>>
+
+<<widget "lferocity">>
+	<<set $wolfpackferocity -= 1>>
+	<<if $statdisable is "f">> |
+		<span class="purple">- Ferocity</span>
+	<</if>>
+<</widget>>
+
+<<widget "lharmony">>
+	<<set $wolfpackharmony -= 1>>
+	<<if $statdisable is "f">> |
+		<span class="pink">- Harmony</span>
+	<</if>>
+<</widget>>
+
+<<widget "sub">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $submissive += (_args[0] * 4)>>
+		<<set $submissive = Math.clamp($submissive, 0, 2000)>>
+		<<sub_check>>
+	<</if>>
+<</widget>>
+
+<<widget "def">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $submissive -= (_args[0] * 4)>>
+		<<set $submissive = Math.clamp($submissive, 0, 2000)>>
+		<<sub_check>>
+	<</if>>
+<</widget>>
+
+<<widget "sub_check">>
+<<if $submissive gte 1150 and $speech_attitude is "bratty">>
+	<<set $speech_attitude to "neutral">>
+	<<set $effectsmessage to 1>>
+	<<set $speech_attitude_bratty_message to 1>>
+<</if>>
+<<if $submissive lte 850 and $speech_attitude is "meek">>
+	<<set $speech_attitude to "neutral">>
+	<<set $effectsmessage to 1>>
+	<<set $speech_attitude_meek_message to 1>>
+<</if>>
+<</widget>>
+
+<<widget "incgpenisinsecurity">>
+	<<set _n to 10>>
+	<<if _args[0] and typeof(_args[0]) is "number">> <<set _n to _args[0]>> <</if>>
+	<<switch $player.penissize>>
+		<<case 4>>
+			<<insecurity "penis_big" _n>><<ginsecurity "penis_big">>
+		<<case 1>>
+			<<insecurity "penis_small" _n>><<ginsecurity "penis_small">>
+		<<case 0 -1 -2>>
+			<<insecurity "penis_tiny" _n>><<ginsecurity "penis_tiny">>
+	<</switch>>
+<</widget>>
+
+<<widget "incggpenisinsecurity">>
+	<<incgpenisinsecurity 20>>
+<</widget>>
+
+<<widget "insecurity">>
+	<<if _args[0] and _args[1] and !$statFreeze and ["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"].includes(_args[0])>>
+		<<set
+			_type to _args[0];
+			_change to _args[1];
+			_acceptance = V["acceptance_" + _type];
+			_insecurity = V["insecurity_" + _type];
+			_stat_gain to _change * 10;
+			_insecurity_possible = {
+				"penis_tiny": $player.penisExist and $player.penissize lte 0,
+				"penis_small": $player.penisExist and $player.penissize is 1,
+				"penis_big": $player.penisExist and $player.penissize gte 4,
+				"breasts_tiny": $gender isnot "m",
+				"breasts_small": true,
+				"breasts_big": true,
+				"pregnancy": playerBellySize() gte 8,
+			}[_type];
+		>>
+
+		<<if _acceptance lt 1000 and _insecurity_possible>>
+			<<set _insecurity += _stat_gain>>
+			<<set _insecurity = Math.clamp(_insecurity, 0, 1000)>>
+			<<if _insecurity gte 1000>>
+				<<stress 3>><<control -3>>
+			<<elseif _insecurity gte 800>>
+				<<stress 3>><<control -2>>
+			<<elseif _insecurity gte 600>>
+				<<stress 2>><<control -2>>
+			<<elseif _insecurity gte 400>>
+				<<stress 2>><<control -1>>
+			<<elseif _insecurity gte 200>>
+				<<stress 1>><<control -1>>
+			<<else>>
+				<<stress 1>>
+			<</if>>
+			<<set V["insecurity_" + _args[0]] to _insecurity>>
+			/* reduce acceptance by matching amount */
+			<<if _stat_gain gt 0>>
+				<<set _acceptance -= _stat_gain>>
+				<<set _acceptance = Math.clamp(_acceptance, 0, 1000)>>
+				<<set V["acceptance_" + _args[0]] to _acceptance>>
+			<</if>>
+		<</if>>
+	<<elseif !$statFreeze>>
+		<br><span class="red">IMPROPER INSECURITY CALL! args: <<print _args>></span><br>
+	<</if>>
+<</widget>>
+
+<<widget "acceptance">>
+	/*
+		args[0]: insecurity type
+		args[1]: amount to increase by
+	*/
+	<<if _args[0] and _args[1] and $statFreeze isnot true>>
+		/* note: this does not check if a player is capable of gaining acceptance, so don't use this widget without checking. */
+		<<if ["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"].includes(_args[0])>>
+			<<set V["acceptance_"+_args[0]] += (_args[1] * 6)>>
+			<<set V["acceptance_"+_args[0]] = Math.clamp(V["acceptance_"+_args[0]], 0, 1000)>>
+		<<else>>
+			<span class="red">INVALID ACCEPTANCE TYPE SPECIFIED: <<print "acceptance_"+_args[0]>></span>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "gpenisacceptance">>
+	<<if _args[0] isnot undefined and _args[0] gt 0>>
+		<<switch Math.clamp($player.penissize, 0, 4)>>
+			<<case 0>><<set $_type to "penis_tiny">>
+			<<case 1>><<set $_type to "penis_small">>
+			<<case 2 3>> <!-- nothing should happen -->
+			<<case 4>><<set $_type to "penis_big">>
+		<</switch>>
+		<<if $_type and V["insecurity_"+$_type] gt 0 and V["acceptance_"+$_type] lt 1000>>
+			<<acceptance $_type _args[0]>><<gacceptance>>
+			<<if V["acceptance_"+$_type] gte 1000>>
+				<<set _acceptanceAchieved to $_type>>
+			<</if>>
+		<</if>>
+	<<else>>
+		<<run throw new Error("gpenisacceptance called with no argument or an invalid argument")>>
+	<</if>>
+<</widget>>
+
+<<widget "willpower">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $willpower += (_args[0] * 2)>>
+	<</if>>
+	<<set $willpower = Math.clamp($willpower, 0, $willpowermax)>>
+<</widget>>
+
+<<widget "hope">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $orphan_hope += (_args[0] * 2)>>
+		<<set $orphan_hope = Math.clamp($orphan_hope, -50, 50)>>
+	<</if>>
+<</widget>>
+
+<<widget "reb">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $orphan_reb += (_args[0] * 2)>>
+		<<set $orphan_reb = Math.clamp($orphan_reb, -50, 50)>>
+	<</if>>
+<</widget>>
+
+<<widget "grace">>/*Optional second variable is the rank of the NPC giving the order. Grace changes won't apply if the player's rank equals or exceeds the NPC's.*/
+	<<if _args[0] and $statFreeze isnot true and $temple_rank isnot undefined and $temple_rank isnot "prospective">>
+		<<if _args[1] is "monk">>
+			<<if $temple_rank is "initiate">>
+				<<set $grace += _args[0]>>
+				<<set $grace = Math.clamp($grace, -100, 100)>>
+			<<else>>
+			<</if>>
+		<<elseif _args[1] is "priest">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk">>
+				<<set $grace += _args[0]>>
+				<<set $grace = Math.clamp($grace, -100, 100)>>
+			<<else>>
+			<</if>>
+		<<elseif _args[1] is "bishop">>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
+				<<set $grace += _args[0]>>
+				<<set $grace = Math.clamp($grace, -100, 100)>>
+			<<else>>
+			<</if>>
+		<<else>>
+			<<set $grace += _args[0]>>
+			<<set $grace = Math.clamp($grace, -100, 100)>>
+		<</if>>
+		<<if _args[0] gt 0>>
+			<<set $daily.graceUp to true>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "livestock_obey">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $livestock_obey += _args[0]>>
+		<<set $livestock_obey = Math.clamp($livestock_obey, 0, 100)>>
+	<</if>>
+<</widget>>
+
+<<widget "shame">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $shame += _args[0]>>
+		<<set $shame = Math.clamp($shame, 0, 100)>>
+	<</if>>
+<</widget>>
+
+<<widget "farm_yield">>
+	<<if $farm_yield is undefined>>
+		<<set $farm_yield to 0>>
+	<</if>>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $farm_yield += _args[0]>>
+	<</if>>
+<</widget>>
+
+<<widget "oralskill">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $oralskill += _args[0]>>
+		<<set $oralskill = Math.clamp($oralskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "vaginalskill">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $vaginalskill += _args[0]>>
+		<<set $vaginalskill = Math.clamp($vaginalskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "penileskill">>
+	<<if _args[0] and ($player.penisExist or playerHasStrapon()) and $statFreeze isnot true>>
+		<<set $penileskill += _args[0]>>
+		<<set $penileskill = Math.clamp($penileskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "handskill">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $handskill += _args[0]>>
+		<<set $handskill = Math.clamp($handskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "analskill">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $analskill += _args[0]>>
+		<<set $analskill = Math.clamp($analskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "feetskill">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $feetskill += _args[0]>>
+		<<set $feetskill = Math.clamp($feetskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "bottomskill">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $bottomskill += _args[0]>>
+		<<set $bottomskill = Math.clamp($bottomskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "thighskill">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $thighskill += _args[0]>>
+		<<set $thighskill = Math.clamp($thighskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "chestskill">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $chestskill += _args[0]>>
+		<<set $chestskill = Math.clamp($chestskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "beauty">>
+	<<if _args[0]>>
+		<<set $beauty += _args[0]>>
+		<<set $beauty = Math.clamp($beauty, 0, $beautymax)>>
+		/* 北极星模组 */
+		<<if $options.bjx_animal and $fox gte 6>>
+            <<set $beauty *= 1.4>>
+        <</if>>
+        /* 北极星 */
+	<</if>>
+<</widget>>
+
+<<widget "seductionskill">>
+	<<if _args[0]>>
+		<<set $seductionskill += _args[0]>>
+		<<set $seductionskill = Math.clamp($seductionskill, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "skulduggery">>
+	<<if _args[0]>>
+		<<set $skulduggery += _args[0]>>
+		<<set $skulduggery to Math.clamp($skulduggery, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "prof">>
+	<<if _args[0] and _args[1]>>
+		<<set $prof[_args[0]] += (_args[1] * 5)>>
+		<<set $prof[_args[0]] to Math.clamp($prof[_args[0]], 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "locker_suspicion">>
+	<<if _args[0]>>
+		<<set $locker_suspicion += _args[0]>>
+	<</if>>
+<</widget>>
+
+<<widget "alcohol">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<if $backgroundTraits.includes("plantlover") and _args[0] gt 0>>
+			<<set _drunk_mod to 1.5>>
+		<<else>>
+			<<set _drunk_mod to 1>>
+		<</if>>
+		<<set $drunk += Math.floor(_args[0] * _drunk_mod)>>
+		<<set $drunk to Math.clamp($drunk, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "drugs">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<if $backgroundTraits.includes("plantlover") and _args[0] gt 0>>
+			<<set _drugged_mod to 1.5>>
+		<<else>>
+			<<set _drugged_mod to 1>>
+		<</if>>
+		<<set $drugged += Math.floor(_args[0] * _drugged_mod)>>
+		<<set $drugged to Math.clamp($drugged, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "hallucinogen">>
+	<<if _args[0] and $statFreeze isnot true>>
+		<<set $hallucinogen += _args[0]>>
+		<<set $hallucinogen to Math.clamp($hallucinogen, 0, 1000)>>
+	<</if>>
+<</widget>>
+
+<<widget "upperwet">>
+	<<if _args[0]>>
+		<<set $upperwet += _args[0]>>
+		<<set $upperwet = Math.clamp($upperwet, 0, 200)>>
+	<</if>>
+<</widget>>
+
+<<widget "lowerwet">>
+	<<if _args[0]>>
+		<<set $lowerwet += _args[0]>>
+		<<set $lowerwet = Math.clamp($lowerwet, 0, 200)>>
+	<</if>>
+<</widget>>
+
+<<widget "underupperwet">>
+	<<if _args[0]>>
+		<<set $underupperwet += _args[0]>>
+		<<set $underupperwet = Math.clamp($underupperwet, 0, 200)>>
+	<</if>>
+<</widget>>
+
+<<widget "underlowerwet">>
+	<<if _args[0]>>
+		<<set $underlowerwet += _args[0]>>
+		<<set $underlowerwet = Math.clamp($underlowerwet, 0, 200)>>
+	<</if>>
+<</widget>>
+
+<<widget "world_corruption">>
+	<<if _args[0] and _args[1] and $statFreeze isnot true>>
+		<<set $_cor to _args[1]>>
+		<<if _args[0] is "hard">>
+			<<set $world_corruption_hard += $_cor>>
+			<<set $world_corruption_hard = Math.clamp($world_corruption_hard, -30, 30)>>
+		<<elseif _args[0] is "soft">>
+			<<set $world_corruption_soft += $_cor>>
+			<<if $world_corruption_soft lt 0>>
+				<<set $_overflowC to $world_corruption_soft>>
+			<</if>>
+			<!-- Unclamp or adjust upper limit once world corruption effects are added -->
+			<<set $world_corruption_soft = Math.clamp($world_corruption_soft, 0, 100)>>
+			<<if $_cor lt 0>>
+				<<if $_overflowC>>
+					<<set $_cor -= $_overflowC>>
+				<</if>>
+				<<set $world_corruption_reduced -= $_cor>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>

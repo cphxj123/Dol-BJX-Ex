@@ -1,0 +1,78 @@
+:: The Bunker Intro
+
+<<set $outside to 0>>
+你在爬下一段又长又肮脏的梯子后，进入了某种类似于地堡的建筑。
+<br><br>
+<<link [[继续|Bunker]]>><<set $bunkerdepth to 0>><</link>>
+
+:: Bunker
+
+<<if $stress gte $stressmax and !$possessed>>
+	<<passouttrash>>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $eventskip is 0>>
+		<<rng>>
+		<<if $rng gte 91>>
+			<<eventbunkeritem>>
+		<<elseif $danger gte (9900 - ($allure * $forestmod))>>
+			<<eventbunker>>
+		<<else>>
+			<<eventbunkersafe>>
+		<</if>>
+	<<elseif $eventskip gte 1>>
+		<<if $bunkerdepth lte 5>>
+			你正身处于一个废弃的地堡，这里光线昏暗，所有东西都覆盖着一层灰尘。你扫视地堡的墙壁，注意到了一些奇怪的标记，这似乎是一种你从未见过的语言。这里到处都呈现出一种年久失修的感觉，你想知道这里已经有多久没有人来过了。
+		<<else>>
+			随着你的深入，这座地堡就愈发显得破旧不堪，地堡中的某些地方还有一些污浊的死水池。毫无疑问，这是从上面的垃圾填埋场渗漏下来的。
+		<</if>>
+		<br><br>
+		<<if $bunkerdepth is 10>>
+			你走到了废弃的地堡的尽头，一只古旧的铜鼎矗立在墙边。
+			<<if $museumAntiques.antiques.antiquescroll is "notFound">>
+			    一卷金色的卷轴斜插在铜鼎里，即使布满了灰尘依旧熠熠生辉。
+		    <</if>>
+		    <br><br>
+		<</if>>
+		<<if $options.bjx_antiques and $bunkerdepth is 10 and $museumAntiques.antiques.antiquescroll is "notFound">>
+			<<link [[拿起卷轴|Bunker Scroll]]>><<pass 2>><<museumAntiqueStatus "antiquescroll" "found">><<set $antiquemoney += 8000>><</link>>
+			<br>
+		<</if>>
+		<<if $bunkerdepth lt 10>>
+			<<link [[向深处进发|Bunker]]>><<set $bunkerdepth += 1>><</link>>
+			<br>
+		<</if>>
+		<<if $bunkerdepth gt 0>>
+			<<link [[向出口前进|Bunker]]>><<set $bunkerdepth -= 1>><</link>>
+			<br>
+		<</if>>
+		<<if $bunkerdepth is 0>>
+			<<link [[离开地堡|Bunker Exit]]>><</link>>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>
+
+:: Bunker Exit
+
+<<set $outside to 1>>
+你再一次着忍受那又脏又长的梯子，终于回到了地面。
+<br><br>
+<<link [[继续|Trash]]>><</link>>
+
+:: Bunker Scroll
+
+你展开金色的卷轴，只见上面写着你似懂非懂的奇怪文字"[[卧室|Bedroom]"。
+<br><br>
+出于某种强迫症，你突然很想在后面补写一个"]"，正好铜鼎里还有一只炭笔，于是你补写了上去。
+<br><br>
+<<set $antiquescrollText to "[[卧室|Bedroom]]">>
+<<link [[继续|Bunker Scroll2]]>><</link>>
+
+:: Bunker Scroll2
+
+在你写完后，卷轴似乎发出了金色的光芒，但当你定睛去看，光芒又似乎从没出现过。
+<br><br>
+金色的卷轴展开着，上面写着$antiquescrollText
+<br><br>
+<<link [[收起卷轴|Bunker]]>><</link>>

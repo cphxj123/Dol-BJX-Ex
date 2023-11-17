@@ -1,0 +1,720 @@
+/*
+IMPORTANT:
+	When adding variables to the options menu, state variables must use the $options object.
+	Otherwise changes won't be applied when options overlay is closed. See updateOptions().
+ */
+
+:: Options Overlay [widget]
+<<widget "setupOptions">>
+	<<set _optionsRefresh to false>>
+	<<script>>
+		settingsDisableElement();
+		window.Theme.initControl();
+		onInputChanged(() => {
+			if(!T.optionsRefresh) T.optionsRefresh = true;
+			Wikifier.wikifyEval("<<setFont true>>");
+		});
+	<</script>>
+<</widget>>
+
+<<widget "optionsgeneral">>
+	<<setupOptions>>
+	<span class="gold">General</span>
+	<br>
+
+	<<if $debug is 1>>
+		/*<label><<checkbox "$notifyUpdate" false true autocheck>> Notify when there's a new game update available</label>
+		<br>*/
+		<<link "Check for updates">>
+			<<run checkNewVersion()>>
+		<</link>>
+		<br><br>
+	<</if>>
+	<div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.neverNudeMenus" false true autocheck>>
+				Hide player nudity in menus
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label data-disabledif="V.ironmanmode===true">
+				<<checkbox "$options.autosaveDisabled" false true autocheck>> Disable autosave on sleeping
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label data-disabledif="!StartConfig.enableLinkNumberify">
+				<<checkbox "$options.numberify_enabled" 0 1 autocheck>> Enable numbered link navigation
+				<mouse class="tooltip linkBlue">(?)<span>Allows navigation with keyboard</span></mouse>
+			</label>
+		</div>
+		<div style="clear:both;">/*Keep at end of toggles*/</div>
+	</div>
+	<br>
+	<span class="gold">Sidebar</span>
+	<div>
+		<div class="settingsToggle">
+			Closed sidebar stats:
+			<<listbox "$options.sidebarStats" autoselect>>
+				<<option "Disabled" "disabled">>
+				<<option "Limited" "limited">>
+				<<option "Show all" "all">>
+			<</listbox>>
+		</div>
+		<div class="settingsToggle">
+			Closed sidebar time:
+			<<listbox "$options.sidebarTime" autoselect>>
+				<<option "Disabled" "disabled">>
+				<<option "Above" "top">>
+				<<option "Below" "bottom">>
+			<</listbox>>
+		</div>
+		<div class="settingsToggle">
+			Time format:
+			<label><<radiobutton "$options.timestyle" "military" autocheck>> 24-hour</label> |
+			<label><<radiobutton "$options.timestyle" "ampm" autocheck>> 12-hour</label>
+		</div>
+		<div class="settingsToggle">
+			<label><<checkbox "$options.oldclock" false true autocheck>> Use old clock style in the sidebar</label>
+		</div>
+		<div class="settingsToggle">
+			<label><<checkbox "$options.showCaptionText" false true autocheck>> Show Caption Text in Sidebar</label>
+		</div>
+		<!-- Old renderer should stop being supported very soon.
+		Sidebar character renderer:
+		<label><<radiovar "$options.sidebarRenderer" "img">><<updatesidebarimg>><</radiovar>> Old</label> |
+		<label><<radiovar "$options.sidebarRenderer" "canvas">><<updatesidebarimg>><</radiovar>> New</label> |
+		<label><<radiovar "$options.sidebarRenderer" "both">><<updatesidebarimg>><</radiovar>> Both</label>
+		<br>
+		-->
+		<div class="settingsToggle">
+			Condoms display:
+			<label><<radiovar "$options.condomsDisplay" "standard">><<updatesidebarimg>><</radiovar>> Standard</label> |
+			<label><<radiovar "$options.condomsDisplay" "none">><<updatesidebarimg>><</radiovar>> Hidden</label>
+		</div>
+		<div class="settingsToggle">
+			Pepper sprays display:
+			<<listbox "$options.pepperSprayDisplay" autoselect>>
+				<<option "Sprays" "sprays">>
+				<<option "Compact (dots)" "compact">>
+				<<option "None" "none">>
+			<</listbox>>
+		</div>
+		<div class="settingsToggle">
+			<<if !$options.genderBody>><<set $options.genderBody to "default">><</if>>
+			<label><<radiobutton "$options.genderBody" "default" autocheck>> Default</label> |
+			<label><<radiobutton "$options.genderBody" "m" autocheck>> Masculine</label> |
+			<label><<radiobutton "$options.genderBody" "a" autocheck>> Androgynous</label> |
+			<label><<radiobutton "$options.genderBody" "f" autocheck>> Feminine</label>
+		</div>
+		<div class="settingsToggle">
+			<label><<checkbox "$options.tipdisable" "t" "f" autocheck>> Enable sidebar hints and tips</label>
+		</div>
+		<div class="settingsToggle">
+			<label><<checkbox "$options.debugdisable" "t" "f" autocheck>> Enable additional error messages</label>
+		</div>
+		<div style="clear:both;">/*Keep at end of toggles*/</div>
+	</div>
+	<br>
+	<span class="gold">Combat</span>
+	<div>
+		<div class="settingsToggle">
+			"Yourself" as a target:
+			<label><<radiobutton "$options.targetYourself" false autocheck>> Disabled</label> |
+			<label><<radiobutton "$options.targetYourself" true autocheck>> Enabled</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.scrollRemember" false true autocheck>>
+				Restore scrolling position during combat
+			</label>
+		</div>
+		<div class="settingsToggle">
+			Combat Controls:
+			<<listbox "$options.combatControls" autoselect>>
+				<<option "Radio Buttons" "radio">>
+				<<option "Radio Buttons (In Columns)" "columnRadio">>
+				<<option "Lists (No width limit)" "lists">>
+				<<option "Lists (Width Limit)" "limitedLists">>
+			<</listbox>>
+		</div>
+		<div style="clear:both;">/*Keep at end of toggles*/</div>
+	</div>
+
+	<<if $map isnot undefined>>
+		<br>
+		<span class="gold">Map</span>
+		<div>
+			<div class="settingsToggle">
+				<label data-target="images" data-disabledif="V.options.images===0"><<checkbox "$options.mapMovement" false true autocheck>> Enable map movement by clicking/touching the map icons</label>
+			</div>
+			<div class="settingsToggle">
+				<label data-target="images" data-disabledif="V.options.images===0"><<checkbox "$options.mapLegacy" false true autocheck>> Disable SVG map. Enable if town map is not visible.</label>
+			</div>
+			<div class="settingsToggle">
+				<label data-target="['images', 'maplegacy]" data-disabledif="V.options.images===0||V.options.mapLegacy"><<checkbox "$options.mapMarkers" false true autocheck>> Show clickable area on map</label>
+			</div>
+			<div class="settingsToggle">
+				<label data-target="images" data-disabledif="V.options.images===0"><<checkbox "$options.mapTop" false true autocheck>> Move the map above the map links</label>
+			</div>
+			<div style="clear:both;">/*Keep at end of toggles*/</div>
+		</div>
+	<</if>>
+	<br>
+	<span class="gold">Overlays</span>
+	<div>
+		<div class="settingsToggle">
+			Position of the close-button for overlay menus
+			<mouse class="tooltip linkBlue">(?)<span>Updated next time overlay is opened</span></mouse><br>
+			<label><<radiobutton "$options.closeButtonMobile" false autocheck>> Normal</label> |
+			<label><<radiobutton "$options.closeButtonMobile" true autocheck>> Mobile (Left-hand side)</label>
+		</div>
+		<div style="clear:both;">/*Keep at end of toggles*/</div>
+	</div>
+	<br>
+	<span class="gold">Extra Info</span>
+	<div>
+		<div class="settingsToggle">
+			Display passage count in the top right of the screen
+			<br>
+			<label><<radiobutton "$options.passageCount" "disabled" autocheck>> Disable</label>
+			<br>
+			<label><<radiobutton "$options.passageCount" "changes" autocheck>> Passage Changes Count</label>
+			<mouse class="tooltip linkBlue">(?)<span>Total number of times a new passage has changed (Clicking on links in most cases). Passages such as the settings are excluded. Not tracked in versions '0.3.12.X' and older</span></mouse>
+			<br>
+			<label><<radiobutton "$options.passageCount" "total" autocheck>> Passage Count</label>
+			<mouse class="tooltip linkBlue">(?)<span>Total number of times a new passage has been loaded (Clicking on links in most cases). Passages such as the settings are excluded. Not tracked in versions '0.3.12.X' and older</span></mouse>
+		</div>
+		<div class="settingsToggle">
+			Display play time in the top right of the screen
+			<mouse class="tooltip linkBlue">(?)<span>Formatted into 'h:mm:ss'. Be aware that leaving the game for hours alone, then saving will have its time tracked, to avoid, save the game before ending play and then load the save when you resume play. Not tracked in versions '0.3.13.X' and older</span></mouse>
+			<br>
+			<label><<radiobutton "$options.playtime" false autocheck>> Disable</label>
+			<br>
+			<label><<radiobutton "$options.playtime" true autocheck>> Enable</label>
+		</div>
+		<div style="clear:both;">/*Keep at end of toggles*/</div>
+	</div>
+
+	<<if $passage isnot "Start">>
+		<br>
+		<<button "Restart Game">>
+			<<script>>
+				SugarCube.UI.restart();
+			<</script>>
+		<</button>>
+	<</if>>
+<</widget>>
+
+<<widget "optionstheme">>
+	<<setupOptions>>
+	<span class="gold">Theme</span>
+	<br>
+
+	Theme:
+	<label><input type="radio" name="theme" value="system-default" /> Default</label> |
+	<label><input type="radio" name="theme" value="dark" /> Dark</label> |
+	<label><input type="radio" name="theme" value="arctic" /> Nord</label> |
+	<label><input type="radio" name="theme" value="zen" /> Zenburn</label> |
+	<label><input type="radio" name="theme" value="monokai" /> Monokai</label> |
+	<label><input type="radio" name="theme" value="storm" /> Storm</label> |
+	<br><br>
+
+	<span class="gold">Line Height</span>
+	<div>
+		<div class="settingsToggle">
+			Passage
+			<<listbox "$options.passageLineHeight" autoselect>>
+				<<option "Default" undefined>>
+				<<option "1" 1>>
+				<<option "1.25" 1.25>>
+				<<option "1.5" 1.5>>
+				<<option "1.75" 1.75>>
+				<<option "2" 2>>
+			<</listbox>>
+		</div>
+		<div class="settingsToggle">
+			Overlay:
+			<<listbox "$options.overlayLineHeight" autoselect>>
+				<<option "Default" undefined>>
+				<<option "1" 1>>
+				<<option "1.25" 1.25>>
+				<<option "1.5" 1.5>>
+				<<option "1.75" 1.75>>
+				<<option "2" 2>>
+			<</listbox>>
+		</div>
+		<div class="settingsToggle">
+			Sidebar:
+			<<listbox "$options.sidebarLineHeight" autoselect>>
+				<<option "Default" undefined>>
+				<<option "1" 1>>
+				<<option "1.25" 1.25>>
+				<<option "1.5" 1.5>>
+				<<option "1.75" 1.75>>
+				<<option "2" 2>>
+			<</listbox>>
+		</div>
+		<div style="clear:both;">/*Keep at end of toggles*/</div>
+	</div>
+	<br>
+	<span class="gold">Font Size</span>
+	<div>
+		<div class="settingsToggle">
+			Passage:
+			<<listbox "$options.passageFontSize" autoselect>>
+				<<option "Default" undefined>>
+				<<option "10px" 10>>
+				<<option "12px" 12>>
+				<<option "14px" 14>>
+				<<option "16px" 16>>
+				<<option "18px" 18>>
+				<<option "20px" 20>>
+			<</listbox>>
+		</div>
+		<div class="settingsToggle">
+			Overlay <mouse class="tooltip linkBlue">(?)<span>Default is equal to passage font size.</span></mouse>:
+			<<listbox "$options.overlayFontSize" autoselect>>
+				<<option "Default" undefined>>
+				<<option "10px" 10>>
+				<<option "12px" 12>>
+				<<option "14px" 14>>
+				<<option "16px" 16>>
+				<<option "18px" 18>>
+				<<option "20px" 20>>
+			<</listbox>>
+		</div>
+		<div class="settingsToggle">
+			Sidebar:
+			<<listbox "$options.sidebarFontSize" autoselect>>
+				<<option "Default" undefined>>
+				<<option "12px" 12>>
+				<<option "14px" 14>>
+				<<option "16px" 16>>
+				<<option "18px" 18>>
+				<<option "20px" 20>>
+			<</listbox>>
+		</div>
+		<div style="clear:both;">/*Keep at end of toggles*/</div>
+	</div>
+	<br>
+
+	<span class="gold">Font Style</span>
+	<br>
+	<label><<radiobutton "$options.font" "" `$options.font is undefined ? 'checked' : 'autocheck'`>> Use system default</label>
+	<br>
+	Sans-serif:
+	<label class="Arial"><<radiobutton "$options.font" "Arial" autocheck>> Arial</label> |
+	<label class="Verdana"><<radiobutton "$options.font" "Verdana" autocheck>> Verdana</label>
+	<br>
+	Serif:
+	<label class="TimesNewRoman"><<radiobutton "$options.font" "TimesNewRoman" autocheck>> Times New Roman</label> |
+	<label class="Georgia"><<radiobutton "$options.font" "Georgia" autocheck>> Georgia</label> |
+	<label class="Garamond"><<radiobutton "$options.font" "Garamond" autocheck>> Garamond</label>
+	<br>
+	Monospace:
+	<label class="CourierNew"><<radiobutton "$options.font" "CourierNew" autocheck>> Courier New</label> |
+	<label class="LucidaConsole"><<radiobutton "$options.font" "LucidaConsole" autocheck>> Lucida Console</label> |
+	<label class="Monaco"><<radiobutton "$options.font" "Monaco" autocheck>> Monaco</label>
+	<br>
+	Accessibility:
+	<label class="OpenDyslexicMono"><<radiobutton "$options.font" "OpenDyslexicMono" autocheck>> OpenDyslexic Mono</label> |
+	<label class="ComicSans"><<radiobutton "$options.font" "ComicSans" autocheck>> Comic Sans</label>
+
+
+	<br><br>
+<</widget>>
+
+<<widget "optionsperformance">>
+	<<setupOptions>>
+	<span class="gold">Images</span>
+	<br>
+	<<if StartConfig.enableImages is true>>
+		<div>
+			<div class="settingsToggle">
+				<label><<checkbox "$options.images" 0 1 autocheck>> Enable images</label>
+				<mouse class="tooltip-small linkBlue">(?)<span>Images may not load properly on older Androids</span></mouse>
+			</div>
+			<div class="settingsToggle">
+				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.combatImages" 0 1 autocheck>> Enable combat images</label>
+			</div>
+
+			<div class="settingsToggle">
+				<label data-target="options.images" data-disabledif="V.options.images===0">
+					<<checkbox "$options.bodywritingImages" false true autocheck>> Enable body-writing Images
+					<mouse class="tooltip-small linkBlue">(?)<span>Disabling may improve performance and potentially prevent images from not loading correctly</span></mouse>
+				</label>
+			</div>
+			<div class="settingsToggle">
+				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.silhouetteEnabled" false true autocheck>> Enable NPC silhouettes</label>
+			</div>
+			<div class="settingsToggle">
+				<label data-target="options.images" data-disabledif="V.options.images===0">
+					<<checkbox "$options.tanImgEnabled" false true autocheck>> Visual representation of the player's and NPC's skin colour
+					<mouse class="tooltip-small linkBlue">(?)<span>May hinder performance on some devices</span></mouse>
+				</label>
+			</div>
+			<div class="settingsToggle">
+				<label data-target='["options.images", "tanimgenabled"]' data-disabledif="V.options.images===0||V.options.tanImgEnabled===false">
+					<<checkbox "$options.tanningEnabled" false true autocheck>> Tanning changes due to sun exposure
+					<mouse class="tooltip-small linkBlue">(?)<span>Option to disable may be removed at a later date</span></mouse>
+				</label>
+			</div>
+			<div style="clear:both;">/*Keep at end of toggles*/</div>
+		</div>
+		<br>
+		<span class="gold">Animations</span>
+		<div>
+			<div class="settingsToggle">
+				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.sidebarAnimations" false true autocheck>> Sidebar animations</label>
+			</div>
+			<div class="settingsToggle">
+				<label data-target='["options.images", "sidebaranimations"]' data-disabledif="V.options.images===0||V.options.sidebarAnimations===false"><<checkbox "$options.blinkingEnabled" false true autocheck>> Animate eyes blinking</label>
+			</div>
+			<div class="settingsToggle">
+				<label data-target="images" data-disabledif="V.options.images===0||V.options.combatImages===0">
+					<<checkbox "$options.combatAnimations" false true autocheck>> Combat animations
+					<mouse class="tooltip-small linkBlue">(?)<span>Disabling may help improve performance and prevent images from loading incorrectly. Gif images will not be affected. Try disabling sidebar images first</span></mouse>
+				</label>
+			</div>
+			<<if $eyelidTEST is true>>
+				<div class="settingsToggle">
+					<label data-target='["options.images", "sidebaranimations"]' data-disabledif="V.options.images===0||V.options.sidebarAnimations===false"><<checkbox "$options.halfClosedEnabled" false true autocheck>> Enable half-closed eyes graphics</label></div>
+					<div class="description">Draw eyelids in sidebar as half-closed when highly aroused.
+				</div>
+			<</if>>
+			<div style="clear:both;">/*Keep at end of toggles*/</div>
+		</div>
+		<br>
+		<span class="gold">Character Lighting</span>
+		<div>
+			<div class="settingsToggle" onchange="new Wikifier(null, '<<updatesidebarimg>>')">
+				<label data-target="options.images" data-disabledif="V.options.images===0">
+					<<checkbox "$options.characterLightEnabled" false true autocheck>> Enable character lighting
+				</label>
+			</div>
+			<div style="clear:both;">/*Keep at end of toggles*/</div>
+			<div data-target='["images", "characterLightEnabled"]' data-disabledif="V.options.images===0||V.options.characterLightEnabled===false" oninput="new Wikifier(null, '<<updatesidebarimg>>')">
+				<div class="settingsToggle">
+					<label>
+						Spotlight<br>
+						<<numberslider "$options.lightSpotlight" $options.lightSpotlight 0 1 0.05>>
+					</label>
+				</div>
+				<div class="settingsToggle">
+					<label>
+						Gradient<br>
+						<<numberslider "$options.lightGradient" $options.lightGradient 0 1 0.05>>
+					</label>
+				</div>
+				<div class="settingsToggle">
+					<label>
+						Glow<br>
+						<<numberslider "$options.lightGlow" $options.lightGlow 0 1 0.05>>
+					</label>
+				</div>
+				<div class="settingsToggle">
+					<label>
+						Flat<br>
+						<<numberslider "$options.lightFlat" $options.lightFlat 0 1 0.05>>
+					</label>
+				</div>
+				<div class="settingsToggle">
+					<label data-target="images" data-disabledif="V.options.images===0||V.options.combatImages===0">
+						Combat Light<br>
+						<<numberslider "$options.lightCombat" $options.lightCombat 0 1 0.05>>
+					</label>
+				</div>
+				<div class="settingsToggle">
+					<label>
+						Angel/Devil TF colour component<br>
+						<<numberslider "$options.lightTFColor" $options.lightTFColor 0 1 0.05>>
+					</label>
+				</div>
+			</div>
+			<div style="clear:both;">/*Keep at end of toggles*/</div>
+		</div>
+	<<else>>
+		<br>
+		Images disabled
+	<</if>>
+	<br>
+	<span class="gold">History depth</span>
+	<br>
+	<div class="description">Enables going back in history up to N-1 passages.</div>
+	<div class="settingsToggle">
+		<<numberslider "$options.maxStates" $options.maxStates 1 20 1 $ironmanmode>>
+		<label>
+			<<ind>><<checkbox "$options.sessionHistory" false true autocheck>> Preserve history when refreshing a page.
+			<mouse class="tooltip-small linkBlue">(?)<span>Bad for performance. Only useful if you need full history restored after F5.</span></mouse>
+		</label>
+	</div>
+	<br><br>
+<</widget>>
+
+<<widget "optionsadvanced">>
+	<<setupOptions>>
+	<span class="gold">Advanced settings</span>
+	<div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.numpad" false true autocheck>>
+				Enable numpad
+				<mouse class="tooltip-small linkBlue">(?)<span>Useful on mobile if links break due to translation software</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.newWardrobeStyle" true false autocheck>>
+				Use the old wardrobe style
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.useNarrowMarket" false true autocheck>>
+				Use "narrow screen" version of the market inventory
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.skipStatisticsConfirmation" false true autocheck>>
+				Skip asking for confirmation when viewing Extra Stats
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label><<checkbox "$options.showDebugRenderer" false true autocheck>> Enable renderer debugger</label>
+		</div>
+		<div class="settingsToggle">
+			<label onclick="setTimeout(() => {toggleConfirmDialogUponTabClose();}, 100)">
+				<<checkbox "$options.confirmDialogUponTabClose" false true autocheck>>
+				Prompt confirmation dialog upon closing tab
+			</label>
+		</div>
+		<div style="clear:both;">/*Keep at end of toggles*/</div>
+	</div>
+	<br>
+	<span class="gold">Game Zoom</span>
+	<mouse class="tooltip linkBlue">(?)<span>Will allow you to adjust the size of game elements and text.
+	<span class="red">
+		Please be careful with this setting! Only save if you are happy with the changes made, as reloading the game will reset it to the last value used in that save.
+		Depending on the device and browser, the setting may break entirely, and may cause unexpected effects.
+	</span></span></mouse>
+	<br>
+	<span class="red">Not supported in all browsers</span>
+	<br>
+	<br>
+
+	<<numberslider "$options.zoom" $options.zoom 50 200 1>>
+	<input type="button" value="Set" onclick='zoom()'/>
+	<input type="button" value="Reset" onclick='zoom(100)'/>
+<</widget>>
+
+/* 北极星模组 */
+<<widget "optionsmods">>
+    <<setupOptions>>
+    <<updateMuseumAntiques>>
+	<span class="gold">北极星模组-大改</span>
+	<div>
+	    <div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_divine" false true autocheck>>
+				神性转化大修
+				<mouse class="tooltip-small linkBlue">(?)<span>添加混沌天使(堕天使进阶)，恶魔猎手(恶魔禁内射后异变)，天使恶魔转化增强。</span></mouse>
+			</label>
+		</div>
+	    <div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_animal" false true autocheck>>
+				动物转化大修
+				<mouse class="tooltip-small linkBlue">(?)<span>动物转化可共存，部位关联性合理化，添加多种新动物转化，原有动物转化增强。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_eventTF" false true autocheck>>
+				事件转化
+				<mouse class="tooltip-small linkBlue">(?)<span>通过事件获得的半永久转化，包括：幽灵，史莱姆，蘑菇等。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_antiques" false true autocheck>>
+				古董大改
+				<mouse class="tooltip-small linkBlue">(?)<span>新增多种新古董，部分古董转化为神器，增加特殊效果。</span></mouse>
+			</label>
+		</div>
+		<div style="clear:both;">/*保持在切换按钮的末端*/</div>
+    </div>
+    <span class="gold">北极星模组-小修</span>
+	<div>
+	    <div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_health" false true autocheck>>
+				显示敌人数值
+				<mouse class="tooltip-small linkBlue">(?)<span>战斗中显示对方具体数值，包括：血量，性奋，愤怒，信任等。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_smallup" false true autocheck>>
+				小体型强化
+				<mouse class="tooltip-small linkBlue">(?)<span>体型越小，温顺与顺从动作的加信任和减愤怒效果越高。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_clothes" false true autocheck>>
+				解锁衣服栏位
+				<mouse class="tooltip-small linkBlue">(?)<span>解锁：外套上衣，外套下装，头套栏位。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_sewmachine" false true autocheck>>
+				解锁商店缝纫机
+				<mouse class="tooltip-small linkBlue">(?)<span>原版内容，该模组仅开放解锁。</span></mouse>
+			</label>
+		</div>
+        <div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_sellcloth" false true autocheck>>
+				解锁出售衣服选项
+				<mouse class="tooltip-small linkBlue">(?)<span>原版内容，该模组仅开放解锁。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_magicpreg" false true autocheck>>
+				解锁魔法怀孕效果
+				<mouse class="tooltip-small linkBlue">(?)<span>在耻部纹或写下怀孕类纹身，即可增加怀孕率甚至男性怀孕。</span></mouse>
+			</label>
+		</div>
+	    <div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_sydneybelt" false true autocheck>>
+				添加悉尼安装贞操带事件
+				<mouse class="tooltip-small linkBlue">(?)<span>悉尼睡懒觉时可以偷偷安装贞操带。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_robinincome" false true autocheck>>
+				增加罗宾收入与自信相关
+				<mouse class="tooltip-small linkBlue">(?)<span>原版的固定300，改为自信值的40倍。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_averymoney" false true autocheck>>
+				艾弗里约会给钱翻倍
+				<mouse class="tooltip-small linkBlue">(?)<span>罗宾都能给4000，艾弗里也不能太小气。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_greengod" false true autocheck>>
+				拥抱绿色神明改为减性意识
+				<mouse class="tooltip-small linkBlue">(?)<span>给天真无邪一个活路。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_goodstudent" false true autocheck>>
+				好学生按需上课系统
+				<mouse class="tooltip-small linkBlue">(?)<span>成绩足够优秀或者好感够高可以不受逃课惩罚。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_doglovenodown" false true autocheck>>
+				狗舍好感不再每日下降
+				<mouse class="tooltip-small linkBlue">(?)<span>并非是狗舍声望，而是好感。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_crimewipe" false true autocheck>>
+				犯罪记录擦除无需高犯罪
+				<mouse class="tooltip-small linkBlue">(?)<span>原版低于1000就不能擦除了。</span></mouse>
+			</label>
+		</div>
+		<div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_sellproduce" false true autocheck>>
+				售卖声望调整
+				<mouse class="tooltip-small linkBlue">(?)<span>工厂售卖声望改为250个一加，摆摊声望根据信任度浮动。</span></mouse>
+			</label>
+		</div>
+	    <div class="settingsToggle">
+			<label>
+				<<checkbox "$options.bjx_stealhand" false true autocheck>>
+				手技加成偷窃类诡术效果
+				<mouse class="tooltip-small linkBlue">(?)<span>偷窃类的诡术判定增加20%手技加成。</span></mouse>
+			</label>
+		</div>
+		<div style="clear:both;">/*保持在切换按钮的末端*/</div>
+	</div>
+<</widget>>
+/* 北极星 */
+
+<<widget "setFont">>
+	<<removeclass "#passages" "fontSize10">>
+	<<removeclass "#passages" "fontSize12">>
+	<<removeclass "#passages" "fontSize14">>
+	<<removeclass "#passages" "fontSize16">>
+	<<removeclass "#passages" "fontSize18">>
+	<<removeclass "#passages" "fontSize20">>
+	<<if $options.passageFontSize>><<addclass "#passages" `"fontSize" + $options.passageFontSize`>><</if>>
+
+	<<removeclass "#story-caption" "fontSize12">>
+	<<removeclass "#story-caption" "fontSize14">>
+	<<removeclass "#story-caption" "fontSize16">>
+	<<removeclass "#story-caption" "fontSize18">>
+	<<removeclass "#story-caption" "fontSize20">>
+	<<if $options.sidebarFontSize>><<addclass "#story-caption" `"fontSize" + $options.sidebarFontSize`>><</if>>
+
+	<<if _args[0]>><!--For elements that are not sugarcube specific and wont be loaded when the widget is normally called-->
+		<<removeclass "#customOverlay" "fontSize10">>
+		<<removeclass "#customOverlay" "fontSize12">>
+		<<removeclass "#customOverlay" "fontSize14">>
+		<<removeclass "#customOverlay" "fontSize16">>
+		<<removeclass "#customOverlay" "fontSize18">>
+		<<removeclass "#customOverlay" "fontSize20">>
+		<<if $options.overlayFontSize>><<addclass "#customOverlay" `"fontSize" + $options.overlayFontSize`>><</if>>
+	<</if>>
+
+	<<removeclass "#passages" "lineHeight1">>
+	<<removeclass "#passages" "lineHeight125">>
+	<<removeclass "#passages" "lineHeight15">>
+	<<removeclass "#passages" "lineHeight175">>
+	<<removeclass "#passages" "lineHeight2">>
+	<<if $options.passageLineHeight>><<addclass "#passages" `"lineHeight" + $options.passageLineHeight.toString().replace('.','')`>><</if>>
+
+	<<removeclass "#story-caption" "lineHeight1">>
+	<<removeclass "#story-caption" "lineHeight125">>
+	<<removeclass "#story-caption" "lineHeight15">>
+	<<removeclass "#story-caption" "lineHeight175">>
+	<<removeclass "#story-caption" "lineHeight2">>
+	<<if $options.sidebarLineHeight>><<addclass "#story-caption" `"lineHeight" + $options.sidebarLineHeight.toString().replace('.','')`>><</if>>
+
+	<<if _args[0]>>
+		<<removeclass "#customOverlay" "lineHeight1">>
+		<<removeclass "#customOverlay" "lineHeight125">>
+		<<removeclass "#customOverlay" "lineHeight15">>
+		<<removeclass "#customOverlay" "lineHeight175">>
+		<<removeclass "#customOverlay" "lineHeight2">>
+		<<if $options.overlayLineHeight>><<addclass "#customOverlay" `"lineHeight" + $options.overlayLineHeight.toString().replace('.','')`>><</if>>
+	<</if>>
+
+	<<removeclass "html" "Arial">>
+	<<removeclass "html" "Verdana">>
+	<<removeclass "html" "TimesNewRoman">>
+	<<removeclass "html" "Georgia">>
+	<<removeclass "html" "Garamond">>
+	<<removeclass "html" "CourierNew">>
+	<<removeclass "html" "LucidaConsole">>
+	<<removeclass "html" "Monaco">>
+	<<removeclass "html" "ComicSans">>
+	<<removeclass "html" "OpenDyslexicMono">>
+	<<if $options.font>><<addclass "html" $options.font>><</if>> <!--Adding to the body would remove it on changing passage-->
+<</widget>>

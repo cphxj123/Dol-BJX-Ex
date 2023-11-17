@@ -1,0 +1,713 @@
+:: Widgets Underground [widget]
+
+<<widget "dungeonescape">>
+	<<if $baileySold>>
+		<<set $baileyReunionScene to "dungeon">>
+	<</if>>
+
+	<<if $whitneyromance is 1>>
+		<<set $whitneyReunionScene to "dungeon">>
+	<</if>>
+
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
+		<<if $home_gone gte 4 and !$undergroundbrothel.robin>>
+			<<set $robinReunionScene to "dungeon">>
+		<<elseif $undergroundbrothel.robinGone>>
+			<<set $robinReunionScene to "dungeonRobin">>
+		<</if>>
+	<</if>>
+
+	<<if $undergroundbrothel.robin>>
+		<<set $robinmissing to 0>>
+	<</if>>
+
+	<<unset $baileySold>>
+	<<unset $wraithUnderground>>
+	<<set $undergroundbrothelescaped to true>>
+	<<set $undergroundbrothel to {"escape": $undergroundbrothel.escape}>>
+	<<unset $underground_shirt>>
+<</widget>>
+
+<<widget "undergroundCellOptions">>
+	<<ind>><<link [[Rest (1:00)|Underground Cell Rest]]>><<pass 1 hour>><<set $tiredness -= 1000>><</link>><<ltiredness>>
+	<br>
+	<<if $undergroundbrothel.robin and !$undergroundbrothel.robinSpoke>>
+		<<ind>><<link [[Talk to Robin (0:10)|Underground Cell Robin Talk]]>><<pass 10>><<stress -4>><<trauma -4>><<npcincr Robin trauma -2>><</link>><<lstress>><<ltrauma>><<lrtrauma>>
+		<br>
+	<</if>>
+	<<if $undergroundbrothel.escape is 0>>
+		<<investigateicon>><<link [[Look for a way out|Underground Cell Look]]>><</link>>
+	<<elseif $undergroundbrothel.escape gte 19>>
+		<<getouticon "hole">><<link [[Escape|Underground Escape]]>><</link>>
+	<<elseif $undergroundbrothel.escape gte 18 and $physiquesize lte 12000>>
+		<<getouticon "hole">><<link [[Escape|Underground Escape]]>><</link>><<small_text>>
+	<<elseif $undergroundbrothel.escape gte 17 and $physiquesize lte 10000>>
+		<<getouticon "hole">><<link [[Escape|Underground Escape]]>><</link>><<small_text>>
+	<<elseif $undergroundbrothel.escape gte 16 and $physiquesize lte 6000>>
+		<<getouticon "hole">><<link [[Escape|Underground Escape]]>><</link>><<small_text>>
+	<<else>>
+		<<getouticon "dig">><<link [[Dig (1:00)|Underground Cell Dig]]>><<pass 1 hour>><</link>>
+	<</if>>
+	<br>
+	<<investigateicon>><<link [[Examine the door|Underground Cell Lock]]>><</link>>
+<</widget>>
+
+<<widget "undergroundEscapeForestStart">>
+	<<clotheson>>
+	<<endcombat>>
+
+	A chill runs up your spine, a warning from some primal instinct. <span class="red">Something is hunting you.</span>
+	<<set $foresthunt to 1>><<dungeonescape>>
+	<br><br>
+
+	<<link [[Next|Forest]]>><<set $forest to 40>><</link>>
+<</widget>>
+
+<<widget "undergroundReturnToCell">>
+	<<tearful>> you sit on the mattress.
+	<<if _args[0] is "Robin">>
+		At least Robin got away.
+	<</if>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<if _args[0] is "skip">>
+		<<set $eventskip to 1>>
+	<</if>>
+
+	<<if _args[0] is undefined or _args[0]>>
+		<<link [[Next|Underground Cell]]>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "undergroundPlantFakeChoice">>
+	"Did you hit your head?" the <<person2>><<person>> grunts. "It doesn't matter if <<pshe>> wants to or not. <<pShes>> yours."
+	<br><br>
+
+	"Oh yeah! I forgot this place worked like that!" The <<person1>><<person>> claps <<his>> hands together and lunges for you.
+	<br><br>
+
+	<<link [[Next|Underground Plant Molestation]]>><<set $molestationstart to 1>><</link>>
+<</widget>>
+
+:: Underground Intro
+<<set $outside to 0>><<set $location to "underground">><<effects>>
+<<if $phase is 1>>
+	/* endevent was called before setting phase to 1, regen all npcs */
+	<<set _withRobin to 1>>
+	<<set _robin to statusCheck("Robin")>>
+	<<npc Robin 1>><<generate2>><<generate3>><<generate4>>
+<</if>>
+
+<<if _withRobin>>
+	You and Robin are dragged through a door and down a flight of stairs. You hear the sound of rushing water.
+	At the bottom the <<person2>><<person>> turns on a torch, revealing an old stone corridor leading away into darkness.
+	<br><br>
+
+	After walking awhile you come to a metal door. The <<person2>><<person>> knocks, and is answered by a thin opening sliding apart near the top.
+	It closes promptly, and the door opens.
+	<br><br>
+
+	You are forced through the door and to your knees before a
+	<<person4>><<person>>, who crouches and grabs your neck.
+	<<He>> turns your head to examine one side of your face, then the other, then forces your mouth open and looks inside.
+	"<<pShe>> will do," <<he>> says, standing up. <<He>> then looks at Robin and does the same before making a sly grin in the torchlight.
+	<<person1>>"<<He>>'ll be popular, I can tell."
+<<else>>
+	You are dragged through a door and down a flight of steps. You hear the sound of rushing water.
+	At the bottom the <<person>> turns on a torch, revealing an old stone corridor leading away into darkness.
+	<<pass 15>>
+	<br><br>
+
+	After walking awhile you come to a metal door.
+	The <<person2>><<person>> knocks, and is answered by a thin opening sliding apart near the top. It closes promptly, and the door opens.
+	<br><br>
+
+	<<endcombat>>
+	<<generate1>><<person1>>
+	You are forced through the door and to your knees before a <<person>>, who crouches and grabs your neck.
+	<<He>> turns your head to examine one side of your face, then the other, then forces your mouth open and looks inside.
+	"<<pShe>> will do," <<he>> says, standing up.
+<</if>>
+<br><br>
+
+<<if $worn.neck.collared isnot 1>>
+	<<neckwear 21>>
+	Your neck is freed only briefly. Someone closes something hard and cold around it before you are yanked to your feet and pulled away.
+<<else>>
+	<<attach_leash>>
+	Someone attaches a leash to your collar, yanks you to your feet, and pulls you away.
+<</if>>
+<<if !$worn.feet.type.includes("shackle")>>
+	You feel cold metal clamp around your ankles.
+	<<shackle_feet>>
+<</if>>
+<<if _withRobin>>
+	<br><br>
+	<<if _robin.dom gte 70>>
+		Robin doesn't make a sound, and in the dim light you can see <<his>> eyes are full of determination.
+		<br><br>
+
+		"A lot of people love the types who need to be broken in," the <<person4>><<person>> chuckles as <<he>> clamps Robin's ankles.
+	<<else>>
+		Robin whimpers. "Get used to it," the <<person4>><<person>> snaps. "You're never leaving this place."
+	<</if>>
+	<br><br>
+
+	A <<person3>><<person>> holds the other end of your leash in one hand, and Robin's in the other. <<He>> leads you towards a door at the far end of the room.
+<<else>>
+	<<generate2>><<person2>>
+	A <<person>> holds the other end of your leash. <<He>> leads you towards a door at the far end of the room.
+<</if>>
+<br><br>
+
+<<stealclothes>>
+<<link [[Next|Underground Intro2]]>><</link>>
+<br>
+
+:: Underground Intro2
+<<set $outside to 0>><<set $location to "underground">><<effects>>
+<<if $phase is 1>>
+	<<set _withRobin to 1>>
+	<<set _robin to statusCheck("Robin")>>
+<</if>>
+
+<<if _withRobin is 1>>/* 4 npcs are generated so far, person1 is robin */
+	You and Robin enter another corridor, lined on one side with metal floor hatches. The <<person3>><<person>> opens one of them, and shoves you inside. You land on something soft at least.
+	Soon you hear an adjacent hatch open and <<person1>>Robin lets out a yelp as you assume <<hes>> tossed in as well.
+	<br><br>
+
+	<<person3>>"Both of you, your role here is simple. Do as you're told. You don't want to know what happened to the last <<girl>> who made a fuss."
+	<<He>> slams the hatch shut, plunging you into complete darkness as you hear <<his>> receding footsteps.
+	<br><br>
+
+	You fumble around in the dark, and find you fell on what feels like a mattress. There's also a locked metal door and a tap in the corner, but the room is otherwise bare.
+	<br><br>
+
+	<<person1>>"Are you there?" You hear Robin's<<if _robin.dom lte 40>> trembling<</if>> voice coming from nearby.
+	As you trace the location of <<his>> voice, you find that there is a small hole in the wall that connects you.
+<<else>>/* 2 npcs are present */
+	You enter another corridor, lined on one side with metal floor hatches. <<person2>><<He>> opens one of them, and shoves you inside. You land on something soft at least.
+	"Your role here is simple. Do as you're told. You don't want to know what happened to the last <<girl>> who made a fuss."
+	<<He>> slams the hatch shut, plunging you into complete darkness.
+	<br><br>
+
+	You fumble around in the dark, and find you fell on what feels like a mattress.
+	There's also a locked metal door and a tap in the corner, but the room is otherwise bare.
+<</if>>
+<br><br>
+
+<<set $undergroundbrothel to {
+	"active": true,
+	"time": 0,
+	"timepass": true,
+	"water": 0,
+	"escape": 0
+}>>
+<<if _withRobin>>
+	<<set $undergroundbrothel.robin to true>>
+	<<set $undergroundbrothel.robinTopics to {
+		"cold": "undiscussed",
+		"lonely": "undiscussed",
+		"dark": "undiscussed",
+		"scared": "undiscussed",
+		"touch": "undiscussed"
+	}>>
+	<<set $undergroundbrothel.robinTalk to 0>>
+<</if>>
+<<link [[Next|Underground Cell]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Underground Cell
+<<set $outside to 0>><<set $location to "underground">><<effects>>
+
+You are in an underground cell. You can't see a thing but can tell that the walls and floor are made of cold stone.
+<<if $undergroundbrothel.water is 0>>
+	There's a tap in the corner which barely dribbles water.
+
+<<else>>
+	<<if $undergroundbrothel.timepass isnot false>>
+		<<set $undergroundbrothel.water += 1>>
+	<</if>>
+	There's a tap in the corner, which they turned off to punish your disobedience.
+	<<if $undergroundbrothel.water gte 25>>
+		<span class="red">You're dying of thirst!</span>
+		<<pain 15>><<stress 6>><<trauma 6>><<gtrauma>><<gstress>><<rngWraith>>
+	<<elseif $undergroundbrothel.water gte 20>>
+		<span class="pink">You really need water.</span>
+		<<pain 8>>
+	<<elseif $undergroundbrothel.water gte 15>>
+		<span class="purple">You're very thirsty.</span>
+		<<pain 5>>
+	<<elseif $undergroundbrothel.water gte 10>>
+		<span class="blue">You're thirsty.</span>
+		<<pain 2>>
+	<<elseif $undergroundbrothel.water gte 5>>
+		<span class="lblue">You feel a bit thirsty.</span>
+	<</if>>
+<</if>>
+<br><br>
+
+<<if $undergroundbrothel.timepass isnot false>>
+	<<set $undergroundbrothel.time += 1>>
+<</if>>
+
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "dungeon">>
+<<elseif $undergroundbrothel.timepass is false>>
+	<<undergroundCellOptions>>
+
+<<elseif _wraithEvent and !$wraithUnderground>>
+	<<set $wraithUnderground to true>>
+	<<set $undergroundbrothel.water to 1>>
+	The lights flicker on for a moment. You brace yourself, but your room remains sealed. A dim white light hovers above you.
+	You look, and see a cloaked pale figure looking down to you with <<wraithEyes>> eyes.
+	<<if $wraith.state is "active">>
+		It rubs a necklace of ivory around its neck.
+	<</if>>
+	<br><br>
+
+	It puts a hand behind your head, and tilts it up. Its other hand clenches into a fist, and from it, water begins to flow.
+	Your body goes limp in relief as you drink. <<stress -12>><<trauma -12>><<pain -50>><<lstress>><<ltrauma>><<lpain>>
+	<br><br>
+
+	<<if $wraith.state is "haunt">>
+		<<if $wraithPrison and $wraithPrison.vision is true>>
+			"<span class="wraith">Disappear. Drown. Don't make me repeat myself.</span>"
+		<<else>>
+			"<span class="wraith">Alone. Desolate. Your suffering hasn't ended.</span>"
+		<</if>>
+	<<elseif $wraith.state is "despair">>
+		"<span class="wraith">Our suffering isn't over. <<pcPetname "Wraith">>.</span>"
+	<<else>>
+		"<span class="wraith">No one deserves to die in a cage.</span>"
+	<</if>>
+	<br><br>
+
+	You cough. You're standing in front of the tap. No water runs from it, but you feel better.
+	<br><br>
+
+	<<link [[Next|Underground Cell]]>><</link>>
+	<br>
+<<elseif $undergroundbrothel.time is 2 and $bodywritingLvl gte 3>>
+	<<undergroundRobinTopic "tattoo" "undiscussed">><<run delete $undergroundbrothel.robinSpoke>>
+	<<if $undergroundbrothel.robin>>
+		<<set $robinTattoo.pushUnique("164")>>
+	<</if>>
+	Dim pink-hued lights turn on, bathing the room in light. Before your eyes can adjust, one of the doors opens and a number of people enter.
+	You think there are four of them.
+	<<generate1>><<generate2>><<generate3>><<generate4>>
+	They grab your arms and legs, and force you onto your back.
+	<br><br>
+
+	<<person1>>
+	<<if $worn.upper.name isnot "naked" or $worn.lower.name isnot "naked" or $worn.under_lower.name isnot "naked" or $worn.under_upper.name isnot "naked">>
+		Hands grope at your clothing, pulling and tugging them off your body while a <<person>> hefts a machine to the ground.
+		Metal rails protrude from the top, and various apparatus from the middle. <<He>> examines what looks like a needle.
+		<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+		<br><br>
+	<<else>>
+		A <<person>> hefts a machine to the ground. Metal rails protrude from the top, and various apparatus from the middle.
+		<<He>> examines what looks like a needle.
+		<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+		<br><br>
+	<</if>>
+
+	More shackles are clasped around your wrists and ankles, attached to chains connected to the rails.
+	<br><br>
+	<<strip>>
+
+	<<link [[Struggle|Underground Tattoo Struggle]]>><<def 1>><</link>>
+	<br>
+	<<link [[Lie still|Underground Tattoo Still]]>><<sub 1>><</link>>
+	<br>
+
+<<elseif $undergroundbrothel.time is 4>>
+	<<run delete $undergroundbrothel.robinSpoke>>
+	<<generate1>><<person1>>
+	<<if $undergroundbrothel.robin>>
+		The lights turn on once more, and a <<person>> enters. "Time for your performance," <<he>> says, yanking your leash. "Your friend will be accompanying us. Hope you're feeling lucky."
+		<br><br>
+		<<link [[Go quietly|Underground Robin Dice Intro]]>><<endevent>><</link>>
+	<<else>>
+		The lights turn on once more, and a <<person>> enters. "Time for your performance," <<he>> says, yanking your leash.
+		"Make sure you dance sexy. If you don't attract a customer we'll just let the whole audience have a piece." <<He>> tries to pull you from the room.
+		<br><br>
+		<<link [[Go quietly|Underground Dance Intro]]>><<endevent>><</link>>
+	<</if>>
+	<br>
+	<<link [[Resist|Underground Cell Resist]]>><<set $molestationstart to 1>><<set $phase to 1>><</link>>
+	<br>
+<<elseif $undergroundbrothel.time is 8>>
+	<<run delete $undergroundbrothel.robinSpoke>>
+	<<generate1>><<person1>>
+	<<if $undergroundbrothel.robin>>
+		The lights turn on once more, and a <<person1>><<person>> enters. "Time for another performance," <<he>> says, yanking your leash.
+		<br><br>
+		<<if $tentacledisable is "t">>
+			<<link [[Go quietly|Underground Robin Stage Intro]]>><<endevent>><</link>>
+		<<else>>
+			<<link [[Go quietly|Underground Robin Tentacles Intro]]>><<endevent>><</link>>
+		<</if>>
+	<<else>>
+		The lights turn on once more, and a <<person>> enters. "You're needed," <<he>> says, yanking your leash.
+		<br><br>
+		<<link [[Go quietly|Underground Presentation]]>><<endevent>><</link>>
+	<</if>>
+	<br>
+	<<link [[Resist|Underground Cell Resist]]>><<set $molestationstart to 1>><<set $phase to 2>><</link>>
+	<br>
+<<elseif $undergroundbrothel.time is 12>>
+	<<run delete $undergroundbrothel.robinSpoke>>
+	<<generate1>><<person1>>
+	<<if $undergroundbrothel.robin>>
+		The lights turn on once more, and a <<person>> enters. "Time for another performance," <<he>> says, yanking your leash.
+		<br><br>
+		<<link [[Go quietly|Underground Robin Machine Intro]]>><<endevent>><</link>>
+	<<else>>
+		The lights turn on once more, and a <<person>> enters. "Time for another performance," <<he>> says, yanking your leash.
+		<br><br>
+		<<link [[Go quietly|Underground Stage Intro]]>><<endevent>><</link>>
+	<</if>>
+	<br>
+	<<link [[Resist|Underground Cell Resist]]>><<set $molestationstart to 1>><<set $phase to 3>><</link>>
+	<br>
+<<elseif $undergroundbrothel.time is 16>>
+	<<run delete $undergroundbrothel.robinSpoke>>
+	<<generate1>><<person1>>
+	<<if $undergroundbrothel.robin>>
+		The lights turn on once more, and a <<person>> enters. "Time for another performance," <<he>> says, yanking your leash.
+		<br><br>
+		<<link [[Go quietly|Underground Robin Kiss Intro]]>><<endevent>><</link>>
+	<<else>>
+		The lights turn on once more, and a <<person>> enters. "Time for another performance," <<he>> says, yanking your leash.
+		<br><br>
+		<<link [[Go quietly|Underground Film Intro]]>><<endevent>><</link>>
+	<</if>>
+	<br>
+	<<link [[Resist|Underground Cell Resist]]>><<set $molestationstart to 1>><<set $phase to 4>><</link>>
+	<br>
+<<elseif $undergroundbrothel.time is 20>>
+	<<run delete $undergroundbrothel.robinSpoke>>
+	<<generate1>><<person1>>
+	<<if $undergroundbrothel.robin>>
+		The lights turn on once more, and a <<person>> enters. "Time for some fresh air," <<he>> says, yanking your leash.
+		<br><br>
+		<<link [[Go quietly|Underground Robin Hunt Intro]]>><<endevent>><</link>>
+	<<else>>
+		The lights turn on once more, and a <<person>> enters. "Time for some fresh air," <<he>> says, yanking your leash.
+		<br><br>
+		<<link [[Go quietly|Underground Hunt Intro]]>><<endevent>><</link>>
+	<</if>>
+	<br>
+	<<link [[Resist|Underground Cell Resist]]>><<set $molestationstart to 1>><<set $phase to 5>><</link>>
+	<br>
+<<elseif $undergroundbrothel.time is 24>>
+	<<set $undergroundbrothel.time to 0>><<run delete $undergroundbrothel.robinSpoke>>
+	<<if $trauma gte $traumamax>>
+		<<generate1>><<generate2>>
+		The lights turn on once more, and a <<fullGroup>> enter.
+		The <<person1>><<person>> crouches beside you, grabs your neck and turns you to face <<him>>.
+		"Yep," <<he>> says. "<<pHer>> lights are out. Shame, <<pshes>> a pretty little thing."
+		<br><br>
+		Together they lift you by the shoulders and carry you from the room.
+		They take you down a flight of steps to a large hole in the ground. They dump you in.
+		<br><br>
+		You fall through darkness for several seconds before splashing into cold water.<<water>>
+		<br><br>
+		<<endevent>>
+		<<dungeonescape>>
+		<<link [[Next|Underground Lake]]>><</link>>
+	<<else>>
+		<<generate1>>
+		The lights turn on once more, and a <<person1>><<person>> enters, holding a hose.
+		Water shoots from the tip, knocking you prone and drenching you.
+		<<He>> walks closer and continues spraying you from multiple angles, before finally turning it off.
+		"There we go," <<he>> says. "Nice and clean." The door slams shut behind <<him>>, plunging you into darkness.
+		<br><br>
+		<<wash>><<water>>
+		<<endevent>>
+		<<link [[Next|Underground Cell]]>><</link>>
+		<br>
+	<</if>>
+<<elseif $underground_shirt isnot 1 and $worn.upper.name is "naked">>
+	<<set $underground_shirt to 1>>
+	<<generate1>>
+	The lights turn on once more, and a <<person1>><<person>> steps inside. <<He>> hurls a bundle of fabric at you. "Here you go, slut," <<he>> says. "Don't want you catching a chill." <<He>> laughs and slams the door.
+	<br><br>
+	You unfurl the fabric. It's a shirt, with the word "Slut" emblazoned on the front.
+	<br><br>
+
+	<<link [[Wear|Underground Shirt]]>><<upperwear 27>><</link>>
+	<br>
+	<<link [[Tear it up|Underground Shirt Tear]]>><<trauma -12>><</link>><<lltrauma>>
+	<br>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>><<set _allure to $allure / 2>>
+	<<if $danger gte (9900 - _allure) and $eventskip is 0>>
+		Dim pink-hued lights turn on, bathing the room in light.
+		One of the doors opens and a <<generate1>><<person1>><<person>> walks in, closing the door behind <<him>>.
+		<<covered>>
+		<<He>> sizes you up as <<he>> approaches.
+		<<switch random(1,5)>>
+			<<case 1>>	"You're adorable. Don't worry, I'll be gentle."
+			<<case 2>>	"Good enough. Hold still."
+			<<case 3>>	"Yes, just my style."
+			<<case 4>>	"You better be worth it <<bitch>>." <<set $phase to 1>>
+			<<default>>	"I paid good money for you. You better be worth it." <<set $phase to 1>>
+		<</switch>>
+		<br><br>
+		<<link [[Next|Underground Cell Molestation]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<else>>
+		<<undergroundCellOptions>>
+	<</if>>
+<</if>>
+
+<<set $undergroundbrothel.timepass to true>>
+<<set $eventskip to 0>>
+
+:: Underground Cell Rest
+<<set $outside to 0>><<set $location to "underground">><<effects>>
+
+You lie on the uncomfortable mattress and close your eyes. You're not sure how long you were lying there, but you feel refreshed.
+<br><br>
+
+<<link [[Next|Underground Cell]]>><</link>>
+<br>
+
+:: Underground Cell Look
+<<set $outside to 0>><<set $location to "underground">><<effects>>
+
+<<if $undergroundbrothel.robin>>
+	You carefully feel around the edge of the room, looking for anything that might help you get out. You don't find anything. Feeling helpless, you press your back against the wall of Robin's cell and slide down.
+	<br><br>
+
+	"Psst!" You hear Robin's voice, and turn to look at the hole between your cells. "There are cracks under my mattress," Robin whispers. "If you dig into my cell, I could dig through the floor and get us out."
+	<br><br>
+
+	You shift yourself to peer through the tiny hole into Robin's cell. <<nnpc_His "Robin">> mattress has been shifted aside. You can barely make out cracks in the floor. It might be your imagination, but you think you can see a tiny amount of light through them too.
+<<else>>
+	You carefully feel around the edge of the room, looking for anything that might help you get out. You don't find anything.
+	Feeling helpless, you sit back down on the mattress, and feel a cool breeze caress your leg.
+	You put your hands against the floor and feel it again, coming from beneath the mattress.
+	<br><br>
+
+	You shunt it aside and the breeze becomes unmistakable. You can feel small cracks in the ground.
+	It might be your imagination, but you think you can see a tiny amount of light through them too.
+<</if>>
+<br><br>
+
+<<set $undergroundbrothel.timepass to false>>
+<<set $undergroundbrothel.escape to 1>>
+<<link [[Next|Underground Cell]]>><</link>>
+<br>
+
+:: Underground Cell Dig
+<<set $outside to 0>><<set $location to "underground">><<effects>>
+<<if $undergroundbrothel.robin>>
+	You pick at the hole connecting your cell to Robin's.
+<<else>>
+	You pick at the loose stone beneath the mattress.
+<</if>>
+<<set $undergroundbrothel.escape += 1>>
+<<if $undergroundbrothel.escape gte 19>>
+	It'll be a squeeze, but you think you can fit.
+	<br><br>
+	<<getouticon "hole">><<link [[Escape|Underground Escape]]>><</link>>
+<<elseif $undergroundbrothel.escape gte 18 and $physiquesize lte 12000>>
+	It'll be a squeeze, but you think you can fit.
+	<br><br>
+	<<getouticon "hole">><<link [[Escape|Underground Escape]]>><</link>><<small_text>>
+<<elseif $undergroundbrothel.escape gte 17 and $physiquesize lte 10000>>
+	It'll be a squeeze, but you think you can fit.
+	<br><br>
+	<<getouticon "hole">><<link [[Escape|Underground Escape]]>><</link>><<small_text>>
+<<elseif $undergroundbrothel.escape gte 16 and $physiquesize lte 6000>>
+	It'll be a squeeze, but you think you can fit.
+	<br><br>
+	<<getouticon "hole">><<link [[Escape|Underground Escape]]>><</link>><<small_text>>
+<<elseif $undergroundbrothel.escape gte 15>>
+	The hole needs to be just a bit bigger and you'll be able to fit through.
+<<elseif $undergroundbrothel.escape gte 12>>
+	<<if $undergroundbrothel.robin>>
+		You can definitely break through, it just needs to be bigger.
+	<<else>>
+		There's definitely a way out here, it just needs to be bigger.
+	<</if>>
+<<elseif $undergroundbrothel.escape gte 8>>
+	The hole grows wider.
+<<elseif $undergroundbrothel.escape gte 4>>
+	Some of the cracks grow into a small hole.
+<<else>>
+	You make the cracks a bit bigger.
+<</if>>
+<br><br>
+
+<<getouticon>><<link [[Stop|Underground Cell]]>><</link>>
+<br>
+
+:: Underground Cell Lock
+<<set $outside to 0>><<set $location to "underground">><<effects>><<set $lock to 1000>>
+
+The metal door is locked tight. It uses an advanced electronic lock.
+<br><br>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">You think you could manipulate it.</span>
+	<br><br>
+	<<link [[Open it (0:05)|Underground Cell Sneak]]>><<pass 5>><</link>>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Underground Cell Sneak]]>><<pass 1>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<set $undergroundbrothel.timepass to false>>
+<<link [[Stop|Underground Cell]]>><</link>>
+<br>
+
+:: Underground Cell Sneak
+<<set $outside to 0>><<set $location to "underground">><<effects>>
+
+No lock is going to stop you. You open the door and sneak out, tiptoeing across the plush carpet. You hear laughter and music up ahead.
+You peek round the corner and see
+<<if $NPCName[$NPCNameList.indexOf("Whitney")].state is "dungeon">>
+	Whitney
+<<else>>
+	a <<persony>>
+<</if>>
+getting brutally fucked on stage as a crowd of <<people>> watch.
+With the exception of the stage, the lights have been switched off, leaving the edge of the room in darkness.
+<br><br>
+
+<<if $undergroundbrothel.robin>>
+	<<set _robin to statusCheck("Robin")>><<npc "Robin">><<person1>>
+	You sneak back to Robin's cell. It's unlocked from this side, fortunately.
+	<<if _robin.dom lte 20 or _robin.trauma gte 70>>
+		Robin cringes and turns <<his>> head away, as if expecting to be beaten,
+	<<else>>
+		Robin gulps and shrinks away as the door opens,
+	<</if>>
+	but relief floods <<his>> face when <<he>> sees that it's you. You raise your finger to your lips, but <<he>> seemingly already knows to be quiet.
+	<br><br>
+<</if>>
+
+You slink into the room and round the side. No one notices you. You make it to the other side and up the stairs, emerging in the forest.
+<br><br>
+
+<<dungeonescape>>
+
+<<if _robin>>
+	<<link [[Next|Underground Robin Escape Orphanage]]>><<set $phase to 0>><<set $stress -= 1000>><</link>>
+<<else>>
+	<<link [[Next|Forest]]>><<set $forest to 40>><<set $stress -= 1000>><</link>>
+<</if>>
+
+:: Underground Escape
+<<set $outside to 0>><<set $location to "underground">><<effects>>
+
+
+<<if $undergroundbrothel.robin>>
+	"I'm done on my end," Robin calls out, half-whispered. "Can you make it through?"
+	<br><br>
+
+	<<if $speech_attitude is "bratty">>
+		"Y-yeah! Let's hurry!"
+	<<elseif $speech_attitude is "meek">>
+		"Don't give them a chance to stop us!"
+	<<else>>
+		"Let's go!"
+	<</if>>
+	You quickly squeeze through the hole and into Robin's cell.
+	<br><br>
+
+	Robin immediately hugs you as you enter. "Let's get out of here!" Robin helps you into the hole and as you carefully lower yourself down you see Robin squeezing in after you.
+	<<nnpc_He "Robin">> makes sure to use the mattress to hide the hole as <<nnpc_he "Robin">> does so.
+<<else>>
+	You sit on the edge with your legs hanging over the hole. You feel a slope. You carefully lower yourself down, pulling the mattress over as you do.
+	Relying on your hands at least as much as your feet, you scramble downwards.
+<</if>>
+<br><br>
+
+The stone gives way and you fall several feet into cold water.
+<br><br>
+
+<<link [[Next|Underground Lake]]>><<set $stress -= 1000>><</link>>
+<br>
+
+:: Underground Lake
+<<set $outside to 0>><<set $location to "underground">><<water>><<effects>>
+<<set _fromUB to $undergroundbrothel isnot undefined>>
+<<set _withRobin to _fromUB ? $undergroundbrothel.robin : false>>
+<<rngWraith>>
+<<if _wraithEvent>>
+	<<set _drown to ($wraith.state is "haunt" ? "Drown" : "Don't")>>
+	<<ind>><<ind>><<ind>><span class="wraith_flicker">_drown</span>
+	<br><br>
+<</if>>
+
+<<set $stress -= 1000>>
+<<if $historytrait gte 4 and !_withRobin>>
+	You are pulled through the dark by a current. You've read about these tunnels, and should be able to influence where you end up.
+	<br><br>
+
+	<<link [[Near the shore|Underground Lake2]]>><<set $sea to 10>><</link>>
+	<br>
+	<<link [[Further out at sea|Underground Lake2]]>><<set $sea to 50>><</link>>
+	<br><br>
+<<else>>
+	You are pulled through the dark by a current. Without warning, you are sucked underwater.
+	You try to fight it, but the force is too strong. After a few moments, the darkness gives way to light, and you are pushed upwards.
+	You struggle further up, and emerge into the <<print Time.dayState>>.
+	<br><br>
+
+	<<if _withRobin>>
+		<<set _robin to statusCheck("Robin")>>
+		<<npc Robin 1>>
+		Robin eventually bobs to the surface next to you.
+		<br><br>
+		<<if _robin.dom gte 40>>
+			<<set _swimtestdiff to 400>>
+			<<He>> does <<his>> best to stay afloat, but <<his>> rapid breathing doesn't help <<him>>.
+			"Grab on!" <<He>> shouts as you drift closer to <<him>>. "We can't get separated out here!"
+			You get close and let <<him>> latch on to you.
+		<<else>>
+			<<set _swimtestdiff to 600>>
+			<<He>> seems to be struggling to stay afloat against the waves.
+			"H-help!" <<He>> coughs out as you get close and let <<him>> latch onto you.
+		<</if>>
+		<br><br>
+
+		<<link [[Swim to shore|Underground Robin Escape Swim]]>><</link>><<swimmingdifficulty 1 _swimtestdiff>>
+		<br>
+	<<else>>
+		<<link [[Next|Sea]]>><<set $sea to 50>><</link>>
+		<br>
+	<</if>>
+	<<if _fromUB>>
+		<<dungeonescape>>
+	<</if>>
+<</if>>
+<<if _wraithEvent and !_withRobin>>
+	<<ind>><<ind>><<ind>><<ind>><<ind>><<ind>><span class="wraith_flicker">_drown</span>
+	<br><br><br><br><br><br><span class="wraith_flicker">_drown</span>
+<</if>>
+
+:: Underground Lake2
+<<set $outside to 0>><<set $location to "underground">><<effects>>
+
+The current sucks you underwater. After a few moments, the darkness gives way to light, and you are pushed upwards.
+You struggle further, and emerge into the <<print Time.dayState>>.
+<br><br>
+<<link [[Next|Sea]]>><</link>>
+<br>

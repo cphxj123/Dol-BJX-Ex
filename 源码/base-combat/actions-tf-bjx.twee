@@ -1,0 +1,216 @@
+:: Widgets Actions Transformations [widget]
+
+/*
+
+db    db db    db db   dD d888888b         .d88b.  d8b   db d8b   db  .d8b.  
+`8b  d8' 88    88 88 ,8P'   `88'          .8P  Y8. 888o  88 888o  88 d8' `8b 
+ `8bd8'  88    88 88,8P      88           88    88 88V8o 88 88V8o 88 88ooo88 
+   88    88    88 88`8b      88    C8888D 88    88 88 V8o88 88 V8o88 88~~~88 
+   88    88b  d88 88 `88.   .88.          `8b  d8' 88  V888 88  V888 88   88 
+   YP    ~Y8888P' YP   YD Y888888P         `Y88P'  VP   V8P VP   V8P YP   YP 
+                                                                             
+                                                                             
+
+*/
+
+<<widget "deathlychill">>
+	<<set $deathlychill to 1>>
+
+	<<if $deathlychill is 1>>
+		<<set $auratimer to 20>>
+		<<switch $auratimer>>
+			<<case 20>><<coolaura>>
+			<<case 19>><<coolaura>>
+			<<case 18>><<coolaura>>
+			<<case 17>><<coolaura>>
+			<<case 16>><<coolaura>>
+			<<case 15>><<coolaura>>
+			<<case 14>><<coolaura>>
+			<<case 13>><<coolaura>>
+			<<case 12>><<coolaura>>
+			<<case 12>><<coolaura>>
+			<<case 11>><<coolaura>>
+			<<case 10>><<coolaura>>
+			<<case 9>><<coolaura>>
+			<<case 8>><<coolaura>>
+			<<case 7>><<coolaura>>
+			<<case 6>><<coolaura>>
+			<<case 5>><<coolaura>>
+			<<case 4>><<coolaura>>
+			<<case 3>><<coolaura>>
+			<<case 4>><<coolaura>>
+			<<case 2>><<coolaura>>
+			<<case 1>><<coolaura>>
+			<<case 0>><span class='lblue'>你耗尽了你的灵魂能量，你周围的温度正在恢复正常。</span><<set $auratimer to 0>><<set deathlychill to 0>>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<<widget "coolaura">>
+    <<set $enemyhealth -= ($enemyhealthmax / 10)>>
+	<<set _npctodefeat to []>>
+	<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
+		<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated" and (!$fightTargets or $fightTargets.includes(_npctodamage))>>
+			<<set _enemydivide to $fightTargets ? $enemyno-$fightTargets.length : $enemyno>>
+			<<set $NPCList[_npctodamage].health -= (($enemyhealthmax / 10)/_enemydivide)>>
+			<<if $enemyno gte 2 and $NPCList[_npctodamage].health lte 0>>
+				<<set _npctodefeat.push(_npctodamage)>>
+			<</if>>
+		<</if>>
+	<</for>>
+	<<for $_defeatcontroller to 0; $_defeatcontroller lt _npctodefeat.length; $_defeatcontroller++>>
+		<<if $enemyno gte 2>>
+		    <<defeatnpc _npctodefeat[$_defeatcontroller]>>
+		<</if>>
+	<</for>>
+	<<if $enemytype is "beast">>
+		<span class='lblue'>那<<beasttype>>因极寒而痛苦哀嚎着...<br><br></span>
+	<<elseif $enemyno gte 2>>
+		<span class='lblue'>攻击你的<<group>>因极寒而痛苦哀嚎着...<br><br></span>
+	<<else>>
+		<span class='lblue'>你的袭击者因致命的严寒而痛苦哀嚎着...<br><br></span>
+	<</if>>
+<</widget>>
+
+/*
+
+.88b  d88. db    db .d8888. db   db d8888b.  .d88b.   .d88b.  .88b  d88. 
+88'YbdP`88 88    88 88'  YP 88   88 88  `8D .8P  Y8. .8P  Y8. 88'YbdP`88 
+88  88  88 88    88 `8bo.   88ooo88 88oobY' 88    88 88    88 88  88  88 
+88  88  88 88    88   `Y8b. 88~~~88 88`8b   88    88 88    88 88  88  88 
+88  88  88 88b  d88 db   8D 88   88 88 `88. `8b  d8' `8b  d8' 88  88  88 
+YP  YP  YP ~Y8888P' `8888Y' YP   YP 88   YD  `Y88P'   `Y88P'  YP  YP  YP 
+                                                                         
+                                                                         
+
+*/
+<<widget "slimetransform">>
+    <<if $options.bjx_eventTF>>
+    	<<set $slime to 1>>
+    	<<if ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"].includes($skinColor.natural)>>
+    	    <<set $skinColor.naturalreset to $skinColor.natural>>
+    	<</if>>
+    	<<set $skinColor.natural to "slimy">> 
+    	<<set $transformationParts.slime.bubble to "default">>
+    	<<set $transformationParts.slime.stream to "default">>
+    	<<set $transformationParts.slime.core to "default">>
+    	<<set $haircolourreset to $haircolour>>
+    	<<set $haircolour to "slimegreen">>
+    	<<set $hairfringecolourreset to $hairfringecolour>>
+    	<<set $hairfringecolour to "slimegreen">>
+    <</if>>
+<</widget>>
+
+<<widget "slimeuntransform">>
+    <<if !["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"].includes($skinColor.naturalreset)>>
+	    <<set $skinColor.naturalreset to "light">>
+	<</if>>
+    <<set $skinColor.natural to $skinColor.naturalreset>>
+    <<set $haircolour to $haircolourreset>>
+    <<set $hairfringecolour to $hairfringecolourreset>>
+    <<set $transformationParts.slime.bubble to "disabled">>
+    <<set $transformationParts.slime.stream to "disabled">>
+    <<set $transformationParts.slime.core to "disabled">>
+    <<set $slime to 0>>
+    <<set $onemoreslime to 1>>
+<</widget>>
+
+<<widget "ghosttransform">>
+    <<if $options.bjx_eventTF>>
+    	<<if ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"].includes($skinColor.natural)>>
+    	    <<set $skinColor.naturalreset to $skinColor.natural>>
+    	<</if>>
+    	<<set $skinColor.natural to "ghostly">>
+    	<<set $transformationParts.ghost.eyes to "default">>
+    	<<set $transformationParts.ghost.hitodama to "default">>
+    	<<set $haircolourreset to $haircolour>>
+    	<<set $haircolour to "jetblack">>
+    	<<set $hairfringecolourreset to $hairfringecolour>>
+    	<<set $hairfringecolour to "jetblack">>
+    	<<set $options.lightGlow to 1>>
+    	<<set $ghost to 1>>
+    <</if>>
+<</widget>>
+
+<<widget "ghostuntransform">>
+    <<if !["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"].includes($skinColor.naturalreset)>>
+	    <<set $skinColor.naturalreset to "light">>
+	<</if>>
+    <<set $options.lightGlow to .1>>
+    <<set $skinColor.natural to $skinColor.naturalreset>>
+    <<set $transformationParts.ghost.eyes to "disabled">>
+    <<set $transformationParts.ghost.hitodama to "disabled">>
+    <<set $transformationParts.ghost.mist to "disabled">>
+    <<set $transformationParts.ghost.stream to "disabled">>
+    <<set $transformationParts.ghost.flame to "disabled">>
+    <<set $haircolour to $haircolourreset>>
+    <<set $hairfringecolour to $hairfringecolourreset>>
+    <<set $ghost to 0>>
+    <<set $exorcised to 1>>
+<</widget>>
+
+<<widget "mushroomtransform">>
+    <<if $options.bjx_eventTF>>
+    	<<set $mushroom to 1>>
+    	<<if ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"].includes($skinColor.natural)>>
+    	    <<set $skinColor.naturalreset to $skinColor.natural>>
+    	<</if>>
+    	<<set $skinColor.natural to "dusky">> 
+    	<<set $transformationParts.mushroom.cap to "default">>
+    	<<set $transformationParts.mushroom.eyes to "default">>
+    	<<set $transformationParts.mushroom.spores to "default">>
+    	<<set $transformationParts.mushroom.mushrooms to "disabled">>
+    	<<set $haircolourreset to $haircolour>>
+    	<<set $haircolour to "amberyellow">>
+    	<<set $hairfringecolourreset to $hairfringecolour>>
+    	<<set $hairfringecolour to "amberyellow">>
+    	<<overheadruined>>
+    	<<bjxclotheswear "over_head" "mushroom cap">>
+    <</if>>
+<</widget>>
+
+<<widget "mushroomuntransform">>
+    <<if !["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"].includes($skinColor.naturalreset)>>
+	    <<set $skinColor.naturalreset to "light">>
+	<</if>>
+	<<set $skinColor.natural to $skinColor.naturalreset>>
+	<<set $haircolour to $haircolourreset>>
+	<<set $hairfringecolour to $hairfringecolourreset>>
+	<<set $transformationParts.mushroom.cap to "disabled">>
+	<<set $transformationParts.mushroom.eyes to "disabled">>
+	<<set $transformationParts.mushroom.spores to "disabled">>
+	<<set $transformationParts.mushroom.mushrooms to "disabled">>
+	<<set $worn.over_head.cursed to 0>>
+	<<overheadruined>>
+	<<set $mushroom to 0>>
+	<<set $speechmushroom to 0>>
+	<<if $worn.upper.set is "mushroom">>
+	    <<upperruined>>
+	    <<set $speechmushroom to 1>>
+	<</if>>
+	<<if $worn.lower.name is "mushroom">>
+	    <<lowerruined>>
+	    <<set $speechmushroom to 1>>
+	<</if>>
+	<<if $worn.under_upper.name is "mushroom">>
+	    <<underupperruined>>
+	    <<set $speechmushroom to 1>>
+	<</if>>
+	<<if $worn.under_lower.name is "mushroom">>
+	    <<underlowerruined>>
+	    <<set $speechmushroom to 1>>
+	<</if>>
+	<<if $worn.legs.set is "mushroom">>
+	    <<legsruined>>
+	    <<set $speechmushroom to 1>>
+	<</if>>
+	<<if $worn.feet.set is "mushroom">>
+	    <<feetruined>>
+	    <<set $speechmushroom to 1>>
+	<</if>>
+	<<if $speechmushroom is 1>>
+		<br><span class='yellow'>你的生物服饰突然分泌出强力酶，开始溶解自身！</span><br>
+	<</if>>
+<</widget>>
+
+

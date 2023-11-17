@@ -1,0 +1,605 @@
+:: Museum Look around
+<<set $outside to 0>>
+<<museumAntiqueText>>
+<<npc Winter>><<person1>>
+You look around the museum. The pedestals are grooved, as if awaiting specific objects.
+<br><br>
+<<if $museumAntiques.museumCount is 0>>
+	The museum is empty.
+<<elseif $museumAntiques.museumCount lt $museumAntiques.maxCount / 3>>
+	The museum is almost empty.
+<<elseif $museumAntiques.museumCount lt $museumAntiques.maxCount / 2>>
+	The museum looks better than it did.
+<<elseif $museumAntiques.museumCount lt $museumAntiques.maxCount / 1.5>>
+	The museum has a reasonable collection.
+<<elseif $museumAntiques.museumCount lt $museumAntiques.maxCount / 1.25>>
+	The museum has a good collection.
+<<elseif $museumAntiques.museumCount lt $museumAntiques.maxCount>>
+	The museum has an amazing collection.
+<<elseif $museumAntiques.museumCount is $museumAntiques.maxCount>>
+	Every spot is full.
+<</if>>
+<br><br>
+
+<<set _possibleHints to []>>
+<ul>
+<<for _labelM, _valueM range $museumAntiques.antiques>>
+	<<switch _valueM>>
+	    /* 北极星模组 */
+	    <<case "take">><li><<print _museumAntiqueText[_labelM].name>>被你带走了。</li>
+	    /* 北极星 */
+		<<case "museum">><li><<print _museumAntiqueText[_labelM].museum>></li>
+		<<case "stolen">><li><<print _museumAntiqueText[_labelM].stolen>></li>
+		<<case "recovered">><li><<print _museumAntiqueText[_labelM].recovered>></li>
+		<<case "found" "talk">><li>You should show the <<print _museumAntiqueText[_labelM].name>> to Winter.</li>
+		<<case "notFound">><li>Empty. <<run _possibleHints.push(_labelM)>></li>
+	<</switch>>
+<</for>>
+</ul>
+
+<<if _possibleHints.length gt 0>>
+	<<if $winterHint is "notGiven">>
+		<<set $winterHint to _possibleHints[random(0,_possibleHints.length - 1)]>>
+		As you look around, Winter approaches.
+		<br><br>
+		<<print _museumAntiqueText[$winterHint].hint>>
+		<<if $museumAntiqueJournalHints is undefined>>
+			<<set $museumAntiqueJournalHints to []>>
+		<</if>>
+		<<run $museumAntiqueJournalHints.delete($winterHint)>>
+		<<run $museumAntiqueJournalHints.push($winterHint)>>
+		<br>
+	<</if>>
+<</if>>
+
+<br>
+<<link [[Go back to the entrance|Museum]]>><<endevent>><</link>>
+
+:: MuseumAntiques [widget]
+<<widget "museumAntiqueStatus">>
+	<<if _args[0] and _args[1]>>
+		<<if ($museumAntiques.antiques[_args[0]] is "notFound" and _args[1] is "found")
+		or ($museumAntiques.antiques[_args[0]] is "found" and _args[1] is "talk")
+		or ($museumAntiques.antiques[_args[0]] is "talk" and _args[1] is "museum")
+		or _args[1] is "stolen" or _args[1] is "recovered">>
+			<<set $museumAntiques.antiques[_args[0]] to _args[1]>>
+			<<switch _args[1]>>
+				<<case "museum">><<set $museumAntiques.museumCount++>>
+				<<case "stolen">><<set $museumAntiques.stolenCount++>>
+				<<case "recovered">><<set $museumAntiques.recoveredCount++>>
+			<</switch>>
+		/* 北极星模组 */
+		<<elseif ($museumAntiques.antiques[_args[0]] is "museum" and _args[1] is "take")
+		or ($museumAntiques.antiques[_args[0]] is "take" and _args[1] is "museum")>>
+		    <<set $museumAntiques.antiques[_args[0]] to _args[1]>>
+			<<switch _args[1]>>
+			    <<case "take">><<set $museumAntiques.museumCount-->>
+				<<case "museum">><<set $museumAntiques.museumCount++>>
+			<</switch>>
+		/* 北极星 */
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "museumAntiqueText">>
+	<<if _museumAntiqueText is undefined>>
+		<!--Should not have been converted to a $ variable-->
+		<<unset $museumAntiqueText>>
+		<<set _museumAntiqueText to {
+			"antiquebox":{
+				hint:`"For a jewellery case," Winter says while gesturing at an empty pedestal. "People around here used <<printTo>> keep their valuables in ornate boxes, sculpted of the finest ivory <<printAnd>> hewn from wood found right outside town.
+					I'd imagine they don't look like anything you'd find today."<br><br> <<He>> turns away. "If you had paid attention in my class, you might know what <<printTo>> look for."`,
+				museum:"The Ivory Box sits on a pedestal.",
+				name:"Waterlogged Ivory Box",
+				journal: `"A jewellery case. People around here used <<printTo>> keep their valuables in ornate boxes, sculpted of the finest ivory <<printAnd>> hewn from wood found right outside town. I'd imagine they don't look like anything you'd find today. If you had paid attention in my class, you might know what <<printTo>> look for."`
+			},
+			"antiquesilverring":{
+				hint:`"For a simple silver band," Winter says while gesturing at an empty pedestal. "Silver was common in jewellery like this. Hardy enough <<printTo>> outlive its owner, so it was often buried with them." <br><br><<He>> turns away. "Silver is even known <<printTo>> hold up well underwater, compared <<printTo>> most other metals."`,
+				museum:"The Worn Silver Ring sits on a red pillow on top of a pedestal.",
+				name:"Worn Silver Ring",
+				journal: `"A simple silver band. Silver was common in jewellery like this. Hardy enough <<printTo>> outlive its owner, so it was often buried with them. Silver is even known <<printTo>> hold up well underwater, compared <<printTo>> most other metals."`
+			},
+			"antiquegoldnecklace":{
+				hint:`"For a gold necklace. This would be quite the rare find," Winter says while gesturing at an empty pedestal. "Usually worn by people of a higher class."<br><br><<He>> turns away. "Did you know that Gold never rusts? You could keep it submerged until the end of time."`,
+				museum:"The Ornate Gold Necklace sits on a red pillow on top of a pedestal.",
+				name:"Ornate Gold Necklace",
+				journal: `"A gold necklace. This would be quite the rare find. Usually worn by people of a higher class. Did you know that Gold never rusts? You could keep it submerged until the end of time."`
+			},
+			"antiqueivorynecklace":{
+				hint:`"I'm not certain that this one exists," Winter says while gesturing at an empty pedestal. "There's an old poem mentioning something like it. 'Great beast's tusks, carved anew. Starlight sapphire, midnight blue. Cut <<printTo>> perfection, lustre <<printAnd>> hue. Immaculate vanity, known by the few. Locked away forever, the writhing ensue. Locked away forever, in lake creature's slew. Cast away forever, the waves <<printTo>> chew. Cast away forever, <<printTo>> be found by...'" <<he>> turns on the spot, flicking you on the nose. "You."<br><br><<He>> turns away. "You would most likely find something like this surrounded by lesser jewellery. Good luck."`,
+				museum:"The spot for the Immaculate Ivory Necklace is bare, as it was taken away.",
+				name:"Immaculate Ivory Necklace",
+				journal: `"An ivory necklace. I'm not certain that this one exists, there's an old poem mentioning something like it. 'Great beast's tusks, carved anew. Starlight sapphire, midnight blue. Cut <<printTo>> perfection, lustre <<printAnd>> hue. Immaculate vanity, known by the few. Locked away forever, the writhing ensue. Locked away forever, in lake creature's slew. Cast away forever, the waves <<printTo>> chew. Cast away forever, <<printTo>> be found by...' You. You would most likely find something like this surrounded by lesser jewellery. Good luck."`
+			},
+			"antiquecrystal":{
+				hint:`"I received a call about the object meant for this one," Winter says while gesturing at an empty pedestal. "A small pinkish crystal with an engraving. How unusual."<br><br><<He>> turns away. "Whoever called about it mentioned losing something down a drainage pipe."`,
+				museum:"The Arousing Crystal sits on a red pillow on top of a pedestal.",
+				name:"Arousing Crystal",
+				journal: `"I received a call about the object meant for this one, a small pinkish crystal with an engraving. How unusual. Whoever called about it mentioned losing something down a drainage pipe."`
+			},
+			"antiquehorn":{
+				hint:`"For a hunting trophy of some kind," Winter says while gesturing at an empty pedestal. "A hollowed out horn. Hunters in the old town loved their trophies."<br><br><<He>> turns away. "Sadly, most remains of the old town are buried."`,
+				museum:"The Hunting Horn sits on a red pillow on top of a pedestal.",
+				name:"Hunting Horn",
+				journal: `"A hunting trophy of some kind, a hollowed out horn. Hunters in the old town loved their trophies. Sadly, most remains of the old town are buried."`,
+			},
+			"antiquewatch":{
+				hint:`"For old clockwork, most likely non-functional," Winter says while gesturing at an empty pedestal. "You'd be surprised how valuable a simple wristwatch could be."<br><br><<He>> turns away. "Sometimes they were even locked in specialised safe boxes with a matching timer."`,
+				museum:"The Old Watch sits in a specially prepared case on top of a pedestal.",
+				name:"Old Watch",
+				journal: `"Old clockwork of some sort, you'd be surprised how valuable a simple wristwatch could be. Sometimes they were even locked in specialised safe boxes with a matching timer."`
+			},
+			"antiquedildo":{
+				hint:`"Let's call this one a medical aid," Winter says while gesturing at an empty pedestal. "Beyond obsolete. Often unsanitary."<br><br><<He>> turns away. "Speaking of unsanitary, I heard that someone managed <<printTo>> stumble into the old sewers."`,
+				museum:"The Odd Medical Aid sits on a pedestal.",
+				name:"Odd Medical Aid",
+				journal: `"A 'medical aid.' Beyond obsolete. Often unsanitary. Speaking of unsanitary, I heard that someone managed <<printTo>> stumble into the old sewers."`
+			},
+			"antiquecandlestick":{
+				hint:`"For a humble candle, turned into a symbol of power for a house of nobles," Winter says while gesturing at an empty pedestal. "With how many were made, there must be some still around."<br><br><<He>> turns away. "The old sewers are the most likely place <<printTo>> find one."`,
+				museum:"The Noble Candle Stick sits in a mockup of a sconce hanging from the wall.",
+				name:"Noble Candle Stick",
+				journal: `"A humble candle, turned into a symbol of power for a house of nobles. With how many were made, there must be some still around. The old sewers are the most likely place <<printTo>> find one."`,
+			},
+			"antiqueforestarrow":{
+				hint:`"For an arrowhead. A very common find," Winter says while gesturing at an empty pedestal. "Little more than a curiosity, but having one <<printTo>> display would be valued nonetheless."<br><br><<He>> turns away. "They're strewn about everywhere just outside of town."`,
+				museum:"The Mossy Forest Arrow sits on a green pillow on top of a pedestal.",
+				name:"Mossy Forest Arrow",
+				journal: `"An arrowhead. A very common find, little more than a curiosity, but having one <<printTo>> display would be valued nonetheless. They're strewn about everywhere just outside of town."`
+			},
+			"antiqueforestdagger":{
+				hint:`"For an old weapon," Winter says while gesturing at an empty pedestal. "Most likely buried under a few metres of dirt, <<printAnd>> a good distance away from town."<br><br><<He>> turns away. "Watch where you step out there, just in case."`,
+				museum:"The Rusted Forest Dagger sits on a green pillow on top of a pedestal.",
+				name:"Rusted Forest Dagger",
+				journal: `"An old weapon, most likely buried under a few metres of dirt, <<printAnd>> a good distance away from town. Watch where you step out there, just in case."`,
+			},
+			"antiqueforestgem":{
+				hint:`"Someone from the same class as you reported this one <<printTo>> me," Winter says while gesturing at an empty pedestal. "They spun a tale of a verdant gemstone with shifting patterns that made them feel unnaturally calm. If it is indeed real, there's a decent reward for bringing it <<printTo>> me."<br><br><<He>> turns away. "They used <<printTo>> mine gems like this deep in the forest."`,
+				museum:"The Pulsing Forest Gem sits on a green pillow on top of a pedestal.",
+				name:"Pulsing Forest Gem",
+				journal: `"Someone from the same class as you reported this one <<printTo>> me, they spun a tale of a verdant gemstone with shifting patterns that made them feel unnaturally calm. If it is indeed real, there's a decent reward for bringing it <<printTo>> me. They used <<printTo>> mine gems like this deep in the forest."`
+			},
+			"antiquesilverbrooch":{
+				hint:`"I'm at a loss," Winter says while gesturing at an empty pedestal. "For a brooch made from sterling silver. Something like this should be more common. The design was popular just a few decades ago."<br><br><<He>> turns away. "It's likely hidden away in a loft somewhere. Someone with a rebellious streak is bound <<printTo>> find one digging through their parents' old belongings eventually."`,
+				museum:"The Silver Brooch sits on a pedestal.",
+				name:"Silver Brooch",
+				journal: `"A brooch made from sterling silver. Something like this should be more common. The design was popular just a few decades ago. It's likely hidden away in a loft somewhere. Someone with a rebellious streak is bound <<printTo>> find one digging through their parents' old belongings eventually."`
+			},
+			"antiquetrashcup":{
+				hint:`"Such a shame," Winter says while gesturing at an empty pedestal. "For a simple drinking cup. These were common barely a century ago. No one thinks <<printTo>> keep them around."<br><br><<He>> turns away. "Most people toss them away like common rubbish."`,
+				museum:"The Discarded Cup sits on a pedestal.",
+				name:"Discarded Cup",
+				journal: `"A simple drinking cup. These were common barely a century ago. No one thinks <<printTo>> keep them around. Most people toss them away like common rubbish."`,
+			},
+			"antiquetrashburner":{
+				hint:`"For an incense burner used in religious ceremonies," Winter says while gesturing at an empty pedestal. "The temple still has some lying around. Don't think you can just take one, though."<br><br><<He>> turns away. "They threw away a batch of these not too long ago. I suspect they burn through after too much use."`,
+				museum:"The Incense Burner sits on a pedestal. It seems <<printTo>> have been cleaned <<printAnd>> restored recently.",
+				name:"Incense Burner",
+				journal: `"An incense burner used in religious ceremonies, the temple still has some lying around. Don't think you can just take one, though. They threw away a batch of these not too long ago. I suspect they burn through after too much use."`
+			},
+			"antiquebrassstatuette":{
+				hint:`"For an exotic statuette, cast in brass. These particular ones were never produced here," Winter says while gesturing at an empty pedestal. "Truly ancient. It might have spiritual significance <<printTo>> whoever brought it here."<br><br><<He>> turns away. "I'm sure you could find something like this if you dug through enough religious areas."`,
+				museum:"The Forgotten Brass Statuette sits on a pedestal.",
+				name:"Forgotten Brass Statuette",
+				journal: `"An exotic statuette, cast in brass. These particular ones were never produced here, truly ancient. It might have spiritual significance <<printTo>> whoever brought it here. I'm sure you could find something like this if you dug through enough religious areas."`,
+			},
+			"antiquegoldchastitybelt":{
+				hint:`"I have a particular interest in this one," Winter says while gesturing at an empty pedestal. "Priestesses of old would wear special... protection, for ceremonies. Higher quality than what the temple gives out today. I imagine it could be used for more than just protection, however."<br><br><<He>> turns away. "The word 'Gilded' comes up in the translation multiple times. Reminds me of a tale of tainted religious objects being cleansed in a holy lake."`,
+				museum:"The Golden Chastity Belt is wrapped around a feminine mannequin.",
+				name:"Golden Chastity Belt",
+				journal: `"Priestesses of old would wear special... protection, for ceremonies. Higher quality than what the temple gives out today. I imagine it could be used for more than just protection, however. The word 'Gilded' comes up in the translation multiple times. Reminds me of a tale of tainted religious objects being cleansed in a holy lake."`
+			},
+			"antiquecoppercompass":{
+				hint:`"For a copper compass," Winter says while gesturing at an empty pedestal. "Many were made, <<printAnd>> they saw frequent use."<br><br> <<He>> turns away. "I heard one washed ashore a few towns over. There must be more out there, lost at sea."`,
+				museum:"The Copper Compass sits on a pedestal. It points north, as appropriate.",
+				name:"Copper Compass",
+				journal: `"A copper compass. Many were made, <<printAnd>> they saw frequent use. I heard one washed ashore a few towns over. There must be more out there, lost at sea."`
+			},
+			"antiquegrenade":{
+				hint:`"For something left over from the great war," Winter says while gesturing at an empty pedestal. "Something that never saw its intended use."<br><br> <<He>> turns away. "People out in the countryside sometimes find war relics, <<printAnd>> build collections of their own."`,
+				museum:"The grenade sits on a pedestal. You assume it isn't live.",
+				name:"Old Grenade",
+				journal: `"Something left over from the great war. Something that never saw its intended use. People out in the countryside sometimes find war relics, <<printAnd>> build collections of their own."`
+				},
+			"antiquestonetalisman":{
+				hint:`"For an ancient holy necklace," Winter says while gesturing at an empty pedestal. "It would have been used in rituals far from the town proper."<br><br> <<He>> turns away. "Not sure where you'd find one, I'm afraid. Somewhere no person has thought to look."`,
+				museum:"The stone talisman sits on a pedestal.",
+				name:"Stone Talisman",
+				journal: `"An ancient holy necklace, it would have been used in rituals far from the town proper. Not sure where you'd find one, I'm afraid. Somewhere no person has thought <<printTo>> look."`,
+			},
+			"antiquesilvermask":{
+				hint:`"For something peculiar," Winter says while gesturing at an empty pedestal. "Ancient religious garb. Or perhaps jewellery."<br><br> <<He>> turns away. "No idea where you'd find one. Perhaps one will turn up as you search for other things."`,
+				museum:"The silver mask rests on the wall.",
+				name:"Silver Mask",
+				journal: `"Something peculiar, like ancient religious garb. Or perhaps jewellery. No idea where you'd find one. Perhaps one will turn up as you search for other things."`
+			},
+			"antiquediamond":{
+				hint:`"For a jewel," Winter says while gesturing at an empty pedestal. "Or gemstone."<br><br> <<He>> turns away. "Smugglers used <<printTo>> traffic such objects through town. A long time ago."`,
+				museum:"The diamond rests on a pillow.",
+				name:"Diamond",
+				journal: `"A jewel, or gemstone. Smugglers used <<printTo>> traffic such objects through town. A long time ago."`
+			},
+			"antiquesilvercompass":{
+				hint:`"For a compass," Winter says while gesturing at an empty pedestal. "But not just any. Something used by a person of class."<br><br> <<He>> turns away. "Not the sort of item <<printTo>> be misplaced. Not willingly."`,
+				museum:"The silver compass rests on a pedestal.",
+				name:"Silver Compass",
+				journal: `"A compass, but not just any. Something used by a person of class. Not the sort of item <<printTo>> be misplaced. Not willingly."`
+			},
+			"antiquesilverdagger":{
+				hint:`"For an ornamental weapon," Winter says while gesturing at an empty pedestal. "Something not meant for combat, but worn as an accessory."<br><br> <<He>> turns away. "Sailors used <<printTo>> wear them."`,
+				museum:"The silver dagger rests on the wall.",
+				name:"Silver Dagger",
+				journal: `"An ornamental weapon. Something not meant for combat, but worn as an accessory. Sailors used <<printTo>> wear them."`
+			},
+			"antiquerustedcutlass":{
+				hint:`"For a cutlass," Winter says while gesturing at an empty pedestal. "Something rusted would do."<br><br> <<He>> turns away. "They were used by sailors. I'd be surprised if some weren't hidden in their old haunts."`,
+				museum:"The rusted cutlass hangs on the wall.",
+				name:"Rusted Cutlass",
+				journal: `"A cutlass, even a rusted one would do. They were used by sailors. I'd be surprised if some weren't hidden in their old haunts."`
+			},
+			"antiquecutlass":{
+				hint:`"For a cutlass," Winter says while gesturing at an empty pedestal. "A well-preserved example. The ones I've seen have all been rusted <<printAnd>> worn."<br><br> <<He>> turns away. "Thousands must have passed through town. Some should have survived intact."`,
+				museum:"The cutlass hangs on the wall.",
+				name:"Cutlass",
+				journal: `"A cutlass, preferably a well-preserved example. The ones I've seen have all been rusted <<printAnd>> worn. Thousands must have passed through town. Some should have survived intact."`,
+			},
+			"antiqueleathermap":{
+				hint:`"For a pirate map," Winter says while gesturing at an empty pedestal. "A legend says they hid treasure in the nearby countryside." <br><br> <<He>> turns away. "Sounds far-fetched, but pirates <<printAnd>> smugglers did use a secret passage <<printTo>> enter town. Perhaps some of their effects are still there."`,
+				museum:"The leather map rests on the wall.",
+				name:"Leather Map",
+				journal: `"A pirate map, legend says they hid treasure in the nearby countryside. Sounds far-fetched, but pirates <<printAnd>> smugglers did use a secret passage <<printTo>> enter town. Perhaps some of their effects are still there."`
+			},
+			"antiquebell":{
+				hint:`"For a bell," Winter says while gesturing at an empty pedestal. "A relic of the old religion. Only one was made. They used <<printTo>> keep it at the temple, but it was stolen."<br><br> <<He>> turns away. "Not been seen since. Surprised it hasn't turned up in a museum elsewhere."`,
+				museum:"A sheet has been drawn over the bell's pedestal, concealing its contents.",
+				stolen:"The bell's pedestal is empty, save a note from Winter, apologising that the intended display is unavailable.",
+				recovered:"",
+				/* 北极星模组 */
+				name:"恐惧铃铛",
+				journal: `"一个铃铛，古老宗教的一件遗物，独一无二，据说它的铃声会让人恐惧。他们曾经把它存放在神殿里，但还是遭了贼，从那之后就再没人见过了。我很惊讶它没有出现在其他地方的博物馆里。"`
+				/* 北极星 */
+			},
+			"antiquebullet":{
+				hint:`"For a bullet," Winter says while gesturing at an empty pedestal. "Left over from the Great War. They'd practise with live ammunition. Ramblers find them on occasion."<br><br> <<He>> turns away. "They used <<printTo>> drill volunteers out on the moor."`,
+				museum:"The bullet rests on a pedestal.",
+				name:"Bullet",
+				journal: `"A bullet, left over from the Great War. They'd practise with live ammunition. Ramblers find them on occasion. They used <<printTo>> drill volunteers out on the moor."`,
+			},
+			"antiqueshell":{
+				hint:`"For an explosive," Winter says while gesturing at an empty pedestal. "Left over from the Great War. Ammunition would go missing, <<printAnd>> turn up on the black market."<br><br> <<He>> turns away. "They used <<printTo>> practise with live ammunition out on the moor."`,
+				museum:"The artillery shell rests on a pedestal.",
+				name:"Artillery Shell",
+				journal: `"An explosive, left over from the Great War. Ammunition would go missing, <<printAnd>> turn up on the black market. They used <<printTo>> practise with live ammunition out on the moor."`,
+			},
+			"antiquegoldring":{
+				hint:`"For an ancient gold ring," Winter says while gesturing at an empty pedestal. "Something worn by nobility."<br><br> <<He>> turns away. "It would be somewhere no one's looked. Perhaps buried."`,
+				museum:"The gold ring rests on a pedestal.",
+				name:"Gold Ring",
+				journal: `"An ancient gold ring, something worn by nobility. It would be somewhere no one's looked. Perhaps buried."`
+			},
+			"antiquegoldbrooch":{
+				hint:`"For an ancient gold brooch," Winter says while gesturing at an empty pedestal. "The sort of thing I suspect local nobility have squirreled away."<br><br> <<He>> turns away. "Not that they'd let the likes of me in to check."`,
+				museum:"The gold brooch rests on a pedestal.",
+				name:"Gold Brooch",
+				journal: `"An ancient gold brooch, something hidden by nobility. Perhaps in one of their homes."`
+			},
+			"antiquecoralring":{
+				hint:`"For an ancient coral ring," Winter says while gesturing at an empty pedestal. "The captain of a local band of pirates used to wear one."<br><br> <<He>> turns away. "They say their heirs still have it, but don't go getting yourself in trouble."`,
+				museum:"The coral ring rests on a pedestal.",
+				name:"Coral Ring",
+				journal: `"An ancient coral ring, once worn by a pirate captain. Perhaps its lost at sea."`
+			},
+			"antiquehourglass":{
+				hint:`"For an ancient hourglass," Winter says while gesturing at an empty pedestal. "Well, ancient in theory. Sources tend to disagree on how old it is."<br><br> <<He>> turns away. "It's been mentioned relatively recently. I'm sure it fell into bad hands."`,
+				museum:"The inscribed hourglass rests on a pedestal.",
+				name:"Inscribed Hourglass",
+				journal: `"An ancient hourglass, though how ancient is up for debate. It likely fell into bad hands."`
+			},
+			"antiquecoppercoin":{
+				hint:`"For a copper coin," Winter says while gesturing at an empty pedestal. "Many would have been minted, but not many would have survived the ages."<br><br> <<He>> turns away. "Any remaining would be buried deep."`,
+				museum:"A copper coin sits on display.",
+				name:"Copper Coin",
+				journal: `"An ancient copper coin. Perhaps buried underground."`
+			},
+			"antiquesilvercoin":{
+				hint:`"For a silver coin," Winter says while gesturing at an empty pedestal. "They sometimes find them in old tombs."<br><br> <<He>> turns away. "Not many have survived out in the open."`,
+				museum:"A silver coin sits on display.",
+				name:"Silver Coin",
+				journal: `"An ancient silver coin. Perhaps buried underground."`
+			},
+			"antiquegoldcoin":{
+				hint:`"For a gold coin," Winter says while gesturing at an empty pedestal. "Perhaps buried with a wealthy owner, as was their custom."<br><br> <<He>> turns away. "Not that I expect you to go grave robbing!"`,
+				museum:"A gold coin sits on display.",
+				name:"Gold Coin",
+				journal: `"An ancient gold coin. Perhaps buried underground."`
+			},
+			"antiquesilverblade":{
+				hint:`"For a silver blade," Winter says while gesturing at an empty pedestal. "It would need to have been protected from the elements."<br><br> <<He>> turns away. "Buried, perhaps."`,
+				museum:"The silver blade rests on a pedestal.",
+				name:"Silver Blade",
+				journal: `"An ancient silver blade. Perhaps buried underground."`
+			},
+			"antiqueivorystatuette":{
+				hint:`"For an ivory statuette," Winter says while gesturing at an empty pedestal. "A unique religious artifact."<br><br> <<He>> turns away. "If it exists. The priests seem to think it does. It would be somewhere deep and dark, where no one dares to look."`,
+				museum:"The ivory statuette rests on a pedestal.",
+				name:"Ivory Statuette",
+				journal: `"An ancient ivory statuette. Perhaps buried underground."`
+			},
+			"antiquestrangefetish":{
+				hint:`"For a strange fetish," Winter says while gesturing at an empty pedestal. "From one of the earliest settlements."<br><br> <<He>> turns away. "It would be somewhere ancient."`,
+				museum:"The strange fetish rests on a pedestal.",
+				name:"Strange Fetish",
+				journal: `"An ancient strange fetish. Perhaps buried underground."`
+			},
+			"antiquesilvergoblet":{
+				hint:`"For a silver goblet," Winter says while gesturing at an empty pedestal. "Must be locked away somewhere."<br><br> <<He>> turns away. "Silver's always been valuable, so it must be somewhere no one's looked."`,
+				museum:"The silver goblet rests on a pedestal.",
+				name:"Silver Goblet",
+				journal: `"An ancient silver goblet. Perhaps buried underground."`
+			},
+			"antiquesilvercrown":{
+				hint:`"For a silver crown," Winter says while gesturing at an empty pedestal. "A unique item."<br><br> <<He>> turns away. "Likely buried with its owner."`,
+				museum:"The silver crown rests on a pedestal.",
+				name:"Silver Crown",
+				journal: `"An ancient silver crown. Perhaps buried underground."`
+			},
+			"antiquewhitecrystal":{
+				hint:`"For a white crystal," Winter says while gesturing at an empty pedestal. "I received a call about this one."<br><br> <<He>> turns away. "It was lost in the forest, near the old churchyard."`,
+				museum:"The white crystal rests on a cushion.",
+				name:"White Crystal",
+				journal: `"An ancient white crystal. Perhaps buried underground."`
+			},
+			"antiqueminesign":{
+				hint:`"For a metal sign," Winter says while gesturing at an empty pedestal. "It used to hang in front of a mine."<br><br> <<He>> turns away. "It was thrown away when the mine closed."`,
+				museum:"The Bailey sign rests on a cushion.",
+				name:"Bailey Sign",
+				journal: `"A sign for an old mine. Was thrown away years ago."`
+			},
+			"antiqueobsidiandisc":{
+				hint:`"For an obsidian disc," Winter says while gesturing at an empty pedestal. "It used to hang in front of a mine."<br><br> <<He>> turns away. "It was thrown away when the mine closed."`,
+				museum:"The obsidian disc rests on a pedestal.",
+				name:"",
+				journal: `"A sign for an old mine. Was thrown away years ago."`
+			},
+			"antiquewoodenmask":{
+				hint:`"For a wooden mask," Winter says while gesturing at an empty pedestal. "Like those worn by the peoples of this area centuries ago. One washed up on shore."<br><br> <<He>> turns away. "But it was in an advanced state of decay."`,
+				museum:"The wooden mask rests on a pedestal.",
+				name:"",
+				journal: `"A wooden mask, worn by people of old."`
+			},
+			"antiquetrilobitefossil":{
+				hint:`"For a trilobite fossil," Winter says while gesturing at an empty pedestal. "Not just any. There's a large variant unique to this area, but a good specimen has never been found."<br><br> <<He>> turns away. "They'd be somewhere no one has looked."`,
+				museum:"The trilobite fossil rests on a pedestal.",
+				name:"",
+				journal: `"A trilobite fossil, of a rare species."`
+			},
+			"antiqueislandarrow":{
+				hint:`"For an arrow," Winter says while gesturing at an empty pedestal. "Made entirely of wood, and used by peoples of old."<br><br> <<He>> turns away. "I don't hold much hope. They'd have decayed centuries ago."`,
+				museum:"The island arrow rests on a pedestal.",
+				name:"",
+				journal: `"For an arrow used by people of old."`
+			}
+		}>>
+	<</if>>
+	/* 北极星模组 */
+    <<set _museumAntiqueText_bjx to {
+		"antiqueliquor":{
+			hint:`"传说中永远也喝不完的酒瓶，据说是某位公爵的最爱，" 温特一边说着一边指向一个空着的基座: "不过那位公爵早已死去，居住的庄园也废弃了。"`,
+			museum:"无尽酒瓶被放在了垫子上。",
+			name:"无尽酒瓶",
+			journal: `"传说中永远也喝不完的酒瓶，可能在公爵死后遗留在庄园里的某处。"`
+		},
+		"antiquebogplate":{
+			hint:`"这是为一块古旧的钢板所留的," 温特一边说着一边指向一个空基座。 "也许能在某地找到别人丢失的。"`,
+			museum:"那块钢板正放在基座上。",
+			name:"古旧的钢板",
+			journal: `"一块古老的钢板，可能会在沼泽中找到。"`
+		},
+		"antiquebogbone":{
+			hint:`"一个较为精致的老骨头，"温特一边说着一边指了指一个空的基座。"去城南的沼泽看看吧。"`,
+			museum:"那块老骨头正安放在基座上。",
+			name:"古骨",
+			journal: `"一根古旧的骨头，大概遗失在了沼泽之中。"`
+		},
+		"antiquebogtool":{
+			hint:`"一个老农具," 温特一边说着一边指向一个空基座。 "过去的农民们会把一些坏掉或者太旧的丢掉，现在那里变成了沼泽。"`,
+			museum:"老旧的农具正放在展柜里。",
+			name:"老旧农具",
+			journal: `"一把古老的农具，大概丢失在了沼泽。"`
+		},
+		"antiquebunkertablet":{
+			hint:`"这是为一块石碑而留下的," 温特一边说着一边指了指一个空基座。 "我听说过这个东西的消息。"<br><br><<He>>转身离开。 "听说垃圾填埋场的深处有一个地堡，有空的话可以去看看。"`,
+			museum:"奇特的石碑被放了展柜处。",
+			name:"奇特的石碑",
+			journal: `"一块古旧的石碑，也许在某个地堡里。"`
+		},
+		"antiquebunkertag":{
+			hint:`"一个身份的证明," 温特一边说着一边指向一个空基座。 "你可能会在某个废弃建筑里找到它。"`,
+			museum:"那块破旧的狗牌正放在基座上。",
+			name:"狗牌",
+			journal: `"一种古老的身份证明，也许地堡里会有什么线索。"`
+		},
+		"antiquecannonball":{
+			hint:`"这是为一个古老的炮弹而留," 温特一边说着一边指向一个空基座。 "试着海岸附近看看吧。"`,
+			museum:"那枚炮弹正放在基座上。",
+			name:"大炮弹",
+			journal: `"一颗旧炮弹，也许是在岸边的某个地方找到的。"`
+		},
+		"antiquearttablet":{
+			hint:`"为古老的石碑而留，"温特指着一个空基座说，"在部落时代的某个地方也许能找到一个。"`,
+			museum:"旧艺术碑正放在一个垫子上展示。",
+			name:"艺术碑",
+			journal: `"一块古老的艺术碑。也许来自古文明。"`
+		},
+		"antiqueterracottastatue":{
+			hint:`"为古老的陶俑而留，"温特指着一个空基座说，"也许能在沙漠里找到一个。"`,
+			museum:"这座陶俑安放在陈列柜里。",
+			name:"陶俑",
+			journal: `"一座古老的陶俑。也许来自远离现代文明的地方。"`
+		},
+		"antiqueredvial":{
+			hint:`"某种古老而又奇特的东西，"温特沉思了一会儿，指向一个空的基座。"在一个很遥远的地方。"`,
+			museum:"红色小瓶就摆在那里。",
+			name:"红色小瓶",
+			journal: `"一个奇怪的物体。也许来自非常遥远的地方。"`
+		},
+		"antiquetribemask":{
+			hint:`"某种部落面具，"温特一边说着，一边指着一个空的基座，"也许能在过去有部落的地方找到一个。"`,
+			museum:"部落面具戴在一个人体模特的脸上。",
+			name:"部落面具",
+			journal: `"一个古老的部落面具，也许来自一个远离现代文明的地方。"`
+		},
+		"antiqueebonystatuette":{
+			hint:`"一件黑檀木雕像，"温特一边说着，一边指了指空空如也的基座，"也许能在过去有部落的地方找到一个。"`,
+			museum:"黑檀木雕像安放在一个底座上。",
+			name:"乌木雕像",
+			journal: `"一个古老的乌木雕像，也许来自远离现代文明的地方。"`
+		},
+		"antiqueglacierplant":{
+			hint:`"为了一种古老的植物。"温特指着一个空基座说，"试着寻找一个可以保存的地方。"`,
+			museum:"小树苗在陈列柜里休息。",
+			name:"古代植物",
+			journal: `"一种古老的植物，也许来自冰河时代。"`
+		},
+		"antiquebullion":{
+			hint:`"为了一根金条而留，"温特指着一个空基座说，"试着去找一个可能藏有宝藏的地方。"`,
+			museum:"古旧的金条放在一个陈列柜里。",
+			name:"古旧金条",
+			journal: `"一跟金条，也许失落在了海上。"`
+		},
+		"antiquereal":{
+			hint:`"为了一枚来自远方的原始硬币，"温特指着一个空基座说，"试试潜水吧，很多古老的宝藏最终都会沉入海底。"`,
+			museum:"这枚原始的硬币正在展出。",
+			name:"原始硬币",
+			journal: `"一枚原始银币，也许在水下沉船里。"`
+		},
+		"antiqueindigo":{
+			hint:`"为了一瓶稀有染料而留，"温特指着一个空基座说，"对于这一点，我建议去探索一些古老的遗址。"`,
+			museum:"那瓶靛蓝染料放在一个陈列柜里。",
+			name:"靛蓝染料",
+			journal: `"一瓶染料，也许存在于某处遗址。"`
+		},
+		"antiquescroll":{
+			hint:`"一卷古老的卷轴。"温特指着一个空基座说，"传说写在上面的文字具有神奇的魔力，或许埋藏在某座废弃的地堡里。"`,
+			museum:"言灵卷轴被工整地放在展台上。",
+			name:"言灵卷轴",
+			journal: `"一卷古老的卷轴，传说写在上面的文字具有神奇的魔力。"`
+		}
+	}>>
+    <<run $.extend(_museumAntiqueText, _museumAntiqueText_bjx)>>
+	/* 北极星 */
+<</widget>>
+
+/* 北极星模组 */
+<<widget "updateMuseumAntiques">>
+    <<if $museumAntiques isnot undefined>>
+        <<for _labelM, _valueM range $museumAntiques.antiques>>
+			<<print '<<if $museumAntiques.antiques.'+_labelM+' isnot undefined>>'+
+				'<<set $'+_labelM+' to $museumAntiques.antiques.'+_labelM+'>>'+
+			'<</if>>'>>
+		<</for>>
+    <</if>>
+    <<set $museumAntiques to {
+		antiques:{
+			"antiquebox":"notFound",
+				"antiquesilverring":"notFound",
+				"antiquegoldnecklace":"notFound",
+				"antiqueivorynecklace":"notFound",
+				"antiquecrystal":"notFound",
+				"antiquehorn":"notFound",
+				"antiquewatch":"notFound",
+				"antiquedildo":"notFound",
+				"antiquecandlestick":"notFound",
+				"antiqueforestarrow":"notFound",
+				"antiqueforestdagger":"notFound",
+				"antiqueforestgem":"notFound",
+				"antiquesilverbrooch":"notFound",
+				"antiquetrashcup":"notFound",
+				"antiquetrashburner":"notFound",
+				"antiquebrassstatuette":"notFound",
+				"antiquegoldchastitybelt":"notFound",
+				"antiquecoppercompass":"notFound",
+				"antiquegrenade":"notFound",
+				"antiquestonetalisman":"notFound",
+				"antiquesilvermask":"notFound",
+				"antiquediamond":"notFound",
+				"antiquesilvercompass":"notFound",
+				"antiquesilverdagger":"notFound",
+				"antiquerustedcutlass":"notFound",
+				"antiquecutlass":"notFound",
+				"antiqueleathermap":"notFound",
+				"antiquebell":"notFound",
+				"antiquebullet":"notFound",
+				"antiqueshell":"notFound",
+				"antiquegoldring":"notFound",
+				"antiquegoldbrooch":"notFound",
+				"antiquecoralring":"notFound",
+				"antiquehourglass":"notFound",
+				"antiquecoppercoin":"notFound",
+				"antiquesilvercoin":"notFound",
+				"antiquegoldcoin":"notFound",
+				"antiquesilverblade":"notFound",
+				"antiqueivorystatuette":"notFound",
+				"antiquestrangefetish":"notFound",
+				"antiquesilvergoblet":"notFound",
+				"antiquesilvercrown":"notFound",
+				"antiquewhitecrystal":"notFound",
+				"antiqueminesign":"notFound",
+				"antiqueobsidiandisc":"notFound",
+				"antiquewoodenmask":"notFound",
+				"antiquetrilobitefossil":"notFound",
+				"antiqueislandarrow":"notFound"
+		},
+		museumCount:0,
+		stolenCount:0,
+		recoveredCount:0
+	}>>
+	<<if $options.bjx_antiques>>
+        <<set _bjxAntiques to {
+			"antiqueliquor":"notFound",
+			"antiquebogplate":"notFound",
+			"antiquebogbone":"notFound",
+			"antiquebogtool":"notFound",
+			"antiquebunkertablet":"notFound",
+			"antiquebunkertag":"notFound",
+			"antiquecannonball":"notFound",
+			"antiquearttablet":"notFound",
+			"antiqueterracottastatue":"notFound",
+			"antiqueredvial":"notFound",
+			"antiquetribemask":"notFound",
+			"antiqueebonystatuette":"notFound",
+			"antiqueglacierplant":"notFound",
+			"antiquebullion":"notFound",
+			"antiquereal":"notFound",
+			"antiqueindigo":"notFound",
+			"antiquescroll":"notFound"
+		}>>
+		<<for _labelM, _valueM range _bjxAntiques>>
+    	    <<set $museumAntiques.antiques[_labelM] to _valueM>>
+    	<</for>>
+	<</if>>
+	<<for _labelM, _valueM range $museumAntiques.antiques>>
+		<<print '<<if $'+_labelM+' isnot undefined>>'+
+			'<<set $museumAntiques.antiques.'+_labelM+' to $'+_labelM+'>>'+
+		'<</if>>'>>
+		<<if $museumAntiques.antiques[_labelM] is "museum" or $museumAntiques.antiques[_labelM] is "stolen" or $museumAntiques.antiques[_labelM] is "recovered">>
+			<<set $museumAntiques.museumCount++>>
+		<</if>>
+		<<if $museumAntiques.antiques[_labelM] is "stolen">>
+			<<set $museumAntiques.stolenCount++>>
+		<</if>>
+		<<if $museumAntiques.antiques[_labelM] is "recovered">>
+			<<set $museumAntiques.recoveredCount++>>
+		<</if>>
+	<</for>>
+	<<if $winterHint is undefined>>
+		<<set $winterHint to "notGiven">>
+	<</if>>
+	<<if $bell_stolen is 1>>
+		<<unset $bell_stolen>>
+		<<museumAntiqueStatus "antiquebell" "stolen">>
+	<</if>>
+	/*Should be the last to always run*/
+	<<set $museumAntiques.maxCount to Object.keys($museumAntiques.antiques).length>>
+<</widget>>
+/* 北极星 */

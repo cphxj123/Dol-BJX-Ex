@@ -1,0 +1,855 @@
+:: Widgets Tending [widget]
+<<widget "plots_init">>
+	/*
+	* First argument: location.
+	* Second argument: number of plots.
+	* Third argument: ground type (earth, water).
+	* Fourth argument: plot quality
+	* Fifth argument: plot size */
+	/* Note: if you plan to add a new plot size, make sure to update all the places where plot size is hardcoded. */
+	<<set $_plotsInLocation to []>>
+	<<for _i to 0; _i lt _args[1]; _i++>>
+		<<set $_plotsInLocation[_i] to clone(setup.tending.plot_base)>>
+		<<set $_plotsInLocation[_i].bed to _args[2]>>
+		<<set $_plotsInLocation[_i].quality to _args[3]>>
+		<<set $_plotsInLocation[_i].size to _args[4]>>
+	<</for>>
+	<<set $plots[_args[0]] to $_plotsInLocation>>
+<</widget>>
+
+<<widget "add_plot">>
+	/*Adds a plot to an existing location. Arguments are as in the plots_init widget, but the second argument and beyond are shifted down one.*/
+	<<set $_plotsInLocation to $plots[_args[0]]>>
+	<<set $_last to $_plotsInLocation.length>>
+	<<set $_plotsInLocation.push(clone(setup.tending.plot_base))>>
+	<<set $_plotsInLocation[$_last].bed to _args[1]>>
+	<<set $_plotsInLocation[$_last].quality to _args[2]>>
+	<<set $_plotsInLocation[$_last].size to _args[3]>>
+<</widget>>
+
+<<widget "clear_plot">>
+	/*Returns a plot to its default state.
+	First argument: location.
+	Second argument: index of plot to be reset.
+	OR
+	First argument: the plot to operate on.
+	*/
+	<<if _args[1] isnot undefined>>
+		<<set $_plot to $plots[_args[0]][_args[1]]>>
+	<<else>>
+		<<set $_plot to _args[0]>>
+	<</if>>
+
+	<<if $_plot.baseQuality isnot undefined and !$backgroundTraits.includes("greenthumb")>>
+		<<if $_plot.fertiliserDecay gt 0>>
+			<<set $_plot.fertiliserDecay-->>
+		<</if>>
+		<<if $_plot.fertiliserDecay is 0 and $_plot.quality gt $_plot.baseQuality>>
+			<<set $_plot.quality-->>
+			<<set $tendingvars.plotDecay to 2>>
+			<<if $_plot.quality gt $_plot.baseQuality>>
+				<<set $_plot.fertiliserDecay to 2>>
+				<<if $_plot.size isnot "large">>
+					<<set $_plot.fertiliserDecay to 3>>
+				<</if>>
+				<<set $tendingvars.plotDecay to 1>>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<set $_plot.water to 0>>
+	<<set $_plot.days to 0>>
+	<<set $_plot.plant to "none">>
+	<<set $_plot.till to 0>>
+	<<set $_plot.stage to 0>>
+<</widget>>
+
+<<widget "display_quality">><<silently>>
+	<<set $_plot to _args[0]>>
+	<<switch $_plot.bed>>
+		<<case "water">><<set _bedType to "water">>
+		<<case "earth">><<set _bedType to "soil">>
+		<<default>><<set _bedType to clone($_plot.bed)>>
+	<</switch>>
+
+	<<switch Math.clamp($_plot.quality, 0, 4)>>
+		<<case 1>> <<set $_result to `<span class="blue">poor `+_bedType+`</span>`>>
+		<<case 2>> <<set $_result to `<span class="lblue">decent `+_bedType+`</span>`>>
+		<<case 3>> <<set $_result to `<span class="teal">good `+_bedType+`</span>`>>
+		<<case 4>> <<set $_result to `<span class="green">excellent `+_bedType+`</span>`>>
+		<<default>> <<set $_result to `<span class="red">ERROR</span>`>>
+	<</switch>>
+<</silently>><<print $_result>><</widget>>
+
+/* 北极星模组 */
+<<widget "display_plot">>/*Argument is the plot location you want to display.*/
+	<<set _location to _args[0]>>
+	<<set $_plotsHere to $plots[_location]>>
+	<<set _harvest_needed to 0>>
+	<<set _seed_needed to 0>>
+	<<set _till_needed to 0>>
+	<<set _water_needed to 0>>
+	
+	<<if $farm isnot undefined>>
+		<<if $farm.tractor is undefined>>
+			<<set $farm.tractor to 0>>
+			<<set $farm.tractorplough to false>>
+			<<set $farm.tractorseeddrill to false>>
+			<<set $farm.tractorharvester to false>>
+			<<set $farm.tractorloader to false>>
+		<</if>>
+	<</if>>
+	<<set _number_small to 0>>
+	<<set _number_medium to 0>>
+	<<set _number_large to 0>>
+	<<for _plantbed range $_plotsHere>>
+    	<<switch _plantbed.size>>
+    		<<case "small">> <<set _number_small += 1>>
+    		<<case "medium">> <<set _number_medium += 1>>
+    		<<default>> <<set _number_large += 1>>
+    	<</switch>>
+	<</for>>
+	这里有: 
+	<br>
+	<<if _number_small gte 1>>
+		_number_small块可供耕种的<span class="lblue">苗圃</span>。
+	    <br>
+	<</if>>
+	<<if _number_medium gte 1>>
+		_number_medium块可供耕种的<span class="teal">菜田</span>。
+	    <br>
+	<</if>>
+	<<if _number_large gte 1>>
+    	_number_large块可供耕种的<span class="green">农田</span>。
+    	<br>
+	<</if>>
+	<<if $fertiliser.current + $fertiliser.used gt 0>>
+		你现在有<<number $fertiliser.current>>袋肥料。
+	<</if>>
+	耕作的时间会随着你护理技能的升高而减少。
+	<br><br>
+
+	<<set $_i to 0>>
+
+	<<for _plantbed range $_plotsHere>>
+		<<capture _plantbed>>
+			<span class="gold"><<wordify_i $_i cap>>号田(<<display_quality _plantbed>>):</span>
+
+			<<if _plantbed.stage gte 1>>
+				<<set $_plantedPlant to setup.plants[_plantbed.plant]>>
+				<<if $weather is "rain">>
+					<<set _plantbed.water to 1>>
+				<</if>>
+			<</if>>
+
+			<<if _plantbed.stage gte 5>>
+				<span class="green"><<print $_plantedPlant.plural>>已经成熟，可以采摘了。</span>
+				<br>
+			    <<set _harvest_needed += 1>>
+				<<tending_harvests _location $_i>>
+			<<elseif _plantbed.stage is 4>>
+				<span class="teal"><<print $_plantedPlant.plural>>正在开花。</span><br>
+			<<elseif _plantbed.stage is 3>>
+				<span class="lblue"><<print $_plantedPlant.plural>>已长成幼苗。</span><br>
+			<<elseif _plantbed.stage is 2>>
+				<span class="blue">细细的<<print $_plantedPlant.plural>>从土壤中萌发。</span><br>
+			<<elseif _plantbed.stage is 1>>
+				<span class="blue">你在这里播下了<<print $_plantedPlant.plural>>的种子。</span><br>
+			<<else>>
+				<<if _plantbed.till gte 1>>
+					土壤已准备好种植。
+					<br>
+					<<set _seed_needed += 1>>
+					<<tendingPlantSeeds _location $_i>>
+				<<else>>
+					土壤已准备好耕种。
+					<br>
+					<<set _till_needed += 1>>
+					<<tendingTills _location $_i>>
+				<</if>>
+			<</if>>
+			<<if _plantbed.stage gte 1 and _plantbed.stage lt 5>>
+				<<if _plantbed.bed is "water">>
+				<<elseif _plantbed.water is 1>>
+					<span class="green"><<print (_plantbed.bed is "large" ? "这块田地" : "这块地")>>已经浇完水了。</span>
+					<br>
+				<<else>>
+					<span class="purple"><<print (_plantbed.bed is "large" ? "田地" : "苗圃")>>目前很干燥。</span>
+					<br>
+					<<tendingWaterPlot _plantbed>>
+				<</if>>
+			<</if>>
+			<br>
+		<</capture>>
+		<<set $_i++>>
+	<</for>>
+    
+    <<if _harvest_needed gte 1>>
+		<<tending_harvests _location "all">>
+	<</if>>
+	<<if _seed_needed gte 1>>
+		<<tendingPlantSeeds _location "all">>
+	<</if>>
+	<<if _till_needed gte 1>>
+		<<tendingTills _location "all">>
+	<</if>>
+	<<if _water_needed gte 1>>
+		<<set _plotsToWater to $_plotsHere.filter(plot => plot.stage >= 1 && plot.stage < 5 && plot.bed !== "water" && plot.water === 0)>>
+		<<set _totalTimeToWater to 0>>
+		<<run _plotsToWater.forEach(plot => _totalTimeToWater += setup.tending.wateringTimes[plot.size])>>
+		<<set $_time to getTimeString(_totalTimeToWater)>>
+        <<if $farm_attack_timer is 0>>
+    		<<set $_timeUntilAttack to ((23 - Time.hour) * 60) + (60 - Time.minute)>>
+    	<</if>>
+		<<if $location is "alex_farm" and _totalTimeToWater gte $_timeUntilAttack>>
+			<span class="pink">在雷米到来之前，你没有足够的时间浇灌所有的田地。</span>
+		<<else>>
+			<<if !($leftarm is "bound" and $rightarm is "bound")>>
+				<<gardenicon "water">>
+				<<link "给所有旱地浇水 ($_time)" $passage>>
+					<<tendingWaterAllDryBeds _plotsToWater>><<tiredness _water_needed>><<physique _water_needed>><<tending _water_needed>>
+				<</link>><<gtiredness>><<gtending>>
+			<</if>>
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $debug is 1 and $_plotsHere.filter(plot => plot.stage > 0 && plot.stage < 5).length gte 1>>
+		<br>
+		<<link "DEBUG: 立即催生所有作物" $passage>><<run tendingInstaGrow(_location)>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "tending_harvests">>
+	/* 收获参数列表里的全部作物 */
+	
+	<<set _location to _args[0]>>
+	<<if _args[1] is "all">>
+		<<set $_plotsToHarvest to $plots[_location].filter(plot => plot.stage >= 5)>>
+	<<else>>
+		<<set $_plotsToHarvest to [$plots[_location][_args[1]]]>>
+    <</if>>
+	<<set _totalTimeToHarvest to 0>>
+	
+	<<if $farm_attack_timer is 0>>
+		<<set $_timeUntilAttack to ((23 - Time.hour) * 60) + (60 - Time.minute)>>
+	<</if>>
+	
+	<<for _plantbed range $_plotsToHarvest>>
+	    <<switch _plantbed.size>>
+    		<<case "small">> <<set _baseTime to 5>>
+    		<<case "medium">> <<set _baseTime to 15>>
+    		<<default>> <<set _baseTime to 60>>
+    	<</switch>>
+    	<<if $location is "alex_farm">>
+    		<<if $farm.tractor gte 3>>
+    			<<set _baseTime = Math.round(_baseTime * 0.7)>>
+    			<<set _tractor = 0.25>>
+    		<<elseif $farm.tractor gte 2>>
+    			<<set _baseTime = Math.round(_baseTime * 0.8)>>
+    			<<set _tractor = 0.5>>
+    		<<elseif $farm.tractor gte 1>>
+    			<<set _baseTime = Math.round(_baseTime * 0.9)>>
+    			<<set _tractor = 1>>
+    		<</if>>
+    		<<if $farm.tractorharvester is true>>
+    			<<set _baseTime = Math.round(_baseTime * (0.5 * _tractor))>>
+    		<</if>>
+    	<</if>>
+		<<set _totalTimeToHarvest += _baseTime>>
+	<</for>>
+	<<set $_time to getTimeString(_totalTimeToHarvest)>>
+	
+    <<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">你的手臂被捆绑住了，你无法收获作物。</span>
+		<br>
+	<<elseif $location is "alex_farm" and _totalTimeToSeed gte $_timeUntilAttack>>
+		<span class="pink">在雷米到来之前，你没有足够的时间收获作物。</span>
+		<br>
+    <<elseif $_plotsToHarvest.length is 1>>
+        <<set $_plantedPlant to setup.plants[_plantbed.plant]>>
+    	<<if $options.images is 1 and $_plantedPlant.icon>>
+    		<img class="tending_icon" @src="`img/misc/icon/tending/` + $_plantedPlant.icon">
+    	<</if>>
+		<<print '<<link "收获 ('+$_time+')" $passage>><<pass '+_totalTimeToHarvest+'>><<set _plantbed to $plots["'+_location+'"]['+_args[1]+']>><<tending_harvest _plantbed>><<clear_plot _plantbed>><</link>>'>>
+    	<br>
+    <<elseif $_plotsToHarvest.length gte 2>>
+	    <<print '<<link "收获全部 ('+$_time+')" $passage>><<pass '+_totalTimeToHarvest+'>><<set $_plotsToHarvest to $plots["'+_location+'"].filter(plot => plot.stage >= 5)>>
+			<<for _plantbed range $_plotsToHarvest>><<tending_harvest _plantbed>><<clear_plot _plantbed>><</for>><</link>>'>>
+	    <br>
+	<</if>>
+<</widget>>
+
+<<widget "tendingPlantSeeds">>
+	<<set _location to _args[0]>>
+	<<if _args[1] is "all">>
+		<<set _plantbeds to $plots[_location].filter(plot => plot.stage === 0 && plot.till >= 1)>>
+	<<else>>
+		<<set _plantbeds to [$plots[_location][_args[1]]]>>
+    <</if>>
+	<<if _plantbeds.length is 1 and $plants_known.length is 0>>
+		在野外寻找种子来种植。
+		<br>
+	<</if>>
+	<<switch _location>>
+		<<case "farm">> <<set _irrigation to ($farm.irrigation ? $farm.irrigation : 0)>>
+		<<default>> <<set _irrigation to 0>>
+	<</switch>>
+	<<if $farm_attack_timer is 0>>
+		<<set $_timeUntilAttack to ((23 - Time.hour) * 60) + (60 - Time.minute)>>
+	<</if>>
+	
+	<<for _plantType range $plants_known>>
+		<<set $_plant to setup.plants[_plantType]>>
+		<<if $_plant.season.includes(Time.season) or (_location is "garden" and $alex_greenhouse gte 3)>>
+			/* comparing soil types; check if target bed is compatible with the seed's soil type */
+			<<set _canSeed to 0>>
+			<<set _totalTimeToSeed to 0>>
+			<<for _plantbed range _plantbeds>>
+    			<<if $_plant.bed is _plantbed.bed>>
+    			    <<set _canSeed += 1>>
+    			    <<switch _plantbed.size>>
+                		<<case "small">> <<set _baseTime to 30>>
+                		<<case "medium">> <<set _baseTime to 90>>
+                		<<default>> <<set _baseTime to 180>>
+                	<</switch>>
+                	<<if $location is "alex_farm">>
+                		<<if $farm.tractor gte 3>>
+                			<<set _baseTime = Math.round(_baseTime * 0.7)>>
+                			<<set _tractor = 0.25>>
+                		<<elseif $farm.tractor gte 2>>
+                			<<set _baseTime = Math.round(_baseTime * 0.8)>>
+                			<<set _tractor = 0.5>>
+                		<<elseif $farm.tractor gte 1>>
+                			<<set _baseTime = Math.round(_baseTime * 0.9)>>
+                			<<set _tractor = 1>>
+                		<</if>>
+                		<<if $farm.tractorseeddrill is true>>
+                			<<set _baseTime = Math.round(_baseTime * (0.5 * _tractor))>>
+                		<</if>>
+                	<</if>>
+                	<<set _totalTimeToSeed += _baseTime>>
+        		<</if>>
+			<</for>>
+			<<if _canSeed gte 1>>
+			    <<if $leftarm is "bound" and $rightarm is "bound">>
+            		<span class="red">你的手臂被捆绑住了，你无法进行播种。</span>
+            		<br>
+        		<<elseif $location is "alex_farm" and _totalTimeToSeed gte $_timeUntilAttack>>
+        			<span class="pink">在雷米到来之前，你没有足够的时间播种。</span>
+        			<br>
+        		<<else>>
+    			    <<set $_time to getTimeString(_totalTimeToSeed)>>
+					<<if _args[1] is "all" and _canSeed gt 1>>
+						<<set _textout to "全部种植" + $_plant.plural + " (" + $_time + ")">>
+						<<set _bedsString to "<<set _plantbeds to $plots['"+_location+"'].filter(plot => plot.stage === 0 && plot.till >= 1)>>">>
+    			    <<elseif _args[1] isnot "all">>
+    			        <<set _textout to "种植" + $_plant.plural + " (" + $_time + ")">>
+						<<set _bedsString to "<<set _plantbeds to [$plots['"+_location+"']["+_args[1]+"]]>>">>
+					<<else>>
+						<<set _textout to "">>
+    			    <</if>>
+					<<if _textout isnot "">>
+						<<if $options.images is 1 and $_plant.icon>>
+							<img class="tending_icon" @src="`img/misc/icon/tending/` + $_plant.icon">
+						<</if>>
+    					<<print "<<link _textout $passage>><<pass "+_totalTimeToSeed+">>"+_bedsString+"<<for _plantbed range _plantbeds>>
+							<<if _plantbed.bed is '"+$_plant.bed+"'>><<run plantSeedsInPlot(_plantbed, '"+_plantType+"')>><</if>><</for>><</link>>">>
+						<<if $statdisable is "f">>
+							<span class="orange">(<<print $_plant.days>>天)</span>
+						<</if>>
+    					<br>
+					<</if>>
+    			<</if>>
+			<<else>>
+				<span class="blue"><<print $_plant.plural>>仅能种植于<<print $_plant.bed.replace("earth","土地里").replace("water","水池中")>>。</span>
+				<br>
+			<</if>>
+		<<else>>
+			<<tending_season_notice $_plant>>
+			<br>
+		<</if>>
+	<</for>>
+<</widget>>
+
+<<widget "tendingTills">>
+	<<set _location to _args[0]>>
+	<<if _args[1] is "all">>
+		<<set _plantbeds to $plots[_location].filter(plot => plot.stage === 0 && plot.till === 0)>>
+	<<else>>
+		<<set _plantbeds to [$plots[_location][_args[1]]]>>
+    <</if>>
+	<<set _totalTimeToTill to 0>>
+	<<set _totalTirednessToTill to 0>>
+	<<set _totalTimeToFertilise to 0>>
+	<<set _totalTirednessToFertilise to 0>>
+	<<set _numFertilise to 0>>
+	
+	<<if $pigshit is undefined or !$options.bjx_animal or $pig lt 6>>
+        <<set $pigshit to 0>>
+    <</if>>
+	
+	<<for _plantbed range _plantbeds>>
+    	<<if currentSkillValue('tending') gte 1500>>
+    		<<set _baseTime to 3>>
+    		<<set _baseTiredness to 1>>
+    	<<else>>
+    		<<set $_ti to Math.clamp(Math.floor(currentSkillValue('tending') / 200), 0, 6)>>
+    		<<set _baseTime to [30,25,20,15,10,5,4][$_ti]>>
+    		<<set _baseTiredness to [6,5,4,3,2,1,1][$_ti]>>
+    	<</if>>
+    	<<if _plantbed.size is "medium">>
+    		<<set _baseTime *= 3>>
+    		<<set _baseTiredness *= 2>>
+    	<<elseif _plantbed.size is "large">>
+    		<<set _baseTime *= 12>>
+    		<<set _baseTiredness *= 6>>
+    	<</if>>
+    	<<if $location is "alex_farm">>
+    		<<if $farm.tractor gte 1>>
+    			<<set _baseTiredsness = Math.round(_baseTiredsness * 0.8)>>
+    		<</if>>
+    		<<if $farm.tractor gte 3>>
+    			<<set _baseTime = Math.round(_baseTime * 0.7)>>
+    			<<set _tractor = 0.25>>
+    		<<elseif $farm.tractor gte 2>>
+    			<<set _baseTime = Math.round(_baseTime * 0.8)>>
+    			<<set _tractor = 0.5>>
+    		<<elseif $farm.tractor gte 1>>
+    			<<set _baseTime = Math.round(_baseTime * 0.9)>>
+    			<<set _tractor = 1>>
+    		<</if>>
+    		<<if $farm.tractorplough is true>>
+    			<<set _baseTime = Math.round(_baseTime * (0.5 * _tractor))>>
+    			<<set _baseTiredsness = Math.round(_baseTiredsness * (0.5 * _tractor))>>
+    		<</if>>
+    	<</if>>
+        <<set _totalTimeToTill += _baseTime>>
+        <<set _totalTirednessToTill += _baseTiredness>>
+        <<if ($fertiliser.current + $pigshit) gt _numFertilise and _plantbed.quality lt 4>>
+            <<set _numFertilise += 1>>
+            <<set _totalTimeToFertilise += _baseTime * 1.5>>
+            <<set _totalTirednessToFertilise += _baseTiredness * 1.5>>
+        <<else>>
+            <<set _totalTimeToFertilise += _baseTime>>
+            <<set _totalTirednessToFertilise += _baseTiredness>>
+        <</if>>
+	<</for>>
+	<<set _timeString to getTimeString(_totalTimeToTill)>>
+	<<set _timeString2 to getTimeString(_totalTimeToFertilise)>>
+	
+	<<if $farm_attack_timer is 0>>
+		<<set $_timeUntilAttack to ((23 - Time.hour) * 60) + (60 - Time.minute)>>
+	<</if>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">你的手臂被捆绑住了，你无法进行耕地。</span>
+		<br>
+	<<else>>
+		<<if $location is "alex_farm" and _totalTimeToTill gte $_timeUntilAttack>>
+			<span class="pink">在雷米到来之前，你没有足够的时间耕地。</span>
+			<br>
+		<<else>>
+		    <<if _plantbeds.length is 1>>
+		        <<set _textout to "耕种" + " (" + _timeString + ")">>
+		    <<else>>
+		        <<set _textout to "全部耕种" + " (" + _timeString + ")">>
+		    <</if>>
+			<<if _args[1] is "all">>
+				<<set _bedsString to "<<set _plantbeds to $plots['"+_location+"'].filter(plot => plot.stage === 0 && plot.till === 0)>>">>
+			<<else>>
+				<<set _bedsString to "<<set _plantbeds to [$plots['"+_location+"']["+_args[1]+"]]>>">>
+			<</if>>
+			<<gardenicon "till">>
+			<<print '<<link _textout $passage>><<set $tendingvars.plot_tilled to true>><<tiredness '+_totalTirednessToTill+'>><<physique '+_totalTirednessToTill+'>>
+				<<pass '+_totalTimeToTill+'>><<if $location is "farm">><<farm_count '+_totalTimeToTill+'>><</if>>'+_bedsString+'
+				<<for _plantbed range _plantbeds>><<set _plantbed.till to 1>><</for>><</link>>'>>
+			<<gtiredness>>
+			<br>
+		<</if>>
+		
+		<<if ($fertiliser.current + $pigshit) gte 1 and _numFertilise gt 0 and currentSkillValue('tending') gte 400>>
+			<<if $location is "alex_farm" and _totalTimeToFertilise gte $_timeUntilAttack>>
+        		<span class="pink">在雷米到来之前，你没有足够的时间耕地并施肥。</span>
+        		<br>
+        	<<else>>
+            	<<if _plantbeds.length is 1>>
+    		        <<set _textout to "耕种并施肥" + " (" + _timeString2 + ")">>
+    		    <<else>>
+    		        <<set _textout to "全部耕种并施肥" + " (" + _timeString2 + ")">>
+    		    <</if>>
+				<<if _args[1] is "all">>
+					<<set _bedsString to "<<set _plantbeds to $plots['"+_location+"'].filter(plot => plot.stage === 0 && plot.till === 0)>>">>
+				<<else>>
+					<<set _bedsString to "<<set _plantbeds to [$plots['"+_location+"']["+_args[1]+"]]>>">>
+				<</if>>
+				<<gardenicon "fertiliser">>
+    		    <<print '<<link _textout $passage>><<set $tendingvars.plot_tilled_fertiliser to true>><<tiredness '+_totalTirednessToFertilise+'>><<physique '+_totalTirednessToFertilise+'>>
+					<<pass '+_totalTimeToFertilise+'>><<if $location is "farm">><<farm_count '+_totalTimeToFertilise+'>><</if>>'+_bedsString+'
+					<<for _plantbed range _plantbeds>><<set _plantbed.till to 1>><</for>>
+					<<for _plantbed range _plantbeds>><<if ($fertiliser.current + $pigshit) gte 1 and _plantbed.quality lt 4>>
+    				<<if $pigshit gte 1>><<set $pigshit-->><<else>><<set $fertiliser.current-->><</if>>
+					<<set $fertiliser.used++>><<set _plantbed.quality++>>
+					<<if !$backgroundTraits.includes("greenthumb")>><<if _plantbed.baseQuality is undefined>><<set _plantbed.baseQuality to clone(_plantbed.quality - 1)>><</if>>
+        			<<set _plantbed.fertiliserDecay to 2>><<if _plantbed.size isnot "large">><<set _plantbed.fertiliserDecay++>>
+        			<</if>><</if>><</if>><</for>><</link>>'>>
+				<<gtiredness>>
+				<br>
+        	<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+/* 北极星 */
+
+<<widget "tendingWaterPlot">>
+	<<set _plantbed to _args[0]>>
+
+	<<set _water_needed += 1>>
+	<<switch _plantbed.size>>
+		<<case "small">><<set _tStatup to 1>><<set _tPass to 5>>
+		<<case "medium">><<set _tStatup to 2>><<set _tPass to 15>>
+		<<default>><<set _tStatup to 6>><<set _tPass to 60>>
+	<</switch>>
+
+	<<set $_time to getTimeString(_tPass)>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">Can't water when your arms are bound.</span>
+	<<else>>
+		<<gardenicon "water">>
+		<<link "Water ($_time)" $passage>>
+			<<tending _tStatup>><<pass _tPass>><<set _plantbed.water to 1>><<set $tendingvars.plot_watered to true>>
+			<<tiredness _tStatup>><<physique _tStatup>><<event_trigger>>
+		<</link>><<gtiredness>><<gtending>>
+	<</if>>
+<</widget>>
+
+<<widget "tendingWaterAllDryBeds">>
+	<<set $_plotsToWater to _args[0]>>
+
+	<<for $_plot range $_plotsToWater>>
+		<<set $_plot.water to 1>>
+		<<set _waterTime to setup.tending.wateringTimes[$_plot.size]>>
+		<<pass _waterTime>><<event_trigger>>
+	<</for>>
+	<<set $tendingvars.all_plots_watered to true>>
+<</widget>>
+
+<<widget "tendingPlantSeedsOptions">>
+	<<set _location to _args[0]>>
+	<<set _plantbed to _args[1]>>
+
+	<<if $plants_known.length is 0>>
+		Search wild areas for seeds to plant.
+	<</if>>
+	<<switch _location>>
+		<<case "farm">> <<set _irrigation to ($farm.irrigation ? $farm.irrigation : 0)>>
+		<<default>> <<set _irrigation to 0>>
+	<</switch>>
+	<<for _plantType range $plants_known>>
+		<br>
+		<<set $_plant to setup.plants[_plantType]>>
+		<<if $_plant.season.includes(Time.season) or (_location is "garden" and $alex_greenhouse gte 3)>>
+			/* comparing soil types; check if target bed is compatible with the seed's soil type */
+			<<if $_plant.bed is _plantbed.bed>>
+				<<switch _plantbed.size>>
+					<<case "small">><<set _passTime to 30>>
+					<<case "medium">><<set _passTime to 90>>
+					<<default>><<set _passTime to 180>>
+				<</switch>>
+				<<set $_timeString to getTimeString(_passTime)>>
+				<<capture _passTime _plantbed _plantType>>
+					<<if $options.images is 1 and $_plant.icon>>
+						<img class="tending_icon" @src="`img/misc/icon/tending/` + $_plant.icon">
+					<</if>>
+					<<link "Plant $_plant.plural ($_timeString)" $passage>><<pass _passTime>><<run plantSeedsInPlot(_plantbed, _plantType)>><</link>>
+				<</capture>>
+				<<if $statdisable is "f">>
+					<span class="orange">(<<print $_plant.days>> days)</span>
+				<</if>>
+			<<else>>
+				<span class="blue"><<print $_plant.plural.toLocaleUpperFirst()>> only grow in <<print $_plant.bed>>.</span>
+			<</if>>
+		<<else>>
+			<<tending_season_notice $_plant>>
+		<</if>>
+
+	<</for>>
+	<br>
+<</widget>>
+
+<<widget "tendingTillOptions">>
+	<<set _plantbed to _args[0]>>
+
+	<<if currentSkillValue('tending') gte 1500>>
+		<<set _baseTime to 3>>
+		<<set _baseTiredness to 1>>
+	<<else>>
+		<<set $_ti to Math.clamp(Math.floor(currentSkillValue('tending') / 200), 0, 6)>>
+		<<set _baseTime to [30,25,20,15,10,5,4][$_ti]>>
+		<<set _baseTiredness to [6,5,4,3,2,1,1][$_ti]>>
+	<</if>>
+
+	<<if _plantbed.size is "medium">>
+		<<set _baseTime *= 3>>
+		<<set _baseTiredness *= 2>>
+	<<elseif _plantbed.size is "large">>
+		<<set _baseTime *= 12>>
+		<<set _baseTiredness *= 6>>
+	<</if>>
+
+	<<set _timeString to getTimeString(_baseTime)>>
+
+	<<if $farm_attack_timer is 0>>
+		<<set $_timeUntilAttack to ((23 - Time.hour) * 60) + (60 - Time.minute)>>
+	<</if>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<span class="red">Can't till when your arms are bound.</span>
+		<br>
+	<<else>>
+		<<if $location is "alex_farm" and _baseTime gte $_timeUntilAttack>>
+			<span class="pink">Not enough time to till the field before Remy's arrival.</span>
+		<<else>>
+			<<capture _baseTiredness _baseTime _plantbed>>
+				<<gardenicon "till">>
+				<<link "Till (_timeString)" $passage>>
+					<<set $tendingvars.plot_tilled to true>>
+					<<tiredness _baseTiredness>><<physique _baseTiredness>>
+					<<pass _baseTime>>
+					<<if $location is "farm">>
+						<<farm_count _baseTime>>
+					<</if>>
+					<<set _plantbed.till to 1>>
+				<</link>><<gtiredness>>
+			<</capture>>
+		<</if>>
+		<br>
+		<<if $fertiliser.current gte 1 and _plantbed.quality lt 4 and currentSkillValue('tending') gte 400>>
+			<<set _baseTimeFert to Math.floor(_baseTime * 1.5)>>
+			<<set _timeString to getTimeString(_baseTimeFert)>>
+			<<set _fertTiredness to Math.floor(_baseTiredness * 1.5)>>
+			<<capture _baseTimeFert _fertTiredness _plantbed>>
+				<<gardenicon "fertiliser">>
+				<<link "Till and apply fertiliser (_timeString)" $passage>>
+					/* Till */
+					<<set $tendingvars.plot_tilled_fertiliser to true>>
+					<<tiredness _fertTiredness>><<physique _fertTiredness>>
+					<<pass _baseTimeFert>>
+					<<if $location is "farm">>
+						<<farm_count _baseTimeFert>>
+					<</if>>
+					<<set _plantbed.till to 1>>
+
+					/* Fertilise */
+					<<set $fertiliser.current-->><<set $fertiliser.used++>>
+					<<set _plantbed.quality++>>
+					<<if !$backgroundTraits.includes("greenthumb")>>
+						<<if _plantbed.baseQuality is undefined>>
+							<<set _plantbed.baseQuality to clone(_plantbed.quality - 1)>>
+						<</if>>
+						<<set _plantbed.fertiliserDecay to 2>>
+						<<if _plantbed.size isnot "large">>
+							<<set _plantbed.fertiliserDecay++>>
+						<</if>>
+					<</if>>
+				<</link>><<gtiredness>>
+			<</capture>>
+			<br>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "plot_effects">>
+	<<if $tendingvars.plot_watered>>
+		You water the plot. <span class="gold">You get a good workout.</span>
+		<br>
+	<<elseif $tendingvars.all_plots_watered>>
+		You water the plots. <span class="gold">You get a good workout.</span>
+		<br>
+	<</if>>
+	<<if $tendingvars.harvest>>
+	    /* 北极星模组 */
+	    <<for _key range Object.keys($tendingvars.harvest_dict)>>
+	        你收获了<<number $tendingvars.harvest_dict[_key]>>个<<print _key>>。
+	        <br>
+	    <</for>>
+	    <<set $tendingvars.harvest_dict to {}>>
+	    <<set $tendingvars.harvest to false>>
+	    /* 北极星 */
+		<<if $tendingvars.plotDecay>>
+			The fertiliser effect has decayed<<if $tendingvars.plotDecay is 2>> completely<</if>>.
+		<</if>>
+		<br>
+	<</if>>
+	<<if $tendingvars.plot_tilled>>
+		You get to work removing weeds and tilling the soil. It's hard going, but when you're done the soil is ready for planting.
+		<span class="gold">You get a good workout.</span>
+		<br>
+	<</if>>
+	<<if $tendingvars.plot_tilled_fertiliser>>
+		You get to work removing weeds and tilling the soil while mixing in some fertiliser. It's hard going, but when you're done the soil is ready for planting.
+		<span class="gold">You get a good workout.</span>
+	<</if>>
+	<<if $tendingvars.plot_planted>>
+		You plant the seeds in the cool earth.
+		<br>
+	<</if>>
+	<<if $weather is "rain">>
+		<span class="green">The rain soaks the ground.</span>
+		<br>
+	<</if>>
+	<<run unsetTendingVars()>>
+<</widget>>
+
+<<widget "tending_day">>
+	<<for _location range Object.keys($plots)>>
+		<<switch _location>>
+			<<case "farm">> <<set _irrigation to ($farm.irrigation ? $farm.irrigation : 0)>>
+			<<default>> <<set _irrigation to 0>>
+		<</switch>>
+		<<for $_plot range $plots[_location]>>
+			/* growth check */
+			<<if $_plot.stage gte 1 and ($_plot.water is 1 or $_plot.bed is "water")>>
+				<<set $_plot.days += 1>>
+				<<if $_plot.days gte setup.plants[$_plot.plant].days * (($_plot.stage+1) / 5)>>
+					<<set $_plot.stage += 1>>
+				<</if>>
+			<</if>>
+
+			/* should this check really happen AFTER the growth check? */
+			<<if $weather is "rain">>
+				<<set $_plot.water to 1>>
+			<<elseif _irrigation gte 1>>
+				<<set $_plot.water to 1>>
+				<<set _irrigation-->>
+			<<else>>
+				<<set $_plot.water to 0>>
+			<</if>>
+		<</for>>
+	<</for>>
+<</widget>>
+
+<<widget "tending_harvest">>
+	/* Argument is the plot you want to harvest */
+	<<set $_plot to _args[0]>>
+	<<set $_type to $_plot.plant>>
+	<<if $plants[$_type] is undefined>>
+		<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": 0}>>
+	<<elseif $plants[$_type].name is undefined>>
+		<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": $plants[$_type].amount}>>
+	<</if>>
+	<<switch $_plot.size>>
+		<<case "small">> <<set _tending_amount to random(10, (currentSkillValue('tending') / 20) + 10)>>
+		<<case "medium">> <<set _tending_amount to random(10, (currentSkillValue('tending') / 10) + 20)>>
+		<<default>> <<set _tending_amount to random(10, (currentSkillValue('tending') / 2) + 50)>>
+	<</switch>>
+	<<set _tending_amount *= setup.plants[$_type].multiplier>>
+	<<switch Math.clamp($_plot.quality, 1, 4)>>
+		<<case 4>> <<set _tending_amount *= 1.6>>
+		<<case 3>> <<set _tending_amount *= 1.4>>
+		<<case 2>> <<set _tending_amount *= 1.2>>
+	<</switch>>
+	<<if !$backgroundTraits.includes("greenthumb") and $tending is 1000 and $plants_known.length gte 16 and
+	($fertiliser.used gte 40 or ($fertiliser.used gte 25 and $farm_stage gte 6))>>
+		<<run $backgroundTraits.pushUnique("greenthumb")>>
+		<span class="gold">Spending a large amount of time in the dirt has given you a green thumb.</span>
+		<br>
+	<</if>>
+	<<if $backgroundTraits.includes("greenthumb")>>
+		<<set _tending_amount *= 1.2>>
+	<</if>>
+	/* 北极星模组 */
+	<<if $options.bjx_animal and $transformationParts.traits.strongnose isnot "disabled">>
+		<<set _tending_amount *= 1.5>>
+	<</if>>
+	/* 北极星 */
+	<<set _tending_amount *= $tending_yield_factor>>
+
+	<<set _tending_amount to Math.trunc(_tending_amount)>>
+	<<set $plants[$_type].amount += _tending_amount>>
+
+	<<set $tendingvars.harvest to true>>
+	/* 北极星模组 */
+	<<if $tendingvars.harvest_dict is undefined>>
+	    <<set $tendingvars.harvest_dict to {}>>
+	<</if>>
+	<<if $tendingvars.harvest_dict[setup.plants[$_type].plural] is undefined>>
+	    <<set $tendingvars.harvest_dict[setup.plants[$_type].plural] to _tending_amount>>
+	<<else>>
+	    <<set $tendingvars.harvest_dict[setup.plants[$_type].plural] += _tending_amount>>
+	<</if>>
+	/* 北极星 */
+	<<set $tendingvars.harvest_amount to _tending_amount>>
+	<<set $tendingvars.harvest_name to (_tending_amount is 1 ? setup.plants[$_type].name.replace(/_/g," ") : setup.plants[$_type].plural)>>
+<</widget>>
+
+<<widget "tending_pick">>
+	/*
+	* First argument: plant type.
+	* Second argument: minimum number picked.
+	* Third argument: maximum number picked.
+	*/
+	<<set $_type to _args[0]>>
+	<<if $plants[$_type] is undefined>>
+		<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": 0}>>
+	<<elseif $plants[$_type].name is undefined>>
+		<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": $plants[$_type].amount}>>
+	<</if>>
+
+	<<if _args[2] gte 1>>
+		<<set _tending_amount to random(_args[1], _args[2])>>
+	<<else>>
+		<<set _tending_amount to random(1, 5)>>
+	<</if>>
+
+	<<if !setup.plants[$_type].special.includes("large") and setup.plants[$_type].bed isnot "bird_nest">>
+		<<set _tending_amount *= (1 + (currentSkillValue('tending') / 1000))>>
+	<</if>>
+	<<if $backgroundTraits.includes("greenthumb")>>
+		<<set _tending_amount *= 1.2>>
+	<</if>>
+	<<set _tending_amount to Math.trunc(_tending_amount)>>
+	<<set $plants[$_type].amount += _tending_amount>>
+	<<set $wild_plant_stat += _tending_amount>>
+
+	You pick
+	<<if $_type is "bird_egg">>
+		up
+	<</if>>
+	<<if _tending_amount is 1>>
+		<<if (["a","e","i","o","u","A","E","I","O","U"].some(letter => $_type.startsWith(letter)))>>
+			an
+		<<else>>
+			a
+		<</if>>
+		<<if $options.images is 1 and setup.plants[$_type].icon>>
+			<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[$_type].icon">
+		<</if>>
+		<<print setup.plants[$_type].name.replace(/_/g," ")>>.
+	<<else>>
+		<<if $options.images is 1 and setup.plants[$_type].icon>>
+			<img class="tending_icon" @src="`img/misc/icon/tending/` + setup.plants[$_type].icon">
+		<</if>>
+		<<number _tending_amount>> <<print setup.plants[$_type].plural>>.
+	<</if>>
+<</widget>>
+
+<<widget "tending_give">>
+	<<if _args[0]>>
+		<<set $_type to _args[0]>>
+		<<if $plants[$_type] is undefined>>
+			<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": 0}>>
+		<<elseif $plants[$_type].name is undefined>>
+			<<set $plants[$_type] to {"name": setup.plants[$_type].name, "plural": setup.plants[$_type].plural, "amount": $plants[$_type].amount}>>
+		<</if>>
+
+		<<set $plants[$_type].amount += (_args[1] ? _args[1] : 1)>>
+	<</if>>
+<</widget>>
+
+<<widget "tending_season_notice">>
+	<<set $_plant to _args[0]>>
+	<span class="blue">
+		<<set $_seasons to formatList($_plant.season)>>
+		<<print $_plant.plural.toLocaleUpperFirst()>> can only be planted in $_seasons.
+	</span>
+<</widget>>

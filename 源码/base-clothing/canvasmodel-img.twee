@@ -1,0 +1,779 @@
+:: Widgets Canvas Model Main [widget]
+
+<!--
+<<canvasimg [CSSCLASSES]>>
+Render full player image.
+-->
+<<widget "canvasimg">>
+	<<selectmodel "main" "sidebar">>
+	<<modelprepare-player-body>>
+	<<modelprepare-player-clothes>>
+	<<if $options.sidebarAnimations isnot false>>
+		<<animatemodel _args[0]>>
+	<<else>>
+		<<rendermodel _args[0]>>
+	<</if>>
+	<<if playerHasStrapon()>>
+		<<set _modeloptions.crotch_visible to false>>
+		<<set _modeloptions.crotch_exposed to false>>
+		<<if $worn.lower.exposed lte 1 and $lowerwetstage lte 0>>
+			<<set _modeloptions.worn_under_lower to 0>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<!--
+Set model options & filters from player body
+Requires prior <<selectmodel "main">>
+-->
+<<widget "modelprepare-player-body">>
+	/*Prep for image checks*/
+	<<set _disabled to ["disabled","hidden"]>>
+
+	<!-- unwrap tanLoc/tanValues array -->
+	<<twinescript>>
+	let tanValByName = {
+		body: 0,
+		breasts: -0.01,
+		penis: -0.01,
+		swimshorts: -0.01,
+		swimsuitTop: -0.01,
+		swimsuitBottom: -0.01,
+		bikiniTop: -0.01,
+		bikiniBottom: -0.01,
+		tshirt: -0.01 /* No sprites yet? */
+	};
+	for (let i = 0; i < setup.skinColor.tanLoc.length; i++) {
+		tanValByName[setup.skinColor.tanLoc[i]] = $skinColor.tanValues[i] / 100;
+	}
+
+	_modeloptions.skin_type = $skinColor.natural || "light";
+	_modeloptions.skin_tone = tanValByName["body"];
+	if ($options.tanningEnabled is true){
+		for (let loc in tanValByName) {
+			if (loc !== 'body') {
+				_modeloptions['skin_tone_'+loc] = tanValByName[loc];
+			}
+		}
+	} else {
+		_modeloptions.show_tanlines = false;
+	}
+	<</twinescript>>
+
+	<<if $makeup.eyeshadow != 0>>
+		<<set _modeloptions.eyeshadow_colour to $makeup.eyeshadow>>
+	<</if>>
+	<<if $makeup.mascara != 0>>
+		<<set _modeloptions.mascara_colour to $makeup.mascara>>
+	<</if>>
+	<<if $makeup.mascara_running != 0>>
+		<<set _modeloptions.mascara_running to $makeup.mascara_running>>
+	<</if>>
+	<<if $makeup.lipstick != 0>>
+		<<set _modeloptions.lipstick_colour to $makeup.lipstick>>
+	<</if>>
+
+	<<if $possessed>>
+		<<set _modeloptions.left_eye = (["haunt", "despair"].includes($wraith.state) ? "red possessed" : "blue possessed")>>
+		<<set _modeloptions.right_eye = (["haunt", "despair"].includes($wraith.state) ? "red possessed" : "blue possessed")>>
+	<<else>>
+		<<set _modeloptions.left_eye = $makeup.eyelenses.left != 0 ? $makeup.eyelenses.left : $leftEyeColour>>
+		<<set _modeloptions.right_eye = $makeup.eyelenses.right != 0 ? $makeup.eyelenses.right : $rightEyeColour>>
+	<</if>>
+	<<set _modeloptions.hair_colour = $haircolour>>
+	<<set _modeloptions.hair_fringe_colour = $hairfringecolour>>
+	<<set _modeloptions.hair_colour_gradient = $hairColourGradient>>
+	<<set _modeloptions.hair_fringe_colour_gradient = $hairFringeColourGradient>>
+	<<set _modeloptions.hair_colour_style to $hairColourStyle>>
+	<<set _modeloptions.hair_fringe_colour_style to $hairFringeColourStyle>>
+
+
+
+	<<set _modeloptions.brows_colour = ($makeup.browscolour != 0 ? $makeup.browscolour : $naturalhaircolour)>>
+	<<set _modeloptions.pbhair_colour = ($makeup.pbcolour != 0 ? $makeup.pbcolour : $naturalhaircolour)>>
+
+	<!--
+		██████   █████  ███████ ███████
+		██   ██ ██   ██ ██      ██
+		██████  ███████ ███████ █████
+		██   ██ ██   ██      ██ ██
+		██████  ██   ██ ███████ ███████
+	-->
+
+	<<set _modeloptions.body_type to !$options.genderBody || $options.genderBody === "default" ? $player.gender_body : $options.genderBody>>
+
+	<<run apparentbreastsizecheck()>>
+	<<switch $player.perceived_breastsize>>
+		<<case 12>>
+			<<set _modeloptions.breast_size to 6>>
+		<<case 8 9 10 11>>
+			<<set _modeloptions.breast_size to 5>>
+		<<case 6 7>>
+			<<set _modeloptions.breast_size to 4>>
+		<<case 4 5>>
+			<<set _modeloptions.breast_size to 3>>
+		<<case 3>>
+			<<set _modeloptions.breast_size to 2>>
+		<<case 1 2>>
+			<<set _modeloptions.breast_size to 1>>
+		<<default>>
+			<<set _modeloptions.breast_size to 0>>
+	<</switch>>
+	<<set _modeloptions.breasts to "default">>
+	<<if $sexStats>>
+		<<set _modeloptions.belly to playerBellySize() || $bellySizeDebug>>
+		<<set _bellySize to playerBellySize() || $bellySizeDebug>>
+	<</if>>
+
+	<<if $wraithSkin>>
+		<<set _modeloptions.mannequin to true>>
+		<<set _modeloptions.skin_type to 'custom'>>
+		<<set _modeloptions.filters.body to {blend:'#ffffff',blendMode:'multiply',desaturate:true}>>
+		<<set _modeloptions.filters.breasts to _modeloptions.filters.body>>
+		<<set _modeloptions.filters.penis to _modeloptions.filters.body>>
+		<<set _modeloptions.show_tanlines to false>>
+	<</if>>
+
+	<!--
+	-    ██   ██  █████  ██ ██████
+	-    ██   ██ ██   ██ ██ ██   ██
+	-    ███████ ███████ ██ ██████
+	-    ██   ██ ██   ██ ██ ██   ██
+	-    ██   ██ ██   ██ ██ ██   ██
+	-
+	-
+	-->
+
+	<<set _modeloptions.hair_sides_length to $hairlengthstage>>
+	<<set _modeloptions.hair_sides_type to $hairtype>>
+	<<set _modeloptions.hair_sides_position to $hairposition>>
+	<<set _modeloptions.hair_fringe_length to $fringelengthstage>>
+	<<set _modeloptions.hair_fringe_type to $fringetype>>
+
+	<!--
+	-     █████  ██████  ███    ███ ███████
+	-    ██   ██ ██   ██ ████  ████ ██
+	-    ███████ ██████  ██ ████ ██ ███████
+	-    ██   ██ ██   ██ ██  ██  ██      ██
+	-    ██   ██ ██   ██ ██      ██ ███████
+	-
+	-->
+
+	<<set _coverBreastsWithArm to false>>
+	<<if $leftarm isnot "bound" and $leftarm isnot "grappled">>
+		<<if $dontHide is false and $worn.over_upper.exposed gte 1 and ($worn.upper.exposed gte 1 or $upperwetstage gte 3)
+		and (($uncomfortable.underwear is true and !$worn.under_upper.type.includes("naked")) or ($uncomfortable.nude is true and ($worn.under_upper.exposed gte 1 or $underupperwetstage gte 3)))>>
+			<<set _coverBreasts to true>>
+			<<set _modeloptions.arm_left to "cover">> <!-- might be changed back to "idle" if covering with wings -->
+		<<else>>
+			<<set _coverBreasts to false>>
+			<<set _modeloptions.arm_left to "idle">>
+		<</if>>
+	<<else>>
+		<<set _modeloptions.arm_left to "none">>
+	<</if>>
+
+	<<if $rightarm isnot "bound" and $rightarm isnot "grappled">>
+		<<if $dontHide is false and $worn.over_lower.exposed gte 1 and ($worn.lower.exposed gte 1 or $lowerwetstage gte 3)
+		and (($uncomfortable.underwear is true and !$worn.under_lower.type.includes("naked")) or ($uncomfortable.nude is true and ($worn.under_lower.exposed gte 1 or $underlowerwetstage gte 3)))>>
+			<<set _coverCrotch to true>>
+			<<set _modeloptions.arm_right to "cover">> <!-- might be changed back to "idle" if covering with wings/tail -->
+		<<else>>
+			<<set _coverCrotch to false>>
+			<<set _modeloptions.arm_right to "idle">>
+		<</if>>
+	<<else>>
+		<<set _modeloptions.arm_right to "none">>
+	<</if>>
+
+	<<if $leftarm isnot "bound" and $leftarm isnot "grappled">>
+
+		<<if _coverBreasts is false>>
+			<<if $exposed gte 2 and $dontHide is false and $transformationParts.traits.flaunting is "default">>
+				<<set _modeloptions.demon_wings_state to "flaunt">>
+			<<else>>
+				<<set _modeloptions.demon_wings_state to "idle">>
+			<</if>>
+			<<set _modeloptions.angel_wing_right to "idle">>
+			<<set _modeloptions.fallen_wing_right to "idle">>
+			<<set _modeloptions.bird_wing_right to "idle">>
+			/* 北极星模组 */
+			<<set _modeloptions.bee_wing_right to "idle">>
+			/* 北极星 */
+		<<elseif _coverBreasts is true>>
+			<<if !_disabled.includes($transformationParts.demon.wings)>>
+				<<set _modeloptions.demon_wings_state to ($transformationParts.traits.flaunting is "default" ? "flaunt" : "cover")>>
+				<<set _modeloptions.arm_left to "idle">>
+			<<elseif !_disabled.includes($transformationParts.angel.wings)>>
+				<<set _modeloptions.angel_wing_right to "cover">>
+				<<set _modeloptions.arm_left to "idle">>
+			<<elseif !_disabled.includes($transformationParts.fallenAngel.wings)>>
+				<<set _modeloptions.fallen_wing_right to "cover">>
+				<<set _modeloptions.arm_left to "idle">>
+			<<elseif !_disabled.includes($transformationParts.bird.wings)>>
+				<<set _modeloptions.bird_wing_right to "cover">>
+				<<set _modeloptions.arm_left to "idle">>
+			<<else>>
+				<<set _coverBreastsWithArm to true>>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<if $rightarm isnot "bound" and $rightarm isnot "grappled">>
+		<<if _coverCrotch is false>>
+			<<if !_disabled.includes($transformationParts.demon.tail)>>
+				<<if $exposed gte 2 and $dontHide is false and $transformationParts.traits.flaunting is "default">>
+					<<set _modeloptions.demon_tail_state to "flaunt">>
+					<<set _modeloptions.cat_tail_state to "flaunt">>
+				<<else>>
+					<<set _modeloptions.demon_tail_state to "idle">>
+					<<set _modeloptions.cat_tail_state to "idle">>
+				<</if>>
+			<</if>>
+			<<set _modeloptions.angel_wing_left to "idle">>
+			<<set _modeloptions.fallen_wing_left to "idle">>
+			<<set _modeloptions.bird_wing_left to "idle">>
+			/* 北极星模组 */
+			<<set _modeloptions.bee_wing_left to "idle">>
+			/* 北极星 */
+		<<elseif _coverCrotch is true>>
+			<<if !_disabled.includes($transformationParts.demon.tail)>>
+				<<set _modeloptions.demon_tail_state to ($transformationParts.traits.flaunting is "default" ? "flaunt" : "cover")>>
+				<<set _modeloptions.cat_tail_state to "cover">>
+				<<set _modeloptions.arm_right to "idle">>
+			<<elseif !_disabled.includes($transformationParts.angel.wings)>>
+				<<set _modeloptions.angel_wing_left to "cover">>
+				<<set _modeloptions.arm_right to "idle">>
+			<<elseif !_disabled.includes($transformationParts.fallenAngel.wings)>>
+				<<set _modeloptions.fallen_wing_left to "cover">>
+				<<set _modeloptions.arm_right to "idle">>
+			<<elseif !_disabled.includes($transformationParts.bird.wings)>>
+				<<set _modeloptions.bird_wing_left to "cover">>
+				<<set _modeloptions.arm_right to "idle">>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<!--
+	-    ██     ██ ██████  ██ ████████ ██ ███    ██  ██████  ███████
+	-    ██     ██ ██   ██ ██    ██    ██ ████   ██ ██       ██
+	-    ██  █  ██ ██████  ██    ██    ██ ██ ██  ██ ██   ███ ███████
+	-    ██ ███ ██ ██   ██ ██    ██    ██ ██  ██ ██ ██    ██      ██
+	-     ███ ███  ██   ██ ██    ██    ██ ██   ████  ██████  ███████
+	-->
+
+	<<if $options.bodywritingImages is true>>
+		<<for _label, _value range $skin>>
+			<<if _value.writing>>
+				<<set _modeloptions["writing_"+_label] to setup.bodywriting_namebyindex[_value.index]>>
+			<</if>>
+		<</for>>
+	<</if>>
+
+	<!--
+	-    ███████  █████   ██████ ███████
+	-    ██      ██   ██ ██      ██
+	-    █████   ███████ ██      █████
+	-    ██      ██   ██ ██      ██
+	-    ██      ██   ██  ██████ ███████
+	-->
+
+	<<set _modeloptions.facestyle to $facestyle>>
+
+	<<set _modeloptions.freckles = $player.freckles == true and $makeup.concealer != 1>>
+
+	<<set _modeloptions.ears_position to $earsposition>>
+
+	<<set _modeloptions.toast = _toast == true>>
+
+	<!-- Eyes -->
+	<<if $possessed>>
+		<<set _modeloptions.trauma to $possessed>>
+	<<else>>
+	    /* 北极星模组 */
+		<<set _modeloptions.trauma to ($trauma gte ($traumamax * 0.9)) or $traumatized and $options.bjx_divine>>
+		/* 北极星 */
+	<</if>>
+	<<set _modeloptions.blink to $options.blinkingEnabled>>
+	<<set _modeloptions.eyes_bloodshot to $pain gte 100 and $willpowerpain is 0 or $tiredness >= C.tiredness.max>>
+	<<set _modeloptions.eyes_half to $options.halfClosedEnabled and ($arousal gte ($arousalmax / 5) * 4 or $orgasmdown gte 1) and $trauma lt ($traumamax * 0.9) and $pain lt 60 and $eyelidTEST is true or ($possessed or $tiredness >= C.tiredness.max * 0.75)>>
+
+	<!-- Brows -->
+	<<if $trauma gte $traumamax or $possessed>>
+		<<set _modeloptions.brows = "top">>
+	<<elseif $pain gte 60>>
+		<<set _modeloptions.brows = "low">>
+	<<elseif $arousal gte ($arousalmax / 5) * 4 or $orgasmdown gte 1>>
+		<<set _modeloptions.brows = "orgasm">>
+	<<elseif $pain gte 20>>
+		<<set _modeloptions.brows = "mid">>
+	<<else>>
+		<<set _modeloptions.brows = "top">>
+	<</if>>
+	<<set _modeloptions.brows_position to $browsposition>>
+
+	<!-- Mouth -->
+	<<if $trauma gte $traumamax>>
+		<<set _modeloptions.mouth = "neutral">>
+	<<elseif $pain gte 60 or $orgasmdown gte 1 or ($possessed)>>
+		<<set _modeloptions.mouth = "cry">>
+	<<elseif $exposed is 2 and $uncomfortable.nude is true and $dontHide is false or $pain gte 20>>
+		<<set _modeloptions.mouth = "frown">>
+	<<elseif $pain gte 1 or ($exposed is 1 and $uncomfortable.underwear is true) or ($combat is 1 and $consensual isnot 1)>>
+		<<set _modeloptions.mouth = "neutral">>
+	<<elseif $stress >= ($stressmax / 5) * 3 or !($control >= ($controlmax / 5) * 1)>> <!-- $stress == You are strained. or $control == You are scared.-->
+		<<set _modeloptions.mouth = "neutral">>
+	<<else>>
+		<<set _modeloptions.mouth = "smile">>
+	<</if>>
+
+	<!-- Blush -->
+	<<set _modeloptions.blush = Math.min(5, Math.floor($arousal / 2000) + 1)>>
+	<<if _modeloptions.blush lt 2 and $exposed gte 2>>
+		<<set _modeloptions.blush = 2>>
+	<<elseif $arousal lt 100 and $exposed lt 1>>
+		<<set _modeloptions.blush = 0>>
+	<</if>>
+	<<if !$worn.over_upper.type.includes("naked") and !$worn.over_lower.type.includes("naked") and
+	$worn.upper.type.includes("naked") and $worn.lower.type.includes("naked") and
+	$worn.under_upper.type.includes("naked") and $worn.under_lower.type.includes("naked")>>
+		<<set _modeloptions.blush = 2>>
+	<</if>>
+
+	<!-- Tears -->
+	<<set _modeloptions.tears = painToTearsLvl($pain)>>
+
+	<!--
+	-    ████████ ███████ ███████
+	-       ██    ██      ██
+	-       ██    █████   ███████
+	-       ██    ██           ██
+	-       ██    ██      ███████
+	-->
+
+	<!-- Transformation filters here -->
+	<<set $_filterBase to {
+		blendMode: "hard-light",
+		brightness: 0,
+		contrast: 1,
+		desaturate: false
+	}>>
+
+	<!-- wing and tail idle/cover/flaunt state is configured in the arms section above -->
+
+	<<set _modeloptions.angel_wings_type to $transformationParts.angel.wings>>
+	<<set _modeloptions.angel_wings_layer to $wingslayer>>
+	<<set _modeloptions.angel_halo_type to $transformationParts.angel.halo>>
+
+	<<set _modeloptions.fallen_wings_type to $transformationParts.fallenAngel.wings>>
+	<<set _modeloptions.fallen_wings_layer to $wingslayer>>
+	<<set _modeloptions.fallen_halo_type to $transformationParts.fallenAngel.halo>>
+
+	<<set _modeloptions.demon_wings_type to $transformationParts.demon.wings>>
+	<<set _modeloptions.demon_wings_layer to $wingslayer>>
+	<<set _modeloptions.demon_tail_type to $transformationParts.demon.tail>>
+	<<set _modeloptions.demon_tail_layer to $taillayer>>
+	<<set _modeloptions.demon_horns_type to $transformationParts.demon.horns>>
+	<<set _modeloptions.demon_horns_layer to $hornslayer>>
+
+	<!-- Calculate blend pattern for demon TF here. -->
+
+	<<set $_demonHsl to ColourUtils.toHslString(Transformations.defaults.demon.colour)>>
+	<<set _modeloptions.filters.demon_wings to clone(Object.assign($_filterBase, {
+		blend: ColourUtils.toHslString($transformationParts.demon.wings_colour, $_demonHsl)
+	}))>>
+	<<set _modeloptions.filters.demon_tail to clone(Object.assign($_filterBase, {
+		blend: ColourUtils.toHslString($transformationParts.demon.tail_colour, $_demonHsl)
+	}))>>
+	<<set _modeloptions.filters.demon_horns to clone(Object.assign($_filterBase, {
+		blend: ColourUtils.toHslString($transformationParts.demon.horns_colour, $_demonHsl)
+	}))>>
+	
+	/* 北极星模组 */
+	<<set $_dragonHsl to ColourUtils.toHslString(Transformations.defaults.dragon.colour)>>
+	<<set _modeloptions.filters.dragon_wings to clone(Object.assign($_filterBase, {
+		blend: ColourUtils.toHslString($transformationParts.dragon.wings_colour, $_dragonHsl)
+	}))>>
+	<<set _modeloptions.filters.dragon_tail to clone(Object.assign($_filterBase, {
+		blend: ColourUtils.toHslString($transformationParts.dragon.tail_colour, $_dragonHsl)
+	}))>>
+	<<set _modeloptions.filters.dragon_horns to clone(Object.assign($_filterBase, {
+		blend: ColourUtils.toHslString($transformationParts.dragon.horns_colour, $_dragonHsl)
+	}))>>
+	/* 北极星 */
+
+	<<set _modeloptions.wolf_tail_type to $transformationParts.wolf.tail>>
+	<<set _modeloptions.wolf_tail_layer to $taillayer>>
+	<<set _modeloptions.wolf_ears_type to $transformationParts.wolf.ears>>
+	<<set _modeloptions.wolf_pits_type to $transformationParts.wolf.pits>>
+	<<set _modeloptions.wolf_pubes_type to $transformationParts.wolf.pubes>>
+	<<set _modeloptions.wolf_cheeks_type to $transformationParts.wolf.cheeks>>
+
+	<<set _modeloptions.cat_tail_type to $transformationParts.cat.tail>>
+	<<set _modeloptions.cat_tail_layer to $taillayer>>
+	<<set _modeloptions.cat_ears_type to $transformationParts.cat.ears>>
+
+	<<set _modeloptions.cow_horns_type to $transformationParts.cow.horns>>
+	<<set _modeloptions.cow_horns_layer to $hornslayer>>
+	<<set _modeloptions.cow_tail_type to $transformationParts.cow.tail>>
+	<<set _modeloptions.cow_tail_layer to $taillayer>>
+	<<set _modeloptions.cow_ears_type to $transformationParts.cow.ears>>
+
+	<<set _modeloptions.bird_wings_type to $transformationParts.bird.wings>>
+	<<set _modeloptions.bird_wings_layer to $wingslayer>>
+	<<set _modeloptions.bird_tail_type to $transformationParts.bird.tail>>
+	<<set _modeloptions.bird_tail_layer to $taillayer>>
+	<<set _modeloptions.bird_eyes_type to $transformationParts.bird.eyes>>
+	<<set _modeloptions.bird_malar_type to $transformationParts.bird.malar>>
+	<<set _modeloptions.bird_plumage_type to $transformationParts.bird.plumage>>
+	<<set _modeloptions.bird_pubes_type to $transformationParts.bird.pubes>>
+
+	<<set _modeloptions.fox_tail_type to $transformationParts.fox.tail>>
+	<<set _modeloptions.fox_tail_layer to $taillayer>>
+	<<set _modeloptions.fox_ears_type to $transformationParts.fox.ears>>
+	<<set _modeloptions.fox_cheeks_type to $transformationParts.fox.cheeks>>
+	
+	/* 北极星模组 */
+	<<set _modeloptions.all_ears_layer to $earslayer>>
+	<<set _modeloptions.all_horns_layer to $hornslayer>>
+	<<set _modeloptions.all_tails_layer to $taillayer>>
+	<<set _modeloptions.all_wings_layer to $wingslayer>>
+	
+	<<set _modeloptions.raccoon_tail_type to $transformationParts.raccoon.tail>>
+	<<set _modeloptions.raccoon_ears_type to $transformationParts.raccoon.ears>>
+	<<set _modeloptions.raccoon_mask_type to $transformationParts.raccoon.mask>>
+
+	<<set _modeloptions.fish_tail_type to $transformationParts.fish.tail>>
+	<<set _modeloptions.fish_fins_type to $transformationParts.fish.fins>>
+
+	<<set _modeloptions.horse_tail_type to $transformationParts.horse.tail>>
+	<<set _modeloptions.horse_ears_type to $transformationParts.horse.ears>>
+
+	<<set _modeloptions.spider_eyes_type to $transformationParts.spider.eyes>>
+	<<set _modeloptions.spider_tail_type to $transformationParts.spider.tail>>
+
+	<<set _modeloptions.frog_eyes_type to $transformationParts.frog.eyes>>
+	<<set _modeloptions.frog_cheeks_type to $transformationParts.frog.cheeks>>
+
+	<<set _modeloptions.pig_tail_type to $transformationParts.pig.tail>>
+	<<set _modeloptions.pig_ears_type to $transformationParts.pig.ears>>
+
+	<<set _modeloptions.bee_tail_type to $transformationParts.bee.tail>>
+	<<set _modeloptions.bee_ears_type to $transformationParts.bee.ears>>
+	<<set _modeloptions.bee_wings_type to $transformationParts.bee.wings>>
+
+	<<set _modeloptions.sheep_tail_type to $transformationParts.sheep.tail>>
+	<<set _modeloptions.sheep_ears_type to $transformationParts.sheep.ears>>
+	<<set _modeloptions.sheep_horns_type to $transformationParts.sheep.horns>>
+
+	<<set _modeloptions.deer_tail_type to $transformationParts.deer.tail>>
+	<<set _modeloptions.deer_ears_type to $transformationParts.deer.ears>>
+	<<set _modeloptions.deer_horns_type to $transformationParts.deer.horns>>
+
+	<<set _modeloptions.bear_tail_type to $transformationParts.bear.tail>>
+	<<set _modeloptions.bear_ears_type to $transformationParts.bear.ears>>
+
+	<<set _modeloptions.dragon_wings_type to $transformationParts.dragon.wings>>
+	<<set _modeloptions.dragon_tail_type to $transformationParts.dragon.tail>>
+	<<set _modeloptions.dragon_horns_type to $transformationParts.dragon.horns>>
+	<<set _modeloptions.dragon_eyes_type to $transformationParts.dragon.eyes>>
+
+	<<set _modeloptions.lizard_tail_type to $transformationParts.lizard.tail>>
+	<<set _modeloptions.lizard_eyes_type to $transformationParts.lizard.eyes>>
+
+	<<set _modeloptions.dolphin_tail_type to $transformationParts.dolphin.tail>>
+
+	<<set _modeloptions.dog_tail_type to $transformationParts.dog.tail>>
+	<<set _modeloptions.dog_ears_type to $transformationParts.dog.ears>>
+
+	<<set _modeloptions.ghost_eyes_type to $transformationParts.ghost.eyes>>
+	<<set _modeloptions.ghost_hitodama_type to $transformationParts.ghost.hitodama>>
+	<<set _modeloptions.ghost_mist_type to $transformationParts.ghost.mist>>
+	<<set _modeloptions.ghost_stream_type to $transformationParts.ghost.stream>>
+	<<set _modeloptions.ghost_stream_type to $transformationParts.ghost.flame>>
+
+	<<set _modeloptions.slime_bubble_type to $transformationParts.slime.bubble>>
+	<<set _modeloptions.slime_stream_type to $transformationParts.slime.stream>>
+	<<set _modeloptions.slime_core_type to $transformationParts.slime.core>>
+
+	<<set _modeloptions.mushroom_cap_type to $transformationParts.mushroom.cap>>
+	<<set _modeloptions.mushroom_eyes_type to $transformationParts.mushroom.eyes>>
+	<<set _modeloptions.mushroom_spores_type to $transformationParts.mushroom.spores>>
+	<<set _modeloptions.mushroom_mushrooms_type to $transformationParts.mushroom.mushrooms>>
+
+	<<set _modeloptions.eldrich_crown_type to $transformationParts.eldritch.crown>>
+	<<set _modeloptions.eldrich_eyes_type to $transformationParts.eldritch.eyes>>
+	<<set _modeloptions.eldritch_mist_type to $transformationParts.eldritch.mist>>
+	<<set _modeloptions.eldritch_tentacle_type to $transformationParts.eldritch.tentacle>>
+	/* 北极星 */
+
+	<!--
+	-	 ██████ ██   ██ ██ ███    ███ ███████ ██████   █████
+	-	██      ██   ██ ██ ████  ████ ██      ██   ██ ██   ██
+	-	██      ███████ ██ ██ ████ ██ █████   ██████  ███████
+	-	██      ██   ██ ██ ██  ██  ██ ██      ██   ██ ██   ██
+	-	 ██████ ██   ██ ██ ██      ██ ███████ ██   ██ ██   ██
+	-->
+
+	<!-- Demon-cat tail -->
+	<<if isPartEnabled(_modeloptions.cat_tail_type) and isPartEnabled(_modeloptions.demon_tail_type) and isChimeraEnabled("demoncat", "tail")>>
+		<<set _modeloptions.demon_tail_type to 'default-cat'>>
+		<<set _modeloptions.demon_tail_layer to "cover">>
+	<</if>>
+	<!-- Demon-harpy wings -->
+	<<if isPartEnabled(_modeloptions.demon_wings_type) and isPartEnabled(_modeloptions.bird_wings_type) and isChimeraEnabled("demonharpy", "wings")>>
+		<<set _modeloptions.bird_wings_type to 'default-demon'>>
+		<<set _modeloptions.demon_wings_type to 'hidden'>>
+	<</if>>
+	<!-- Demon-cow horns -->
+	<<if isPartEnabled(_modeloptions.cow_horns_type) and isPartEnabled(_modeloptions.demon_horns_type) and isChimeraEnabled("demoncow", "horns")>>
+		<<if !['default', 'succubus'].includes(_modeloptions.demon_horns_type)>>
+			<!-- Force default horns if the PC has unsupported horn styles (E.G. Classic) -->
+			<<set _modeloptions.demon_horns_type to 'default'>>
+		<</if>>
+		<<set _modeloptions.cow_horns_type to 'default-demon'>>
+	<</if>>
+
+	<!--
+	-     ██████ ██████   ██████  ████████  ██████ ██   ██
+	-    ██      ██   ██ ██    ██    ██    ██      ██   ██
+	-    ██      ██████  ██    ██    ██    ██      ███████
+	-    ██      ██   ██ ██    ██    ██    ██      ██   ██
+	-     ██████ ██   ██  ██████     ██     ██████ ██   ██
+	-->
+
+	<<set _modeloptions.crotch_visible to true>>
+	<<if $pbdisable is "f">>
+		<<set _modeloptions.pbhair_level = $pblevel>>
+		<<set _modeloptions.pbhair_strip = $pbstrip>>
+		<<set _modeloptions.pbhair_balls = $pblevelballs>>
+	<</if>>
+	<<if $player.penisExist>>
+		<<set _modeloptions.penis_size to Math.clamp($player.penissize, -2, 4)>>
+		<<set _modeloptions.penis to ($player.virginity.penile === true ? "virgin" : "default") >>
+		<<set _modeloptions.balls to $player.ballsExist>>
+		<<set _modeloptions.penis_parasite to $parasite.penis.name>>
+		<<set _modeloptions.penis_condom to $player.condom.type>>
+		<<set _modeloptions.condom_colour to $player.condom.colour>>
+	<</if>>
+	<<if $player.vaginaExist>>
+		<<set _modeloptions.clit_parasite to $parasite.clit.name>>
+	<</if>>
+	<<if _modeloptions.penis_parasite is "parasite" or _modeloptions.clit_parasite is "parasite">>
+		/* Always uses the clit image as a base */
+		<<set _modeloptions.clit_parasite to "parasite">>
+		<<if $player.penisExist and $player.ballsExist and $player.penissize gte -1>>
+			<<set _modeloptions.penis_parasite to "parasite">>
+		<<else>>
+			<<set _modeloptions.penis_parasite to "">>
+		<</if>>
+	<</if>>
+
+	<!-- Dripping Speeds -->
+	<<set $_dripspeeds to ["", "Start", "VerySlow", "Slow", "Fast", "VeryFast"]>>
+
+	<!-- Vagina -->
+	<<set $_liquidamt to Math.clamp(setup.bodyliquid.combined("vagina"), 0, 5)>>
+	<<set _modeloptions.drip_vaginal to $_dripspeeds.select($_liquidamt)>>
+
+	<!-- Anus -->
+	<<set $_liquidamt to Math.clamp(setup.bodyliquid.combined("anus"), 0, 5)>>
+	<<set _modeloptions.drip_anal to $_dripspeeds.select($_liquidamt)>>
+
+	<!-- Mouth -->
+	<<set $_liquidamt to Math.clamp(setup.bodyliquid.combined("mouth"), 0, 5)>>
+	<<set _modeloptions.drip_mouth to $_dripspeeds.select($_liquidamt)>>
+
+	<<if $worn.upper.exposed gte 2 and $worn.under_upper.exposed gte 1>>
+		<<set _chestVisible to true>>
+	<<elseif ($upperwetstage gt 0 or $worn.upper.type.includes("naked")) and ($underupperwetstage gt 0 or $worn.under_upper.type.includes("naked"))>>
+		<<set _chestVisible to true>>
+	<</if>>
+	<<if _chestVisible>>
+		<<set _modeloptions.nipples_parasite to $parasite.nipples.name>>
+		<<set _modeloptions.breasts_parasite to $parasite.breasts.name>>
+	<</if>>
+
+	<!--
+	-    ███████ ██      ██    ██ ██ ██████  ███████
+	-    ██      ██      ██    ██ ██ ██   ██ ██
+	-    █████   ██      ██    ██ ██ ██   ██ ███████
+	-    ██      ██      ██    ██ ██ ██   ██      ██
+	-    ██      ███████  ██████  ██ ██████  ███████
+	-->
+
+	<<script>>
+		let cumsprite = {
+			"chest": [null, "1", "2", "3", "4,5", "4,5"],
+			"face": [null, "1,2", "1,2", "3,4", "3,4", "5"],
+			"feet": [null, null, "2,3", "2,3", "4,5", "4,5"],
+			"leftarm": [null, "1,2,3", "1,2,3", "1,2,3", "4,5", "4,5"],
+			"rightarm": [null, "1,2,3", "1,2,3", "1,2,3", "4,5", "4,5"],
+			"neck": [null, "1,2", "1,2", "3,4", "3,4", "5"],
+			"thigh": [null, "1", "2", "3", "4", "5"],
+			"tummy": [null, "1", "2", "3", "4", "5"]
+		};
+		let bodyparts = ["chest", "face", "feet", "leftarm", "rightarm", "neck", "thigh", "tummy"];
+		bodyparts.forEach(bodypart => {
+			let liquidamt = Math.clamp(setup.bodyliquid.combined(bodypart), 0, 5);
+			T.modeloptions["cum_" + bodypart] = cumsprite[bodypart].select(liquidamt);
+		});
+	<</script>>
+<</widget>>
+
+<!--
+ -     ██████ ██       ██████  ████████ ██   ██ ███████ ███████
+ -    ██      ██      ██    ██    ██    ██   ██ ██      ██
+ -    ██      ██      ██    ██    ██    ███████ █████   ███████
+ -    ██      ██      ██    ██    ██    ██   ██ ██           ██
+ -     ██████ ███████  ██████     ██    ██   ██ ███████ ███████
+ -->
+<!--
+Set model options & filters for player clothes
+-->
+<<widget "modelprepare-player-clothes">>
+	<<if !$worn.upper.type.includes("naked") || !$worn.under_upper.type.includes("naked") || _coverBreastsWithArm>>
+		<<set _modeloptions.breasts to "cleavage">>
+	<<else>>
+		<<set _modeloptions.breasts to "default">>
+	<</if>>
+
+	<<if $worn.under_upper.type.includes("chest_bind")>>
+		<<set _modeloptions.breast_size to 1>>
+	<</if>>
+
+	<<if $worn.lower.exposed gte 2 and $worn.under_lower.exposed gte 1 and !$worn.legs.name.includes("tights")>>
+		<<set _modeloptions.crotch_visible to true>>
+		<<set _modeloptions.crotch_exposed to true>>
+	<<elseif ($lowerwetstage gt 0 or $worn.lower.type.includes("naked")) and ($underlowerwetstage gt 0 or $worn.under_lower.type.includes("naked"))>>
+		<<set _modeloptions.crotch_visible to true>>
+		<<set _modeloptions.crotch_exposed to false>>
+	<<else>>
+		<<set _modeloptions.crotch_visible to false>>
+	<</if>>
+
+	<<set _modeloptions.hood_down to $worn.upper.hoodposition is "down">>
+	<<if ((($worn.over_head.hood is 1 and $worn.over_head.mask_img isnot 1) or ($worn.head.hood is 1 and $worn.head.mask_img isnot 1))) and $worn.upper.hoodposition is "down">>
+		<<set _modeloptions.hair_sides_length to "short">>
+		<<set _modeloptions.hair_fringe_length to "short">>
+	<</if>>
+
+	<<set _modeloptions.alt_position to $worn.upper.altposition is "alt">>
+	<<set _modeloptions.alt_position_neck to $worn.neck.altposition is "alt">>
+
+	<<set _modeloptions.upper_tucked to $upperTucked and !setup.clothes.upper[clothesIndex('upper', $worn.upper)].notuck and $worn.upper.outfitPrimary is undefined>>
+
+	<<twinescript>>
+		let slots = [
+			["upper", $upperwetstage],
+			["over_upper"],
+			["genitals"],
+			["lower", $lowerwetstage],
+			["over_lower"],
+			["under_lower", $underlowerwetstage],
+			["under_upper", $underupperwetstage],
+			["hands"],
+			["head"],
+			["over_head"],
+			["face"],
+			["neck"],
+			["legs"],
+			["feet"],
+		];
+		for (let slotobj of slots) {
+			let slot = slotobj[0];
+			let worn = $worn[slot];
+			switch (slotobj[1]) {
+				case 1: _modeloptions['worn_'+slot+'_alpha'] = 0.9; break;
+				case 2: _modeloptions['worn_'+slot+'_alpha'] = 0.7; break;
+				case 3: _modeloptions['worn_'+slot+'_alpha'] = 0.5; break;
+				default: _modeloptions['worn_'+slot+'_alpha'] = 1.0; break;
+			}
+			_modeloptions['worn_'+slot] = clothesIndex(slot,worn);
+			_modeloptions['worn_'+slot+'_integrity'] = integrityKeyword(worn,slot);
+			_modeloptions['worn_'+slot+'_colour'] = worn.colour;
+			if (worn.colour === 'custom') {
+				/* TODO @aimozg We recalculate custom colour RGB here; in future versions, we should store custom colours in canvasfilter-friendly way */
+				_modeloptions.filters['worn_'+slot+'_custom'] = worn.colourCanvasFilter || getCustomClothesColourCanvasFilter(worn.colourCustom);
+			}
+			_modeloptions['worn_'+slot+'_acc_colour'] = worn.accessory_colour;
+			if (worn.accessory_colour === 'custom') {
+				_modeloptions.filters['worn_'+slot+'_acc_custom'] = worn.accessory_colourCanvasFilter || getCustomClothesColourCanvasFilter(worn.accessory_colourCustom);
+			}
+			if (worn.accessory_layer_under) {
+				_modeloptions.acc_layer_under = worn.accessory_layer_under;
+			}
+		}
+	<</twinescript>>
+
+	<<if Object.keys($modeloptionsOverride).length gte 1>>
+		<<for _m to 0; _m lt Object.keys($modeloptionsOverride).length; _m++>>
+			<<set _modeloptions[Object.keys($modeloptionsOverride)[_m]] to Object.values($modeloptionsOverride)[_m]>>
+		<</for>>
+	<</if>>
+<</widget>>
+
+<<widget "canvas-player-base-body">>
+	<<selectmodel "main">>
+	<<modelprepare-player-body>>
+
+	<!-- Reset covering -->
+	<<set _modeloptions.arm_left to "idle">>
+	<<set _modeloptions.arm_right to "idle">>
+	<<set _modeloptions.angel_wing_left to "idle">>
+	<<set _modeloptions.angel_wing_right to "idle">>
+	<<set _modeloptions.fallen_wing_left to "idle">>
+	<<set _modeloptions.fallen_wing_right to "idle">>
+	<<set _modeloptions.demon_wing_left to "idle">>
+	<<set _modeloptions.demon_wing_right to "idle">>
+	<<set _modeloptions.bird_wing_left to "idle">>
+	<<set _modeloptions.bird_wing_right to "idle">>
+	/* 北极星模组 */
+	<<set _modeloptions.bee_wing_left to "idle">>
+	<<set _modeloptions.bee_wing_right to "idle">>
+	/* 北极星 */
+	<!-- Reset face -->
+	<<set _modeloptions.blink to false>>
+	<<set _modeloptions.eyes_half to false>>
+	<<set _modeloptions.brows to "top">>
+	<<set _modeloptions.mouth to "neutral">>
+	<<set _modeloptions.tears to 0>>
+	<<set _modeloptions.blush to 0>>
+	<!-- Reset effects -->
+	<<set _modeloptions.drip_vaginal to "">>
+	<<set _modeloptions.drip_anal to "">>
+	<<set _modeloptions.drip_mouth to "">>
+
+	<<if $options.neverNudeMenus>>
+		<<set _modeloptions.crotch_visible to false>>
+		<<set _modeloptions.penis to "">>
+		<<if $player.gender_appearance neq "m" or $player.perceived_breastsize gte 3>>
+			<<set _modeloptions.worn_under_upper to 12>>
+			<<set _modeloptions.worn_under_upper_colour to "pale white">>
+		<</if>>
+		<<set _modeloptions.worn_under_lower_colour to "pale white">>
+		<<if $player.gender_appearance is "m">>
+			<<set _modeloptions.worn_under_lower to 4>>
+		<<else>>
+			<<set _modeloptions.worn_under_lower to 1>>
+		<</if>>
+	<</if>>
+	<<if playerHasStrapon()>>
+		<<set _modeloptions.worn_under_lower to $worn.under_lower.index>>
+		<<set _modeloptions.worn_under_lower_colour to ($worn.under_lower.colourCustom ? $worn.under_lower.colourCustom : $worn.under_lower.colour)>>
+	<</if>>
+
+	<<if $options.sidebarRenderer is 'both'>>
+		<<rendermodel 'canvasimg-both'>>
+	<<else>>
+		<<rendermodel>>
+	<</if>>
+<</widget>>
+
+<<widget "canvas-model-override">>
+    <<if _args[0] is "clear">>
+        <<set $modeloptionsOverride to {}>>
+    <<else>>
+        <<set $modeloptionsOverride[_args[0]] to _args[1]>>
+    <</if>>
+<</widget>>

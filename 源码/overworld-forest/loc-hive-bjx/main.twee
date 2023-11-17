@@ -1,0 +1,1203 @@
+:: Hive Entrance 
+
+<<set $outside to 1>><<set $location to "hive">><<effects>>
+<<if $foresthunt gte 1 and $edenforesthunt is 1>>
+	<<set $rng to random(1, 60)>>
+	<<if $rng lte 20>>
+	<span class="red">你正在被追捕。你看到子弹壳散落在地上。</span>
+	<br><br>
+	<<elseif $rng lte 40>>
+	<span class="red">你正在被追捕。你看到地上有靴子的脚印。</span>
+	<br><br>
+	<<else>>
+	<span class="red"> 你正在被追捕。你听到远处传来枪声。</span>
+	<br><br>
+	<</if>>
+<<elseif $foresthunt gte 1 and $blackwolfhunt is 1>>
+	<<set $rng to random(1, 60)>>
+	<<if $rng lte 20>>
+	<span class="red">你正在被追猎，你留意到树枝上挂着一撮狼毛。</span>
+	<br><br>
+	<<elseif $rng lte 40>>
+	<span class="red">你正在被追猎，你看到地上有狼活动的痕迹。</span>
+	<br><br>
+	<<else>>
+	<span class="red">你正在被追猎。你听到远处传来一声咆哮。</span>
+	<br><br>
+	<</if>>
+<</if>>
+<<if $arousal gte 10000>>
+	<<orgasmforest>>
+<</if>>
+<<if $stress gte 10000>>
+	<<passoutforest>>
+<<elseif $foresthunt gte 10>>
+	<<foresthunt>>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	你面前是一个巨大的蜂巢，由两只看起来就很强壮的黄蜂守卫。 
+	<br><br>
+	<<if Time.hour lte 9>>
+		<<if $bjob is "Worker">>
+			你还看见一群工蜂准备出去采蜜。
+			<br><br>
+		<<elseif $bjob is "Hunter">>
+			你还看见一群猎手准备出去狩猎。
+			<br><br>
+		<</if>>
+	<</if>>
+	<<if Time.dayState isnot "night" and !random(3)>>
+		<<link [[观察|Hive Observe]]>><</link>>
+		<br>
+	<</if>>
+	<<link [[接近 (0:02)|Hive Approach]]>><<pass 2>><</link>>
+	<br>
+	<<if Time.hour lte 10 and Time.hour gte 6>>
+		<<if $bjob is "Worker">>
+			<<link [[工作|Hive Pollen Collection]]>><</link>>
+			<br>
+		<<elseif $bjob is "Hunter">>
+			<<link [[狩猎|Hive Animal Hunting]]>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+	<<link [[森林 (0:20)|Forest]]>><<pass 20>><</link>>
+	<br>
+<</if>>
+
+:: Hive Approach
+
+<<set $outside to 1>><<set $location to "hive">><<effects>><<set $hivestage to 0>>
+<<if $stress gte 10000 and $hivemember is 1>>
+	<<passouthive>>
+<<elseif $stress gte 10000 and $hivemember is 0>>
+	<<passoutforest>>
+<<else>>
+	<<if $hivemember is 1>>
+		守卫认出了你，没有阻止你进去。 
+		<br><br>
+		<<link [[进入蜂巢|Hive Corridor]]>><</link>>
+		<br>
+		<<link [[离开|Hive Entrance]]>><</link>>
+		<br>
+	<<elseif $bee gte 6>>
+		"小蜂崽子，停下。"它们嗅了嗅你，若有所思。"你闻起来不像是其它蜂巢的，你是野生的？"
+		<br><br>
+		<<link [[说你是野生的|Hive Entrance Accepted]]>><</link>>
+		<br>
+		<<link [[说你是来自其它蜂巢的|Hive Entrance Rejected]]>><</link>>
+		<br>
+	<<else>>
+		<<if ($monsterchance gte random(1, 100) and ($hallucinations gte 1 or $monsterhallucinations is "f")) or ($bestialitydisable is "t")>>
+			<<beastNEWinit 2 wasp>>
+			"人类止步。"它们发出威胁的嗡鸣。 
+		<<else>>
+			它们发出愤怒的嗡鸣，把你赶出蜂巢。 
+		<</if>>
+		<br><br>
+		<<link [[继续|Hive Entrance]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Hive Corridor
+
+<<set $outside to 0>><<set $location to "hive">><<effects>><<set $hivestage to 1>>
+<<if $foresthunt gte 1>>
+	<span class="lblue">你在蜂巢里很安全，无论什么都伤害不到你。</span>
+	<br><br>
+	<<set $foresthunt to 0>>
+<</if>>
+<<if $stress gte 10000>>
+	<<passouthive>>
+<<elseif $NPCName[$NPCNameList.indexOf("泰勒")].love gte $npclovehigh and $TaylorFreed is 0>>
+    你刚来到走廊，突然一名护卫走近并拦住了你。
+    <br><br>
+    <<link [[继续|Throne Vouch 1]]>><</link>>
+    <br>
+<<else>>
+	<<if Time.dayState is "dawn">>
+		<<if random(1)>>
+			<<beastNEWinit 5 bee>>
+		<<else>>
+			<<beastNEWinit 5 wasp>>
+		<</if>>
+		走廊里熙熙攘攘，<<beastsplural>>正赶着去工作。
+	<<elseif Time.dayState is "day">>
+		走廊里沉默始终，所有成员都各就其位。
+	<<elseif Time.dayState is "dusk">>
+		<<if random(1)>>
+			<<beastNEWinit 5 bee>>
+		<<else>>
+			<<beastNEWinit 5 wasp>>
+		<</if>>
+		走廊里开始嘈杂，大多数<<beastsplural>>都结束了手头的工作，开始谈天说地。
+	<<elseif Time.dayState is "night">>
+		走廊里沉默始终，大家不是在睡觉就是在轻手轻脚。
+	<<else>>
+		你正站在蜂巢的走廊里。 
+	<</if>>
+	<br><br>
+
+	<<if $TaylorSeen is 0 and $TaylorMissing is 0>>
+		你在走廊上看见警卫把一个小孩带进牢房。
+		<br><br>
+		<<set $TaylorSeen to 1>><<set $TaylorMissing to 1>>
+	<</if>>
+	
+	<<link [[营房|Hive Barracks]]>><<endevent>><</link>>
+	<br>
+	<<link [[牢房|Hive Cell Outside]]>><<endevent>><</link>>
+	<br>
+	<<link [[御室|Hive Throne Room]]>><<endevent>><</link>>
+	<br>
+	<<link [[离开蜂巢|Hive Approach]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Hive Barracks
+
+<<set $outside to 0>><<set $location to "hive">><<effects>><<set $hivestage to 2>>
+<<roomoptions>>
+你在一个大房间里，墙上遍布着用于睡觉的六边形孔。 
+<<if Time.dayState is "dusk">>
+	房间里熙熙攘攘，蜜蜂们正准备为明天的辛劳养精蓄锐。
+<</if>>
+<br><br>
+
+<<if $unbind is 1>>
+	<<set $unbind to 0>>
+	你在桌子上摩擦束缚你的绑带。这需要水磨工夫，但最终它断裂开来。
+	<br><br>
+<</if>>
+<<if $stress gte 10000>>
+	<<passouthive>>
+<<else>>
+	<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
+		<<link [[解开你的束缚 (0:10)|Hive Barracks]]>><<set $unbind to 1>><<pass 10>><<unbind>><</link>>
+		<br>
+	<</if>>
+    <<if $arousal gte 2000 and !$worn.genitals.type.includes("chastity") and $homemasturbationtest is 1>>
+	    <<link [[自慰 (0:05)|Hive Masturbation]]>><<pass 5>><<set $masturbationstart to 1>><</link>>
+		<br>
+    <</if>>
+	<<if Time.dayState is "dusk">>
+		<<link [[放松 (0:30)|Hive Barracks Relax]]>><<pass 30>><<endevent>><</link>>
+		<br>
+	<</if>>
+	<<link [[进入你的舱室|Hive Pod]]>><</link>>
+	<br>
+    <<link [[走廊|Hive Corridor]]>><<endevent>><</link>>
+    <br>
+    <<link [[设置|Hive Settings]]>><<endevent>><</link>>
+    <br>
+    <<attitudesControlCheck>>
+    <<if $attitudesControl.showGoldLink is true>>
+	    <span class="goldLink"><<link [[态度|Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>  </span><span class="red">!!</span>
+    <<else>>
+	    <<link [[态度|Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+    <</if>>
+<</if>>
+
+:: Hive Settings 
+
+<<set $settingsExitPassage to "Hive Barracks">>
+<<settings>>
+
+:: Hive Barracks Relax
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+<<cleareventpool>>
+<<addinlineevent>>
+	<<if random(1)>>
+		<<beastNEWinit 5 bee>>
+	<<else>>
+		<<beastNEWinit 5 wasp>>
+	<</if>>
+	你和<<beastsplural>>放松地闲聊起来。你聊得很开心，感觉轻松了不少。<<lstress>><<stress -5>>
+<</addinlineevent>>
+<<addinlineevent>>
+	<<if random(1)>>
+		<<beastNEWinit 5 bee>>
+	<<else>>
+		<<beastNEWinit 5 wasp>>
+	<</if>>
+	你和一些<<beastsplural>>坐在一起聊了会。它们给了你一些蜂蜜，口感不错！<<ltiredness>><<lpain>><<pain -5>><<tiredness -5>>
+<</addinlineevent>>
+<<addinlineevent>>
+	<<if random(1)>>
+		<<beastNEWinit 5 bee>>
+	<<else>>
+		<<beastNEWinit 5 wasp>>
+	<</if>>
+	你试图与<<beastsplural>>交谈但无法理解它们在说些什么，你有点困惑。
+<</addinlineevent>>
+<<addinlineevent>>
+	<<if random(1)>>
+		<<beastNEWinit 5 bee>>
+	<<else>>
+		<<beastNEWinit 5 wasp>>
+	<</if>>
+	你试图与<<beastsplural>>交谈但它们精疲力尽，不想再说话了。
+<</addinlineevent>>
+<<runeventpool>>
+<br><br>
+<<link [[继续|Hive Barracks]]>><<endevent>><</link>>
+
+
+:: Hive Pod
+
+<<effects>>
+你挤进舱室，感受着蜡质墙壁紧贴着你的皮肤。 
+<br><br>
+<<if $sleeptrouble is 1 and $controlled is 0>>
+	<<link [[睡10小时|Hive Barracks Sleep]]>><<set $sleephour to 10>><<incrementautosave>><</link>> (<<timeAfterXHours 10>>)<<ltiredness>>
+	<br>
+	<<link [[睡9小时|Hive Barracks Sleep]]>><<set $sleephour to 9>><<incrementautosave>><</link>> (<<timeAfterXHours 9>>)<<ltiredness>>
+	<br>
+<</if>>
+<<link [[睡8小时|Hive Barracks Sleep]]>><<set $sleephour to 8>><<incrementautosave>><</link>> (<<timeAfterXHours 8>>)<<ltiredness>>
+<br>
+<<link [[睡7小时|Hive Barracks Sleep]]>><<set $sleephour to 7>><<incrementautosave>><</link>> (<<timeAfterXHours 7>>)<<ltiredness>>
+<br>
+<<link [[睡6小时|Hive Barracks Sleep]]>><<set $sleephour to 6>><<incrementautosave>><</link>> (<<timeAfterXHours 6>>)<<ltiredness>>
+<br>
+<<link [[睡5小时|Hive Barracks Sleep]]>><<set $sleephour to 5>><<incrementautosave>><</link>> (<<timeAfterXHours 5>>)<<ltiredness>>
+<br>
+<<link [[睡4小时|Hive Barracks Sleep]]>><<set $sleephour to 4>><<incrementautosave>><</link>> (<<timeAfterXHours 4>>)<<ltiredness>>
+<br>
+<<link [[睡3小时|Hive Barracks Sleep]]>><<set $sleephour to 3>><<incrementautosave>><</link>> (<<timeAfterXHours 3>>)<<ltiredness>>
+<br>
+<<link [[睡2小时|Hive Barracks Sleep]]>><<set $sleephour to 2>><<incrementautosave>><</link>> (<<timeAfterXHours 2>>)<<ltiredness>>
+<br>
+<<link [[睡1小时|Hive Barracks Sleep]]>><<set $sleephour to 1>><<incrementautosave>><</link>> (<<timeAfterXHours 1>>)<<ltiredness>>
+<br>
+<<link [[只管去睡|Hive Barracks Sleep]]>><<set $sleephour to -1>><<incrementautosave>><</link>> (??:??)<<ltiredness>>
+<br><br>
+<<link [[爬出舱室|Hive Barracks]]>><<endevent>><</link>>
+<br><br>
+
+:: Hive Barracks Sleep 
+
+<<set $hiveslept to 1>>
+<<set _autosavehere to true>>
+<<sleep>><<effects>>
+<<sleepeffects>>
+<<if $nightmares gte 1 and $controlled is 0>>
+	你梦见你被一些黑暗可怖的东西追猎。
+<<else>>
+	<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
+		你的睡眠被肮脏的梦境所扰乱。
+		<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+		<<arousal `100 * $sleepHoursTotal`>>
+		<<if $arousal gte $arousalmax>>
+			你把自己推向了顶点。
+			<<orgasm>><<set _orgasm to true>>
+		<</if>>
+	<<else>>
+		你睡的很安稳。
+	<</if>>
+<</if>>
+<br><br>
+<<sleepeffects>>
+<br><br>
+<<link [[离开舱室|Hive Barracks]]>><</link>>
+
+:: Hive Throne Room
+
+<<set $outside to 0>><<set $location to "hive">><<effects>><<set $hivestage to 4>>
+<<if $stress gte 10000>>
+	<<passouthive>>
+<<else>>
+	你试着打开门，才想起来它是被锁上的。
+	<br><br>
+	<<link [[走廊|Hive Corridor]]>><<endevent>><</link>>
+<</if>>
+
+:: Hive Cell Outside
+
+<<set $outside to 0>><<set $location to "hive">><<effects>><<set $hivestage to 3>>
+<<if $stress gte 10000>>
+	<<passouthive>>
+<<else>>
+	<<if ($TaylorArrested is 1 or $TaylorMissing is 1) and $TaylorFreed is 0>>
+		<<npc "泰勒">><<person1>>
+		一排牢房排列在蜂巢的后壁上。其中一间被一名人类占据。
+	<<else>>
+		一排牢房排列在蜂巢的后壁上。尽管目前所有的牢房都是空的，但仍然有警卫驻扎在这里。 
+	<</if>>
+	<br><br>
+	<<if ($TaylorArrested is 1 or $TaylorMissing is 1) and $TaylorIntroduction is undefined and $TaylorFreed is 0>>
+		<<link [[和囚犯说话 (0:30)|Hive Taylor Introduction]]>><<npcincr "泰勒" love 1>><<pass 30>><</link>><<glove>>
+		<br>
+	<<elseif ($TaylorArrested is 1 or $TaylorMissing is 1) and $TaylorFreed is 0>>
+		<<link [[和泰勒说话 (0:30)|Hive Taylor Hangout]]>><<npcincr "泰勒" love 1>><<pass 30>><</link>><<glove>>
+		<br>
+	<</if>>
+	<<link [[走廊|Hive Corridor]]>><</link>>
+	<br>
+<</if>>
+
+:: Hive Cell
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+你看到自己在一个潮湿的蜂窝状监狱中。窗栏比你想象的要坚固，但你感觉后墙似乎有一些破损。
+<br><br>
+
+<<link [[等待 (0:15)|Hive Cell Wait]]>><<pass 15>><</link>>
+<br>
+<<link [[睡觉|Hive Cell Sleep 1]]>><</link>>
+<br>
+<<if $hivecelltear gte 13>>
+	<<link [[脱身|Hive Cell Hole]]>><</link>>
+	<br>
+<<elseif $hivecelltear gte 12 and $physiquesize lte 12000>>
+	<<link [[脱身|Hive Cell Hole]]>><</link>><<small_text>>
+	<br>
+<<elseif $hivecelltear gte 11 and $physiquesize lte 10000>>
+	<<link [[脱身|Hive Cell Hole]]>><</link>><<small_text>>
+	<br>
+<<elseif $hivecelltear gte 10 and $physiquesize lte 6000>>
+	<<link [[脱身|Hive Cell Hole]]>><</link>><<small_text>>
+	<br>
+<<elseif $hivecelltear gte 1>>
+	<<link [[破坏牢房墙壁 (1:00)|Hive Cell Wall Tear]]>><<pass 1 hour>><<set $hivecelltear += 1>><</link>>
+	<br>
+<<else>>
+	<<link [[观察破损墙壁|Hive Cell Wall Examine]]>><<set $hivecelltear to 1>><</link>>
+	<br>
+<</if>>
+
+:: Hive Cell Wall Examine
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+你调查后壁，发现那边的蜂蜡有些酥脆，甚至有些开裂，只要继续花点力气似乎能将其破坏。
+<br><br>
+<<link [[破坏牢房墙壁 (1:00)|Hive Cell Wall Tear]]>><<pass 1 hour>><<set $hivecelltear += 1>><</link>>
+<br>
+<<link [[继续|Hive Cell]]>><</link>>
+
+:: Hive Cell Wall Tear
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+你用力撕扯墙壁的裂口，
+<<if $hivewalltear lte 13 and $hivewalltear gte 6>>
+    感到阵阵微风从裂口中吹来，
+<</if>>
+<<if $hivewalltear gte 13>>
+	直到洞大到可以挤过。 
+<<elseif $hivewalltear gte 12 and $physiquesize lte 12000>>
+	直到洞大到可以挤过。 
+<<elseif $hivewalltear gte 11 and $physiquesize lte 10000>>
+	直到洞大到可以挤过。 
+<<elseif $hivewalltear gte 10 and $physiquesize lte 6000>>
+	直到洞大到可以挤过。 
+<<elseif $hivewalltear gte 9>>
+	这个洞越来越大，几乎大到足以通过了。 
+<<elseif $hivewalltear gte 6>>
+	已经出现了一个连通外部的小孔。 
+<<elseif $hivewalltear gte 4>>
+	你拽下了它的一小块。 
+<<else>>
+	它看起来有点能被扒下来了。 
+<</if>>
+<br><br>
+<<if $hivewalltear gte 13>>
+	<<link [[挤过|Hive Cell Hole]]>><</link>>
+	<br>
+	<<link [[返回|Hive Cell]]>><</link>>
+	<br>
+<<elseif $hivewalltear gte 12 and $physiquesize lte 12000>>
+	<<link [[挤过|Hive Cell Hole]]>><</link>>
+	<br>
+	<<link [[返回|Hive Cell]]>><</link>>
+	<br>
+<<elseif $hivewalltear gte 11 and $physiquesize lte 10000>>
+	<<link [[挤过|Hive Cell Hole]]>><</link>>
+	<br>
+	<<link [[返回|Hive Cell]]>><</link>>
+	<br>
+<<elseif $hivewalltear gte 10 and $physiquesize lte 6000>>
+	<<link [[挤过|Hive Cell Hole]]>><</link>>
+	<br>
+	<<link [[返回|Hive Cell]]>><</link>>
+	<br>
+<<else>>
+    <<link [[返回|Hive Cell]]>><</link>>
+    <br>
+<</if>>
+
+:: Hive Cell Hole
+
+<<set $outside to 1>><<set $location to "forest">><<effects>>
+你挤进洞里，努力逃到了蜂巢外去。 
+<br><br>
+<<set $beeprisoner to 0>>
+<<link [[继续|Forest]]>><<endevent>><</link>>
+
+:: Hive Cell Sleep 1
+
+<<effects>>
+你蜷缩在牢房的地面上，试图让自己稍微舒服点。 
+<br><br>
+<<if $sleeptrouble is 1 and $controlled is 0>>
+	<<link [[睡10小时|Hive Cell Sleep 2]]>><<set $sleephour to 10>><<incrementautosave>><</link>> (<<timeAfterXHours 10>>)<<ltiredness>>
+	<br>
+	<<link [[睡9小时|Hive Cell Sleep 2]]>><<set $sleephour to 9>><<incrementautosave>><</link>> (<<timeAfterXHours 9>>)<<ltiredness>>
+	<br>
+<</if>>
+<<link [[睡8小时|Hive Cell Sleep 2]]>><<set $sleephour to 8>><<incrementautosave>><</link>> (<<timeAfterXHours 8>>)<<ltiredness>>
+<br>
+<<link [[睡7小时|Hive Cell Sleep 2]]>><<set $sleephour to 7>><<incrementautosave>><</link>> (<<timeAfterXHours 7>>)<<ltiredness>>
+<br>
+<<link [[睡6小时|Hive Cell Sleep 2]]>><<set $sleephour to 6>><<incrementautosave>><</link>> (<<timeAfterXHours 6>>)<<ltiredness>>
+<br>
+<<link [[睡5小时|Hive Cell Sleep 2]]>><<set $sleephour to 5>><<incrementautosave>><</link>> (<<timeAfterXHours 5>>)<<ltiredness>>
+<br>
+<<link [[睡4小时|Hive Cell Sleep 2]]>><<set $sleephour to 4>><<incrementautosave>><</link>> (<<timeAfterXHours 4>>)<<ltiredness>>
+<br>
+<<link [[睡3小时|Hive Cell Sleep 2]]>><<set $sleephour to 3>><<incrementautosave>><</link>> (<<timeAfterXHours 3>>)<<ltiredness>>
+<br>
+<<link [[睡2小时|Hive Cell Sleep 2]]>><<set $sleephour to 2>><<incrementautosave>><</link>> (<<timeAfterXHours 2>>)<<ltiredness>>
+<br>
+<<link [[睡1小时|Hive Cell Sleep 2]]>><<set $sleephour to 1>><<incrementautosave>><</link>> (<<timeAfterXHours 1>>)<<ltiredness>>
+<br>
+<<link [[只管去睡|Hive Cell Sleep 2]]>><<set $sleephour to -1>><<incrementautosave>><</link>> (??:??)<<ltiredness>>
+<br><br>
+<<link [[起床|Hive Cell]]>><<endevent>><</link>>
+
+:: Hive Cell Sleep 2
+
+<<run Save.autosave.save(null, {"saveId":$saveId, "saveName":$saveName})>>
+<<if _preventUpdate is undefined>>
+	<<run setSaveDetail("autosave",{"saveId":$saveId,"saveName":$saveName})>>
+<</if>>
+<<sleep>><<effects>>
+<<if $nightmares gte 1 and $controlled is 0>>
+	你梦见你被一些黑暗可怖的东西追猎。
+<<else>>
+	<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte 9000>>
+		你的睡眠被肮脏的梦境所扰乱。
+		<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+		<<arousal `100 * $sleepHoursTotal`>>
+		<<if $arousal gte $arousalmax>>
+			你把自己推向了顶点。
+			<<orgasm>><<set _orgasm to true>>
+		<</if>>
+	<<else>>
+		你睡的很安稳。
+	<</if>>
+<</if>>
+<br><br>
+<<sleepeffects>>
+<br><br>
+<<link [[起床|Hive Cell]]>><</link>>
+
+:: Hive Cell Wait
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+<<cleareventpool>>
+<<addinlineevent "hivecell_nothing">>
+	<<if $bee gte 6>>
+		"起来了。"一群护卫靠近了你的牢房。蜂后想见你。
+		<br><br>
+		<<link [[继续|Throne Job Assignment]]>><</link>>
+	<<else>>
+        时间，随着日晷之影流逝着，什么事都没有发生。
+		<br><br>
+		<<link [[继续|Hive Cell]]>><<endevent>><</link>>
+	<</if>>
+<</addinlineevent>>
+<<addinlineevent "hivecell_offerhoney" 0.5>>
+	<<beastNEWinit 1 bee>>
+	一只<<beasttype>>停下来望向你。"猎人们怎么这么对你，肚子饿了么，你想来点蜂蜜吗？"
+	<br><br>
+	<<link [[接受|Cell Honey Accept]]>><</link>>
+	<br>
+	<<link [[拒绝|Cell Honey Refuse]]>><</link>>
+<</addinlineevent>>
+<<addinlineevent "hivecell_offersex" 0.5>>
+	<<beastNEWinit 1 bee>>
+	一只<<beasttype>>走向你。"我很抱歉猎人们这么对你，你想和我玩一玩，来放松一下吗？"
+	<br><br>
+	<<link [[接受|Cell Sex Accept]]>><</link>>
+	<br>
+	<<link [[拒绝|Cell Sex Refuse]]>><</link>>
+<</addinlineevent>>
+<<runeventpool>>
+
+:: Cell Honey Accept
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+"诺，但是别告诉别人。"<<bhe>>匆匆忙忙地飞走了。你看着你手里圆圆的金色小球，试着把它放到嘴里，甜甜的。<<ltiredness>><<lpain>><<pain -5>><<tiredness -5>><<transform bee 1>>
+<br><br>
+<<link [[继续|Hive Cell]]>><<endevent>><</link>>
+
+:: Cell Honey Refuse
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+"好吧，随你便。"<<bHe>>耸耸肩，离开了。
+<br><br>
+<<link [[继续|Hive Cell]]>><<endevent>><</link>>
+
+:: Cell Sex Accept
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+"真的吗？太好了。"<<bHe>>打开门走了进来，"我会让你好好享受的。"
+<br><br>
+<<link [[继续|Cell Bee Sex]]>><<transform bee 1>><<set $sexstart to 1>><</link>>
+
+:: Cell Sex Refuse
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+"好吧，真可惜。"<<bHe>>耸耸肩，离开了。
+<br><br>
+<<link [[继续|Hive Cell]]>><<endevent>><</link>>
+
+:: Cell Bee Sex
+
+<<effects>>
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<set $enemytrust += 100>>
+<</if>>
+<<effects>>
+<<effectsman>><<man>>
+<<stateman>>
+<<actionsman>>
+<<if $finish is 1>>
+	<span id="next"><<link [[继续|Cell Bee Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[继续|Cell Bee Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[继续|Cell Bee Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Cell Bee Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Cell Bee Sex Finish 
+
+<<set $outside to 0>><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	"你的滋味真不错哇。"<<bHe>>说着走出牢房，把门再次锁上。"也许下次我们可以再来一次。"
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Cell]]>><<endevent>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	<<bHe>>躺在地板上不省人事，你急忙走出牢房，沿着一条长长的走廊奔跑，朝着出口冲去。 
+	<br><br>
+	守卫们措手不及，你一路跑回了森林。
+	<br><br>
+	<<set $beeprisoner to 0>>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Forest]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	"你疯了？难怪你会被关进去。"<<bHe>>吐了口唾沫走远了。
+	<br><br>
+	<<tearful>>你重新站了起来。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Cell]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Throne Job Assignment
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+你走在一条长长的六角形走廊上，身后跟着两个护卫。最终，在一扇大门前停了下来，护卫摆弄着他的钥匙，插入门中转动。 
+<br><br>
+你听到咔哒一声，护卫们贴在门上，用尽全身力量慢慢推开大门。房间很大，两旁摆满了奢侈品，中间是两个大王座。 
+<br><br>
+左边的一个是一只黄蜂女王，看起来强而有力。她肌肉发达，可以在徒手格斗中把你认识的大多数人打致跪倒在地。 
+<br><br>
+右边坐着另一个蜂后，她的尾巴比你见过的大多数其它黄蜂和蜜蜂都要长得多。她看起来很温柔，还很优雅，你感觉自己被迷住了。 
+<br><br>
+你走近两人，感到空气变得沉重，就像它们的气场让空气变得凝重。
+<br><br>
+
+<<if $beeprisoner is 1>>
+	"很有意思。"黄蜂女王的身子前倾，"在我统治的这些年里，我从未见过人类变成蜜蜂。但不能因此就容忍你干扰我们的狩猎。不过你与另一个蜂巢无关，所以你会被释放。" 
+	<br><br>
+	她想了一会儿。"我们总是需要更多的猎人，或者你愿意，也可以加入采蜜者。"
+	<br><br>
+<<else>>
+	"哦，欢迎。"蜂后笑盈盈地说道。你有点吃惊，压倒性的气场和善良开朗的个性出现在同一个生物的身上。 
+	<br><br>
+	"我希望护卫们没对你太糟糕，虽说安全起见这是值得的。不管怎么说，欢迎来到我们的蜂巢。既然你是新来的，那就给你安排一份工作吧，现在我们总是需要更多的采蜜者，但如果你愿意，也可以成为一名猎人。"
+	<br><br>
+<</if>>
+
+<<link [[选择加入猎杀队|Throne Hunter Job]]>><</link>>
+<br>
+<<link [[成为一名采蜜者|Throne Worker Job]]>><</link>>
+<br>
+
+:: Throne Hunter Job
+
+<<set $outside to 0>><<set $location to "hive">><<effects>><<set $bjob to "Hunter">>
+<<if $beeprisoner is 1>>
+	"很好，当你还清你的罪行时，我们还有其它赏赐。记住猎人每天早上在蜂巢的前门集合。现在，护卫！" 
+	<br><br>
+	她拍拍手，两个护卫走上前来抓住你，把你拉出房间。
+	<br><br>
+<<else>>
+	"好吧，我知道了。"她说道，"猎人们每天早上会在前门集合，记住不要迟到哦。"
+	<br><br>
+<</if>>
+<<set $hivemember to 1>>
+你被带到了御室外面。
+<br><br>
+<<link [[继续|Hive Corridor]]>><<endevent>><</link>>
+
+:: Throne Worker Job
+
+<<set $outside to 0>><<set $location to "hive">><<effects>><<set $bjob to "Worker">>
+<<if $beeprisoner is 1>>
+	"好吧，当你还清你的罪行时，我们还有其它赏赐。采蜜者每天早上在蜂巢的前门集合。现在，护卫！" 
+	<br><br>
+	她拍拍手，两个护卫走上前来抓住你，把你拉出房间。
+	<br><br>
+<<else>>
+	"很好，"她说道。"采蜜者每天早上会在前门集合，很高兴你会选择如此，祝你生活愉快。"
+	<br><br>
+<</if>>
+<<set $hivemember to 1>>
+你被带到了御室外面。
+<br><br>
+<<link [[继续|Hive Corridor]]>><<endevent>><</link>>
+
+:: Hive Pollen Collection
+
+<<set $outside to 1>><<set $location to "forest">><<effects>>
+<<beastNEWinit 5 bee>>
+你遇到了一小群<<beastsplural>>，然后开始为蜂巢收集花粉。
+<br><br>
+<<cleareventpool>>
+<<addinlineevent "hive_pollen_collection_1">>
+	你跟着其它<<beastsplural>>来到树林里的一大片空地，那里开满了鲜艳、多彩、美丽的花朵。你和其他<<beastsplural>>开始收集花粉，你收集了很多花蜜并且提前返回蜂巢。 
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><<pass 180>><</link>>
+<</addinlineevent>>
+<<addinlineevent "hive_pollen_collection_2">>
+	<<beastNEWinit 5 bee>>
+	你跟着<<beastsplural>>来到树林里的一大片空地，那里开满了鲜艳、多彩、美丽的花朵。其他的<<beastsplural>>开始采蜜，但你听到了一种奇怪的声音。
+	<br><br>
+	<<endevent>><<beastNEWinit 1 wolf>>你环顾四周，发现一只大<<beasttype>>正在暗处虎视眈眈。
+	<br><br>
+	<<link [[献身|Hive Pollen Collection 2 Allow]]>><<set $sexstart to 1>><</link>><<deviant2>>
+	<br>
+	<<link [[对抗|Hive Pollen Collection 2 Resist]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</addinlineevent>>
+<<addinlineevent "hive_pollen_collection_3">>
+	你发现一朵大花充满了花粉，和今天的份额相比绰绰有余。你很快收集了尽可能多的花蜜并返回蜂巢。
+	<br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><<pass 60>><</link>>
+<</addinlineevent>>
+<<addinlineevent "hive_pollen_collection_4" 0.2>>
+	<<beastNEWinit 2 bee>>
+	离开时，你被一名警卫拦住了。<<bHe>>告诉你有个清洁工在空中劈叉时受了伤并且有人需要接替<<bhis 2>>的工作。 
+	<br>
+	<<link [[同意|Hive Pollen Collection Cleaner Agree]]>><</link>>
+	<br>
+	<<link [[拒绝|Hive Pollen Collection Refuse]]>><</link>>
+<</addinlineevent>>
+<<addinlineevent "hive_pollen_collection_5" 0.2>>
+	<<beastNEWinit 2 bee>>
+	离开时，你被一名警卫拦住了。<<bHe>>告诉你有个护士飞歪撞墙受了伤，需要有人接替<<bhis 2>>的工作。 
+	<br>
+	<<link [[同意|Hive Pollen Collection Nurse Agree]]>><</link>>
+	<br>
+	<<link [[拒绝|Hive Pollen Collection Refuse]]>><</link>>
+<</addinlineevent>>
+<<runeventpool>>
+
+:: Hive Pollen Collection 2 Allow
+
+<<set $outside to 1>><<set $location to "forest">><<effects>>
+你趴在地上，摆出交配姿势。
+<<deviancy2>>
+<<beasttype>>朝你走了过来，嗅了嗅。
+<<if $monster is 1>>
+	"好奇。好闻。"
+<</if>>
+<<bHe>>顺势骑上了你。
+<br><br>
+<<link [[继续|Hive Pollen Collection 2 Sex]]>><<set $sexstart to 1>><</link>>
+
+:: Hive Pollen Collection 2 Sex
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<set $NPCList[0].stance to "top">>
+	<<set $enemytrust += 20>>
+	<<deviancy2>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<beast $enemyno>>
+<<stateman>>
+<<actionsman>>
+
+<<if $finish is 1>>
+	<span id="next"><<link [[继续|Hive Pollen Collection 2 Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[继续|Hive Pollen Collection 2 Sex Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[继续|Hive Pollen Collection 2 Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Hive Pollen Collection 2 Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Hive Pollen Collection 2 Sex Finish
+
+<<set $outside to 1>><<set $location to "forest">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<beasttype>>匆忙跑开，只留下筋疲力尽的你在原地。
+	<<if $monster is 1>>
+		"好味。"
+	<</if>>
+	<<wolfpacktrust>>
+	<br><br>
+	你爬起身来，重新开始采集花蜜，由于耽搁了时间，你回到蜂巢很晚。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Entrance]]>><<set $eventskip to 1>><<pass 360>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	<<beasttype>>嘶吼着跑开了。
+	<<if $monster is 1>>
+		"好强！"
+	<</if>>
+	<br><br>
+	<<tearful>>你爬起身来，重新开始采集花蜜，由于没有了干扰，很快就完成收集，早早地回到了蜂巢。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Entrance]]>><<set $eventskip to 1>><<pass 180>><</link>>
+	<br>
+<<else>>
+	<<beasttype>>转身离开，在树林中乱晃。
+	<br><br>
+	<<tearful>>你爬起身来，重新开始采集花蜜，由于没有了干扰，很快就完成收集，早早地回到了蜂巢。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Entrance]]>><<set $eventskip to 1>><<pass 180>><</link>>
+	<br>
+<</if>>
+
+:: Hive Pollen Collection 2 Resist
+
+<<if $molestationstart is 1>>
+    <<set $molestationstart to 0>>
+    <<controlloss>>
+    <<violence 1>>
+    <<neutral 1>>
+    <<molested>>
+	<<beastCombatInit>>
+    <<set $enemytrust -= 40>>
+<</if>>
+<<effects>>
+<<effectsman>>
+<<beast $enemyno>>
+<<stateman>>
+<<actionsman>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<span id="next"><<link [[继续|Hive Pollen Collection 2 Resist Finish]]>><</link>></span><<nexttext>>
+<<elseif $enemyhealth lte 0>>
+	<span id="next"><<link [[继续|Hive Pollen Collection 2 Resist Finish]]>><</link>></span><<nexttext>>
+<<elseif $rescue is 1 and $alarm is 1>>
+	<span id="next"><<link [[继续|Hive Pollen Collection 2 Resist Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Hive Pollen Collection 2 Resist]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Hive Pollen Collection 2 Resist Finish
+
+<<set $outside to 1>><<set $location to "forest">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<tearful>>你爬起身来，重新开始采集花蜜，由于耽搁了时间，你回到蜂巢很晚。
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Entrance]]>><<set $eventskip to 1>><<pass 360>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	<<beasttype>>嘶吼着跑开了。
+	<br><br>
+	<<tearful>>你爬起身来，重新开始采集花蜜，由于没有了干扰，很快就完成收集，早早地回到了蜂巢。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[继续|Hive Entrance]]>><<set $eventskip to 1>><<pass 180>><</link>>
+	<br>
+<</if>>
+
+:: Hive Pollen Collection Cleaner Agree
+
+<<set $outside to 0>><<set $location to "hive">><<effects>>
+"我很乐意。"你点了点头，"好的，这边请"<<bHe>>带你到达营房。"你的工作是确保这些舱室在猎人和采蜜者返回时是干净的。"<<bHe>>转身离开房间，留下你和其他清洁工。你环顾四周，看到它们开始把舱室舔干净。
+<br><br>
+<<link [[开舔|Hive Pollen Collection Licking End]]>><<endevent>><</link>><<promiscuous3>>
+<br>
+<<link [[找一块蜡清洁|Hive Pollen Collection Wax End]]>><<endevent>><</link>>
+
+:: Hive Pollen Collection Licking End
+
+你学着其它清洁工，开始舔舱室，不久你就能看出舱室明显干净很多。你们完成了一天的工作，在剩余时间里一起放松。 <<lstress>><<stress -3>>
+<br><br>
+<<link [[继续|Hive Barracks]]>><<pass 180>><</link>>
+
+:: Hive Pollen Collection Wax End
+
+你开始用蜡擦洗舱室，但这明显不如其他清洁工舔得干净，因此你得进行双倍甚至三倍的工作，等你干完已经是离开的时候了。
+<br><br>
+<<link [[继续|Hive Barracks]]>><<pass 360>><</link>>
+
+:: Hive Pollen Collection Cleaner Refuse
+
+"对不起，我今天要一直收集花粉。"你为自己辩护着。
+<br><br>
+<<link [[继续|Hive Pollen Collection Refuse]]>><</link>>
+
+:: Hive Pollen Collection Refuse
+
+<<cleareventpool>>
+<<addinlineevent "hive_pollen_collection_1">>
+	你跟着其它<<beastsplural>>来到树林里的一大片空地，那里开满了鲜艳、多彩、美丽的花朵。你和其他<<beastsplural>>开始收集花粉，你收集了很多花蜜并且提前返回蜂巢。 
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><<pass 180>><</link>>
+<</addinlineevent>>
+<<addinlineevent "hive_pollen_collection_2">>
+	<<beastNEWinit 5 bee>>
+	你跟着<<beastsplural>>来到树林里的一大片空地，那里开满了鲜艳、多彩、美丽的花朵。其他的<<beastsplural>>开始采蜜，但你听到了一种奇怪的声音。
+	<br><br>
+	<<endevent>><<beastNEWinit 1 wolf>>你环顾四周，发现一只大<<beasttype>>正在暗处虎视眈眈。
+	<br><br>
+	<<link [[献身|Hive Pollen Collection 2 Allow]]>><<set $sexstart to 1>><</link>><<deviant2>>
+	<br>
+	<<link [[对抗|Hive Pollen Collection 2 Resist]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</addinlineevent>>
+<<addinlineevent "hive_pollen_collection_3">>
+	你发现一朵大花充满了花粉，和今天的份额相比绰绰有余。你很快收集了尽可能多的花蜜并返回蜂巢。
+	<br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><<pass 60>><</link>>
+<</addinlineevent>>
+<<runeventpool>>
+
+:: Hive Pollen Collection Nurse Agree
+
+"我很乐意。"你点了点头，"好的，这边请。"<<bHe>>带你进入蜂巢深处一个你从未进过的房间，这个房间满是蜂卵和新生儿。"这是我们的孵化间，婴儿们在此成长为成熟的个体。"<<bHe>>给你解释道。"你的工作是确保孩子们得到食物、梳理和清洁。"<<bHe>>转身离开，留下你和其它护士在这。
+<br><br>
+<<endevent>>
+<<cleareventpool>>
+<<addinlineevent "hive_pollen_collection_nurse_1">>
+	你和孩子们坐在一起，开始梳理它们。你用手指梳理它们的头发，确保它们干净健康，它们健康的笑容温暖了你的心。<<lstress>><<ltrauma>><<stress -3>><<trauma -3>>
+	<br><br>
+	<<link [[继续|Hive Corridor]]>><</link>><<pass 360>>
+<</addinlineevent>>
+<<addinlineevent "hive_pollen_collection_nurse_2">>
+	一只小<<beasttype>>冲过来抱住你。<<bHe>>抱怨说饿了，你拿下一点蜂蜜交给<<bhim>>，<<bHe>>坐在你的腿上愉快地吃着蜂蜜，然后跑去和其他孩子一起玩。<<lstress>><<stress -3>>
+	<br><br>
+	<<link [[继续|Hive Corridor]]>><</link>><<pass 360>>
+<</addinlineevent>>
+<<addinlineevent "hive_pollen_collection_nurse_3">>
+	在你照看孩子们时，你注意到一个年龄较大的孩子在欺负一个年幼的孩子。
+	<br><br>
+	<<link [[干预|Hive Pollen Collection Bully Do Nothing]]>><</link>>
+	<br>
+	<<link [[袖手旁观|Hive Pollen Collection Bully Do Nothing]]>><</link>>
+<</addinlineevent>>
+<<addinlineevent "hive_pollen_collection_nurse_4">>
+	一群孩子过来求你和它们一起玩。
+	<br><br>
+	<<link [[玩|Hive Pollen Collection Children Play]]>><</link>>
+	<br>
+	<<link [[拒绝|Hive Pollen Collection Children Refuse]]>><</link>>
+<</addinlineevent>>
+<<runeventpool>>
+
+:: Hive Pollen Collection Bully Intervene
+
+<<beastNEWinit 2 bee>>
+你把它们分开，并且告诉大一点的<<beasttype 2>>不准再这么干，要不然你会通知警卫。大一点的<<beasttype 2>>嘟囔着走开了，帮助年幼的<<beasttype>>让你自我感觉良好。<<ltrauma>><<trauma -3>>
+<br><br>
+<<link [[继续|Hive Corridor]]>><</link>><<endevent>><<pass 360>>
+
+:: Hive Pollen Collection Bully Do Nothing
+
+<<beastNEWinit 1 bee>>
+你袖手旁观。年幼的<<beasttype>>被推倒在地，大一点的那个笑着走开了。你帮助小点的<<beasttype>>爬起来，<<bhe>>看起来很沮丧。
+<br><br>
+<<link [[继续|Hive Corridor]]>><</link>><<endevent>><<pass 360>>
+
+:: Hive Pollen Collection Children Play
+
+你同意和它们一起玩，于是它们把你拉到它们的游乐区。"那么，玩什么呢？"它们争执了一会，决定玩一个像是鬼抓人的游戏，并且决定你先当鬼。
+<br><br>
+<<link [[努力胜利|Hive Pollen Collection Children Win]]>><</link>><<athleticsdifficulty 250 700>>
+<br>
+<<link [[放太平洋|Hive Pollen Collection Children Lose]]>><</link>>
+
+:: Hive Pollen Collection Children Win
+
+<<if $athleticsSuccess>>
+	你轻而易举地抓住了它们然后躲得远远的。孩子们对抓不到你有点沮丧，不过它们还是继续和你聊天直到你不得不离开。<<lstress>><<gtiredness>><<stress -3>><<tiredness +3>>
+<<else>>
+	你尝试抓住某个孩子，但没跑几步就上气不接下气，在游戏的大部分时间里你都是这样。老实说，输给一些孩子挺尴尬的，不过它们还是继续和你聊天直到你不得不离开。<<gtiredness>><<tiredness +3>>
+<</if>>
+<br><br>
+<<link [[继续|Hive Corridor]]>><</link>><<pass 360>>
+
+:: Hive Pollen Collection Children Lose
+
+你故意输掉了比赛，看见孩子们自豪的模样，你很高兴。之后它们继续和你聊天直到你不得不离开。<<lstress>><<stress -3>>
+<br><br>
+<<link [[继续|Hive Corridor]]>><</link>><<pass 360>>
+
+:: Hive Pollen Collection Children Refuse
+
+你拒绝和孩子们玩耍，它们走开之前看起来很悲伤。你继续坐着，直到下班。
+<br><br>
+<<link [[继续|Hive Corridor]]>><</link>><<pass 360>>
+
+:: Hive Animal Hunting
+
+<<beastNEWinit 5 bee>>
+你与一小群<<beastsplural>>会面，然后前往湖边开始狩猎。
+<br><br>
+<<cleareventpool>>
+<<addinlineevent "hive_animal_hunting_1">>
+	你跟着<<beastsplural>>们到了森林的湖边静静等待。不一会，你听到树枝断裂的声音，一头野猪在你的视野里徘徊。它小心翼翼地嗅了嗅周围的环境，然后继续前进，你的团队慢慢地包围了野猪，然后一齐冲出来突刺。几秒钟之内，它就一瘸一拐地倒下了，你们抬起它并将其带回蜂巢。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 180>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_2">>
+	你跟着<<beastsplural>>们到了森林的湖边静静等待。你们在这儿等了很久很久，但什么也没出现，只好垂头丧气地回到蜂巢。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 540>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_3">>
+	你跟着<<beastsplural>>们到了森林的湖边静静等待。许久之后，你听到一声咆哮，一只熊从树林里向湖边冲了过来。你们的团队紧张地面面相觑，连忙逃回了蜂巢。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 360>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_4">>
+	你跟着<<beastsplural>>们来到树林里的一片小空地，地上到处都是小洞。你被递了一张小网，并被告知一旦兔子离你够近就扔网。你趴在草地上，等待兔子靠近，近一点，再近一点！
+	<br><br>
+	<<link [[继续|Hive Animal Hunting Rabbit]]>><<endevent>><</link>><<physiquedifficulty 4000 14000>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_5">>
+	你跟着<<beastsplural>>们来到一棵大柳树下，它们让你开始剥树皮用于织网。你花一天时间剥树皮并将其扔进篮子里，然后返回蜂巢。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 360>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_6" 0.2>>
+	离开时，你被一名警卫拦住了。<<bHe>>告诉你一名警卫在最近的一次袭击中受伤，需要有人来替<<bhis>>一天的班。 
+	<br><br>
+	<<link [[同意|Hive Animal Hunting Guard Agree]]>><</link>>
+	<br>
+	<<link [[拒绝|Hive Animal Hunting Refuse]]>><<endevent>><</link>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_7" 0.2>>
+	离开时，你被一名警卫拦住了。<<bHe>>告诉你一位建筑师在施工期间受伤，需要有人来替<<bhis>>一天的班。 
+	<br><br>
+	<<link [[同意|Hive Animal Hunting Architect Agree]]>><</link>>
+	<br>
+	<<link [[拒绝|Hive Animal Hunting Refuse]]>><</link>>
+<</addinlineevent>>
+<<runeventpool>>
+
+:: Hive Animal Hunting Rabbit
+
+<<if $physiqueSuccess>>
+	你用力一抛，网飞了过去，将兔子罩在其中。你猛冲过去用矛刺它，直到它失去反抗能力，你把一瘸一拐的兔子扔进篮子里。而后在回到蜂巢前继续捕猎。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><</link>><<pass 180>>
+<<else>>
+	网空了又空，你一次次地捡回网再次尝试，但每次都是一无所获。你只好空着手返回蜂巢。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><</link>><<pass 360>>
+<</if>>
+
+:: Hive Animal Hunting Guard Agree
+
+"乐意至极。"你同意道。"很好，"<<bHe>>说着，带你走进一个小房间。"选件你喜欢的穿上吧。"<<bHe>>说着递给你一套厚厚的蜡甲。你穿好衣服，跟着<<bhim>>回到前门，<<bHe>>让你和另一个警卫一起监视蜂巢的入口并阻止潜在的入侵者。
+<br><br>
+<<cleareventpool>>
+<<addinlineevent "hive_animal_hunting_guard_1">>
+	你守着入口一天，但除了采蜜者和猎人之外，没有人试图进入。你结束了一天的工作，并与夜间警卫交接。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 540>>
+<</addinlineevent>>
+<<if $TaylorArrested is 0 and $TaylorMissing is 0>>
+	<<addinlineevent "hive_animal_hunting_guard_2">>
+		<<npc "泰勒">><<person1>>
+		你守卫着蜂巢入口，但似乎感觉有些不对劲。你朝着外面张望，虽然表面上一片平静，但你总感觉前方的树丛里好像有什么。
+		<br><br>
+		<<link [[前去探察|Hive Animal Hunting Find Observer]]>><</link>>
+		<br>
+		<<link [[坚守任务|Hive Animal Hunting Give Up]]>><</link>>
+	<</addinlineevent>>
+<</if>>
+<<runeventpool>>
+
+:: Hive Animal Hunting Find Observer
+
+你跟着感觉走到树丛前，仔细搜查，突然你听到有奔跑的沙沙声。
+<br><br>
+<<if $TaylorChase is 0>>
+	<<link [[追逐|Hive Animal Hunting Chase Observer 1]]>><</link>><<athleticsdifficulty 500 1000>><<gtiredness>>
+<<elseif $TaylorChase is 1 and $TaylorArrested is 0 and $TaylorMissing is 0>>
+	<<link [[追逐|Hive Animal Hunting Chase Observer 2]]>><</link>><<gtiredness>>
+<</if>>
+<br>
+<<link [[放弃|Hive Animal Hunting Give Up]]>><<endevent>><</link>>
+
+:: Hive Animal Hunting Chase Observer 1
+
+<<tiredness +3>>
+<<if $athleticsSuccess>>
+	<<set $TaylorChase to 1>>
+	你在森林中追逐着脚步声，然后一个飞扑，将之牢牢地抱住。这是一个年轻的<<personsimple>>，看起来和你差不多大。<<he>>看起来很害怕，无助地挣扎着。"请放开我，"<<he>>恳求道，"我没有伤害你的意思。"
+	<br><br>
+	<<link [[放开对方|Hive Animal Hunting Free]]>><</link>>
+	<br>
+	<<link [[将其逮捕|Hive Animal Hunting Arrest]]>><<set $TaylorArrested to 1>><</link>>
+<<else>>
+	你试图追逐脚步声，但最终失去了它的踪迹。于是你又回到岗位上，继续站岗直到结束了一天的工作，并与夜间警卫交接。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><</link>><<endevent>><<pass 540>>
+<</if>>
+
+:: Hive Animal Hunting Free
+
+你松开手并让<<him>>离开。"万分感谢。"<<he>>握了握你的手，跑走了。你回到岗位上，继续站岗直到结束了一天的工作，并与夜间警卫交接。<<glove>><<npcincr "泰勒" love 1>>
+<br><br>
+<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 540>>
+
+:: Hive Animal Hunting Arrest
+
+你抓住<<him>>并把<<him>>拖回蜂巢。叫来守卫押送<<him>>进入蜂巢并丢进一个牢房。 随后你回到岗位，继续站岗直到结束了一天的工作，并与夜间警卫交接。<<llove>><<npcincr "泰勒" love -1>>
+<br><br>
+<<link [[继续|Hive Entrance]]>><</link>><<endevent>><<pass 540>>
+
+:: Hive Animal Hunting Chase Observer 2
+
+<<tiredness +3>>
+你在森林中追逐着脚步声，然后一个飞扑，将之牢牢地抱住。又是那个<<personsimple>>，<<he>>看起来很震惊。"又是你。"<<he>>注意到，"请放开我，我真的没有想过伤害你。"
+<br><br>
+
+<<link [[放开对方|Hive Animal Hunting Free]]>><</link>>
+<br>
+<<link [[将其逮捕|Hive Animal Hunting Arrest]]>><<set $TaylorArrested to 1>><</link>>
+
+:: Hive Animal Hunting Give Up
+
+你决定不再去追逐，回到岗位上，继续站岗直到结束了一天的工作，并与夜间警卫交接。
+<br><br>
+<<link [[继续|Hive Entrance]]>><</link>><<endevent>><<pass 540>>
+
+:: Hive Animal Hunting Refuse
+
+"对不起，我今天要外出打猎。"你为自己辩护着。
+<br><br>
+<<cleareventpool>>
+<<addinlineevent "hive_animal_hunting_1">>
+	你跟着<<beastsplural>>们到了森林的湖边静静等待。不一会，你听到树枝断裂的声音，一头野猪在你的视野里徘徊。它小心翼翼地嗅了嗅周围的环境，然后继续前进，你的团队慢慢地包围了野猪，然后一齐冲出来突刺。几秒钟之内，它就一瘸一拐地倒下了，你们抬起它并将其带回蜂巢。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 180>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_2">>
+	你跟着<<beastsplural>>们到了森林的湖边静静等待。你们在这儿等了很久很久，但什么也没出现，只好垂头丧气地回到蜂巢。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 540>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_3">>
+	你跟着<<beastsplural>>们到了森林的湖边静静等待。许久之后，你听到一声咆哮，一只熊从树林里向湖边冲了过来。你们的团队紧张地面面相觑，连忙逃回了蜂巢。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 360>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_4">>
+	你跟着<<beastsplural>>们来到树林里的一片小空地，地上到处都是小洞。你被递了一张小网，并被告知一旦兔子离你够近就扔网。你趴在草地上，等待兔子靠近，近一点，再近一点！
+	<br><br>
+	<<link [[继续|Hive Animal Hunting Rabbit]]>><<endevent>><</link>><<physiquedifficulty 4000 14000>>
+<</addinlineevent>>
+<<addinlineevent "hive_animal_hunting_5">>
+	你跟着<<beastsplural>>们来到一棵大柳树下，它们让你开始剥树皮用于织网。你花一天时间剥树皮并将其扔进篮子里，然后返回蜂巢。
+	<br><br>
+	<<link [[继续|Hive Entrance]]>><<endevent>><</link>><<pass 360>>
+<</addinlineevent>>
+<<runeventpool>>
+
+:: Hive Animal Hunting Architect Agree
+
+"乐意至极。"你同意道。"很好，来这边。"<<bHe>>带您来到营房。"你的工作是为那些还在发育的年轻人建造一些新的舱室。"<<bHe>>告诉你，"这些蜡板已经被切成合适的尺寸，只需将它们粘在一起就可以了。"<<bHe>>转身离去。
+<br><br>
+
+<<link [[开始工作|Hive Animal Hunting Construction]]>><</link>><<mathsdifficulty 250 700>>
+
+:: Hive Animal Hunting Construction
+
+<<if $mathsSuccess>>
+	你很快地将蜡板们一一粘了起来，完成了这份轻松的差事。
+	<br><br>
+	<<link [[继续|Hive Barracks]]>><<endevent>><</link>><<pass 180>>
+<<else>>
+	你试图把蜡板粘在一起，但你无法搞清楚它们究竟要如何粘在一起。你一直尝试到到晚上，另外一只<<beasttype>>看着你哈哈大笑，无奈地帮你粘好了舱室。<<gstress>><<stress +3>>
+	<br><br>
+	<<link [[继续|Hive Barracks]]>><<endevent>><</link>><<pass 540>>
+<</if>>
+
+:: Throne Vouch 1
+
+<<npc "泰勒">><<person1>>
+守卫说: "女王想和你说话，请跟我来，我会护送你到御室。"你跟着护卫来到门前，他把一把钥匙插到门里，打开了门。
+<br><br>
+你又一次来到黄蜂女王面前，她和以前一样令人生畏。她把你压倒在地，盯着你的眼睛问道: "我听说你和我们亲爱的客人越来越亲近了，<<bhe>>被发现在蜂巢外记录我们的一举一动，你觉得这是想干什么呢？"
+<br><br>
+
+<<link [[保证其没有恶意|Throne Vouch 2]]>><</link>>
+<br>
+
+:: Throne Vouch 2
+
+<<set $TaylorFreed to 1>>
+你保证泰勒是个好人，说<<he>>没有任何坏心思，只是好奇。女王想了一会: "这样吧，我们可以放<<him>>出去，但<<he>>要是再敢回来，我们就不会再给<<he>>机会了。既然你们走的这么近，那就由你放<<him>>出去吧。"她说着把牢房的钥匙丢给你。"事情说的差不多了，你自己回去吧。"你走出门去，来到牢房。
+<br><br>
+你找到了泰勒，<<he>>和你打招呼。"你回来啦。等等，那是什么？"<<he>>问道。你告诉<<him>>你设法说服了女王释放<<him>>，只要<<he>>保证不再靠近蜂巢。"哦肯定的。有了这次经历，即使要我回来，我也不会再来了。听着，我住在多瑙河街，如果你有时间可以去拜访我。"<<he>>说着走出牢房，你指引着<<him>>走到入口处，目送<<him>>离开。<<gglove>><<npcincr "泰勒" love 5>>
+<br><br>
+<<link [[继续|Hive Entrance]]>><<endevent>><</link>>
+
+:: Hive Entrance Accepted
+
+你告诉警卫你实际上是一只野蜂。它们沉思了一会儿，然后走到一边。"只有女王才能判断，去御室。"
+<br><br>
+
+<<link [[继续|Throne Job Assignment]]>><</link>>
+
+:: Hive Entrance Rejected
+
+"你最好在我们动手前自己离开。"它们嗡嗡作响。
+<br><br>
+
+<<link [[继续|Hive Entrance]]>><</link>>

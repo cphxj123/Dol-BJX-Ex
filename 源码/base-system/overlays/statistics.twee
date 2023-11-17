@@ -1,0 +1,1126 @@
+:: Statistics [widget]
+<<widget "statistics">>
+	<<foldout false "_virginitiesFoldout">>
+		<span class="gold">Virginities</span>
+		<<if $player.vaginaExist>>
+			Vaginal virginity: <<print ($player.virginity.vaginal is true ? "Present" : "Taken by " + ($player.virginity.vaginal is false ? "unknown" : $player.virginity.vaginal))>>
+			<br>
+		<</if>>
+		<<if $player.penisExist>>
+			Penile virginity: <<print ($player.virginity.penile is true ? "Present" : "Taken by " + ($player.virginity.penile is false ? "unknown" : $player.virginity.penile))>>
+			<br>
+		<</if>>
+
+		Anal virginity: <<print ($player.virginity.anal is true ? "Present" : "Taken by " + ($player.virginity.anal is false ? "unknown" : $player.virginity.anal))>>
+		<br>
+		Oral virginity: <<print ($player.virginity.oral is true ? "Present" : "Taken by " + ($player.virginity.oral is false ? "unknown" : $player.virginity.oral))>>
+		<br>
+		Handholding virginity: <<print ($player.virginity.handholding is true ? "Present" : "Taken by " + ($player.virginity.handholding is false ? "unknown" : $player.virginity.handholding))>>
+		<br>
+		First kiss: <<print ($player.virginity.kiss is true ? "Present" : "Taken by " + ($player.virginity.kiss is false ? "unknown" : $player.virginity.kiss))>>
+		<br>
+		<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">>
+			Temple vow: <<print ($player.virginity.temple is true ? "Unbroken" : "Broken by " + ($player.virginity.temple is false ? "unknown" : $player.virginity.temple))>>
+			<br>
+		<</if>>
+		<br><br>
+	<</foldout>>
+
+	<<foldout false "_virginitiesTakenFoldout">>
+		<span class="gold">Virginities taken</span>
+		<!-- For the total virginities taken, iterate over every virginity type and sum up the number of entries belonging to each. -->
+		<<set _total to 0>>
+		<<run Object.values($virginTaken).forEach(type => _total += type.length)>>
+		Total: _total
+		<br>
+
+		<!-- For each individual virginity type, the number is named and unnamed combined, but the list of names has unnamed npcs filtered out. -->
+		<<set _vaginalNamed to $virginTaken.vaginal.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+		<<set _penileNamed to $virginTaken.penile.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+		<<set _analNamed to $virginTaken.anal.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+		<<set _oralNamed to $virginTaken.oral.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+		<<set _handholdingNamed to $virginTaken.handholding.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+		<<set _kissNamed to $virginTaken.kiss.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+
+		Vaginal: $virginTaken.vaginal.length<<print (_vaginalNamed.length gte 1 ? ", including: " + _vaginalNamed.join(', ') : "")>>
+		<br>
+		Penile: $virginTaken.penile.length<<print (_penileNamed.length gte 1 ? ", including: " + _penileNamed.join(', ') : "")>>
+		<br>
+		Anal: $virginTaken.anal.length<<print (_analNamed.length gte 1 ? ", including: " + _analNamed.join(', ') : "")>>
+		<br>
+		Oral: $virginTaken.oral.length<<print (_oralNamed.length gte 1 ? ", including: " + _oralNamed.join(', ') : "")>>
+		<br>
+		First hands held: $virginTaken.handholding.length<<print (_handholdingNamed.length gte 1 ? ", including: " + _handholdingNamed.join(', ') : "")>>
+		<br>
+		First kisses: $virginTaken.kiss.length<<print (_kissNamed.length gte 1 ? ", including: " + _kissNamed.join(', ') : "")>>
+		<br><br>
+	<</foldout>>
+
+	<<foldout false "_jobsFoldout">>
+		<span class="gold">Jobs</span>
+		Danced: $dancestat
+		<br>
+		Drinks served: $drinksservedstat
+		<br>
+		Tables served: $tablesservedstat
+		<br>
+		Whored yourself: $prostitutionstat
+		<br>
+		<<if $gamemode isnot "soft">>
+		Forcibly whored out: $forcedprostitutionstat
+		<br>
+		<</if>>
+		Hours worked on the docks: $dockhours
+		<br>
+		Buns sold at the cafe: $bunstat
+		<br>
+		Most "cream" produced: <<print parseFloat($creamstat.toFixed(1))>> mL
+		<br>
+		Smugglers intercepted: $smuggler_stolen_stat
+		<br>
+		Tasks performed at the pub: $pub_task_stat
+		<br>
+		Produce sold: $produce_sold
+		<br>
+		<<if $farmersProduce>>
+			Produce sold in bulk: $farmersProduce.totalSold
+			<br>
+		<</if>>
+		Fertiliser Used: $fertiliser.used
+		<br>
+		Hours worked on a farm: <<print Math.trunc($farm_shift / 60)>>
+		<br>
+		Cattle milked: $cattle_milked
+		<br>
+		Clients serviced as a masseur: $masseur_stat
+		<br>
+		Wild plants picked: $wild_plant_stat
+		<br>
+		Aphrodisiacs sold: $stat_aphrodisiacs_sold
+		<br>
+		<<if $brothelVending and $brothelVending.total>>
+			Products sold at the brothel: $brothelVending.total
+			<br>
+		<</if>>
+		<br>
+		<<if $confessionsDone>>
+			Sins confessed: $confessionsDone
+			<br>
+		<</if>>
+		<<if $confessionsTaken>>
+			Confessions taken: $confessionsTaken
+			<br>
+		<</if>>
+	<</foldout>>
+
+	<<foldout false "_sexFoldout">>
+		<span class="gold">Sex</span>
+		Number of orgasms you've experienced: $orgasmstat
+		<br>
+		<<if $ruinedOrgasmStat>>
+			Number of ruined orgasms you've experienced: $ruinedOrgasmStat
+			<br>
+		<</if>>
+		<<if $asphyxiaLvl gte 2>>
+			Orgasms while being choked: $chokeorgasm
+			<br>
+		<</if>>
+		<<if $player.penisExist or $toydildodisable is "f">>
+			Penetrated others: $penilestat
+			<br>
+		<</if>>
+		<<if $straponstat>>
+			Penetrated others with a strapon: $straponstat
+			<br>
+		<</if>>
+		<<if $player.penisExist>>
+			Ejaculated in others: $penileejacstat
+			<br>
+		<</if>>
+		<<if $player.vaginaExist>>
+			Vaginally penetrated: $vaginalstat
+			<br>
+			Ejaculated in vaginally: $vaginalejacstat
+			<br>
+		<</if>>
+		<<if $analdisable is "f">>
+			Anally penetrated: $analstat
+			<br>
+			Ejaculated in anally: $analejacstat
+			<br>
+		<</if>>
+		Orally penetrated: $oralstat
+		<br>
+		Ejaculated in orally: $oralejacstat
+		<br>
+		Semen swallowed: $semenswallowedstat mL
+		<<if $bestialitydisable is "f">>
+			<br>
+			Animal semen swallowed: $animalsemenswallowedstat mL
+			<</if>>
+		<br>
+		Handjobs given: $handstat
+		<br>
+		Handjob ejaculations: $handejacstat
+		<br>
+		<<if $footdisable is "f">>
+			Footjobs given: $feetstat
+			<br>
+			Footjob ejaculations: $feetejacstat
+			<br>
+		<</if>>
+		Thighjobs given: $thighstat
+		<br>
+		Thighjob ejaculations: $thighejacstat
+		<br>
+		Chestjobs given: $cheststat
+		<br>
+		Chestjob ejaculations: $chestejacstat
+		<br>
+		Buttjobs given: $bottomstat
+		<br>
+		Buttjob ejaculations: $bottomejacstat
+		<br>
+		Hair ejaculated on: $hairejacstat
+		<br>
+		Tummy ejaculated on: $tummyejacstat
+		<br>
+		Neck ejaculated on: $neckejacstat
+		<br>
+		<<if $player.vaginaExist>>
+			Pussy ejaculated on: $vaginalentranceejacstat
+			<br>
+		<</if>>
+		Face ejaculated on: $faceejacstat
+		<br>
+		Total times you've been ejaculated on or in: $ejacstat
+		<br>
+		Gloryholes serviced: $gloryholestat
+		<br>
+		Masturbated: $masturbationstat
+		<br>
+		Masturbated to orgasm: $masturbationorgasmstat
+		<br>
+		Minutes spent masturbating: <<print Math.trunc($secondsSpentMasturbating / 60)>>
+		<br>
+		<<if $breastfeedingdisable is "f">>
+			Breast milk drank: $milk_drank_stat mL
+			<br>
+			Breast milk produced: $milk_produced_stat mL
+			<br>
+		<</if>>
+		<<if $plantdisable is "f">>
+			Nectar drank: $nectar_drank_stat mL
+			<br>
+		<</if>>
+		<<if $player.penisExist>>
+			Semen produced: <<print Math.floor($semen_produced_stat)>> mL
+			<br>
+		<</if>>
+		<<if $player.vaginaExist>>
+			Lewd fluid produced: <<print Math.floor($lube_produced_stat)>> mL
+			<br>
+		<</if>>
+		<<if $player.penisExist or $breastfeedingdisable is "f">>
+			Fluid forcibly milked: $fluid_forced_stat mL
+			<br>
+		<</if>>
+		<<if $knot_stat isnot undefined>>
+			Knotted: $knot_stat
+			<br>
+		<</if>>
+		<<if $sextoystat isnot undefined>>
+			Sex toys used on others: $sextoystat
+		<</if>>
+		<br>
+		<<if $analdoubledisable is "f" and $analdoublestat isnot undefined>>
+			Double anally penetrated: $analdoublestat
+			<br>
+		<</if>>
+		<<if $vaginaldoubledisable is "f" and $vaginaldoublestat isnot undefined>>
+			Double vaginally penetrated: $vaginaldoublestat
+			<br>
+		<</if>>
+		<<if $watersportsdisable is "f">>
+			Urinated on: $urinestat
+			<br>
+		<</if>>
+		<br>
+	<</foldout>>
+
+	<<if $gamemode isnot "soft">>
+		<<foldout false "_violenceFoldout">>
+			<span class="gold">Violence</span>
+			Molested: $moleststat
+			<br>
+			Raped: $rapestat
+			<br>
+			<<if $bestialitydisable is "f">>
+				Raped by animals: $beastrapestat
+				<br>
+			<<else>>
+				Raped by monster people: $beastrapestat
+				<br>
+			<</if>>
+			<<if $tentacledisable is "f">>
+				Raped by tentacle monsters: $tentaclerapestat
+				<br>
+			<</if>>
+			<<if $voredisable is "f">>
+				Swallowed: $swallowedstat
+				<br>
+			<</if>>
+			<<if $parasitedisable is "f">>
+				Parasites hosted: $parasitestat
+				<br>
+			<</if>>
+			Been hit: $hitstat
+			<br>
+			Hit others: $attackstat
+			<br>
+			Pepper spray used: $spraystat
+			<br>
+			<<if $NPCName[$NPCNameList.indexOf("Eden")].init>>
+				Practise shots fired with Eden: $stat_shoot
+				<br>
+			<</if>>
+			Machines disabled: $machine_stat
+			<br>
+			<<if $lurkerdisable is "f">>
+				Lurkers captured: $stat_lurkers_captured
+				<br><br>
+			<</if>>
+		<</foldout>>
+	<</if>>
+
+	<<foldout false "_datesFoldout">>
+		<span class="gold">Dates</span>
+		<<if $dateCount.Total lte 0>>
+			You haven't gone on any dates!<br>
+		<<else>>
+			Total Dates: $dateCount.Total
+			<br>
+			<<if $dateCount.Robin gte 1>>
+				Dates with Robin: $dateCount.Robin
+				<br>
+			<</if>>
+			<<if $dateCount.Whitney gte 1>>
+				Dates with Whitney: $dateCount.Whitney
+				<br>
+			<</if>>
+			<<if $dateCount.Kylar gte 1>>
+				Dates with Kylar: $dateCount.Kylar
+				<br>
+			<</if>>
+			<<if $dateCount.Eden gte 1>>
+				Dates with Eden: $dateCount.Eden
+				<br>
+			<</if>>
+			<<if $dateCount.Avery gte 1>>
+				Dates with Avery: $dateCount.Avery
+				<br>
+			<</if>>
+			<<if $dateCount.BlackWolfHunts gte 1>>
+				Hunts with the Black Wolf: $dateCount.BlackWolfHunts
+				<br>
+			<</if>>
+			<<if $dateCount.GreatHawkHunts gte 1>>
+				Hunts with the Great Hawk: $dateCount.GreatHawkHunts
+				<br>
+			<</if>>
+			<<if $dateCount.Alex gte 1>>
+				Dates with Alex: $dateCount.Alex
+				<br>
+			<</if>>
+			<<if $dateCount.Sydney gte 1>>
+				Dates with Sydney: $dateCount.Sydney
+				<br>
+			<</if>>
+		<</if>>
+		<br>
+	<</foldout>>
+
+	<<foldout false "_pregnancyFoldout">>
+		<span class="gold">Pregnancy</span>
+		Times given birth: <<print playerNormalPregnancyTotal()>>
+		<br>
+		<<if $pregnancyStats.playerVirginBirths.length>>
+			Total virgin births: <<print $pregnancyStats.playerVirginBirths.length>>
+			<br>
+		<</if>>
+		Total number of children you gave birth to: <<print $pregnancyStats.playerChildren>>
+		<br>
+		Total number of children you know you fathered: <<print $pregnancyStats.npcChildren>>
+		<br>
+		Total days knowingly being pregnant: <<print Math.floor($pregnancyStats.totalDaysPregnancyKnown)>>
+		<br>
+		Total number of human children: <<print $pregnancyStats.humanChildren>>
+		<br>
+		Total number of wolf children: <<print $pregnancyStats.wolfChildren>>
+		<br>
+		Children interactions: <<print $pregnancyStats.childInteractions>>
+		<br>
+		<!-- ToDo: Pregnancy - Move outside of commented area when interactions are added
+		Breastfed interactions: <<print $pregnancyStats.childBreastfedInteractions>>
+		<br>
+		Bottlefed interactions: <<print $pregnancyStats.childBottlefedInteractions>>
+		<br>
+		First Word interaction: <<print $pregnancyStats.childFirstWordInteractions>>
+		<br>
+		-->
+		Bottles of milk given to the orphanage: <<print $pregnancyStats.orphanageMilkBottlesTotal>>
+		<br>
+		After Morning pills taken: <<print $pregnancyStats.aftermorningpills>>
+		<br>
+		Pregnancy tests taken: <<print $pregnancyStats.pregnancyTestsTaken>>
+		<br>
+		<<if $player.vaginaExist>>
+			Vaginal Parasite Born: <<print $sexStats.vagina.pregnancy.parasiteBirthEvents>>
+			<br>
+		<</if>>
+		Anal Parasite Born: <<print $sexStats.anus.pregnancy.parasiteBirthEvents>>
+		<br><br>
+	<</foldout>>
+
+	<<foldout false "_gamblingFoldout">>
+		<span class="gold">Gambling</span>
+		Games of blackjack played: $estatePersistent.totalGamesPlayed
+		<br>
+		Games of blackjack played with betting: $estatePersistent.totalGamesPlayedWithBetting
+		<br>
+		Rounds of blackjack won/lost/tied: $estatePersistent.totalRoundsWon/$estatePersistent.totalRoundsLost/$estatePersistent.totalRoundsTied
+		<br>
+		Rounds of blackjack won/lost/tied (with bets): $estatePersistent.totalBetRoundsWon/$estatePersistent.totalBetRoundsLost/$estatePersistent.totalBetRoundsTied
+		<br>
+		Money won in blackjack: <<formatmoney $estatePersistent.totalBetMoneyMade>>_printmoney
+		<br>
+		Money lost in blackjack: <<formatmoney $estatePersistent.totalBetMoneyLost>>_printmoney
+		<br>
+		Money confiscated in blackjack: <<formatmoney $estatePersistent.totalMoneyConfiscated>>_printmoney
+		<br>
+		Tips received in blackjack: <<formatmoney $estatePersistent.totalTipMoneyMade>>_printmoney
+		<br>
+		Times caught cheating: $estatePersistent.totalCaughtCheating
+		<br>
+		Highest blackjack streak: $estatePersistent.winStreakHighScore
+		<<if $blackjack_played gt 0 or $blackjack_won gt 0>>
+			<br>
+			Rounds of old blackjack played/won: $blackjack_played/$blackjack_won
+		<</if>>
+		<<if $blackjack_streak_high and $blackjack_streak_high gt 0>>
+			<br>
+			Highest old blackjack streak: $blackjack_streak_high
+		<</if>>
+		<br><br>
+	<</foldout>>
+
+	<<foldout false "_miscFoldout">>
+		<span class="gold">Miscellaneous</span>
+		<<if $gamemode isnot "soft">>
+			Rescued: $rescued
+			<br>
+		<</if>>
+		Clothing stripped: $clothesstripstat
+		<br>
+		Clothing ruined: $clothesruinstat
+		<br>
+		Passed out: $passoutstat
+		<br>
+		Distinctions won: $distinction_stat
+		<br>
+		Hours slept: $sleepStat
+		<br>
+		Underwear stolen: $stat_panties_stolen
+		<br>
+		Sentenced with community service: $stat_police.community
+		<br>
+		Sentenced with the pillory:	$stat_police.pillory
+		<br>
+		Days in prison: $stat_police.prison
+		<br>
+		Hypnotised: $hypnotised
+		<<if $wraith.possessCount>>
+			<br>
+			Possessed: $wraith.possessCount
+		<</if>>
+		<br>
+		School lessons missed: <<print Object.values($schoolLessonsMissed).reduce((x, y) => x + y)>>
+		<mouse class="tooltip linkBlue">(?)<span>Bad math in earlier versions of the game may mean these stats are inaccurate before version '0.4.0.0'</span></mouse>
+		<br>
+		Science lessons missed: $schoolLessonsMissed.science
+		<br>
+		Maths lessons missed: $schoolLessonsMissed.maths
+		<br>
+		English lessons missed: $schoolLessonsMissed.english
+		<br>
+		History lessons missed: $schoolLessonsMissed.history
+		<br>
+		Swimming lessons missed: $schoolLessonsMissed.swimming
+		<br><br>
+	<</foldout>>
+
+
+	<<foldout false "_saveFoldout">>
+		<span class="gold">Save Game Details</span>
+		<<if $passageCount>>
+			Total Passages Count: $passageCount
+			<mouse class="tooltip linkBlue">(?)<span>Total number of times a new passage has been loaded (Clicking on links in most cases). Passages such as the settings are excluded. Not tracked in versions '0.3.12.X' and older</span></mouse>
+			<br>
+			Total Passage Changes Count: $passageChangesCount
+			<mouse class="tooltip linkBlue">(?)<span>Total number of times a new passage has changed (Clicking on links in most cases). Passages such as the settings are excluded. Not tracked in versions '0.3.12.X' and older</span></mouse>
+			<br>
+		<</if>>
+		<<if $saveDetails isnot undefined>>
+			<br>
+			Normal saves count: <<print $saveDetails.slot.count>>
+			<br>
+			Exported saves count: <<print $saveDetails.exported.count>>
+			<br>
+			Auto saves count: <<print $saveDetails.auto.count>>
+			<br>
+			Times Loaded: <<print $saveDetails.loadCount || 0>>
+			<mouse class="tooltip linkBlue">(?)<span>Total number of times a save has been loaded, does not track repeated load times of the same save. Not tracked in versions '0.3.12.X' and older</span></mouse>
+			<br>
+			Play Time: <<print msToTime(($saveDetails.playTime ? $saveDetails.playTime : 0) + ($saveDetails.loadTime ? new Date() - $saveDetails.loadTime : 0))>>
+			<mouse class="tooltip linkBlue">(?)<span>Formatted into 'h:mm:ss'. Be aware that leaving the game for hours alone, then saving will have its time tracked, to avoid, save the game before ending play and then load the save when you resume play. Not tracked in versions '0.3.13.X' and older</span></mouse>
+			<br>
+		<</if>>
+		<<if $saveVersions isnot undefined>>
+			Versions Played On:
+			<br>
+			<<for _i to 0; _i lt $saveVersions.length; _i++>>
+				<<if _i gt 0>>
+					<<if $saveVersions[_i].split(".")[2] is $saveVersions[_i - 1].split(".")[2]>>
+						--
+					<<else>>
+						<br>
+					<</if>>
+				<</if>>
+				$saveVersions[_i]
+			<</for>>
+			<br>
+		<</if>>
+		<<if $saveVersion>>
+			Save loaded from version: $saveVersion
+		<</if>>
+	<</foldout>>
+<</widget>>
+
+<<widget "extraStatisticsWarning">>
+	<<if $options.skipStatisticsConfirmation is undefined>><<set $options.skipStatisticsConfirmation to false>><</if>>
+
+	<h3>Extra Statistics</h3>
+
+	<div id="spoilerWarning">
+		Are you sure you want to see these? They may contain spoilers!
+		<br>
+		<<link "Yes">>
+			<<replace #customOverlayContent>><<extraStatistics>><</replace>>
+		<</link>>
+		&nbsp;&nbsp;&nbsp;<label><<checkbox "$options.skipStatisticsConfirmation" false true autocheck>> Don't Show Again</label>
+		<!-- ignore the nbsp's, they're just for formatting -->
+	</div>
+<</widget>>
+
+<<widget "extraStatistics">>
+	<div id="spoilerWarningConfirmed">
+		<<foldout false "_stateFoldout">>
+			<span class="gold">State</span>
+			Pain: <<print Math.trunc($pain)>>
+			<br>
+			Arousal: <<print Math.trunc($arousal)>>
+			<br>
+			Fatigue: <<print Math.trunc($tiredness)>>
+			<br>
+			Stress: <<print Math.trunc($stress)>>
+			<br>
+			Trauma: <<print Math.trunc($trauma)>>
+			<br>
+			Control: <<print Math.trunc($control)>>
+			<br>
+			Allure: <<print Math.trunc($allure)>>
+			<br>
+			Alcohol: <<print Math.trunc($drunk)>>
+			<br>
+			Drugs: <<print Math.trunc($drugged)>>
+			<br>
+			Hallucinogens: <<print Math.trunc($hallucinogen)>>
+			<br><br>
+		<</foldout>>
+
+		<<foldout false "_charFoldout">>
+			<span class="gold">Characteristics</span>
+			Purity: <<print Math.trunc($purity)>>
+			<br>
+			Beauty: <<print Math.trunc($beauty)>>
+			<br>
+			Physique: <<print Math.trunc($physique)>>
+			<br>
+			Willpower: <<print Math.trunc($willpower)>>
+			<br>
+			Awareness: <<print Math.trunc($awareness)>>
+			<br>
+			Promiscuity: <<print Math.trunc($promiscuity)>>
+			<br>
+			Exhibitionism: <<print Math.trunc($exhibitionism)>>
+			<br>
+			Deviancy: <<print Math.trunc($deviancy)>>
+			<br>
+			Corruption: <<print Math.trunc($earSlime.corruption)>>
+			<br>
+			<<if $earSlime.growth>>
+				Growth: <<print Math.trunc($earSlime.growth)>>
+				<br>
+			<</if>>
+			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
+				Grace: <<print Math.trunc($grace)>>
+				<br>
+			<</if>>
+			Submissiveness: <<print Math.trunc($submissive)>>
+			<br>
+			Masochism: <<print Math.trunc($masochism)>>
+			<br>
+			Sadism: <<print Math.trunc($sadism)>>
+			<br>
+			Crossdresser progression:
+			<<if $crossdressingTrait isnot undefined>>
+				<<print Math.trunc($crossdressingTrait)>> %
+			<<else>>
+				0
+			<</if>>
+			<br><br>
+			Sensitivities:
+			<mouse class="tooltip linkBlue">(?)<span>These are arousal multipliers applied when that part of the body is stimulated.</span></mouse>
+			<ul style="margin-top:0px;margin-left:-5px;">
+				<li>Mouth: <<print $mouthsensitivity.toFixed(2)>></li>
+				<li>Breast: <<print $breastsensitivity.toFixed(2)>></li>
+				<li>Genital: <<print $genitalsensitivity.toFixed(2)>></li>
+				<li>Bottom: <<print $bottomsensitivity.toFixed(2)>></li>
+			</ul>
+			Breast Growth: <<print Math.trunc(100 - ($breastgrowthtimer / 10))>>%
+			<mouse class="tooltip linkBlue">(?)<span>Reach 100% or above to grow, 0% or below to shrink.</span></mouse>
+			<br>
+			Breasts can grow: <<print $player.breastsize lt $breastsizemax>>
+			<<if $player.breastsize is $breastsizemax>>
+				<mouse class="tooltip linkBlue">(?)<span>At max size.</span></mouse>
+			<</if>>
+			<br>
+			Breasts can shrink: <<print $player.breastsize gt $breastsizemin>>
+			<<if $player.breastsize is $breastsizemin>>
+				<mouse class="tooltip linkBlue">(?)<span>At min size.</span></mouse>
+			<</if>>
+			<br>
+			Lactating: <<print ($lactating is 1 ? "True" : "False")>>
+			<br>
+			<<if $lactating is 1>>
+				Milk amount: <<print Math.trunc($milk_amount)>>
+				<br>
+				Milk volume: <<print Math.trunc($milk_volume)>>
+				<br>
+			<</if>>
+			<<if $player.penisExist>>
+				<<if $player.penissize gte -1>>
+					<<set $_penisGrowthMin to 0>>
+				<<else>>
+					<<set $_penisGrowthMin to -400>>
+				<</if>>
+				<<if $player.penissize gt 0>>
+					<<set $_penisGrowthMax to 1000>>
+				<<elseif $player.penissize is 0>>
+					<<set $_penisGrowthMax to 1200>>
+				<<else>>
+					<<set $_penisGrowthMax to 1500>>
+				<</if>>
+				<<set $_penisgrowthtimer to $penisgrowthtimer>>
+				<<if $_penisGrowthMin lt 0>>
+					<<set $_penisGrowthMax -= $_penisGrowthMin>>
+					<<set $_penisgrowthtimer -= $_penisGrowthMin>>
+				<</if>>
+				<br>
+				Penis Growth: <<print Math.trunc(100 - ($_penisgrowthtimer / $_penisGrowthMax * 100))>>%
+				<mouse class="tooltip linkBlue">(?)<span>Reach 100% or above to grow, 0% or below to shrink.</span></mouse>
+				<br>
+				<<if $sexStats && $sexStats.pills>>
+					Penis can grow: <<print $player.penissize lt $penissizemax and ($player.penissize gte -1 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose gte 20)>>
+					<<if $player.penissize is -2 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose lt 20>>
+						<mouse class="tooltip linkBlue">(?)<span>Need to overdose on growing pills or use a urchin penis parasite.</span></mouse>
+					<<elseif $player.penissize is $penissizemax>>
+						<mouse class="tooltip linkBlue">(?)<span>At max size.</span></mouse>
+					<</if>>
+					<br>
+					Penis can shrink: <<print $player.penissize gt $penissizemin and ($player.penissize gte 0 or $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose lte -20)>>
+					<<if $player.penissize is -1 and $sexStats.pills["pills"]["penis growth"].overdose - $sexStats.pills["pills"]["penis reduction"].overdose gt -20>>
+						<mouse class="tooltip linkBlue">(?)<span>Need to overdose on shrinking pills or use a slime penis parasite.</span></mouse>
+					<<elseif $player.penissize is $penissizemin>>
+						<mouse class="tooltip linkBlue">(?)<span>At min size.</span></mouse>
+					<</if>>
+					<br>
+				<</if>>
+				Semen amount: <<print Math.trunc($semen_amount)>>
+				<br>
+				Semen volume: <<print Math.trunc($semen_volume)>>
+				<br>
+			<</if>>
+			<br>
+			Bottom Growth: <<print Math.trunc(100 - ($bottomgrowthtimer / 10))>>%
+			<mouse class="tooltip linkBlue">(?)<span>Reach 100% or above to grow, 0% or below to shrink.</span></mouse>
+			<br>
+			Bottom can grow: <<print $player.bottomsize lt $bottomsizemax>>
+			<<if $player.bottomsize is $bottomsizemax>>
+				<mouse class="tooltip linkBlue">(?)<span>At max size.</span></mouse>
+			<</if>>
+			<br>
+			Bottom can shrink: <<print $player.bottomsize gt $bottomsizemin>>
+			<<if $player.bottomsize is $bottomsizemin>>
+				<mouse class="tooltip linkBlue">(?)<span>At min size.</span></mouse>
+			<</if>>
+			<br><br>
+		<</foldout>>
+
+		<<foldout false "_clothesFoldout">>
+			<span class="gold">Clothes</span>
+			<<if $worn.upper.name isnot "naked">>
+				Upper wetness: <<print Math.trunc($upperwet)>>
+				<br>
+				Upper integrity: <<print Math.trunc($worn.upper.integrity)>>
+				<br>
+			<</if>>
+			<<if $worn.lower.name isnot "naked">>
+				Lower wetness: <<print Math.trunc($lowerwet)>>
+				<br>
+				Lower integrity: <<print Math.trunc($worn.lower.integrity)>>
+				<br>
+			<</if>>
+			<<if $worn.under_upper.name isnot "naked">>
+				Under Upper wetness: <<print Math.trunc($underupperwet)>>
+				<br>
+				Under Upper integrity: <<print Math.trunc($worn.under_upper.integrity)>>
+				<br>
+			<</if>>
+			<<if $worn.under_lower.name isnot "naked">>
+				Under Lower wetness: <<print Math.trunc($underlowerwet)>>
+				<br>
+				Under Lower integrity: <<print Math.trunc($worn.under_lower.integrity)>>
+				<br>
+			<</if>>
+			<<if $worn.genitals.name isnot "naked">>
+				<<print setup.clothes.genitals[clothesIndex('genitals',$worn.genitals)].name_cap>> integrity: <<print Math.trunc($worn.genitals.integrity)>>
+				<br>
+			<</if>>
+			<br>
+		<</foldout>>
+
+		<<foldout false "_socialFoldout">>
+			<span class="gold">Social</span>
+			School status: <<print Math.trunc($cool)>>
+			<br>
+			Delinquency: <<print Math.trunc($delinquency)>>
+			<br>
+			Detention: <<print Math.trunc($detention)>>
+			<br>
+			Crime: <<print Math.trunc(crimeSumCurrent())>>
+			<br>
+			Orphanage hope: <<print Math.trunc($orphan_hope)>>
+			<br>
+			Orphanage rebelliousness: <<print Math.trunc($orphan_reb)>>
+			<br>
+			<<if $dockwork is 2>>
+				Docks status: <<print Math.trunc($dockstatus)>>
+				<br>
+			<</if>>
+			Sex fame: <<print Math.trunc($fame.sex)>>
+			<br>
+			Prostitution fame: <<print Math.trunc($fame.prostitution)>>
+			<br>
+			Rape fame: <<print Math.trunc($fame.rape)>>
+			<br>
+			Bestiality fame: <<print Math.trunc($fame.bestiality)>>
+			<br>
+			Exhibitionism fame: <<print Math.trunc($fame.exhibitionism)>>
+			<br>
+			Pregnancy fame: <<print Math.trunc($fame.pregnancy)>>
+			<br>
+			Impregnation fame: <<print Math.trunc($fame.impreg)>>
+			<br>
+			Combat fame: <<print Math.trunc($fame.scrap)>>
+			<br>
+			Kindness fame: <<print Math.trunc($fame.good)>>
+			<br>
+			Business fame: <<print Math.trunc($fame.business)>>
+			<br>
+			<<if $debug is 1>>
+				Pimp fame: <<print Math.trunc($fame.pimp)>>
+				<br>
+			<</if>>
+			Socialite fame: <<print Math.trunc($fame.social)>>
+			<br>
+			Model fame: <<print Math.trunc($fame.model)>>
+			<br>
+			Islander language: <<print Math.trunc($islander_language)>>
+			<br><br>
+		<</foldout>>
+
+		<<foldout false "_crimeFoldout">>
+			<span class="gold">Crime</span>
+			<<for $_cr range Object.keys(setup.crimeNames)>>
+				<<foldout false $_cr>>
+					<span class="gold"><<print toTitleCase(setup.crimeNames[$_cr]) + ":">></span>
+					<<print "Current: " + Math.trunc($crime[$_cr].current)>>
+					<br>
+					<<print "History: " + Math.trunc($crime[$_cr].history)>>
+					<br>
+					<<print "Daily: " + Math.trunc($crime[$_cr].daily)>>
+					<br>
+					<<print "Count: " + Math.trunc($crime[$_cr].count)>>
+					<br>
+					<<print "Count History: " + Math.trunc($crime[$_cr].countHistory)>>
+					<br>
+				<</foldout>>
+			<</for>>
+			<<foldout false "_crimeTotalsFoldout">>
+				<span class="gold">Totals:</span>
+				<<print "Current: " + crimeSumCurrent()>>
+				<br>
+				<<print "History: " + crimeSumHistory()>>
+				<br>
+				<<print "Daily: " + crimeSumDaily()>>
+				<br>
+				<<print "Count: " + crimeSumCount()>>
+				<br>
+				<<print "Count History: " + crimeSumCountHistory()>>
+				<br>
+			<</foldout>>
+			<<foldout false "_crimeEventsFoldout">>
+				<span class="gold">Crime Events:</span>
+				<span id="statscrimeevents"><<listCrimeCheats>></span>
+				<br>
+			<</foldout>>
+		<</foldout>>
+
+		<<foldout false "_transformationFoldout">>
+			<span class="gold">Transformations</span>
+			Wolfiness: <<print Math.trunc($wolfbuild)>> (30+ for full transformation)
+			<br>
+			Wolf manifestation: <<print Math.trunc($wolfgirl)>>
+			<br>
+			Cattiness: <<print Math.trunc($catbuild)>> (50+ for full transformation)
+			<br>
+			Cat manifestation: <<print Math.trunc($cat)>>
+			<br>
+			Bovinity: <<print Math.trunc($cowbuild)>> (30+ for full transformation)
+			<br>
+			Cow manifestation: <<print Math.trunc($cow)>>
+			<br>
+			<<if $hallucinations gte 2 or $bestialitydisable is "t">>Harpyness<<else>>Birdieness<</if>>: <<print Math.trunc($birdbuild)>> (30+ for full transformation)
+			<br>
+			<<if $hallucinations gte 2 or $bestialitydisable is "t">>Harpy<<else>>Bird<</if>> manifestation: <<print Math.trunc($harpy)>>
+			<br>
+			Foxiness: <<print Math.trunc($foxbuild)>> (30+ for full transformation)
+			<br>
+			Fox manifestation: <<print Math.trunc($fox)>>
+			<br>
+			/* 北极星模组 */
+			羊化: <<print Math.trunc($sheepbuild)>> (30+ 完成变形)
+			<br>
+			羊化阶段: <<print Math.trunc($sheep)>>
+			<br>
+			蜜蜂化: <<print Math.trunc($beebuild)>> (30+ 完成变形)
+			<br>
+			蜜蜂化阶段: <<print Math.trunc($bee)>>
+			<br>
+			鹿化: <<print Math.trunc($deerbuild)>> (30+ 完成变形)
+			<br>
+			鹿化阶段: <<print Math.trunc($deer)>>
+			<br>
+			熊化: <<print Math.trunc($bearbuild)>> (30+ 完成变形)
+			<br>
+			熊化阶段: <<print Math.trunc($bear)>>
+			<br>
+			龙化: <<print Math.trunc($dragonbuild)>> (50+ 完成变形)
+			<br>
+			龙化阶段: <<print Math.trunc($dragon)>>
+			<br>
+			蜥蜴化: <<print Math.trunc($lizardbuild)>> (30+ 完成变形)
+			<br>
+			蜥蜴化阶段: <<print Math.trunc($lizard)>>
+			<br>
+			海豚化: <<print Math.trunc($dolphinbuild)>> (30+ 完成变形)
+			<br>
+			海豚化阶段: <<print Math.trunc($dolphin)>>
+			<br>
+			狗化: <<print Math.trunc($dogbuild)>> (30+ 完成变形)
+			<br>
+			狗化阶段: <<print Math.trunc($dog)>>
+			<br>
+			鱼化: <<print Math.trunc($fishbuild)>> (30+ 完成变形)
+			<br>
+			鱼化阶段: <<print Math.trunc($fish)>>
+			<br>
+			浣熊化: <<print Math.trunc($raccoonbuild)>> (30+ 完成变形)
+			<br>
+			浣熊化阶段: <<print Math.trunc($raccoon)>>
+			<br>
+			马化: <<print Math.trunc($horsebuild)>> (30+ 完成变形)
+			<br>
+			马化阶段: <<print Math.trunc($horse)>>
+			<br>
+			蜘蛛化: <<print Math.trunc($spiderbuild)>> (30+ 完成变形)
+			<br>
+			蜘蛛化阶段: <<print Math.trunc($spider)>>
+			<br>
+			青蛙化: <<print Math.trunc($frogbuild)>> (30+ 完成变形)
+			<br>
+			青蛙化阶段: <<print Math.trunc($frog)>>
+			<br>
+			猪化: <<print Math.trunc($pigbuild)>> (30+ 完成变形)
+			<br>
+			猪化阶段: <<print Math.trunc($pig)>>
+			<br><br>
+			蘑菇营养(进化点): <<print Math.trunc($fungalpoint)>> (每30天获得一个)
+			<br>
+			蘑菇进化阶段: <<print Math.trunc($mushroom)>> 
+			<br><br>
+			/* 北极星 */
+			Angelicness: <<print Math.trunc($angelbuild)>> (50+ for full transformation)
+			<br>
+			Angel manifestation: <<print Math.trunc($angel)>>
+			<br>
+			Demonicness: <<print Math.trunc($demonbuild)>> (30+ for full transformation)
+			<br>
+			Demonic manifestation: <<print Math.trunc($demon)>>
+			<br>
+			Fallen manifestation:
+			<<print ($fallenangel is undefined ? 0 : Math.trunc($fallenangel))>>
+			<br>
+			Fallen Forgiveness: <<print Math.trunc($fallenbuild)>> (30+ to be forgiven)
+			<br>
+			/* 北极星模组 */
+			恶魔猎手阶段:
+			<<print ($demonhunter is undefined ? 0 : Math.trunc($demonhunter))>>
+			<br>
+			复仇的信念: <<print Math.trunc($hunterbuild)>> (30+ 完全坚定)
+			<br><br>
+			/* 北极星 */
+		<</foldout>>
+
+		<<foldout false "_parasitePregnancyFoldout">>
+			<span class="gold">Parasite Pregnancy</span>
+			<<set $_aPregnancy to $sexStats.anus.pregnancy>>
+			<<if $_aPregnancy.type is "parasite" or $_aPregnancy.type is null>>
+				<<for _i to 0; _i lt maxParasites("anus"); _i++>>
+					<<if $_aPregnancy.fetus[_i] isnot undefined>>
+						<<if $_aPregnancy.fetus[_i].fertilised>>
+							Anal slot <<=_i+1>> is pregnant with a $_aPregnancy.fetus[_i].stats.gender $_aPregnancy.fetus[_i].creature,
+							<<if $_aPregnancy.fetus[_i].stats.gender is "Hermaphrodite">>
+								<<if $pregnancyStats.parasiteDoctorEvents gte 4 and $_aPregnancy.fetus[_i].daysLeft is 0>>
+									Dr Harper will be able to help you to deliver at any time.
+								<<elseif $pregnancyStats.parasiteDoctorEvents gte 4>>
+									Dr Harper will be able to help you to deliver in <<=$_aPregnancy.fetus[_i].daysLeft>> days.
+								<<else>>
+									You will need to see Dr Harper to deliver.
+								<</if>>
+							<<else>>
+								<<if $_aPregnancy.fetus[_i].daysLeft is 0>>
+									and will be ready to deliver at any time soon.
+								<<else>>
+									and will be ready to deliver in less than <<=$_aPregnancy.fetus[_i].daysLeft>> days.
+								<</if>>
+							<</if>>
+							<br>
+						<<else>>
+							Anal slot <<=_i+1>> has a $_aPregnancy.fetus[_i].stats.gender $_aPregnancy.fetus[_i].creature egg ready to be fertilised.<br>
+						<</if>>
+					<<else>>
+						Anal slot <<=_i+1>> is empty.<br>
+					<</if>>
+				<</for>>
+			<<else>>
+				<<if getPregnancyObject().awareOf>>
+					Unable to host parasites due to other type of anal pregnancy.
+				<<else>>
+					<<for _i to 0; _i lt maxParasites("anus"); _i++>>
+						Anal slot <<=_i+1>> is empty.<br>
+					<</for>>
+				<</if>>
+			<</if>>
+			<<set $_vPregnancy to $sexStats.vagina.pregnancy>>
+			<<if $player.vaginaExist>>
+				<<if $_vPregnancy.type is "parasite" or $_vPregnancy.type is null>>
+					<<for _i to 0; _i lt maxParasites("vagina"); _i++>>
+						<<if $_vPregnancy.fetus[_i] isnot undefined>>
+							<<if $_vPregnancy.fetus[_i].fertilised>>
+								Vagina slot <<=_i+1>> is pregnant with a $_vPregnancy.fetus[_i].stats.gender $_vPregnancy.fetus[_i].creature,
+								<<if $_vPregnancy.fetus[_i].stats.gender is "Hermaphrodite">>
+									<<if $pregnancyStats.parasiteDoctorEvents gte 4 and $_vPregnancy.fetus[_i].daysLeft is 0>>
+										Dr Harper will be able to help you to deliver at any time.
+									<<elseif $pregnancyStats.parasiteDoctorEvents gte 4>>
+										Dr Harper will be able to help you to deliver in <<=$_vPregnancy.fetus[_i].daysLeft + 1>> days.
+									<<else>>
+										You will need to see Dr Harper to deliver.
+									<</if>>
+								<<else>>
+									<<if $_vPregnancy.fetus[_i].daysLeft is 0>>
+										and will be ready to deliver at any time soon.
+									<<else>>
+										and will be ready to deliver in less than <<=$_vPregnancy.fetus[_i].daysLeft>> days.
+									<</if>>
+								<</if>>
+								<br>
+							<<else>>
+								Vagina slot <<=_i+1>> has a $_vPregnancy.fetus[_i].stats.gender $_vPregnancy.fetus[_i].creature egg ready to be fertilised.<br>
+							<</if>>
+						<<else>>
+							Vagina slot <<=_i+1>> is empty.<br>
+						<</if>>
+					<</for>>
+				<<else>>
+					<<if getPregnancyObject().awareOf>>
+						Unable to host parasites due to other type of vaginal pregnancy.
+					<<else>>
+						<<for _i to 0; _i lt maxParasites("vagina"); _i++>>
+							Vagina slot <<=_i+1>> is empty.<br>
+						<</for>>
+					<</if>>
+				<</if>>
+			<</if>>
+		<</foldout>>
+		<<set $_menstruation to $sexStats.vagina.menstruation>>
+		<<if $cycledisable is "f">>
+			<<foldout false "_menstruationFoldout">>
+				<span class="gold">Menstruation cycle</span>
+				Running: <<print $_menstruation.running ? "true" : "false">>
+				<<if $_menstruation.running>>
+					<br>
+					Current Day in cycle: <<print $_menstruation.currentDay>>
+					<br>
+					Last day in cycle: <<print $_menstruation.currentDaysMax>>
+					<br>
+					Most risky days: <<print $_menstruation.stages[2]>>
+				<</if>>
+				<br>
+			<</foldout>>
+		<</if>>
+		<<foldout false "_pregnancyFoldout">>
+			<span class="gold">Pregnancy</span>
+			/* Previously commented out for being a major spoil, but caused players to think a bug had occured */
+			Total days being pregnant: <<print Math.floor($pregnancyStats.totalDaysPregnant)>>
+			<br>
+			Total days knowingly being pregnant: <<print Math.floor($pregnancyStats.totalDaysPregnancyKnown)>>
+			<br>
+			<<if canBeMPregnant()>>
+			<<elseif !$player.vaginaExist or !$_menstruation.running>>
+				Can not currently get pregnant.
+			<<elseif $_vPregnancy.type is "parasite">>
+				Parasites in the womb are preventing normal pregnancy from occurring.
+			<<elseif $_menstruation.currentState is "recovering">>
+				You are not quite ready to get pregnant so soon after your last one.
+			<<elseif $_vPregnancy.type isnot null>>
+				Currently pregnant with: <<print $_vPregnancy.fetus.length>>
+					<<extraStatisticsPregnancyType $_vPregnancy.type>>
+				<br>
+				<<set $_days to pregnancyDaysEta($_vPregnancy)>>
+				<<if $_days lt 1>>
+					ETA: Anytime.
+				<<elseif $_days>>
+					ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
+				<</if>>
+				<br>
+			<<else>>
+				Not currently pregnant.
+				<br>
+				<<if $pregnancytype is "realistic">>
+					<<set [_trackedNPCs, _spermArray] to spermObjectToArray($sexStats.vagina.sperm, true, true)>>
+					Number of sources of sperm that can get you pregnant: <<print _spermArray.length>>.
+					<<if _trackedNPCs.length>>
+						<br>
+						Those whose sperm you have inside you currently:
+						<ul>
+							<<for _name range _trackedNPCs>>
+								<<set $_count to _spermArray.filter(s => s.source === T.name.source).length>>
+								<li>
+									<<print pregnancyNameCorrection(_name.source)>>
+									<<if $_count gt 1>>
+										(x<<print $_count>>)
+									<</if>>
+								</li>
+							<</for>>
+						</ul>
+					<</if>>
+				<</if>>
+			<</if>>
+			<<if canBeMPregnant()>>
+				<<if $_aPregnancy.type is "parasite">>
+					Parasites in the womb are preventing normal pregnancy from occurring.
+				<<elseif !$_menstruation.running>>
+					You can not current get pregnant.
+				<<elseif $_menstruation.currentState is "recovering">>
+					You are not quite ready to get pregnant so soon after your last one.
+				<<elseif $_aPregnancy.type isnot null>>
+					Currently pregnant with: <<print $_aPregnancy.fetus.length>>
+					<<extraStatisticsPregnancyType $_aPregnancy.type>>
+					<br>
+					<<set $_days to pregnancyDaysEta($_aPregnancy)>>
+					<<if $_days lt 1>>
+						ETA: Anytime.
+					<<elseif $_days>>
+						ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
+					<</if>>
+					<br>
+				<<else>>
+					Not currently pregnant.
+					<br>
+					<<if $pregnancytype is "realistic">>
+						<<set [_trackedNPCs, _spermArray] to spermObjectToArray($sexStats.anus.sperm, true, true)>>
+						Number of sources of sperm that can get you pregnant: <<print _spermArray.length>>.
+						<<if _trackedNPCs.length>>
+							<br>
+							Those whose sperm you have inside you currently:
+							<ul>
+								<<for _name range _trackedNPCs>>
+									<<set $_count to _spermArray.filter(s => s.source === T.name.source).length>>
+									<li>
+										<<print pregnancyNameCorrection(_name.source)>>
+										<<if $_count gt 1>>
+											(x<<print $_count>>)
+										<</if>>
+									</li>
+								<</for>>
+							</ul>
+						<</if>>
+					<</if>>
+				<</if>>
+			<</if>>
+		<</foldout>>
+		<<if $NPCName.find(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
+			<<foldout false "_npcPregnancyFoldout">>
+				<span class="gold">NPC Pregnancy</span>
+				<<for $_npc range $NPCName.filter(npc => npc.pregnancy and npc.pregnancy.enabled isnot undefined)>>
+					<div>
+						<<print $_npc.nam>>:
+						<<if !$_npc.pregnancy.enabled and !$_npc.pregnancy.fetus.length>>
+							Pregnancy for NPC disabled by the player.
+						<<elseif !$_npc.pregnancy.fetus.length>>
+							Not Pregnant.
+						<<elseif $_npc.pregnancy.fetus.length>>
+							Pregnant with <<print $_npc.pregnancy.fetus.length>>
+							<<extraStatisticsPregnancyType $_npc.pregnancy.type>>
+							<<set $_days to pregnancyDaysEta($_npc.pregnancy)>>
+							<<if $_days lt 1>>
+								ETA: Anytime.
+							<<elseif $_days>>
+								ETA: <<print $_days>> day<<if $_days isnot 1>>s<</if>>.
+							<</if>>
+						<</if>>
+					</div>
+				<</for>>
+			<</foldout>>
+		<</if>>
+	</div>
+<</widget>>
+
+<<widget "extraStatisticsPregnancyType">>
+	<<switch _args[0]>>
+		<<case "human">>normal babies.
+		<<case "wolf">>wolf puppies.
+	<</switch>>
+<</widget>>

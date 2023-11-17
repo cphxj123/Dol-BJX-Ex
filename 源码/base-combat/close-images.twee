@@ -1,0 +1,648 @@
+:: Widgets Close Img [widget]
+<<widget "closeimg">>
+    <<set _filters to $skinColor.current>>
+    <<set _na to $active_enemy>>
+    <<imgOpacity>>
+    <<getTentacleColour>>
+
+    /* 北极星模组 */
+    <<if $position is "wall" and $NPCList[_na].type isnot "deer", "stagboy", "deergirl">>
+        <<set _img to setup.tanImg.close["doggy"][($options.tanImgEnabled ? "t" : "f")]>>
+        <<set _position to "doggy">>
+    <<elseif $position is "wall" and $NPCList[_na].type is "deer", "stagboy", "deergirl">>
+    /* 北极星 */
+        <<set _img to setup.tanImg.close["doggy"][($options.tanImgEnabled ? "t" : "f")]>>
+        <<set _position to "doggy">>
+    <<else>>
+        <<set _img to setup.tanImg.close[$position][($options.tanImgEnabled ? "t" : "f")]>>
+        <<set _position to $position>>
+    <</if>>
+
+    <<if playerChastity("hidden")>>
+        <<if $worn.genitals.name is "gold chastity belt">>
+            <<set _beltName to "Gold">>
+        <<else>>
+            <<set _beltName to "">>
+        <</if>>
+    <</if>>
+
+    <<set _pbColour = ($makeup.pbcolour != 0 ? $makeup.pbcolour : $naturalhaircolour).replace(/ /g, '-')>>
+
+    <<if $player.vaginaExist and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+        <div class="i64" id="closevagina">
+        <<set _vagina = _img.vagina>>
+        <<set _aroused = $vaginaWetness gte 75>>
+        <<set _penetrate = "">>
+        <<set _cum = "entrance">>
+        <<set _frames = "anim-close-6f-" + _animspeed>>
+        <<set _penis_frames = _frames>>
+        <<set _penetrator_frames = _frames>>
+		<<set _penetratorColour to "">>
+		<<set _penetratorFilter to "">>
+        <<set _idle = false>>
+
+        <<if playerChastity("hidden") and !playerHasStrapon()>>
+            <<switch $vaginastate>>
+                <<case "tentacle" "tentacleentrance" "tentacleimminent" "entrance" "imminent" "othermouthentrance" "othermouthimminent">>
+                    <<set _aniFrame to 'anim-close-6f-'+_animspeed>>
+                <<default>>
+                    <<set _aniFrame to "anim-idle-6f-slow">>
+            <</switch>>
+            <img @class="_aniFrame" @src="_img.vaginaChastityBase" @style="'filter: '+_filters.body">
+            <<if $pbdisable is "f">>
+                <<if $pbstrip gte 1>>
+                    <img @class="'pbhair-' + _pbColour + ' ' +_aniFrame" @src="'img/sex/close/'+_position+'/phair/vaginapbstrip'+$pbstrip+'.png'">
+                <</if>>
+                <<if $pblevel gte 2>>
+                    <img @class="'pbhair-' + _pbColour + ' ' +_aniFrame" @src="'img/sex/close/'+_position+'/phair/vaginapb'+$pblevel+'.png'">
+                <</if>>
+            <</if>>
+            <img @class="_aniFrame" @src="'img/sex/close/'+_position+'/chastityBelt/vagina'+_beltName+'.png'">
+            <<if $worn.under_lower.state is "totheside">>
+                <img @class="'colour-under_lower ' + _aniFrame" @src="'img/sex/close/' + _position + '/vaginatotheside.png'" @style="($worn.under_lower.colour is 'custom'? $worn.under_lower.colourCustom + _underLowerOpacity : '')">
+            <</if>>
+            <<switch $vaginastate>>
+                <<case "tentacleentrance" "tentacleimminent">>
+                    <img @class="'_aniFrame '+_tentacleColour" @src="'img/sex/close/'+_position+'/chastityBelt/tentacle.png'">
+                <<case "entrance" "imminent">>
+                    <<if $enemytype is "beast">>
+                        <img @class="_aniFrame" @src="'img/sex/close/'+_position+'/chastityBelt/beast.png'">
+                    <<else>>
+                        <img @class="_aniFrame+' '+(npcHasStrapon($vaginatarget) && $options.tanImgEnabled ? 'strapon-' + $NPCList[$vaginatarget].strapon.color : '')"
+                        @src="_img.vaginaChastityMan"
+                        @style="'filter: '+(!npcHasStrapon($vaginatarget) && $options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$vaginatarget].skincolour] : '')">
+                        <<if wearingCondom($vaginatarget)>>
+                            <img @class="_aniFrame+' condom-'+ $NPCList[$vaginatarget].condom.colour.replace(/ /g, '-')"
+                            @src="'img/sex/close/'+_position+'/chastityBelt/man_condom.png'">
+                        <</if>>
+                    <</if>>
+                <<case "othermouthentrance" "othermouthimminent">>
+                    <<if $enemytype is "beast">>
+                        <img @class="_aniFrame" @src="'img/sex/close/'+_position+'/beast/vaginaentrance.png'">
+                    <</if>>
+            <</switch>>
+        <<else>>
+            <<if $vaginastate is "tentacle" or $vaginastate is "tentacledeep">>
+                <<set _vagina = _img.vaginapenetrate>>
+                <<set _penetrate = "penetrate">>
+                <<set _cum = "penetrate">>
+                <<set _penetrator = "close/" + _position + "/vaginatentaclepenetrated.png">>
+                <<set _penetratorColour to _tentacleColour>>
+
+            <<elseif $vaginastate is "tentacleentrance" or $vaginastate is "tentacleimminent">>
+                <<set _penetrator = "close/" + _position + "/vaginatentacleentrance.png">>
+                <<set _penetratorColour to _tentacleColour>>
+
+            <<elseif $vaginastate is "penetrated" or $vaginastate is "doublepenetrated">>
+                <<if ($enemytype is "beast" and $NPCList[_na].penissize gte 5) or ($vaginastate is "doublepenetrated" and $NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginadouble")>>
+                    <<set _vagina = _img.vaginapenetratebig>>
+                <<else>>
+                    <<set _vagina = _img.vaginapenetrate>>
+                <</if>>
+
+                <<set _penetrate = "penetrate">>
+                <<set _cum = "penetrate">>
+
+                <<if $enemytype is "machine">>
+                    <<set _penetrator = "machine/vaginal/" + _position + "/penetrated_close.png">>
+                <<elseif $enemytype is "beast">>
+                    <<if $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur">>
+                        <<set _penetrator = "close/horse/vaginapenetratedhorse.png">>
+                    <<else>>
+                        <<set _penetrator = "close/" + _position + "/vaginapenetratedbeast.png">>
+                    <</if>>
+                <<elseif $vaginastate is "doublepenetrated" and $NPCList[$vaginatarget].penis is "vaginadouble" and $NPCList[$vaginadoubletarget].penis is "vaginadouble">>
+					<<set _penetratorBase to "close/" + _position + "/vaginapenetratedouble_base.png">>
+					<<if $options.tanImgEnabled>>
+						<<set _penetrator = "closeRed/" + _position + "/vaginapenetratedouble_top.png">>
+						<<set _penetratorColour = (npcHasStrapon($vaginatarget) ? "strapon-"+$NPCList[$vaginatarget].strapon.color : "")>>
+						<<set _penetratorFilter = (npcHasStrapon($vaginatarget) ? "" : setup.npcSkinDefaults[$NPCList[$vaginatarget].skincolour])>>
+						<<set _penetrator2 = "closeRed/" + _position + "/vaginapenetratedouble_bottom.png">>
+						<<set _penetrator2Colour = (npcHasStrapon($vaginadoubletarget) ? "strapon-"+$NPCList[$vaginadoubletarget].strapon.color : "")>>
+						<<set _penetrator2Filter = (npcHasStrapon($vaginadoubletarget) ? "" : setup.npcSkinDefaults[$NPCList[$vaginadoubletarget].skincolour])>>
+					<<else>>
+						<<set _penetrator = "close/" + _position + "/vaginapenetratedouble_top.png">>
+						<<set _penetrator2 = "close/" + _position + "/vaginapenetratedouble_bottom.png">>
+					<</if>>
+					<<if wearingCondom($vaginatarget)>>
+						<<set _penetratorCondom to "close/" + _position + "/vaginapenetratedouble_top_condom.png">>
+						<<set _penetratorCondomColour to "condom-" + $NPCList[$vaginatarget].condom.colour.replace(/ /g, '-')>>
+					<</if>>
+					<<if wearingCondom($vaginadoubletarget)>>
+						<<set _penetrator2Condom to "close/" + _position + "/vaginapenetratedouble_bottom_condom.png">>
+						<<set _penetrator2CondomColour to "condom-" + $NPCList[$vaginadoubletarget].condom.colour.replace(/ /g, '-')>>
+					<</if>>
+                <<else>>
+					<<set _penetratorBase to "close/" + _position + "/vaginapenetrated_base.png">>
+					<<if $options.tanImgEnabled>>
+						<<set _penetrator = "closeRed/" + _position + "/vaginapenetrated.png">>
+						<<set _penetratorColour = (npcHasStrapon($vaginatarget) ? "strapon-"+$NPCList[$vaginatarget].strapon.color : "")>>
+						<<set _penetratorFilter = (npcHasStrapon($vaginatarget) ? "" : setup.npcSkinDefaults[$NPCList[$vaginatarget].skincolour])>>
+					<<else>>
+						<<set _penetrator = "close/" + _position + "/vaginapenetrated.png">>
+					<</if>>
+					<<if wearingCondom($vaginatarget)>>
+						<<set _penetratorCondom to "close/" + _position + "/vaginapenetrated_condom.png">>
+						<<set _penetratorCondomColour to "condom-" + $NPCList[$vaginatarget].condom.colour.replace(/ /g, '-')>>
+					<</if>>
+                <</if>>
+
+            <<elseif $vaginastate is "entrance">>
+                <<if $enemytype is "machine">>
+                    <<set _penetrator = "machine/vaginal/" + _position + "/entrance_close.png">>
+                <<elseif $enemytype is "beast">>
+                    <<if $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur">>
+                        <<set _penetrator = "close/horse/vaginaentrancehorse.png">>
+                    <<else>>
+                        <<set _penetrator = "close/" + _position + "/vaginaentrancebeast.png">>
+                    <</if>>
+                <<else>>
+					<<if $options.tanImgEnabled>>
+						<<set _penetrator = "closeRed/" + _position + "/vaginaentrance.png">>
+						<<set _penetratorColour = (npcHasStrapon($vaginatarget) ? "strapon-"+$NPCList[$vaginatarget].strapon.color : "")>>
+						<<set _penetratorFilter = (npcHasStrapon($vaginatarget) ? "" : setup.npcSkinDefaults[$NPCList[$vaginatarget].skincolour])>>
+					<<else>>
+						<<set _penetrator = "close/" + _position + "/vaginaentrance.png">>
+					<</if>>
+					<<if wearingCondom($vaginatarget)>>
+						<<set _penetratorCondom to "close/" + _position + "/vaginaentrance_condom.png">>
+						<<set _penetratorCondomColour to "condom-" + $NPCList[$vaginatarget].condom.colour.replace(/ /g, '-')>>
+					<</if>>
+                <</if>>
+
+            <<elseif $vaginastate is "imminent">>
+                <<set _frames = "anim-close-3f-" + _animspeed>>
+                <<set _penis_frames = "anim-close-6f-" + _animspeed>>
+                <<set _penetrator_frames = "anim-close-3f-" + _animspeed>>
+
+                <<if $enemytype is "machine">>
+                    <<set _penetrator_frames = "anim-close-6f-" + _animspeed>>
+                    <<set _penetrator = "machine/vaginal/" + _position + "/entrance_close.png">>
+                <<elseif $enemytype is "beast">>
+                    <<if $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur">>
+                        <<set _penetrator_frames = "anim-close-6f-" + _animspeed>>
+                        <<set _penetrator = "close/horse/vaginaentrancehorse.png">>
+                    <<else>>
+                        <<set _penetrator = "close/" + _position + "/vaginaentrancebeast.png">>
+                    <</if>>
+                <<else>>
+					<<if $options.tanImgEnabled>>
+						<<set _penetrator = "closeRed/" + _position + "/vaginaentrance.png">>
+						<<set _penetratorColour = (npcHasStrapon($vaginatarget) ? "strapon-"+$NPCList[$vaginatarget].strapon.color : "")>>
+						<<set _penetratorFilter = (npcHasStrapon($vaginatarget) ? "" : setup.npcSkinDefaults[$NPCList[$vaginatarget].skincolour])>>
+					<<else>>
+						<<set _penetrator = "close/" + _position + "/vaginaentrance.png">>
+					<</if>>
+					<<if wearingCondom($vaginatarget)>>
+						<<set _penetratorCondom to "close/" + _position + "/vaginaentrance_condom.png">>
+						<<set _penetratorCondomColour to "condom-" + $NPCList[$vaginatarget].condom.colour.replace(/ /g, '-')>>
+					<</if>>
+                <</if>>
+
+            <<elseif $enemytype is "beast" and ($vaginastate is "othermouthentrance" or $vaginastate is "othermouthimminent") and $monster isnot 1>>
+                <<set _penetrator = "close/" + _position + "/beast/vaginaentrance.png">>
+
+            <<elseif $enemytype is "beast" and $vaginastate is "othermouth" and $monster isnot 1>>
+                <<set _penetrator = "close/" + _position + "/beast/vagina.png">>
+
+            <<elseif $vaginause is "othervagina">>
+                <<set _penetrator = "close/" + _position + "/trib.png">>
+
+            <<else>>
+                <<set _idle = true>>
+                <<set _frames = "anim-idle-1f-slow">>
+                <<set _penis_frames = _frames>>
+                <<set _penetrator_frames = _frames>>
+
+            <</if>>
+
+            <!-- Vagina -->
+            <img @class="_frames" @src="_vagina" @style="'filter: ' + _filters.body">
+            <<if _aroused and _penetrate is "">>
+                <img @class="_frames" @src="_img.vaginaaroused" @style="'filter: ' + _filters.body">
+            <</if>>
+            <!-- Pubic hair -->
+            <<if $pbdisable is "f">>
+                <<if $pbstrip gte 1>>
+                    <img @class="'pbhair-' + _pbColour + ' ' + _frames" @src="'img/sex/close/' + _position + '/phair/vagina' + _penetrate + 'pbstrip' + $pbstrip + '.png'">
+                <</if>>
+                <<if $pblevel gte 2>>
+                    <img @class="'pbhair-' + _pbColour + ' ' + _frames" @src="'img/sex/close/' + _position + '/phair/vagina' + _penetrate + 'pb' + $pblevel + '.png'">
+                <</if>>
+            <</if>>
+            <!-- Wolf TF pubic hair -->
+            <<if !["hidden", "disabled"].includes($transformationParts.wolf.pubes)>>
+                <img @class="'pbhair-' + _pbColour + ' ' + _frames" @src="'img/sex/close/' + _position + '/vaginahirsute.png'">
+            <</if>>
+            <!-- Bird TF pubic hair -->
+            <<if !["hidden", "disabled"].includes($transformationParts.bird.pubes)>>
+                <img @class="'pbhair-' + _pbColour + ' ' + _frames" @src="'img/sex/close/' + _position + '/vaginahirsute.png'">
+            <</if>>
+            <!-- Hermaphrodite penis -->
+            <<if $player.penisExist>>
+                <<if $player.ballsExist is false>>
+                    <img @class="_penis_frames" @src="_img.futavaginanoballs" @style="'filter: ' + _filters.body">
+                /* add clause for strap-ons? */
+                <<else>>
+                    <img @class="_penis_frames" @src="_img.futavagina" @style="'filter: ' + _filters.body">
+                <</if>>
+            <</if>>
+            <!-- Dripping cum -->
+            <<if setup.bodyliquid.combined("vagina") gte 1>>
+                <<if _idle is false>>
+                    <img @class="_frames" @src="'img/sex/close/' + _position + '/vagina' + _cum + 'cum.png'">
+                <<else>>
+                    <img @src="'img/sex/close/' + _position + '/vaginacum.gif'">
+                <</if>>
+            <</if>>
+            <!-- Panties to the side -->
+            <<if $worn.under_lower.state is "totheside">>
+                <img @class="'colour-under_lower ' + _frames" @src="'img/sex/close/' + _position + '/vaginatotheside.png'" @style="($worn.under_lower.colour is 'custom'? $worn.under_lower.colourCustom + _underLowerOpacity : '')">
+            <</if>>
+            <!-- Enemy penis or substitute -->
+            <<if _idle is false>>
+                <img @class="_penetratorColour + ' ' + _penetrator_frames" @src="'img/sex/' + _penetrator" @style="'filter: '+ _penetratorFilter">
+				<<if _penetratorCondom>>
+					<img @class="_penetratorCondomColour + ' ' + _penetrator_frames" @src="'img/sex/' + _penetratorCondom">
+				<</if>>
+				<<if _penetrator2>>
+					<img @class="_penetrator2Colour + ' ' + _penetrator_frames" @src="'img/sex/' + _penetrator2" @style="'filter: '+ _penetrator2Filter">
+					<<if _penetrator2Condom>>
+						<img @class="_penetrator2CondomColour + ' ' + _penetrator_frames" @src="'img/sex/' + _penetrator2Condom">
+					<</if>>
+				<</if>>
+				<<if _penetratorBase>>
+					<img @class="_penetrator_frames" @src="'img/sex/' + _penetratorBase">
+				<</if>>
+            <</if>>
+        <</if>>
+        </div>
+    <</if>>
+
+    <<if $worn.under_lower.anus_exposed is 1 and $worn.lower.anus_exposed is 1>>
+        <div class="i64" id="closeanus">
+        <<set _idle = false>>
+        <<set _penetrated = false>>
+		<<set _imageColour to "">>
+		<<set _imageFilter to "">>
+        <<if $anusstate is "tentacle">>
+            <<set _image = 'close/' + _position + '/anustentaclepenetrated.png'>>
+			<<set _imageColour to _tentacleColour>>
+        <<elseif $anusstate is "tentacledeep">>
+            <<set _penetrated = true>>
+            <<set _image = 'close/' + _position + '/anustentaclepenetrated.png'>>
+			<<set _imageColour to _tentacleColour>>
+        <<elseif $anusstate is "tentacleentrance">>
+            <<set _image = 'close/' + _position + '/anustentacleentrance.png'>>
+			<<set _imageColour to _tentacleColour>>
+        <<elseif $anusstate is "tentacleimminent">>
+            <<set _image = 'close/' + _position + '/anustentacleentrance.png'>>
+			<<set _imageColour to _tentacleColour>>
+        <<elseif $anusstate is "penetrated" or $anusstate is "doublepenetrated">>
+            <<set _penetrated = true>>
+            <<if $enemytype is "machine">>
+                <<set _image = 'machine/anal/' + _position + '/penetrated_close.png'>>
+            <<elseif $enemytype is "beast">>
+                <<if $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur">>
+                    <<set _image = 'close/horse/anuspenetratedhorse.png'>>
+                <<else>>
+                    <<set _image = 'close/' + _position + '/anuspenetratedbeast.png'>>
+                <</if>>
+            <<elseif $anusstate is "doublepenetrated" and $NPCList[$anustarget].penis is "anusdouble" and $NPCList[$anusdoubletarget].penis is "anusdouble">>
+				<<set _imageBase to "close/" +_position+ "/anuspenetratedouble_base.png">>
+				<<if $options.tanImgEnabled>>
+					<<set _image = "closeRed/" + _position + "/anuspenetratedouble_top.png">>
+					<<set _imageColour = (npcHasStrapon($anustarget) ? "strapon-"+$NPCList[$anustarget].strapon.color : "")>>
+					<<set _imageFilter = (npcHasStrapon($anustarget) ? "" : setup.npcSkinDefaults[$NPCList[$anustarget].skincolour])>>
+					<<set _image2 = "closeRed/" + _position + "/anuspenetratedouble_bottom.png">>
+					<<set _image2Colour = (npcHasStrapon($anusdoubletarget) ? "strapon-"+$NPCList[$anusdoubletarget].strapon.color : "")>>
+					<<set _image2Filter = (npcHasStrapon($anusdoubletarget) ? "" : setup.npcSkinDefaults[$NPCList[$anusdoubletarget].skincolour])>>
+				<<else>>
+					<<set _image = "close/" + _position + "/anuspenetratedouble_top.png">>
+					<<set _image2 = "close/" + _position + "/anuspenetratedouble_bottom.png">>
+				<</if>>
+				<<if wearingCondom($anustarget)>>
+					<<set _imageCondom to "close/" + _position + "/anuspenetratedouble_top_condom.png">>
+					<<set _imageCondomColour to "condom-" + $NPCList[$anustarget].condom.colour.replace(/ /g, '-')>>
+				<</if>>
+				<<if wearingCondom($anusdoubletarget)>>
+					<<set _image2Condom to "close/" + _position + "/anuspenetratedouble_bottom_condom.png">>
+					<<set _image2CondomColour to "condom-" + $NPCList[$anusdoubletarget].condom.colour.replace(/ /g, '-')>>
+				<</if>>
+            <<else>>
+				<<set _imageBase to "close/" + _position + "/anuspenetrated_base.png">>
+				<<if $options.tanImgEnabled>>
+					<<set _image = "closeRed/" + _position + "/anuspenetrated.png">>
+					<<set _imageColour = (npcHasStrapon($anustarget) ? "strapon-"+$NPCList[$anustarget].strapon.color : "")>>
+					<<set _imageFilter = (npcHasStrapon($anustarget) ? "" : setup.npcSkinDefaults[$NPCList[$anustarget].skincolour])>>
+				<<else>>
+					<<set _image = "close/" + _position + "/anuspenetrated.png">>
+				<</if>>
+				<<if wearingCondom($anustarget)>>
+					<<set _imageCondom to "close/" + _position + "/anuspenetrated_condom.png">>
+					<<set _imageCondomColour to "condom-" + $NPCList[$anustarget].condom.colour.replace(/ /g, '-')>>
+				<</if>>
+            <</if>>
+        <<elseif $anusstate is "entrance">>
+            <<if $enemytype is "machine">>
+                <<set _image = 'machine/anal/' + _position + '/entrance_close.png'>>
+            <<elseif $enemytype is "beast">>
+                <<if $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur">>
+                    <<set _image = 'close/horse/anusentrancehorse.png'>>
+                <<else>>
+                    <<set _image = 'close/' + _position + '/anusentrancebeast.png'>>
+                <</if>>
+            <<else>>
+				<<if $options.tanImgEnabled>>
+					<<set _image = "closeRed/" + _position + "/anusentrance.png">>
+					<<set _imageColour = (npcHasStrapon($anustarget) ? "strapon-"+$NPCList[$anustarget].strapon.color : "")>>
+					<<set _imageFilter = (npcHasStrapon($anustarget) ? "" : setup.npcSkinDefaults[$NPCList[$anustarget].skincolour])>>
+				<<else>>
+					<<set _image = "close/" + _position + "/anusentrance.png">>
+				<</if>>
+				<<if wearingCondom($anustarget)>>
+					<<set _imageCondom to "close/" + _position + "/anusentrance_condom.png">>
+					<<set _imageCondomColour to "condom-" + $NPCList[$anustarget].condom.colour.replace(/ /g, '-')>>
+				<</if>>
+            <</if>>
+        <<elseif $anusstate is "imminent">>
+            <<if $enemytype is "machine">>
+                <<set _image = 'machine/anal/' + _position + '/entrance_close.png'>>
+            <<elseif $enemytype is "beast">>
+                <<if $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur">>
+                    <<set _image = 'close/horse/anusentrancehorse.png'>>
+                <<else>>
+                    <<set _image = 'close/' + _position + '/anusentrancebeast.png'>>
+                <</if>>
+            <<else>>
+				<<if $options.tanImgEnabled>>
+					<<set _image = "closeRed/" + _position + "/anusentrance.png">>
+					<<set _imageColour = (npcHasStrapon($anustarget) ? "strapon-"+$NPCList[$anustarget].strapon.color : "")>>
+					<<set _imageFilter = (npcHasStrapon($anustarget) ? "" : setup.npcSkinDefaults[$NPCList[$anustarget].skincolour])>>
+				<<else>>
+					<<set _image = "close/" + _position + "/anusentrance.png">>
+				<</if>>
+				<<if wearingCondom($anustarget)>>
+					<<set _imageCondom to "close/" + _position + "/anusentrance_condom.png">>
+					<<set _imageCondomColour to "condom-" + $NPCList[$anustarget].condom.colour.replace(/ /g, '-')>>
+				<</if>>
+            <</if>>
+        <<elseif $enemytype is "beast" and $anusstate is "othermouthentrance" and $monster isnot 1>>
+            <<set _image = 'close/' + _position + '/beast/anusentrance.png'>>
+        <<elseif $enemytype is "beast" and $anusstate is "othermouthimminent" and $monster isnot 1>>
+            <<set _image = 'close/' + _position + '/beast/anusentrance.png'>>
+        <<elseif $enemytype is "beast" and $anusstate is "othermouth" and $monster isnot 1>>
+            <<set _image = 'close/' + _position + '/beast/anus.png'>>
+        <<else>>
+            <<set _idle = true>>
+        <</if>>
+
+        <<if _idle == true>>
+            <img class="anim-idle-1f-slow" @src="_img.anus" @style="'filter: ' + _filters.body">
+            <<if $worn.under_lower.state is "totheside">>
+                <img class="colour-under_lower anim-idle-1f-slow" @src="'img/sex/close/' + _position + '/anustotheside.png'" @style="($worn.under_lower.colour is 'custom'? $worn.under_lower.colourCustom + _underLowerOpacity : '')">
+            <</if>>
+        <<else>>
+            <img @class="'anim-close-6f-' + _animspeed" @src="_penetrated ? _img.anuspenetrate : _img.anus" @style="'filter: ' + _filters.body">
+            <<if $worn.under_lower.state is "totheside">>
+                <img @class="'colour-under_lower anim-close-6f-' + _animspeed" @src="'img/sex/close/' + _position + '/anustotheside' + (_penetrated ? 'penetrate' : '') + '.png'" @style="($worn.under_lower.colour is 'custom'? $worn.under_lower.colourCustom + _underLowerOpacity : '')">
+            <</if>>
+             <img @class="_imageColour + ' anim-close-6f-' +  _animspeed" @src="'img/sex/' + _image" @style="'filter: '+ _imageFilter">
+			<<if _imageCondom>>
+				<img @class="_imageCondomColour + ' anim-close-6f-' +  _animspeed" @src="'img/sex/' + _imageCondom">
+			<</if>>
+			<<if _image2>>
+				<img @class="_image2Colour + ' anim-close-6f-' +  _animspeed" @src="'img/sex/' + _image2" @style="'filter: '+ _image2Filter">
+				<<if _image2Condom>>
+					<img @class="_image2CondomColour + ' anim-close-6f-' +  _animspeed" @src="'img/sex/' + _image2Condom">
+				<</if>>
+			<</if>>
+			<<if _imageBase>>
+				<img @class="'anim-close-6f-' + _animspeed" @src="'img/sex/' + _imageBase">
+			<</if>>
+        <</if>>
+        </div>
+    <</if>>
+
+    <div class="i64" id="closechest">
+    <<if $chestuse is "penis" or $chestuse is "tentacle">>
+        <<if $player.breastsize gte 8>>
+            <img @src="_img.chest+'chest_job_big.png'" @class="'anim-close-10f-'+_animspeed" @style="'filter: ' + _filters.body">
+            <img id="closechestnip" @src="_img.chest+'chest_job_big_nip.png'" @class="'anim-close-10f-'+_animspeed" @style="'filter: ' + _filters.body">
+            <img id="closechestpenis" @src="_img.chest+'chest_job_big_penis.png'"
+            @class="'anim-close-10f-'+_animspeed+' '+(npcHasStrapon($chesttarget) && $options.tanImgEnabled ? 'strapon-' + $NPCList[$chesttarget].strapon.color : '')"
+            @style="'filter: '+(!npcHasStrapon($chesttarget) && $options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$chesttarget].skincolour] : '')">
+        <<else>>
+            <img @src="_img.chest+'base.png'" @class="'anim-close-6f-'+_animspeed" @style="'filter: ' + _filters.body">
+            <img id="closechestbreasts" @src="_img.chest+$player.breastsize+'_job.png'" @class="'anim-close-6f-'+_animspeed" @style="'filter: ' + _filters.body">
+            <img id="closechestnip" @src="_img.chest+$player.breastsize+'_job_nip.png'" @class="'anim-close-6f-'+_animspeed" @style="'filter: ' + _filters.body">
+            <<if $chestuse is "penis" and $enemytype is "beast">>
+                <img id="closechestpenis" @src="_img.chest+'beast.png'" @class="'anim-close-6f-'+_animspeed">
+            <<elseif $chestuse is "penis">>
+                <img id="closechestpenis" @src="_img.chest+'man.png'"
+                @class="'anim-close-6f-'+_animspeed+' '+(npcHasStrapon($chesttarget) && $options.tanImgEnabled ? 'strapon-' + $NPCList[$chesttarget].strapon.color : '')"
+                @style="'filter: '+(!npcHasStrapon($chesttarget) && $options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$chesttarget].skincolour] : '')">
+                <<if wearingCondom($chesttarget)>>
+                    <img id="closechestpenis" @src="'img/sex/close/chest/man_condom.png'"
+                    @class="'anim-close-6f-'+_animspeed+' condom-'+ $NPCList[$chesttarget].condom.colour.replace(/ /g, '-')">
+                <</if>>
+            <<else>>
+                <img id="closechestpenis" @src="_img.chest+'tentacle.png'" @class="'anim-close-6f-'+_animspeed+' '+_tentacleColour">
+            <</if>>
+        <</if>>
+    <<elseif ($worn.upper.exposed gte 2 or $upperwetstage gte 3) and ($worn.under_upper.exposed gte 1 or $underupperwetstage gte 3)>>
+        <img @src="_img.chest+$player.breastsize+'.png'" @style="'filter: ' + _filters.body">
+        <img id="closechestpenis" @src="_img.chest+$player.breastsize+'_nip.png'" @style="'filter: ' + _filters.body">
+    <</if>>
+    </div>
+
+    <<if ($player.penisExist or playerHasStrapon()) and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1>>
+        <div class="i64" id="closepenis">
+
+        <<if $player.vaginaExist>>
+            <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisbase" @style="'filter: '+_filters.body">
+        <<else>>
+            <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisbase" @style="'filter: '+_filters.body">
+        <</if>>
+        <<if $worn.under_lower.state is "totheside">>
+            <img @class="'colour-under_lower anim-close-6f-'+_animspeed" @src="'img/sex/close/' + _position + '/penistotheside.png'" @style="($worn.under_lower.colour is 'custom'? $worn.under_lower.colourCustom + _underLowerOpacity : '')">
+        <</if>>
+        <<if playerChastity("hidden") and !playerHasStrapon()>>
+            <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/' + _position + '/chastityBelt/penis'+_beltName+'.png'">
+            <<switch $penisstate>>
+                <<case "tentacleentrance" "tentacleimminent">>
+                    <img @class="'anim-close-6f-'+_animspeed+' '+_tentacleColour" @src="'img/sex/close/' + _position + '/chastityBelt/tentacle.png'">
+                <<case "entrance" "imminent">>
+					<img @class="'anim-close-6f-'+_animspeed" @src="_img.penisentrance" @style="'filter: '+($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$penistarget].skincolour] : '')">
+                <<case "othermouthentrance" "othermouthimminent">>
+                    <<if $enemytype is "beast">>
+                        <img @class="'anim-close-6f-'+_animspeed" src="img/sex/close/' + _position + '/beast/penisentrance.png">
+                    <</if>>
+            <</switch>>
+        <<elseif $worn.genitals.name.includes("cage") and !playerHasStrapon()>>
+			<<switch $worn.genitals.name>>
+				<<case "flat chastity cage">><<set $_chastityCage to "flat">>
+				<<case "small chastity cage">><<set $_chastityCage to "small">>
+				<<default>><<set $_chastityCage to "">>
+			<</switch>>
+			<img @class="'anim-close-6f-'+_animspeed" @src="_img['chastitypenis'+$_chastityCage]" @style="'filter: '+_filters.body">
+			<img @class="'anim-close-6f-'+_animspeed+' colour-genitals'" @src="'img/sex/close/'+_position+'/chastity'+$_chastityCage+'.png'">
+        <<elseif playerHasStrapon()>>
+            /* Need to add strap-on close sprite here */
+            <<if playerChastity("hidden")>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/' + _position + '/chastityBelt/penis'+_beltName+'.png'">
+            <</if>>
+            <<set _ppcolor to "strapon-"+$worn.under_lower.colour>>
+            /* Add different shape phalluses here */
+            <<if $worn.under_lower.variable is "straponknotted">>
+                <img @class="'layer-sexmouth '+_ppcolor+' anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/straponcloseknot.png'">
+            <<elseif $worn.under_lower.variable is "straponhorse">>
+                <img @class="'layer-sexmouth '+_ppcolor+' anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/straponcloseknot.png'">
+            <<else>>
+                <img @class="'layer-sexmouth '+_ppcolor+' anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/straponclose.png'">
+            <</if>>
+            /* This is the NPC getting penetrated */
+            <<if $penisstate is "penetrated" or $penisstate is "otheranus">>
+				<img @class="'layer-sextears anim-close-6f-'+_animspeed" @src="_img.penispenetrated" @style="'filter: '+($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$penistarget].skincolour] : '')">
+				<<if $options.tanImgEnabled>>
+					<img @class="'layer-sextears anim-close-6f-'+_animspeed" @src="'img/sex/closeRed/'+_position+'/penispenetrated_pink.png'">
+				<</if>>
+            <</if>>
+        <<elseif $penisstate is "tentacle">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <img @class="'anim-close-6f-'+_animspeed+' '+_tentacleColour" @src="'img/sex/close/'+_position+'/penistentaclepenetrated.png'">
+        <<elseif $penisstate is "tentacledeep">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <img @class="'anim-close-6f-'+_animspeed+' '+_tentacleColour" @src="'img/sex/close/'+_position+'/penistentaclepenetrated.png'">
+        <<elseif $penisstate is "tentacleentrance">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <img @class="'anim-close-3f-'+_animspeed+' '+_tentacleColour" @src="'img/sex/close/'+_position+'/penistentacleentrance.png'">
+        <<elseif $penisstate is "tentacleimminent">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <img @class="'anim-close-3f-'+_animspeed+' '+_tentacleColour" @src="'img/sex/close/'+_position+'/penistentacleentrance.png'">
+        <<elseif $penisstate is "penetrated">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penispenetrated.png'">
+            <<else>>
+				<img @class="'anim-close-6f-'+_animspeed" @src="_img.penispenetrated" @style="'filter: '+($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$penistarget].skincolour] : '')">
+				<<if $options.tanImgEnabled>>
+					<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/closeRed/'+_position+'/penispenetrated_pink.png'">
+				<</if>>
+            <</if>>
+        <<elseif $penisstate is "otheranus">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penispenetrated.png'">
+            <<else>>
+				<img @class="'anim-close-6f-'+_animspeed" @src="_img.penispenetrated" @style="'filter: '+($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$penistarget].skincolour] : '')">
+				<<if $options.tanImgEnabled>>
+					<img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/closeRed/'+_position+'/penispenetrated_pink.png'">
+				<</if>>
+            <</if>>
+        <<elseif $penisstate is "imminent">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrancevagina.png'">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisentrance" @style="'filter: '+($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$penistarget].skincolour] : '')">
+            <</if>>
+        <<elseif $penisstate is "entrance">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrancevagina.png'">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisentrance" @style="'filter: '+($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$penistarget].skincolour] : '')">
+            <</if>>
+        <<elseif $penisstate is "otheranusimminent">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrancevagina.png'">
+            <<else>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penisentrance" @style="'filter: '+($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$penistarget].skincolour] : '')">
+            <</if>>
+        <<elseif $penisstate is "otheranusentrance">>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+            <<if $enemytype is "beast" and ($monster isnot 1 or $NPCList[_na].type is "horse" or $NPCList[_na].type is "centaur")>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrancevagina.png'">
+            <<else>>
+                <img @class="'anim-close-3f-'+_animspeed" @src="_img.penisentrance" @style="'filter: '+($options.tanImgEnabled ? setup.npcSkinDefaults[$NPCList[$penistarget].skincolour] : '')">
+            <</if>>
+        <<elseif $enemytype is "beast" and $penisstate is "othermouthentrance" and $monster isnot 1>>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisentrancenoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisentrance1" @style="'filter: '+_filters.body">
+            <</if>>
+            <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisentrance.png'">
+        <<elseif $enemytype is "beast" and $penisstate is "othermouthimminent" and $monster isnot 1>>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisimminentnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisimminent1" @style="'filter: '+_filters.body">
+            <</if>>
+            <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penisimminent.png'">
+        <<elseif $enemytype is "beast" and $penisstate is "othermouth" and $monster isnot 1>>
+            <<if $player.ballsExist is false>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img @class="'anim-close-6f-'+_animspeed" @src="_img.penis1" @style="'filter: '+_filters.body">
+            <</if>>
+            <img @class="'anim-close-6f-'+_animspeed" @src="'img/sex/close/'+_position+'/beast/penis.png'">
+        <<else>>
+            <<if $player.ballsExist is false>>
+                <img class="anim-idle-1f-slow" @src="_img.futapenisnoballs" @style="'filter: '+_filters.body">
+            <<else>>
+                <img class="anim-idle-1f-slow" @src="_img.penis" @style="'filter: '+_filters.body">
+            <</if>>
+        <</if>>
+        <<if wearingCondom("player")>>
+            <<if ["penetrated","otheranus","imminent","entrance","otheranusimminent","otheranusentrance"].includes($penisstate)>>
+                <img @class="'anim-close-6f-'+_animspeed+' condom-'+ $player.condom.colour.replace(/ /g, '-')" @src="'img/sex/close/'+_position+'/penis_condom.png'">
+            <<else>>
+                <img @class="'anim-close-1f-slow condom-'+ $player.condom.colour.replace(/ /g, '-')" @src="'img/sex/close/'+_position+'/penis_condom.png'">
+            <</if>>
+        <</if>>
+        </div>
+    <</if>>
+<</widget>>

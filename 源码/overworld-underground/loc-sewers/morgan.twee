@@ -1,0 +1,1386 @@
+:: Sewers Descend
+<<effects>><<set $location to "sewers">>
+
+You climb the ladder down into the dark. The weight is too much, and the ladder snaps free. You fall the rest of the way. It isn't far, but you're left sprawled on the cold stone.
+<br><br>
+
+<<link [[Next|Sewers Intro]]>><</link>>
+<br>
+
+:: Sewers Intro
+<<effects>><<set $location to "sewers">>
+
+<<set $sewersintro to 1>>
+<<sewersstart>>
+<<npc Morgan>><<person1>>
+Light-headed, you try and fail to stand up without collapsing. You hear footsteps. Odd, uneven footsteps nearing closer and closer until you see a figure in the darkness. The figure screams.
+<br><br>
+
+"My child! <<charles>>, you're alive!" <<he>> says. "<<Mummy>> has missed you so much!" <<He>> steps into the dim light. Unkempt ginger hair tumbles around <<his>> face. There's a badge on <<his>> ruined <<if $pronoun is "f">>gown<<else>>suit<</if>>, "Morgan."
+<br><br>
+
+<<link [[Say nothing|Sewers Intro Play Along]]>><</link>>
+<br>
+<<link [[Say that's not your name|Sewers Intro Refuse]]>><</link>>
+<br>
+
+:: Sewers Intro Play Along
+<<effects>><<set $location to "sewers">>
+
+You nod. The figure outstretches <<his>> arms, and grabs you in a hug. "I knew it," <<he>> cries. "They lied to me." <<He>> runs <<his>> hands over your body.
+<br><br>
+
+<<link [[Allow|Sewers Intro Molestation]]>><<set $molestationstart to 1>><</link>>
+<br>
+<<link [[Push away|Sewers Intro Fight]]>><<set $fightstart to 1>><</link>>
+<br>
+
+:: Sewers Intro Refuse
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+<<if $speech_attitude is "meek">>
+	"T-that's not me," you say. "<<charles>> isn't my name."
+<<elseif $speech_attitude is "bratty">>
+	"Don't touch me," you say. "You're crazy."
+<<else>>
+	"That's not my name," you say. "You've got me confused with someone else."
+<</if>>
+<br><br>
+
+<<He>> grabs your arm and pulls you closer. <<He>> examines your scalp. "Yes, yes, good, looks good," <<he>> babbles, running <<his>> fingers over your head. "My child, you're beginning to upset me. You didn't lose your memory, right?" <<He>> runs <<his>> hands over your body.
+<br><br>
+
+<<link [[Allow|Sewers Intro Molestation]]>><<set $molestationstart to 1>><</link>>
+<br>
+<<link [[Push away|Sewers Intro Fight]]>><<set $fightstart to 1>><</link>>
+<br>
+
+:: Sewers Intro Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+
+	<<maninit>><<npcidlegenitals>>
+	<<set $timer to 10>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+
+<<if $timer is 9>>
+	"Good <<girl>>."
+<<elseif $timer is 7>>
+	"You have a body befitting our family."
+<<elseif $timer is 5>>
+	"This is for your own good darling."
+<<elseif $timer is 3>>
+	"Such smooth, supple skin."
+<</if>>
+
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Sewers Intro Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Sewers Intro Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Sewers Intro Molestation Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"Y-yes," <<he>> stammers. "Good <<girl>>."
+	<br><br>
+
+	<<tearful>> you try to crawl away, but <<he>> grips your waist.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc Morgan>><<person1>>
+	<<link [[Next|Sewers Feeding]]>><</link>>
+
+<<elseif $enemyhealth lte 0>>
+	You shove Morgan away from you, dodge <<his>> clutching grasp and stumble to your feet.
+	<br><br>
+
+	<<if isPubfameTaskAccepted("morgan")>>
+		Something falls from <<his>> pocket and clatters on the floor. <span class="green">It's the USB stick.</span> <<tearful>> you snatch it and escape into another tunnel, chased by <<his>> howls.
+		<br><br>
+		<<pubfameComplete "morgan">>
+	<<else>>
+		<<tearful>> you escape into another tunnel, chased by <<his>> howls.
+	<</if>>
+	<br><br>
+	<<set $sewerschased to 1>>
+	<<set $sewerschasedstep to 3>>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Sewers Residential]]>><</link>>
+
+<</if>>
+
+:: Sewers Intro Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+
+	<<neutral 1>>
+
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+	<<set $timer to 10>>
+	"Don't you dare refuse me," <<he>> snarls.
+	<br><br>
+	<<set $enemyhealthmax += 100>><<set $enemyhealth += 100>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+
+<<if $timer is 9>>
+	"Never refuse me again!"
+<<elseif $timer is 7>>
+	"This is for your own good."
+<<elseif $timer is 5>>
+	"The other students are a bad influence."
+<<elseif $timer is 3>>
+	"You were never like this before."
+<</if>>
+
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Sewers Intro Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Sewers Intro Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Sewers Intro Fight Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"Y-yes," <<he>> stammers. "Good <<girl>>."
+	<br><br>
+
+	<<tearful>> you try to crawl away, but <<he>> grips your waist.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc Morgan>><<person1>>
+	<<link [[Next|Sewers Feeding]]>><</link>>
+
+<<elseif $enemyhealth lte 0>>
+	You shove Morgan away from you, dodge <<his>> clutching grasp and stumble to your feet.
+	<br><br>
+
+	<<if isPubfameTaskAccepted("morgan")>>
+		Something falls from <<his>> pocket and clatters on the floor. <span class="green">It's the USB stick.</span> <<tearful>> you snatch it and escape into another tunnel, chased by <<his>> howls.
+		<br><br>
+		<<pubfameComplete "morgan">>
+	<<else>>
+		<<tearful>> you escape into another tunnel, chased by <<his>> howls.
+	<</if>>
+	<br><br>
+	<<set $sewerschased to 1>>
+	<<set $sewerschasedstep to 3>>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Sewers Escape]]>><</link>>
+
+<<else>>
+	<<tearful>> you collapse, too hurt to continue fighting. "Oh my child," <<he>> says, having vented the worst of <<his>> anger. "Look what you made me do. I know what will make you feel better."
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc Morgan>><<person1>>
+
+	<<link [[Next|Sewers Feeding]]>><</link>>
+<</if>>
+
+:: Sewers Feeding
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+<<set $daily.morgan.feeding to 1>>
+<<if $breastfeedingdisable is "f" and $pronoun is "f">>
+	Morgan loosens <<his>> sash, and exposes <<his>> breast from underneath <<his>> tattered and discoloured gown. "Come, dear. I know you're a bit old for this, but it was always your favourite."
+	<br><br>
+
+	<<link [[Feed|Sewers Breastfeed]]>><<breastfed>><<npcincr Morgan love 1>><<npcincr Morgan dom 1>><</link>>
+	<br>
+	<<link [[Refuse|Sewers Breastfeed Refuse]]>><<npcincr Morgan love -1>><<npcincr Morgan dom -1>><</link>><<llove>>
+	<br>
+<<else>>
+	"You must be hungry dear," Morgan says. "I have just the thing. Tea and scones." <<He>> disappears around a corner for a moment, before emerging with a basket in hand. <<He>> empties it in front of you. Three boiled rats, and a chipped teacup containing a tarry substance. <<if $NPCList[0].penis isnot "none">>A mysterious white fluid floats on the surface.<</if>>
+	<br><br>
+
+	<<link [[Eat|Sewers Rats]]>><<trauma 6>><<stress 6>><<npcincr Morgan love 1>><<npcincr Morgan dom 1>><</link>><<gtrauma>><<gstress>>
+	<br>
+	<<set $skulduggerydifficulty to 200>>
+	<<link [[Pretend to eat|Sewers Rats Pretend]]>><<npcincr Morgan love 1>><<npcincr Morgan dom -1>><</link>><<skulduggerydifficulty>><<glove>>
+	<br>
+	<<link [[Refuse|Sewers Spank]]>><<npcincr Morgan love -1>><<npcincr Morgan dom -1>><<set $molestationstart to 1>><</link>><<llove>>
+	<br>
+<</if>>
+
+:: Sewers Breastfeed
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You wrap your lips around <<his>> breast and suckle while Morgan cradles your head. A sweet warmth fills your mouth. After a few minutes, <<his>> other hand traces down your torso. <<He>> fondles your groin.
+<<garousal>><<arousal 600 "genitals">>
+<br><br>
+
+"There," <<he>> says after a few moments. "Did <<charles>> enjoy? I missed doing that with you. You're never too old for <<mummy>>'s milk. Now maybe you won't be so grouchy." <<He>> laughs. "Now, there are chores you can help me with, or maybe we'll take a nap."
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Breastfeed Refuse
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+<<He>> looks hurt. "Well, you must eat something," <<he>> says. "I have just the thing. Tea and scones." <<He>> disappears around a corner for a moment, before emerging with a basket in hand. <<He>> empties it in front of you. Three boiled rats, and a chipped teacup containing a tarry substance. <<if $NPCList[0].penis isnot "none">>A mysterious white fluid floats on the surface.<</if>>
+<br><br>
+
+<<link [[Eat|Sewers Rats]]>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>>
+<br>
+<<set $skulduggerydifficulty to 200>>
+<<link [[Pretend to eat|Sewers Rats Pretend]]>><</link>><<skulduggerydifficulty>>
+<br>
+<<link [[Refuse|Sewers Spank]]>><<npcincr Morgan love -1>><<npcincr Morgan dom -1>><<set $molestationstart to 1>><</link>><<llove>>
+<br>
+
+:: Sewers Rats
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You feign the most polite smile you can muster, and manage to power through the first rat. The second rat proves challenging, and you gag after the third rat. Alarmed, Morgan pours the tea sludge down your throat, making it worse.
+<br><br>
+
+"There," <<he>> says after a few moments. "Now maybe you won't be so grouchy. There are chores you can help me with, or maybe we'll take a nap."
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Rats Pretend
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You wait for Morgan to become distracted.
+<br><br>
+
+<<skulduggerycheck>>
+<<if $skulduggerysuccess is 1>>
+	You toss the rats and pour the sludge down a drain, while making exaggerated chomping and sipping noises. You force a burp.
+	<br><br>
+
+	"I hope you enjoyed the meal," Morgan says. "It has been quite a while since I've been able to cook for somebody else, much less my own flesh and blood. Now, there are chores you can help me with, or maybe we'll take a nap."
+	<br><br>
+
+	<<skulduggeryuse>>
+
+	<<link [[Next|Sewers Morgan]]>><</link>>
+	<br>
+
+<<else>>
+	You try to toss the rats down a drain, but they splat against the bars. You lift the teacup to pour away, but the slimy handle slips from your hand and it shatters on the ground.
+	<br><br>
+
+	Morgan turns. "I made that for you!" <<he>> says. "You spoiled brat."
+	<br><br>
+
+	<<skulduggeryuse>>
+
+	<<link [[Next|Sewers Spank]]>><<set $molestationstart to 1>><</link>>
+	<br>
+
+<</if>>
+
+:: Sewers Spank
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<npcspank>><<set $enemyanger += 200>><<set $timer to 10>>
+	<<He>> lunges at you and bends you over <<his>> knee.
+	<br><br>
+<</if>>
+
+<<if $timer is 9>>
+	"What did <<mummy>> tell you about saying no."
+<<elseif $timer is 7>>
+	"You dare disrespect our family."
+<<elseif $timer is 5>>
+	"<<Mummy>> only wants you to be the best you can."
+<<elseif $timer is 3>>
+	"This hurts me more than you."
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or $enemyanger lte 40>>
+	<span id="next"><<link [[Next|Sewers Spank Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Sewers Spank]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Sewers Spank Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"I can't stay mad at you," Morgan sighs. "But you have to work extra hard at your chores."
+	<br><br>
+
+	<<tearful>> you squirm from <<his>> grasp.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc Morgan>><<person1>>
+	<<link [[Next|Sewers Morgan]]>><</link>>
+
+<<elseif $enemyhealth lte 0>>
+	You shove Morgan away from you, dodge <<his>> clutching grasp and stumble to your feet.
+	<br><br>
+
+	<<if isPubfameTaskAccepted("morgan")>>
+		Something falls from <<his>> pocket and clatters on the floor. <span class="green">It's the USB stick.</span> <<tearful>> you snatch it and escape into another tunnel, chased by <<his>> howls.
+		<br><br>
+		<<pubfameComplete "morgan">>
+	<<else>>
+		<<tearful>> you escape into another tunnel, chased by <<his>> howls.
+	<</if>>
+	<br><br>
+	<<set $sewerschased to 1>>
+	<<set $sewerschasedstep to 3>>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Sewers Escape]]>><</link>>
+
+<<else>>
+	"That hurt me more than you," Morgan says. "Do as you're told in the future."
+	<br><br>
+
+	<<tearful>> you squirm from <<his>> grasp.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc Morgan>><<person1>>
+	<<link [[Next|Sewers Morgan]]>><</link>>
+
+<</if>>
+
+:: Sewers Morgan
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+<<if $stress gte $stressmax>>
+	It's all too much for you. You pass out.
+	<br><br>
+	<<sewersend>>
+	<<sewerspassout>>
+
+<<elseif Time.hour lte 7>>
+	<<set $sewersSleepSex to 0>>
+	Morgan yawns, stretches and falls back on a pile of blankets. <<He>> snores.
+	<br><br>
+
+	Now could be your chance to escape.
+	<<if isPubfameTaskAccepted("morgan")>>
+		You could also use the time to search Morgan for the USB.
+	<</if>>
+	<br><br>
+
+	<<link [[Sleep|Sewers Sleep]]>><</link>>
+	<br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		<<set $skulduggerydifficulty to 600>>
+		<<link [[Search Morgan|Sewers Search]]>><</link>><<skulduggerydifficulty>>
+		<br>
+	<</if>>
+	<<link [[Escape|Sewers Escape Night]]>><</link>>
+	<br>
+
+<<elseif Time.hour is 18 and !$daily.morgan.feeding>>
+	Morgan stares at you and smiles.
+	<br><br>
+
+	<<link [[Next|Sewers Feeding]]>><</link>>
+	<br>
+
+<<elseif Time.hour is 9 and !$daily.morgan.history>>
+	"Now, sweetie," Morgan says. "It's important for people of our status to be educated about the finer things in life. Allow me to begin by telling you again of our family history." <<He>> prattles, gibbers, and mumbles <<his>> way through what <<he>> calls a history lesson.
+	<br><br>
+
+	<<link [[Pay attention (1:00)|Sewers History]]>><<pass 60>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>><<note "+ History?" "blue">>
+	<br>
+	<<link [[Daydream (1:00)|Sewers History Daydream]]>><<pass 60>><</link>>
+	<br>
+	<<link [[Resist (1:00)|Sewers History Resist]]>><<pass 60>><</link>>
+	<br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		<<link [[Ask Morgan for the USB|Sewers Ask]]>><</link>>
+		<br>
+	<</if>>
+
+<<elseif Time.hour is 12 and !$daily.morgan.maths>>
+	"Mathematics," Morgan says. "My favourite subject." <<He>> licks <<his>> lips and hands you an old receipt to write on.
+	<br><br>
+
+	<<link [[Pay attention (1:00)|Sewers Maths]]>><<pass 60>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>><<note "+ Maths?" "blue">>
+	<br>
+	<<link [[Daydream (1:00)|Sewers Maths Daydream]]>><<pass 60>><</link>>
+	<br>
+	<<link [[Resist (1:00)|Sewers Maths Resist]]>><<pass 60>><</link>>
+	<br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		<<link [[Ask Morgan for the USB|Sewers Ask]]>><</link>>
+		<br>
+	<</if>>
+
+<<elseif Time.hour is 15 and !$daily.morgan.english>>
+	"Now pay attention," Morgan says. "You must be the quintessential socialite."
+	<br><br>
+
+	<<link [[Pay attention (1:00)|Sewers English]]>><<pass 60>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>><<note "+ English?" "blue">>
+	<br>
+	<<link [[Daydream (1:00)|Sewers English Daydream]]>><<pass 60>><</link>>
+	<br>
+	<<link [[Resist (1:00)|Sewers English Resist]]>><<pass 60>><</link>>
+	<br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		<<link [[Ask Morgan for the USB|Sewers Ask]]>><</link>>
+		<br>
+	<</if>>
+
+<<elseif Time.hour is 17 and !$daily.morgan.science>>
+	"Listen carefully <<charles>>," Morgan says. "This is important." <<He>> instructs you on the nutritional value of food in the old sewers.
+	<br><br>
+
+	<<link [[Pay attention (1:00)|Sewers Science]]>><<pass 60>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>><<note "+ Science?" "blue">>
+	<br>
+	<<link [[Daydream (1:00)|Sewers Science Daydream]]>><<pass 60>><</link>>
+	<br>
+	<<link [[Resist (1:00)|Sewers Science Resist]]>><<pass 60>><</link>>
+	<br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		<<link [[Ask Morgan for the USB|Sewers Ask]]>><</link>>
+		<br>
+	<</if>>
+
+<<elseif Time.hour is 20 and !$daily.morgan.sex>>
+	<<if $exposed gte 2>>
+		"I-It's time," Morgan says. "For special learning. Lie down."
+		<br><br>
+
+		<<link [[Lie down|Sewers Sex Ed]]>><<trauma 6>><<stress 6>><<npcincr Morgan love 1>><<set $daily.morgan.sex to 1>><</link>><<gtrauma>><<gstress>><<glove>>
+		<br>
+	<<else>>
+		"I-It's time," Morgan says. "For special learning. Undress and lie down."
+		<br><br>
+
+		<<link [[Undress and lie down|Sewers Sex Ed]]>><<trauma 6>><<stress 6>><<npcincr Morgan love 1>><<set $daily.morgan.sex to 1>><</link>><<gtrauma>><<gstress>><<glove>>
+		<br>
+	<</if>>
+
+	<<link [[Refuse|Sewers Sex Ed Refuse]]>><<npcincr Morgan love -1>><<set $daily.morgan.sex to 1>><</link>><<llove>>
+	<br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		<<link [[Ask Morgan for the USB|Sewers Ask]]>><</link>>
+		<br>
+	<</if>>
+
+<<elseif $rng gte 91 and $worn.neck.collared is 1>>
+	"<<charles>>," Morgan says. "What's that around your neck? I can get that off for you." <<He>> produces a bobby pin, lubricant, and a crowbar. "Now, be a big <<girl>> and come here."
+	<br><br>
+
+	<<link [[Allow|Sewers Collar]]>><<set $worn.neck.cursed to 0>><<neckruined>><<trauma 6>><<stress 6>><<pain 6>><</link>><<gtrauma>><<gstress>><<gpain>>
+	<br>
+	<<link [[Refuse|Sewers Collar Refuse]]>><</link>>
+	<br>
+
+<<elseif $rng gte 81 and $worn.feet.type.includes("shackle")>>
+	"Oh, <<charles>>, your feet!" Morgan exclaims. "It's dangerous to be locked up like that down here. What if you trip into the water?" <<He>> produces a tea plate and a screwdriver. "<<Mummy>> will get those nasty things off you."
+	<br><br>
+
+	<<link [[Allow|Sewers Shackles]]>><<remove_shackle>><<trauma 6>><<stress 6>><<pain 6>><</link>><<gtrauma>><<gstress>><<gpain>>
+	<br>
+	<<link [[Refuse|Sewers Collar Refuse]]>><</link>>
+	<br>
+
+<<elseif $rng gte 71 and ($leftarm is "bound" or $rightarm is "bound")>>
+	"Now how'd you get like that, <<charles>>?" Morgan asks, poking at your bindings. "You shouldn't be playing with rope, you could hurt yourself." <<He>> produces a pair of rusty gardening shears. "Don't be shy, let <<mummy>> take care of it."
+	<br><br>
+
+	<<link [[Allow|Sewers Bindings]]>><<unbind>><<trauma 6>><<stress 6>><<pain 6>><</link>><<gtrauma>><<gstress>><<gpain>>
+	<br>
+	<<link [[Refuse|Sewers Collar Refuse]]>><</link>>
+	<br>
+
+<<elseif $rng gte 51>>
+	"I'm going to bake scones," Morgan says, clutching a number of rats by their tails. "You put the kettle on."
+	<br><br>
+
+	<<link [[Help (1:00)|Sewers Scones]]>><<trauma 6>><<stress 6>><<npcincr Morgan love 1>><<pass 60>><</link>><<gtrauma>><<gstress>>
+	<br>
+	<<link [[Refuse|Sewers Spank]]>><<set $molestationstart to 1>><<npcincr Morgan love -1>><</link>>
+	<br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		<<link [[Ask Morgan for the USB|Sewers Ask]]>><</link>>
+		<br>
+	<</if>>
+
+<<elseif $rng gte 41>>
+	Morgan offers some advice. "Don't go swimming here without a top on," <<he>> says. "There are nasty parasites living in the water."
+	<br><br>
+
+	<<He>> turns away from you. "Help me search through these antiques," <<he>> says as <<he>> rummages through a pile of rubbish. "Don't be a bad <<girl>>, come help."
+	<br><br>
+
+	<<link [[Help (1:00)|Sewers Rummage]]>><<trauma 6>><<stress 6>><<npcincr Morgan love 1>><<pass 60>><</link>><<gtrauma>><<gstress>>
+	<br>
+	<<link [[Refuse|Sewers Spank]]>><<set $molestationstart to 1>><<npcincr Morgan love -1>><</link>>
+	<br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		<<link [[Ask Morgan for the USB|Sewers Ask]]>><</link>>
+		<br>
+	<</if>>
+
+<<elseif $rng gte 31>>
+	"<<charles>>," Morgan hesitates. "Since we've been reunited, darling, I've wanted you to have this." <<He>> hands you a pristine <<if $player.gender_appearance is "m">>shirt and shorts<<else>>sundress<</if>>. "I-It's your favourite little outfit. W-would you wear it for me?"
+	<br><br>
+
+	<<set $phase to ($player.gender_appearance is "m" ? 0 : 1)>>
+	<<link [[Wear|Sewers Outfit]]>><</link>>
+	<br>
+	<<link [[Refuse|Sewers Outfit Refuse]]>><</link>>
+	<br>
+
+<<elseif $rng gte 21>>
+	"How are your grades in school, sweetie?" Morgan asks. "Are <<mummy>>'s lessons helping?"
+	<br><br>
+
+	<<link [[Tell Morgan|Sewers Review]]>><<set $phase to 0>><</link>>
+	<br>
+	<<link [[Lie|Sewers Review]]>><<set $phase to 1>><</link>><<englishdifficulty 1 1000>>
+	<br>
+	<<link [[Refuse to say|Sewers Spank]]>><<set $molestationstart to 1>><<npcincr Morgan love -1>><</link>>
+
+<<else>>
+	"Help me search through these antiques," Morgan says as <<he>> rummages through a pile of rubbish. "Don't be a bad <<girl>>, come help."
+	<br><br>
+
+	<<link [[Help (1:00)|Sewers Rummage]]>><<trauma 6>><<stress 6>><<npcincr Morgan love 1>><<pass 60>><</link>><<gtrauma>><<gstress>>
+	<br>
+	<<link [[Refuse|Sewers Spank]]>><<set $molestationstart to 1>><<npcincr Morgan love -1>><</link>>
+	<br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		<<link [[Ask Morgan for the USB|Sewers Ask]]>><</link>>
+		<br>
+	<</if>>
+
+<</if>>
+
+:: Sewers Scones
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You follow Morgan's recipe as best you can and prepare a fresh batch of "tea" while Morgan prepares the "scones." You're relieved that the tea has actual tea in it.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Rummage
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You help Morgan search for salvage, doing your best to avoid anything too gross. A rat jumps out of a tin can and startles you. Morgan grabs it from the air. "Another scone," <<he>> laughs. "Still fresh."
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Sleep
+<<set _autosavehere to true>>
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+You lie down beside Morgan. <<He>> wraps an arm around you.
+<br><br>
+
+<<sewerssleep>>
+<<if $sewersSleepSex is 0>>
+	<<set $sewersSleepSex to 1>>
+	You awaken some time later. A pair of hands grope you from behind. "I've seen how you've look at me," <<he>> whispers. "I remember how much of a struggle you would put up. I still have that scar."
+	<br><br>
+	<<link [[Next|Sewers Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<<else>>
+	You awaken some time later. A pair of hands strokes your hair. "Good morning, <<charles>>," Morgan whispers. <<He>> gestures to the crumbled stone walls. "Isn't the sunrise beautiful?"
+	<br><br>
+	<<link [[Next|Sewers Morgan]]>><</link>>
+<</if>>
+
+:: Sewers Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Sewers Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Sewers Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Sewers Rape Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<if $phase is 1>>
+		Morgan leans over to give you a kiss on the cheek. "<<charles>>...that was spectacular. An A+ for sure."
+	<<elseif $phase is 2>>
+		"There's room for improvement, dear," <<he>> whispers. "But that was good." <<He>> kisses you on your forehead.
+	<<elseif $phase is 3>>
+		<<set _linkSkip to true>>
+		Morgan brushes your cheek with a smile. "If you ever need me, <<charles>>, I'll always be there to satisfy you." <<He>> dozes off again.
+		<<tearful>> you squirm from <<his>> grasp. Now could be your chance to escape.
+		<br><br>
+		<<clotheson>>
+		<<endcombat>>
+		<<npc Morgan>><<person1>>
+		<<link [[Sleep|Sewers Sleep]]>><</link>>
+		<br>
+		<br>
+		<<link [[Escape|Sewers Escape Night]]>><</link>>
+		<br>
+	<<else>>
+		"You're a bad <<girl>>," <<he>> says. "Provoking your <<if $pronoun is "m">>father<<else>>mother<</if>> like that."
+	<</if>>
+
+	<<if !_linkSkip>>
+		<br><br>
+		<<tearful>> you squirm from <<his>> grasp.
+		<br><br>
+		<<clotheson>>
+		<<endcombat>>
+		<<npc Morgan>><<person1>>
+		<<link [[Next|Sewers Morgan]]>><</link>>
+	<</if>>
+<<else>>
+	You shove Morgan away from you, dodge <<his>> clutching grasp and stumble to your feet.
+	<br><br>
+	<<if isPubfameTaskAccepted("morgan")>>
+		Something falls from <<his>> pocket and clatters on the floor. <span class="green">It's the USB stick.</span> <<tearful>> you snatch it and escape into another tunnel, chased by <<his>> howls.
+		<br><br>
+		<<pubfameComplete "morgan">>
+	<<else>>
+		<<tearful>> you escape into another tunnel, chased by <<his>> howls.
+	<</if>>
+	<br><br>
+	<<set $sewerschased to 1>>
+	<<set $sewerschasedstep to 3>>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Sewers Escape]]>><</link>>
+<</if>>
+
+:: Sewers Escape
+<<effects>><<set $location to "sewers">><<set $outside to 0>><<water>>
+
+There's no way out, except a river running along a canal into darkness. One side is blocked by a metal grate.
+<br><br>
+
+Morgan lurches after you, <<nnpc_his "Morgan">> legs tangled in <<nnpc_his "Morgan">> decaying outfit. You drop into the water and swim.
+<br><br>
+
+You swim against the gentle current and emerge in a large room. You climb onto the shore. "I'm coming <<charles>>," Morgan's voice shouts behind you. You hear a splash of water. <span class="red">You are being hunted.</span>
+<br><br>
+
+<<link [[Next|Sewers Residential]]>><<sewersend>><</link>>
+<br>
+
+:: Sewers Escape Night
+<<effects>><<set $location to "sewers">><<set $outside to 0>><<water>>
+
+There's no way out, except a river running along a canal into darkness. One side is blocked by a metal grate. You lower yourself into the water and swim against the gentle current, emerging in a large room. You climb onto the shore.
+<br><br>
+
+<<set $sewersevent to random(5, 12)>>
+<<link [[Next|Sewers Residential]]>><<sewersend>><</link>>
+<br>
+
+:: Sewers History
+<<effects>><<set $location to "sewers">><<set $outside to 0>><<set $daily.morgan.history to 1>>
+
+Morgan explains your family origins. That you're of a proud and noble house.
+<br><br>
+
+<<if $rng gte 75>>
+	<<His>> take on things seems strange.
+	<<lhistory>><<historyskill -1>>
+	<br><br>
+<<elseif $rng gte 50>>
+	<<His>> take on things seems strange.
+	<<gghistory>><<historyskill>><<historyskill>>
+	<br><br>
+<<else>>
+	<<He>> rambles a lot, but has moments of greater lucidity.
+	<<ghistory>><<historyskill>>
+	<br><br>
+<</if>>
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers History Daydream
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You watch Morgan's lips move, but your mind is elsewhere.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers History Resist
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You put up with <<his>> rambling for a time, then blow a raspberry and tell <<him>> you don't care, and that <<hes>> crazy. <<He>> isn't amused.
+<br><br>
+
+<<link [[Next|Sewers Spank]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Sewers Maths
+<<effects>><<set $location to "sewers">><<set $outside to 0>><<set $daily.morgan.maths to 1>>
+
+Morgan inundates you with facts and formulae.
+<br><br>
+
+<<if $rng gte 75>>
+	<<His>> take on things seems strange.
+	<<lmaths>><<mathsskill -1>>
+<<elseif $rng gte 50>>
+	<<His>> take on things seems strange.
+	<<ggmaths>><<mathsskill>><<mathsskill>>
+<<else>>
+	<<He>> rambles a lot, but has moments of greater lucidity.
+	<<gmaths>><<mathsskill>>
+<</if>>
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Maths Daydream
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You roll your eyes and go through the motions as Morgan tries to explain a theory to you. You nod, mumble, and doodle on the back of the receipt Morgan gave you.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Maths Resist
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You put up with <<his>> rambling for a while, then crumble up the receipt and throw it in <<his>> face. <<He>> glares at you.
+<br><br>
+
+<<link [[Next|Sewers Spank]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Sewers English
+<<effects>><<set $location to "sewers">><<set $outside to 0>><<set $daily.morgan.english to 1>>
+
+You do your best to keep up with Morgan in conversation. <<He>> speaks of commoners with disdain.
+<br><br>
+
+<<if $rng gte 75>>
+	<<His>> take on things seems strange.
+	<<lenglish>><<englishskill -1>>
+<<elseif $rng gte 50>>
+	<<His>> take on things seems strange.
+	<<ggenglish>><<englishskill>><<englishskill>>
+<<else>>
+	<<He>> rambles a lot, but has moments of greater lucidity.
+	<<genglish>><<englishskill>>
+<</if>>
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers English Daydream
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You don't put your heart into the lesson, and mumble vague affirmations to Morgan.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers English Resist
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You tell <<him>> this is a stupid waste of your time, which infuriates <<him>>.
+<br><br>
+
+<<link [[Next|Sewers Spank]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Sewers Science
+<<effects>><<set $location to "sewers">><<set $outside to 0>><<set $daily.morgan.science to 1>>
+
+Morgan is delighted by your interest in scones.
+<br><br>
+
+<<if $rng gte 75>>
+	<<His>> take on things seems strange.
+	<<lscience>><<scienceskill -1>>
+<<elseif $rng gte 50>>
+	<<His>> take on things seems strange.
+	<<ggscience>><<scienceskill 2>>
+<<else>>
+	<<He>> rambles a lot, but has moments of greater lucidity.
+	<<gscience>><<scienceskill>>
+<</if>>
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Science Daydream
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You sit through the lecture. Rats good, tentacle creatures are okay too, you guess.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Science Resist
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You tell Morgan that this is disgusting and that you hate <<his>> cooking. This enrages <<him>>.
+<br><br>
+
+<<link [[Next|Sewers Spank]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Sewers Sex Ed
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+<<if $exposed gte 2>>
+	You do as instructed. Morgan strips <<his>> clothing, and climbs on top of you. "Now, dear, stretch your legs back," <<he>> says. "Work hard and I'm sure you can get an A+."
+<<else>>
+	You do as instructed, blushing as you undress. Morgan strips too, and climbs on top of you. "Now, dear, stretch your legs back," <<he>> says. "Work hard and I'm sure you can get an A+."
+	<<clothesstrip>>
+<</if>>
+<br><br>
+
+<<link [[Next|Sewers Rape]]>><<set $phase to 1>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Sewers Sex Ed Refuse
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You try to move away from Morgan, but <<he>> grasps your arm and pulls you to the cold stone floor.
+<br><br>
+
+<<link [[Next|Sewers Rape]]>><<set $phase to 2>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Sewers Outfit
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+<<if $phase is 0>>
+	<<upperwear 4>>
+	<<lowerwear 5>>
+<<else>>
+	<<upperwear 1>>
+<</if>>
+You turn away from Morgan to dress. You feel <<his>> eyes on your back.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Outfit Refuse
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You push the clothes back at Morgan. <<He>> sighs and shakes <<his>> head.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Collar
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+<<if $syndromeeden is 1>>
+	<<set $edencollarremove to 1>>
+<</if>>
+Morgan pulls you close, and sticks the greased bobby pin down between a gap between your neck and the collar. With a few swift motions, you feel it loosen. "Now that I've got the delicate parts exposed," Morgan lays you down. "I need to smash it! Now, be brave for <<mummy>>." The crowbar comes down on the collar, releasing it from your neck. <<tearful>> you rise to your feet as Morgan snatches and examines the remains.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Collar Refuse
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+Morgan shrugs. "Have it your way, dear."
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Shackles
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+Morgan pulls you close, and sticks the plate between your ankle and one of the shackles. It digs uncomfortably into your skin. "I can't have it moving while doing this," Morgan rambles, "and there's enough room around your leg for it to wiggle. That won't do, it needs a tight fit." <<He>> shakes the shackle to make sure it's flush against the plate, before inserting the screwdriver into the keyhole. <<He>> jams it in and out, the shackle unable to move with the plate holding it in place. "When you don't have a key, brute force does the trick! Remember it well, <<charles>>!"
+<br><br>
+
+Eventually, you hear a snap, and the shackle pops open. <<tearful>> you rise to your feet as Morgan snatches and examines the remains.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Bindings
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+Morgan pulls you close, and wedges one end of the shears between your wrists. "These old things can't cut anymore," Morgan grumbles. "It's a shame, but that's what happens when you don't buy things with a warranty. Let that be a lesson, <<charles>>." <<He>> wiggles the blade back and forth, loosening your restraints. When they're loose enough, Morgan drops the shears and rips the ropes apart with <<his>> bare hands. <<tearful>> you rise to your feet as Morgan snatches and examines the remains.
+<br><br>
+
+<<link [[Next|Sewers Morgan]]>><</link>>
+<br>
+
+:: Sewers Search
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+<<skulduggerycheck>>
+
+You uncover Morgan from <<his>> nest of blankets and carefully peel <<his>> <<if $pronoun is "m">>suit<<else>>gown<</if>> away from <<him>>. <<Hes>> a fitful sleeper, tossing and turning at unpredictable times.
+<br><br>
+
+You feel something solid in an inside pocket, and reach in for it. It's a USB stick, plain black. This must be what Mickey was looking for.
+<br><br>
+<<pubfameComplete "morgan">>
+
+<<skulduggeryuse>>
+
+<<if $skulduggerysuccess is 1>>
+	Morgan snorts in <<his>> sleep and you quickly extract your hand, holding your breath. You wait a few seconds, before hearing Morgan snore again. <span class="green">You weren't noticed.</span>
+	<br><br>
+
+	Now could be your chance to escape.
+	<br><br>
+
+	<<link [[Sleep|Sewers Sleep]]>><</link>>
+	<br>
+	<br>
+	<<link [[Escape|Sewers Escape Night]]>><</link>>
+	<br>
+<<else>>
+	<<set $sewersSleepSex to 1>>
+	Morgan snorts in <<his>> sleep and you yank your hand back, bumping against <<his>> shoulder. <span class="red"><<He>> blearily opens <<his>> eyes.</span>
+	<br><br>
+
+	"<<charles>>?" <<he>> asks. "Are you... undressing me?" A fond smile spreads across <<his>> face. "If you're that desperate for me, I won't deny you, darling."
+	<br><br>
+
+	<<link [[Next|Sewers Rape]]>><<set $molestationstart to 1>><<set $phase to 3>><</link>>
+<</if>>
+
+:: Sewers Ask
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+<<if $speech_attitude is "meek">>
+	"E-excuse me, Morgan?" you ask, raising your hand. "There's something I'm trying to find, c-could you help me?"
+<<elseif $speech_attitude is "bratty">>
+	"Hey, old <<if $pronoun is "f">>lady<<else>>man<</if>>," you say. "Help me out with something."
+<<else>>
+	"Hey, Morgan," you say. "Could you help me find something down here?"
+<</if>>
+<br><br>
+
+<<if Time.hour is 9 or Time.hour is 12 or Time.hour is 15 or Time.hour is 20>>
+	Morgan looks annoyed, but nods. "I suppose the lesson can wait. What did you need, <<charles>>?"
+<<else>>
+	Morgan nods. "Of course, <<charles>>, what else is <<mummy>> here for?"
+<</if>>
+<br><br>
+
+<<if $pubfame.seen.includes("morganDrive")>>
+	You remember the last time you went through this, and decide to cut to the chase. "Have you seen anything called a 'USB flash drive' down here?"
+	<br><br>
+
+	Morgan digs around their clothes, before pulling something out of a pocket. "Saw this floating in the moldy passage south of here just the other day! It says 'USB flash drive' on the side, I'm sure it's what you're talking about. Why, <<charles>>?"
+<<else>>
+	<<set $pubfame.seen.pushUnique("morganDrive")>>
+	You frown, trying to think of a way to explain a USB stick to Morgan in a way <<he>> would understand. "It's small, square-ish, with a little metal bit at the end. The non-metal part is probably plastic, and a little thicker than the rest of-"
+	<br><br>
+
+	Morgan cuts you off with a laugh. "Oh, that!" <<He>> pulls something out of a pocket. "If you were looking for this 32 GB USB flash drive, you should've just said so."
+	<br><br>
+
+	You blink. "You know what a USB is?"
+
+	"Now, <<charles>>." Morgan gives you a stern look. <<He>> turns it to show the side to you, where <i>"32GB USB flash drive"</i> is written in small text. "I know how to read, dear. You shouldn't look down on <<mummy>> like that." The sternness fades away. "Why did you need it?"
+<</if>>
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"W-well..." You look at <<him>> hopefully. "Could I have it?"
+<<elseif $speech_attitude is "bratty">>
+	"Yeah, I need it," you say. "Hand it over."
+<<else>>
+	"Since you won't need it, can I have it?" you ask.
+<</if>>
+<br><br>
+
+<<if $NPCName[$NPCNameList.indexOf("Morgan")].love gte 10>>
+	Morgan laughs. "<span class="green">Of course, <<charles>>!</span> What's mine is yours, and I can't get any use out of it anyway. Too short to stir my tea with." <<He>> gives it to you, gently closing your hand around it.
+	<br><br>
+	<<pubfameComplete "morgan">>
+
+	<<if !$daily.morgan.sex>>
+		Morgan smiles at you. "Now, <<charles>>, since I've done that for you, don't you think you should do something for me? I know I raised you to be polite." <<He>> reaches for you.
+		<br><br>
+
+		<<link [["Allow " + $NPCList[0].pronouns.him|Sewers Rape]]>><<trauma 6>><<npcincr Morgan love 1>><<set $phase to 1>><<set $molestationstart to 1>><</link>><<gtrauma>><<glove>>
+		<br>
+		<<link [["Push " + $NPCList[0].pronouns.him + " away"|Sewers Ask Refuse]]>><<npcincr Morgan love -5>><</link>><<lllove>>
+	<<else>>
+		Morgan smiles at you. "Now, come along. There's plenty of chores for you still."
+		<br><br>
+		<<link [[Next|Sewers Morgan]]>><</link>>
+	<</if>>
+
+<<else>>
+	Morgan clicks <<his>> tongue. "<span class="red">What would you need this silly thing for, <<charles>>?</span> You need to focus on the more important things." <<He>> turns away from you.
+	<<if Time.hour is 9 or Time.hour is 12 or Time.hour is 15 or Time.hour is 20>>
+		"Now, let's continue our lesson, shall we?"
+	<<else>>
+		"Now, come along. There's plenty of chores for you still."
+	<</if>>
+	<br><br>
+
+	<span class="purple">If Morgan liked you more, <<he>> may trust you enough to give you the USB.</span> <span class="blue">There may also be other ways to get it off <<him>>.</span>
+	<br><br>
+
+	<<link [[Next|Sewers Morgan]]>><</link>>
+<</if>>
+
+:: Sewers Ask Refuse
+<<effects>><<set $location to "sewers">><<set $outside to 0>>
+
+You gently push Morgan away, and <<he>> frowns in confusion. "<<charles>>, what are you... why?"
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"I-I'm just... not in the mood," you say.
+<<elseif $speech_attitude is "bratty">>
+	"I'm not yours to molest any time you want," you say.
+<<else>>
+	"It's my choice," you ask. "I don't feel like it."
+<</if>>
+<br><br>
+
+"Even... even after..." Morgan continues muttering to <<himself>>. "You just wanted the flash stick, didn't you, <<charles>>? You wanted it, so you lead me on, took advantage of my love, you... you thief!"
+<br><br>
+
+<<He>> suddenly screams at you. "You rotten, abhorrent, miserable child! Using your own <<if $pronoun is "m">>father<<else>>mother<</if>> like that! Stealing from your own kin! I'll teach you to use me!" <<He>> lunges for you, fury in <<his>> eyes.
+<br><br>
+
+<<link [[Next|Sewers Ask Rape]]>><<set $molestationstart to 1>><</link>>
+
+:: Sewers Ask Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+
+	<<neutral 1>>
+
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<set $timer to 10>>
+	"I'll show you what thieving brats like you get!" <<he>> snarls.
+	<br><br>
+	<<set $enemyhealthmax += 100>><<set $enemyhealth += 100>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+
+<<if $timer is 9>>
+	"Stealing from <<mummy>>!"
+<<elseif $timer is 7>>
+	"Miserable! Terrible!"
+<<elseif $timer is 5>>
+	"What will you steal next, <<charles>>? My badge? My dreams?"
+<<elseif $timer is 3>>
+	"I'll rip that thievery right from your heart!"
+<</if>>
+
+<<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Sewers Ask Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Sewers Ask Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Sewers Ask Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"<<charles>>, you..." <<he>> wheezes. "<<Mummy>> forgives you..."
+	<br><br>
+
+	<<tearful>> you try to crawl away, but <<he>> grips your waist. "No, <<charles>>, stay with me. You still have a lot to make up for."
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc Morgan>><<person1>>
+	<<link [[Next|Sewers Morgan]]>><</link>>
+
+<<elseif $enemyhealth lte 0>>
+	You shove Morgan away from you, dodge <<his>> clutching grasp and stumble to your feet.
+	<br><br>
+
+	<<tearful>> you escape into another tunnel, chased by <<his>> howls.
+	<br><br>
+	<<set $sewerschased to 1>>
+	<<set $sewerschasedstep to 3>>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Sewers Residential]]>><</link>>
+<</if>>
+
+:: Sewers Possessed
+<<effects>><<set $location to "sewers">><<set $outside to 0>><<getTarget true>>
+<<npc Morgan>><<person1>>
+
+Just as you reach for the ladder to haul yourself up, it retracts upwards. You stumble backwards, almost falling over. "There you are, <<charles>>," Morgan exclaims as <<he>> stumbles in from a nearby tunnel. "Don't run from me, insolent-" <<He>> reaches toward you, but suddenly stops, staring at you in confusion.
+<br><br>
+
+<<Hes>> silent for a few seconds, before hissing. <<His>> eyes are filled with a sudden, uncharacteristic clarity. "I can see you in there, you know. Lurking behind <<pher>> eyes, stealing what's not yours. Leave. This place is not yours, nor is that body. You hold no claim down here."
+<br><br>
+
+With a feral screech, Morgan charges at you, <<his>> face twisted in anger. "Be brave for <<mummy>>, <<charles>>! I'll fix this!"
+<br><br>
+
+<span class="nextLink"><<link [[Fight|Sewers Possessed Fight]]>><<set $fightstart to 1>><</link>></span>
+
+:: Sewers Possessed Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust to -100>>
+	<<set $enemyanger to 200>>
+	<<npcidlegenitals>>
+	<<set $noAdmire to true>><<set $noBodyWriting to true>>
+	Your body is made to laugh. "<span class="wraith">Those who interrupt ghosts shall join them.</span>"
+	<br><br>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or _controlRegain is 1>>
+	<span id="next" class="nextWraith"><<link [[Next|Sewers Possessed Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next" class="nextWraith"><<link [[Next|Sewers Possessed Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Sewers Possessed Fight Finish
+<<effects>><<getTarget true>>
+<<if $enemyhealth lte 0>>
+	Morgan is shoved away from you, and collapses to the ground. "<<charles>>!" <<he>> shouts, <<his>> voice hoarse.
+	<br><br>
+
+	You turn your head up to the ladder, and reach toward it. An extra arm extends out and grabs the ladder, pulling you up and away from Morgan's howls.
+	<br><br>
+
+	<<endcombat>><<clotheson>>
+	<<set $wraith.exit to "town">>
+	<<if $bus is "sewersresidential">>
+		<span class="nextLink"><<link [[Climb.|Residential Drain]]>><</link>></span>
+	<<elseif $bus is "sewerscommercial">>
+		<span class="nextLink"><<link [[Climb.|Commercial Drain]]>><</link>></span>
+	<<else>>
+		<span class="nextLink"><<link [[Climb.|Industrial Drain]]>><</link>></span>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation "short">>
+
+	Morgan collapses to the ground. "<<charles>>!" <<he>> shouts, <<his>> voice wavering.
+	<br><br>
+
+	You turn your head up to the ladder, and reach toward it. An extra arm extends out and grabs the ladder, pulling you up and away from Morgan's howls.
+	<br><br>
+
+	<<endcombat>><<clotheson>>
+	<<set $wraith.exit to "town">>
+	<<if $bus is "sewersresidential">>
+		<span class="nextLink"><<link [[Climb.|Residential Drain]]>><</link>></span>
+	<<elseif $bus is "sewerscommercial">>
+		<span class="nextLink"><<link [[Climb.|Commercial Drain]]>><</link>></span>
+	<<else>>
+		<span class="nextLink"><<link [[Climb.|Industrial Drain]]>><</link>></span>
+	<</if>>
+<<else>>
+	<<wraithExorcise true true>><<clearWraith>><<endWraith>>
+	<span class="gold">You stop.</span> You can feel it pushing you to keep going, to keep fighting, but you dig your heels in and focus. You have your body back, and you don't plan on giving it up.
+	<br><br>
+
+	You double over in agony. It's pulling itself out of you, knowing it's been bested. You see a pair of pale, translucent arms erupt from your chest. With a great amount of effort, it expels itself out of you.
+	<br><br>
+
+	Its head snaps back, and it dissipates into nothingness with a brief shriek that echoes in your mind. Your ears ring, and you hear its voice all around you. "<span class="wraith">A gilded cage is still a cage.</span>" Morgan staggers back, clutching <<nnpc_his "Morgan">> ears in pain. <<tearful>> you run to the ladder, which returned back to the ground, and claw your way out of the sewers.
+	<br><br>
+
+	<<endcombat>><<clotheson>>
+	<<if $bus is "sewersresidential">>
+		<<link [[Next|Residential Drain]]>><</link>>
+	<<elseif $bus is "sewerscommercial">>
+		<<link [[Next|Commercial Drain]]>><</link>>
+	<<else>>
+		<<link [[Next|Industrial Drain]]>><</link>>
+	<</if>>
+<</if>>
+
+:: Sewers Review
+<<if $phase is 0>>
+	<<if $school gte 1600>>
+		You tell Morgan that you have
+	<<else>>
+		You sigh, before telling Morgan that you have
+	<</if>>
+	<<if $school gte 4000>>
+		<span class="green">exemplary</span>
+		<<set _result to "good">>
+	<<elseif $school gte 2800>>
+		<span class="teal">excellent</span>
+		<<set _result to "good">>
+	<<elseif $school gte 1600>>
+		<span class="lblue">good</span>
+		<<set _result to "okay">>
+	<<elseif $school gte 800>>
+		<span class="blue">okay</span>
+		<<set _result to "okay">>
+	<<elseif $school gte 400>>
+		<span class="purple">bad</span>
+		<<set _result to "bad">>
+	<<elseif $school gte 1>>
+		<span class="pink">awful</span>
+		<<set _result to "bad">>
+	<<else>>
+		<span class="red">appalling</span>
+		<<set _result to "naked">>
+	<</if>>
+	performance in school.
+<<else>>
+	<<if $englishSuccess>>
+		You tell Morgan that your grades are excellent, and all the teachers are proud of you. <span class="green">Morgan buys it.</span>
+		<<set _result to "good">>
+	<<else>>
+		You tell Morgan that your grades are horrible. Horribly amazing, you mean. As in, it's amazing how horrible they are. <span class="red">You trip over your tongue too much to convince <<him>>.</span>
+		<<set _result to "bad">>
+	<</if>>
+<</if>>
+<br><br>
+
+<<if _result is "good">>
+	<<npcincr Morgan love 1>>
+	"Wonderful! I knew my lovely child was brilliant!" Morgan says ecstatically. <<He>> puts <<his>> hand on your head and ruffles your hair. "I'm happy <<charles>>, you made your <<mummy>> proud! You're living up to our noble name!"
+	<<stress -6>><<lstress>>
+	<br><br>
+
+	<<link [[Next|Sewers Morgan]]>><</link>>
+<<elseif _result is "okay">>
+	"I expect better out of you." Morgan lets out a sigh of frustration, and you can see the disappointment on <<his>> face. "We'll just have to do more lessons then, starting now."
+	<br><br>
+
+	<<He>> steps toward you.
+	<<set _eventsDone to Object.keys($daily.morgan)>>
+	<<if $rng gte 51 and _eventsDone lte 3>>
+		<<set _lessons to []>>
+		<<run ["history", "maths", "science", "english"].forEach(n => _eventsDone.includes(n) ? false : _lessons.push(n))>>
+		<<set _lesson to _lessons.random().toUpperFirst()>>
+
+		Morgan grabs you by the wrist and pulls you over to an abandoned desk, forcing you into the seat. "Now," <<he>> says, "time for review. _lesson will be our focus, so pay attention this time."
+		<br><br>
+		/* these passage names are constructed:
+		|Sewers Maths], |Sewers History], |Sewers Science], |Sewers English] */
+		<<link [[Next|"Sewers " + _lesson]]>><</link>>
+	<<else>>
+		"Lets review a subject you're good at, <<charles>>." Morgan gets close and starts pawing at your body while undressing <<himself>>.
+		<br><br>
+
+		<<link [[Next|Sewers Rape]]>><<set $phase to 1>><<set $molestationstart to 1>><<set $daily.morgan.sex to 1>><</link>>
+	<</if>>
+<<elseif _result is "bad">>
+	<<npcincr Morgan love -1>>
+	Morgan becomes furious and approaches you quickly, <<his>> fists clenched. "After all the lessons we've had and you dare to do bad in school!" <<He>> grips your arms extremely tight. "Bad <<girl>> <<charles>>!"
+	<br><br>
+
+	You are forcefully bent over <<his>> knee. You grit your teeth, preparing for the worst.
+	<br><br>
+
+	<<link [[Refuse|Sewers Spank]]>><<set $molestationstart to 1>><</link>>
+<<else>>
+	Morgan taps <<his>> chin in thought. "There are rumors that studying in the nude helps you retain information," <<he>> muses. "Oh, but it's probably poppycock."
+	<br><br>
+
+	<<link [[Next|Sewers Morgan]]>><</link>>
+<</if>>

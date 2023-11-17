@@ -1,0 +1,633 @@
+:: Widgets Beast Generation [widget]
+<<widget "generateBEAST">>
+	<!-- NEW Args are NPC#(1-6), Type, Gender-->
+	<!-- Example: <<generateBEAST 1 dog m>> would generate NPC 1 as male dog -->
+	<!-- Example: <<generateBEAST 2 wolf f>> would generate NPC 2 as female wolf -->
+
+	<<set _n to _args[0]-1>>
+	<!-- Checks if endevent was properly used after the last event -->
+	<<checkEventNPC _n>>
+	<<set _type to _args[1]>>
+	<<set _gen to _args[2]>>
+	<<set _beast_genitals to _args[3]>>
+	<<set _beast_monster to _args[4]>>
+
+	<!-- Check that Type is known -->
+	<<if !$BeastList.includes(_type)>>
+		<span class="red">ERROR: generateBEAST unknown type</span>
+	<</if>>
+
+	<!-- Set gender and pronoun, random if unspecified -->
+	<<if _gen is "m" or _gen is "f">>
+		<<set $NPCList[_n].gender to _gen>><<set $NPCList[_n].pronoun to _gen>>
+	<<else>>
+		<<if random(1, 100) lte beastMaleChance()>>
+			<<set $NPCList[_n].gender to "m">><<set $NPCList[_n].pronoun to "m">>
+		<<else>>
+			<<set $NPCList[_n].gender to "f">><<set $NPCList[_n].pronoun to "f">>
+		<</if>>
+	<</if>>
+
+	<<set $NPCList[_n].adult to 1>>
+	<<set $NPCList[_n].lefthand to "none">>
+	<<set $NPCList[_n].righthand to "none">>
+	<<set $NPCList[_n].mouth to 0>>
+	<<set $NPCList[_n].stance to "approach">>
+	<<set $NPCList[_n].chastity to {penis:"", vagina:"", anus:""}>>
+	<<generatePronouns $NPCList[_n]>>
+
+	<<set $NPCList[_n].location to {
+		head: 0,
+		genitals: 0,
+	}>>
+	
+	<<if $NPCList[_n].pregnancy is undefined>>
+		<<set $NPCList[_n].pregnancy to 0>>
+	<</if>>
+
+	<<set $NPCList[_n].pregnancyAvoidance to random(0,50)>>
+
+	<<if $enemyno lt 6>><<set $enemyno += 1>><</if>>
+
+	<<beastattribute _n _type>>
+
+	<<run EventSystem.push($passage, _n, $timeStamp)>>
+<</widget>>
+
+<<widget "beastattribute">>
+	<!-- NEW Set Beast attributes. $arg[0] calls NPC number to be generated, arg[1] sets beast type -->
+
+	<!-- <<nounderwearcheck>> see widget for disabled reason -->
+
+	<<set _n to _args[0]>>
+	<<set _type to _args[1]>>
+
+	<!-- Set genitals active -->
+	<<set _gen to $NPCList[_n].gender>>
+	<<set $NPCList[_n].vagina to "none">>
+	<<set $NPCList[_n].penis to "none">>
+
+	<<if _beast_genitals is "penis">>
+		<<set $NPCList[_n].penis to 0>>
+	<<elseif _beast_genitals is "vagina">>
+		<<set $NPCList[_n].vagina to 0>>
+	<<elseif ["m", "f", "h"].includes(_gen)>>
+		<<switch _gen>>
+			<<case "m">>
+				<<set $NPCList[_n].penis to 0>>
+			<<case _gen "f">>
+				<<set $NPCList[_n].vagina to 0>>
+			<<case _gen "h">>
+				<<set $NPCList[_n].penis to 0>>
+				<<set $NPCList[_n].vagina to 0>>
+		<</switch>>
+	<</if>>
+
+	<<npcClothesType $NPCList[_n] "naked">>
+	<<set $NPCList[_n].chest to "none">>
+
+	<<set $NPCList[_n].insecurity to "none">>
+
+	<!-- Select Beast Description/Strength/Genital pairing -->
+	<!-- v2.7 $BeastList is 0-7: "dog", "cat", "pig", "wolf", "dolphin", "lizard", "bear", "creature" -->
+	<!-- v2.13 "horse" added to $BeastList -->
+
+	<<set _h to [200,150,200,300,200,250,500,300,200,500,225,150,400,300]>> <!-- Health Max per type -->
+	<<set _t to ["dog","cat","pig","wolf","dolphin","lizard","bear","boar","creature","horse","fox","hawk","cow","spider"]>> <!-- Name of each type -->
+	<<set _d to [["large"],
+		["large"],
+		["fat"],
+		["enormous", "girthy", "huge", "mighty", "hefty", "colossal", "humongous", "large"],
+		["bottlenose"],
+		["scaly"],
+		["brown"],
+		["hairy"],
+		["strange"],
+		["huge"],
+		["large"],
+		["fierce"],
+		["huge"],
+		["slimy"]
+		]>> <!-- Descriptor of each type -->
+	<<set _pd to ["knotted penis","spiked penis","penis","knotted penis","strange penis","penis","penis","penis","penis","equine cock","knotted penis","avian cock","bovine cock","arachnid penis"]>> <!-- Descriptor of Penises -->
+	/% <<set _cla to [1,1,1,1,0,1,1,1]>> %/
+	<<set _ps to [2,2,2,3,2,2,3,3,2,5,2,2,4,2]>> <!-- Size of penises -->
+	/* 北极星模组 */
+	<<set _h to _h.concat([300,250,300,400,500,300,150,200,300])>>
+	<<set _t to _t.concat(["sheep","deer","bee","wasp","dragon","ant","raccoon","frog","rat"])>>
+	<<set _d to _d.concat([ ["松软的"],["俊美的"],["奇怪的"],["奇怪的"],["有鳞的"],["奇怪的"],["俊美的"],["湿滑的"],["肮脏的"] ])>>
+	<<set _pd to _pd.concat(["肉棒","肉棒","肉棒","肉棒","肉棒","肉棒","肉棒","肉棒","肉棒"])>>
+	<<set _ps to _ps.concat([4,3,2,2,5,3,2,2,3])>>
+	/* 北极星 */
+
+	<<set _i to $BeastList.indexOf(_type)>>
+	<<set $NPCList[_n].healthmax to _h[_i]>>
+	<<set $NPCList[_n].health to $NPCList[_n].healthmax>>
+	<<set $NPCList[_n].description to _d[_i].pluck()>>
+	<<set $NPCList[_n].type to _t[_i]>>
+	<!-- <<set $NPCList[_n].claws to _cla[_i]>> -->
+	<<set $NPCList[_n].breastsize to 0>>
+	<<set $NPCList[_n].breastsdesc to "nipples">>
+	<<set $NPCList[_n].breastdesc to "nipple">>
+	<<set $NPCList[_n].monster to 0>> <!-- Default to assuming not a monster -->
+	<<set $NPCList[_n].claws to "claws">>
+
+	<!-- Check for beast-type specific changes -->
+	<<if $NPCList[_n].type is "horse">>
+		<<set $NPCList[_n].hair to either("appaloosa","bay","black","brown","buckskin","chestnut","cremello","dun","grey","overo","palomino","piebald","roan","skewbald","spotted","tobiano")>>
+		<<set $NPCList[_n].claws to "hooves">> <!-- Horses have hooves -->
+	<<elseif $NPCList[_n].type is "cow">>
+		<<if $NPCList[_n].gender is "m">>
+			<<set $NPCList[_n].type to "bull">> <!-- male cows are called bulls (or bullboys for monsters) -->
+		<</if>>
+		<<set $NPCList[_n].claws to "hooves">> <!-- Cattle have hooves -->
+	<<elseif $NPCList[_n].type is "dolphin">>
+		<<set $NPCList[_n].claws to "flippers">> <!-- Dolphins have flippers -->
+	<<elseif $NPCList[_n].type is "hawk">>
+		<<set $NPCList[_n].claws to "talons">> <!-- Hawks have talons -->
+	/* 北极星模组 */
+	<<elseif $NPCList[_n].type is "pig" or $NPCList[_n].type is "boar" or $NPCList[_n].type is "deer">>
+	/* 北极星 */
+		<<set $NPCList[_n].claws to "hooves">> <!-- Pigs and boars have hooves -->
+	<</if>>
+
+	<!-- Monster generation code -->
+	<<rng>>
+	<!-- Set hallucination creatures to always be monsters. Shadow types could be .monster = "shadow" -->
+	<<if $NPCList[_n].type is "creature" and !_tower_creature>>
+		<<set $NPCList[_n].monster to "monster">>
+	<<elseif _beast_monster isnot "beast" and ($monsterchance gte $rng and ($hallucinations gte 1 or $monsterhallucinations is "f")) or (_beast_monster is "monster") or ($bestialitydisable is "t" and $NPCList[0].monster is "monster")>>
+		<<set $NPCList[_n].monster to "monster">>
+		<<if ["dog","pig","wolf","dolphin","boar","fox","hawk","cow"].includes($NPCList[_n].type)>> <!-- Remove claws from many monster types -->
+			<<run delete $NPCList[_n].claws>> <!-- It can't have claws - using undefined to maintain back compat with previous saves mid-combat ($claws) -->
+		<</if>>
+		/* 北极星模组 */
+		<<if ["deer","raccoon","frog","rat"].includes($NPCList[_n].type)>>
+			<<run delete $NPCList[_n].claws>>
+		<</if>>
+		/* 北极星 */
+		<<if $NPCList[_n].type is "horse">>
+			<<set $NPCList[_n].type to "centaur">>
+		<<elseif $NPCList[_n].type is "hawk">>
+			<<set $NPCList[_n].type to "harpy">>
+		/* 北极星模组 */
+		<<elseif $NPCList[_n].type is "sheep">>
+			<<if $NPCList[_n].gender is "f">>
+				<<set $NPCList[_n].type to "sheepgirl">>
+			<<else>>
+				<<set $NPCList[_n].type to "ramboy">>
+			<</if>>
+		<<elseif $NPCList[_n].type is "deer">>
+			<<if $NPCList[_n].gender is "f">>
+				<<set $NPCList[_n].type to "deergirl">>
+			<<else>>
+				<<set $NPCList[_n].type to "stagboy">>
+			<</if>>
+		/* 北极星 */
+		<<elseif $NPCList[_n].gender is "f">>
+			<<set $NPCList[_n].type to $NPCList[_n].type + "girl">>
+		<<else>>
+			<<set $NPCList[_n].type to $NPCList[_n].type + "boy">>
+		<</if>>
+	<</if>>
+
+	<<if $NPCList[_n].monster is "monster">>
+		<<set $NPCList[_n].lefthand to 0>>
+		<<set $NPCList[_n].righthand to 0>>
+		<!-- female monster people mammals have an accessible chest and might be able to lactate. -->
+		/* 北极星模组 */
+		<<if $NPCList[_n].pronoun is "f" and ["catgirl", "doggirl", "wolfgirl", "beargirl", "foxgirl", "cowgirl", "deergirl", "sheepgirl", "raccoongirl", "dolphingirl"].includes($NPCList[_n].type)>>
+		/* 北极星 */
+			<<set $NPCList[_n].chest to 0>>
+			<<if ["beargirl", "cowgirl"].includes($NPCList[_n].type)>> <!-- Bigger monsters = Bigger booba -->
+				<<set $_breastMin to [0,0,0,0,2,2,2,2,2,5,5,5,5,5,5,5,8,8,9,10,12]>>
+				<<set $_breastMax to [4,4,4,4,4,4,7,7,8,9,9,9,9,12,10,11,10,11,11,12,12]>>
+			<<else>>
+				<<set $_breastMin to [0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,5,5,8,3,10,12]>>
+				<<set $_breastMax to [4,4,4,4,4,4,7,7,7,7,8,8,8,8,8,11,11,12,10,12,12]>>
+			<</if>>
+			<<set _brdes to ["nipple","budding","tiny","small","pert","modest","full","large","ample","massive","huge","gigantic","enormous"]>>
+			<<set _brlvl to random(0,20)>> <!-- select a random index in the arrays -->
+			<<if $breast_mod gte $_breastMin[_brlvl]>><<set $_breastMin[_brlvl] to $breast_mod>><</if>>
+			<<if $breast_mod gte $_breastMax[_brlvl]>><<set $_breastMax[_brlvl] to $breast_mod>><</if>>
+			<<if $breast_mod lt 0>>
+				<<set $_breastMin[_brlvl] to Math.clamp($_breastMin[_brlvl]+$breast_mod, 0, 12)>>
+				<<set $_breastMax[_brlvl] to Math.clamp($_breastMax[_brlvl]+$breast_mod, 0, 12)>>
+			<</if>>
+			<<set _rngbr to random($_breastMin[_brlvl], $_breastMax[_brlvl])>>
+			<<set $NPCList[_n].breastsize to _rngbr>>
+			<<switch _rngbr>>
+			<<case 0>>
+				<<set $NPCList[_n].breastsdesc to "nipples">>
+				<<set $NPCList[_n].breastdesc to "nipple">>
+			<<default>>
+				<<set $NPCList[_n].breastsdesc to _brdes[_rngbr]+" breasts">>
+				<<set $NPCList[_n].breastdesc to _brdes[_rngbr]+" breast">>
+			<</switch>>
+			<<if random(1, 100) gte 61 or $NPCList[_n].type is "cowgirl">>
+				<<set $NPCList[_n].lactation to 1>>
+			<<else>>
+				<<set $NPCList[_n].lactation to 0>>
+			<</if>>
+		<</if>>
+		<<if random(1, 100) lte $blackchance>>
+			<<set $NPCList[_n].skincolour to "black">>
+		<<else>>
+			<<set $NPCList[_n].skincolour to "white">>
+		<</if>>
+	<</if>>
+
+	<<set $NPCList[_n].fullDescription to $NPCList[_n].description + " ">>
+	<<if $NPCList[_n].monster is 0>>
+		<<if $NPCList[_n].type isnot "cow" and $NPCList[_n].type isnot "bull">>
+			<<if $NPCList[_n].pronoun is "m">>
+				<<set $NPCList[_n].fullDescription += "male ">>
+			<<elseif $NPCList[_n].pronoun is "f">>
+				<<set $NPCList[_n].fullDescription += "female ">>
+			<</if>>
+		<</if>>
+	<</if>>
+	<<set $NPCList[_n].fullDescription += $NPCList[_n].type>>
+
+	<<if $NPCList[_n].type.includes("fox")>>
+		<<generate_npc_skills>>
+		<<generate_beast_traits>>
+		<<if $NPCList[_n].traits.includes("cowardly")>>
+			<<set $NPCList[_n].skills.security += 200>>
+			<<set $NPCList[_n].skills.security to Math.clamp($NPCList[_n].skills.security, 1, 1000)>>
+		<<elseif $NPCList[_n].traits.includes("territorial")>>
+			<<set $NPCList[_n].healthmax += 125>>
+			<<set $NPCList[_n].health += 125>>
+			<<set $NPCList[_n].skills.security += 100>>
+			<<set $NPCList[_n].skills.security to Math.clamp($NPCList[_n].skills.security, 1, 1000)>>
+		<<elseif $NPCList[_n].traits.includes("clever")>>
+			<<set $NPCList[_n].skills.security += 150>>
+			<<set $NPCList[_n].skills.security to Math.clamp($NPCList[_n].skills.security, 1, 1000)>>
+			<<set $NPCList[_n].skills.athletics += 100>>
+			<<set $NPCList[_n].skills.athletics to Math.clamp($NPCList[_n].skills.athletics, 1, 1000)>>
+		<<elseif $NPCList[_n].traits.includes("friendly")>>
+			<<set $NPCList[_n].healthmax -= 75>>
+			<<set $NPCList[_n].health -= 75>>
+		<<elseif $NPCList[_n].traits.includes("clumsy")>>
+			<<set $NPCList[_n].skills.security -= 200>>
+			<<set $NPCList[_n].skills.security to Math.clamp($NPCList[_n].skills.security, 1, 1000)>>
+			<<set $NPCList[_n].skills.athletics -= 200>>
+			<<set $NPCList[_n].skills.athletics to Math.clamp($NPCList[_n].skills.athletics, 1, 1000)>>
+		<</if>>
+	<</if>>
+
+
+	<!-- Gender-swap monsters if needed -->
+	<<if $NPCList[_n].monster is "monster" and _beast_genitals is undefined>>
+		<<set $NPCList[_n].penis to "none">>
+		<<set $NPCList[_n].vagina to "none">>
+
+		<<rng>>
+		<<if $NPCList[_n].gender is "m">>
+			<<if $rng lte $cbchance and $debugEnableHerms>>
+				<<set $NPCList[_n].penis to 0>>
+				<<set $NPCList[_n].vagina to 0>>
+			<<elseif $rng lte $cbchance>>
+				<<set $NPCList[_n].vagina to 0>>
+			<<else>>
+				<<set $NPCList[_n].penis to 0>>
+			<</if>>
+		<<elseif $NPCList[_n].gender is "f">>
+			<<if $rng lte $dgchance and $debugEnableHerms>>
+				<<set $NPCList[_n].vagina to 0>>
+				<<set $NPCList[_n].penis to 0>>
+			<<elseif $rng lte $dgchance>>
+				<<set $NPCList[_n].penis to 0>>
+			<<else>>
+				<<set $NPCList[_n].vagina to 0>>
+			<</if>>
+		<</if>>
+	<</if>>
+
+	<<if $NPCList[_n].penis isnot "none">>
+		<<set $NPCList[_n].penisdesc to _pd[_i]>>
+		<<set $NPCList[_n].penissize to _ps[_i]>>
+	<<else>>
+		<<set $NPCList[_n].penisdesc to "none">>
+		<<set $NPCList[_n].penissize to 0>>
+	<</if>>
+<</widget>>
+
+<!-- rng is rolled right after this widget runs, so it shouldn't need correction unless this widget is manually called somewhere outside of beast generation -->
+<<widget "generate_beast_traits">>
+	<<set $NPCList[_n].traits to []>>
+	<<if $location is "moor" and $moor>>
+		<<rng 10>>
+		<<if $moor gte 51>>
+			<!-- High moor -->
+			<<switch $rng>>
+				<<case 1 2 3 4 5>><<set $NPCList[_n].traits.push("territorial")>>
+				<<default>><<set $NPCList[_n].traits.push("clever")>>
+			<</switch>>
+		<<elseif $moor gte 21>>
+			<!-- Mid moor -->
+			<<switch $rng>>
+				<<case 1 2>><<set $NPCList[_n].traits.push("cowardly")>>
+				<<case 3 4>><<set $NPCList[_n].traits.push("territorial")>>
+				<<case 5 6>><<set $NPCList[_n].traits.push("clever")>>
+				<<case 7 8>><<set $NPCList[_n].traits.push("friendly")>>
+				<<default>><<set $NPCList[_n].traits.push("clumsy")>>
+			<</switch>>
+		<<else>>
+			<!-- Low moor -->
+			<<switch $rng>>
+				<<case 1 2 3>><<set $NPCList[_n].traits.push("cowardly")>>
+				<<case 4>><<set $NPCList[_n].traits.push("territorial")>>
+				<<case 5>><<set $NPCList[_n].traits.push("clever")>>
+				<<case 6 7 8>><<set $NPCList[_n].traits.push("friendly")>>
+				<<default>><<set $NPCList[_n].traits.push("clumsy")>>
+			<</switch>>
+		<</if>>
+	<<else>>
+	    /* 北极星模组 */
+		<<set $foxrng to random (1, 5)>>
+		<<switch $foxrng>>
+	    /* 北极星 */
+			<<case 1>><<set $NPCList[_n].traits.push("cowardly")>>
+			<<case 2>><<set $NPCList[_n].traits.push("territorial")>>
+			<<case 3>><<set $NPCList[_n].traits.push("clever")>>
+			<<case 4>><<set $NPCList[_n].traits.push("friendly")>>
+			<<case 5>><<set $NPCList[_n].traits.push("clumsy")>>
+		<</switch>>
+	<</if>>
+<</widget>>
+
+<!-- Dolphin generate calls -->
+<<widget "generatedolphin1">>
+	<<generateBEAST 1 dolphin>>
+<</widget>>
+
+<<widget "generatedolphin2">>
+	<<generateBEAST 2 dolphin>>
+<</widget>>
+
+<<widget "generatedolphin3">>
+	<<generateBEAST 3 dolphin>>
+<</widget>>
+
+<<widget "generatedolphin4">>
+	<<generateBEAST 4 dolphin>>
+<</widget>>
+
+<<widget "generatedolphin5">>
+	<<generateBEAST 5 dolphin>>
+<</widget>>
+
+<<widget "generatedolphin6">>
+	<<generateBEAST 6 dolphin>>
+<</widget>>
+
+<!-- Dog generate calls -->
+<<widget "generatedog1">>
+	<<generateBEAST 1 dog>>
+<</widget>>
+
+<<widget "generatedog2">>
+	<<generateBEAST 2 dog>>
+<</widget>>
+
+<<widget "generatedog3">>
+	<<generateBEAST 3 dog>>
+<</widget>>
+
+<<widget "generatedog4">>
+	<<generateBEAST 4 dog>>
+<</widget>>
+
+<<widget "generatedog5">>
+	<<generateBEAST 5 dog>>
+<</widget>>
+
+<<widget "generatedog6">>
+	<<generateBEAST 6 dog>>
+<</widget>>
+
+<!-- Wolf generate calls -->
+<<widget "generatewolf1">>
+	<<generateBEAST 1 wolf>>
+<</widget>>
+
+<<widget "generatewolf2">>
+	<<generateBEAST 2 wolf>>
+<</widget>>
+
+<<widget "generatewolf3">>
+	<<generateBEAST 3 wolf>>
+<</widget>>
+
+<<widget "generatewolf4">>
+	<<generateBEAST 4 wolf>>
+<</widget>>
+
+<<widget "generatewolf5">>
+	<<generateBEAST 5 wolf>>
+<</widget>>
+
+<<widget "generatewolf6">>
+	<<generateBEAST 6 wolf>>
+<</widget>>
+
+<!-- Cat generate calls -->
+<<widget "generatecat1">>
+	<<generateBEAST 1 cat>>
+<</widget>>
+
+<<widget "generatecat2">>
+	<<generateBEAST 2 cat>>
+<</widget>>
+
+<<widget "generatecat3">>
+	<<generateBEAST 3 cat>>
+<</widget>>
+
+<<widget "generatecat4">>
+	<<generateBEAST 4 cat>>
+<</widget>>
+
+<<widget "generatecat5">>
+	<<generateBEAST 5 cat>>
+<</widget>>
+
+<<widget "generatecat6">>
+	<<generateBEAST 6 cat>>
+<</widget>>
+
+<!-- Pig generate calls -->
+<<widget "generatepig1">>
+	<<generateBEAST 1 pig>>
+<</widget>>
+
+<<widget "generatepig2">>
+	<<generateBEAST 2 pig>>
+<</widget>>
+
+<<widget "generatepig3">>
+	<<generateBEAST 3 pig>>
+<</widget>>
+
+<<widget "generatepig4">>
+	<<generateBEAST 4 pig>>
+<</widget>>
+
+<<widget "generatepig5">>
+	<<generateBEAST 5 pig>>
+<</widget>>
+
+<<widget "generatepig6">>
+	<<generateBEAST 6 pig>>
+<</widget>>
+
+<!-- Boar generate calls -->
+<<widget "generateboar1">>
+	<<generateBEAST 1 boar>>
+<</widget>>
+
+<<widget "generateboar2">>
+	<<generateBEAST 2 boar>>
+<</widget>>
+
+<<widget "generateboar3">>
+	<<generateBEAST 3 boar>>
+<</widget>>
+
+<<widget "generateboar4">>
+	<<generateBEAST 4 boar>>
+<</widget>>
+
+<<widget "generateboar5">>
+	<<generateBEAST 5 boar>>
+<</widget>>
+
+<<widget "generateboar6">>
+	<<generateBEAST 6 boar>>
+<</widget>>
+
+<!-- Lizard generate calls -->
+<<widget "generatelizard1">>
+	<<generateBEAST 1 lizard>>
+<</widget>>
+
+<<widget "generatelizard2">>
+	<<generateBEAST 2 lizard>>
+<</widget>>
+
+<<widget "generatelizard3">>
+	<<generateBEAST 3 lizard>>
+<</widget>>
+
+<<widget "generatelizard4">>
+	<<generateBEAST 4 lizard>>
+<</widget>>
+
+<<widget "generatelizard5">>
+	<<generateBEAST 5 lizard>>
+<</widget>>
+
+<<widget "generatelizard6">>
+	<<generateBEAST 6 lizard>>
+<</widget>>
+
+<!-- Bear generate calls -->
+<<widget "generatebear1">>
+	<<generateBEAST 1 bear>>
+<</widget>>
+
+<<widget "generatebear2">>
+	<<generateBEAST 2 bear>>
+<</widget>>
+
+<<widget "generatebear3">>
+	<<generateBEAST 3 bear>>
+<</widget>>
+
+<<widget "generatebear4">>
+	<<generateBEAST 4 bear>>
+<</widget>>
+
+<<widget "generatebear5">>
+	<<generateBEAST 5 bear>>
+<</widget>>
+
+<<widget "generatebear6">>
+	<<generateBEAST 6 bear>>
+<</widget>>
+
+<!-- creature generate calls -->
+<<widget "generatecreature1">>
+	<<generateBEAST 1 creature>>
+<</widget>>
+
+<<widget "generatecreature2">>
+	<<generateBEAST 2 creature>>
+<</widget>>
+
+<<widget "generatecreature3">>
+	<<generateBEAST 3 creature>>
+<</widget>>
+
+<<widget "generatecreature4">>
+	<<generateBEAST 4 creature>>
+<</widget>>
+
+<<widget "generatecreature5">>
+	<<generateBEAST 5 creature>>
+<</widget>>
+
+<<widget "generatecreature6">>
+	<<generateBEAST 6 creature>>
+<</widget>>
+
+<!-- creature fox calls -->
+<<widget "generatefox1">>
+	<<generateBEAST 1 fox>>
+<</widget>>
+
+<<widget "generatefox2">>
+	<<generateBEAST 2 fox>>
+<</widget>>
+
+<<widget "generatefox3">>
+	<<generateBEAST 3 fox>>
+<</widget>>
+
+<<widget "generatefox4">>
+	<<generateBEAST 4 fox>>
+<</widget>>
+
+<<widget "generatefox5">>
+	<<generateBEAST 5 fox>>
+<</widget>>
+
+<<widget "generatefox6">>
+	<<generateBEAST 6 fox>>
+<</widget>>
+
+<!-- creature spider calls -->
+<<widget "generatespider1">>
+	<<generateBEAST 1 spider>>
+<</widget>>
+
+<<widget "generatespider2">>
+	<<generateBEAST 2 spider>>
+<</widget>>
+
+<<widget "generatespider3">>
+	<<generateBEAST 3 spider>>
+<</widget>>
+
+<<widget "generatespider4">>
+	<<generateBEAST 4 spider>>
+<</widget>>
+
+<<widget "generatespider5">>
+	<<generateBEAST 5 spider>>
+<</widget>>
+
+<<widget "generatespider6">>
+	<<generateBEAST 6 spider>>
+<</widget>>

@@ -1,0 +1,373 @@
+:: Tailor Shop
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+
+You are in the tailor shop. It has cloth of various colours hanging on racks.
+<br><br>
+
+/* 北极星模组 */
+<<if $sewingKit isnot 1 and $options.bjx_sewmachine>>
+/* 北极星 */
+	Looks like the shop has a new machine for sale in the display.
+	<br><br>
+<</if>>
+<<if $sewingBought is 1>>
+	"Thank you for your purchase. I'll have this delivered to your room by the time you get back."
+	<br><br>
+	<<set $sewingBought to 0>>
+<</if>>
+
+<<set $tailor_cost to 0>>
+<<set $outfitRepair to []>>
+<<set _time to 0>>
+<<set _outfitTime to 0>>
+<<set _brokenOutfit to 0>>
+
+<<for _active_clothes range Object.keys($worn)>>
+	<<if _active_clothes is "butt_plug">>
+		<<continue>>
+	<</if>>
+	<<if _active_clothes is "lower" or _active_clothes is "under_lower">>
+		<<if $worn[_active_clothes].one_piece is 1>>
+			<<if $worn[_active_clothes].integrity lt clothingData(_active_clothes,$worn[_active_clothes],'integrity_max')>>
+				<<set _outfitTime += 5>>
+			<</if>>
+			<<continue>>
+		<</if>>
+	<</if>>
+	<<if $worn[_active_clothes].integrity lt clothingData(_active_clothes,$worn[_active_clothes],'integrity_max') and $worn[_active_clothes].integrity gt 0 and clothingData(_active_clothes,$worn[_active_clothes],'integrity_max') gt 0>>
+		<<set $tailor_cost += Math.trunc(tailorClothingCost($worn[_active_clothes],_active_clothes) * (1 - $worn[_active_clothes].integrity / clothingData(_active_clothes,$worn[_active_clothes],'integrity_max')))>>
+		<<set _time += 5>>
+	<</if>>
+
+	<<if _brokenOutfit is 0>>
+		<<set _brokenOutfit to getOutfitPair()>>
+		<<if _brokenOutfit.length is 0>>
+			<<set _brokenOutfit to 1>>
+		<</if>>
+	<</if>>
+<</for>>
+
+<<if $stress gte $stressmax>>
+	<<passoutshop>>
+<<else>>
+	<<if Time.hour is 21>>
+		It's closing time. Security is herding everyone outside. <<if $exposed gte 1>>Panic swells within you as you realise how exposed you'll be should security find you in this state of dress.<</if>>
+		<br><br>
+
+		<<if $exposed lte 0>>
+			<<highicon>><<link [[Go outside|High Street]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			<<link [["Hide until it's over (1:00)"|Tailor Shop]]>><<pass 1 hour>><<endevent>><</link>>
+		<</if>>
+	<<else>>
+		<<if Time.dayState is "night">>
+			You are alone in the darkness.
+			<br><br>
+
+			<<if Time.hour isnot $closinghour and !$weekly.theft.tailor>>
+			<<shopicon "register">><<link [[Examine the cash register|Tailor Register]]>><</link>>
+			<br>
+			<</if>>
+
+		<<elseif $exposed gte 1>>
+
+			You are hiding behind bolts of cloth to protect your dignity.
+			<br><br>
+
+			<<if _brokenOutfit isnot 0 && _brokenOutfit isnot 1>>
+				<<generate1>><<person1>>You get the attention of the <<person>> working behind the counter and <<he>> tells you that <<he>> can help.
+
+				<<for _i = 0; _i lt _brokenOutfit.length; _i++>>
+					<<set _brokenOutfitTime to 15>><<set _tailorCostMod to .55>>
+					<<set _tailorCostMod += .43 * (1 - $worn[_brokenOutfit[_i].wornHalf].integrity / clothingData(_brokenOutfit[_i].wornHalf,$worn[_brokenOutfit[_i].wornHalf],'integrity_max'))>>
+
+					<<if _brokenOutfit[_i].brokenHalf.includes("under")>>
+						<<set _brokenOutfitTime += 5>><<set _tailorCostMod += .06>>
+						<<He>> tells you that your <<print _brokenOutfit[_i].name>> will take a little more time and effort if you're willing to take the risk. The repair will cost <<printmoney `Math.trunc(_brokenOutfit[_i].cost * _tailorCostMod)`>>.
+					<<else>>
+						<<He>> can repair your missing <<print _brokenOutfit[_i].name>> for <<printmoney `Math.trunc(_brokenOutfit[_i].cost * _tailorCostMod)`>>.
+					<</if>>
+					<br>
+
+					<<set _tempText to `Repair ` + _brokenOutfit[_i].name + ` (0:` + (_brokenOutfitTime lt 10 ? "0":"") + _brokenOutfitTime + `)`>>
+
+					<<capture _i>>
+						<<link [[_tempText|Fix Outfit]]>> <<set $outfitRepair to _brokenOutfit[_i]>><<pass _brokenOutfitTime>><<set $money -= Math.trunc(_brokenOutfit[_i].cost * _tailorCostMod)>> <</link>>
+					<</capture>>
+					<br><br>
+				<</for>>
+
+				<<unset _tempText>>
+			<</if>>
+
+		<<else>>
+			<<generate1>><<person1>>"Welcome," the tailor says. "What services are you looking for today?
+			We offer repairs on clothes. We also offer a monthly service to repair by delivery."
+			<br><br>
+			<<if $tailor_cost gte 1 and $money gte $tailor_cost>>
+				<<He>> offers to fix what you're currently wearing for <<printmoney `Math.trunc($tailor_cost)`>>.
+				<br>
+				<<shopicon "tailor">><<print '<<link [[Fix clothes (0:'+(_time lt 10 ? "0":"")+_time+')|Fix Clothes]]>><<set $money -= $tailor_cost>><<pass _time>><</link>>'>>
+				<br><br>
+				<<set _options to true>>
+			<<elseif $money lt $tailor_cost>>
+				You don't have enough cash to repair your current clothes. (<<printmoney `Math.trunc($tailor_cost)` "red">>.)
+				<br><br>
+				<<set _options to true>>
+			<</if>>
+
+			<<if ($worn.upper.set is $worn.lower.set and $worn.lower.integrity lt clothingData('lower',$worn.lower,'integrity_max')) or ($worn.under_upper.set is $worn.under_lower.set and $worn.under_lower.integrity lt clothingData('under_lower',$worn.under_lower,'integrity_max'))>>
+				The tailor will repair the lower halves of outfits for free.
+				<br>
+				<<shopicon "tailor">><<print '<<link [[Fix clothes (0:'+(_outfitTime lt 10 ? "0":"")+_outfitTime+')|Fix Lower]]>><<pass _outfitTime>><</link>>'>>
+				<br><br>
+				<<set _options to true>>
+			<</if>>
+
+			<<if _brokenOutfit isnot 0 && _brokenOutfit isnot 1>>
+
+				<<He>> notices that your <<print _brokenOutfit[random(0,_brokenOutfit.length -1)].name>> is destroyed.
+				"It'll take a while but I can fit those to another half to make them whole." <<He>> pauses for a second to gauge your reaction. "Interested?"
+				<br><br>
+
+				<<set _secondUnderItem to false>><<set _secondOverItem to false>>
+
+				<<for _i = 0; _i lt _brokenOutfit.length; _i++>>
+					<<set _brokenOutfitTime to 15>><<set _tailorCostMod to .55>>
+					<<set _tailorCostMod += .43 * (1 - $worn[_brokenOutfit[_i].wornHalf].integrity / clothingData(_brokenOutfit[_i].wornHalf,$worn[_brokenOutfit[_i].wornHalf],'integrity_max'))>>
+
+					<<if _brokenOutfit[_i].brokenHalf.includes("under")>>
+						<<set _brokenOutfitTime += 5>><<set _tailorCostMod += .06>>
+
+						<<if _secondUnderItem isnot true>>
+							<<set _secondUnderItem to true>>
+							"Ah, things like your <<print _brokenOutfit[_i].name>> take a little more time and effort to fix than other items." <<He>> stops to show you some specialized fabric <<he>> would need to use.
+							"If you're fine with that, I can replace it for <<printmoney `Math.trunc(_brokenOutfit[_i].cost * _tailorCostMod)`>>."
+						<<else>>
+							<<He>> can fix your <<print _brokenOutfit[_i].name>> for <<printmoney `Math.trunc(_brokenOutfit[_i].cost * _tailorCostMod)`>>.
+						<</if>>
+
+					<<elseif _brokenOutfit[_i].brokenHalf.includes("over")>>
+						<<set _brokenOutfitTime -= 5>><<set _tailorCostMod -= .08>>
+
+						<<if _secondOverItem isnot true>>
+							<<set _secondOverItem to true>>
+							"Repairs on <<print _brokenOutfit[_i].name>> are fairly simple for someone of my skill." <<He>> points to a few of the more complex items in the store as proof.
+							"This repair is relatively easy, so I can do it for <<printmoney `Math.trunc(_brokenOutfit.over.outfitCost * _tailorCostMod)`>>. Deal?"
+						<<else>>
+							The ease of the repair means <<he>> can patch up your <<print _brokenOutfit[_i].name>> for <<printmoney `Math.trunc(_brokenOutfit[_i].cost * _tailorCostMod)`>>.
+						<</if>>
+
+					<<else>>
+						<<He>> offers to replace your missing <<print _brokenOutfit[_i].name>> for <<printmoney `Math.trunc(_brokenOutfit[_i].cost * _tailorCostMod)`>>.
+					<</if>>
+					<br>
+
+					<<set _tempText to `Repair ` + _brokenOutfit[_i].name + ` (0:` + (_brokenOutfitTime lt 10 ? "0":"") + _brokenOutfitTime + `)`>>
+					<<capture _i>>
+						<<link [[_tempText|Fix Outfit]]>> <<set $outfitRepair to _brokenOutfit[_i]>><<pass _brokenOutfitTime>><<set $money -= Math.trunc(_brokenOutfit[_i].cost * _tailorCostMod)>> <</link>>
+					<</capture>>
+					<br><br>
+				<</for>>
+
+				<<unset _tempText>><<unset _secondUnderItem>><<unset _secondOverItem>>
+				<<set _options to true>>
+			<</if>>
+
+			<<if _options isnot true>>
+				Your currently worn clothes are fully repaired already.
+				<br><br>
+			<</if>>
+
+			<<if $wardrobeRepair isnot undefined>>
+				You need to visit your wardrobe to collect your repaired clothes.
+			<<elseif $tailorMonthlyService is undefined>>
+				The tailor catches you looking at the small crate beside <<him>>. "Ah, you're in luck if you need our monthly service. We have a spot free as long as it's somewhere local."
+				<br>
+				/* 北极星模组 */
+				<<if $options.bjx_sellcloth>>
+                    <<askicon>><<link [[询问他们愿意花多少钱回收旧衣服|Tailor Monthly Discard]]>><</link>>
+                <</if>>
+                /* 北极星 */
+				<br>
+				<<askicon>><<link [[Ask how much they charge to repair all clothes|Tailor Monthly Repair]]>><</link>>
+			<<elseif $tailorMonthlyService is "repair">>
+				You have a crate waiting to receive clothing for repair.
+			<<elseif $tailorMonthlyService is "discard">>
+				You have a crate waiting to receive clothing you want to sell.
+			<<elseif $tailorMonthlyService gt 0>>
+				You recently made use of this service and have to wait $tailorMonthlyService days before you can do so again.
+			<</if>>
+			<br><br>
+
+			/* 北极星模组 */
+			<<if $sewingKit isnot 1 and $options.bjx_sewmachine>>
+			/* 北极星 */
+				<<ind>><<link [[Approach the display cabinet|Tailor Shop Sewing Machine]]>><</link>>
+				<br><br>
+			<</if>>
+		<</if>>
+		<<getouticon>><<link [[Leave|Shopping Centre Top]]>><<endevent>><<unset $outfitRepair>><</link>>
+	<</if>>
+<</if>>
+
+:: Fix Clothes
+
+Your clothes have been fixed.
+<br><br>
+<<set _equip to setup.clothingLayer.all>>
+<<for _i to 0; _i lt _equip.length; _i++>>
+	<<set $worn[_equip[_i]].integrity = clothingData(_equip[_i],$worn[_equip[_i]],'integrity_max')>>
+<</for>>
+
+<<link [[Back|Tailor Shop]]>><<endevent>><</link>>
+
+:: Fix Lower
+
+Your lower clothes have been fixed.
+<br><br>
+<<if $worn.upper.set is $worn.lower.set>>
+	<<set $worn.lower.integrity = clothingData('lower',$worn.lower,'integrity_max')>>
+<</if>>
+
+<<if $worn.under_upper.set is $worn.under_lower.set>>
+	<<set $worn.under_lower.integrity = clothingData('under_lower',$worn.under_lower,'integrity_max')>>
+<</if>>
+
+<<link [[Back|Tailor Shop]]>><<endevent>><</link>>
+
+:: Tailor Shop Sneak
+<<set $outside to 0>><<effects>><<set $lock to 0>>
+
+	<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+
+	<<lockpickicon>><<link [[Pick it (0:10)|Tailor Shop]]>><<pass 10>><<crimeUp 10 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+	<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span>
+	<<skulduggeryrequired>>
+	<br><br>
+	<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Tailor Shop]]>><<set $ghostIn to true>><<pass 1>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Shopping Centre Top]]>><<endevent>><</link>>
+<br>
+
+:: Tailor Shop Sewing Machine
+<<effects>>
+	You approach the display, inside it lies a sewing machine. An advertisement poster hangs beside the display, it reads:
+
+	<br><br>
+	THE SEWINATOR-9000 <sup>tm</sup>
+	<br><br>
+	- Dog Chewed Your Undies? <span class="pink">~Tentacles~</span> Tore Your Clothes? No Problem!
+	<br><br>
+	- Can Fix Any Piece of Clothing in One minute!
+	<br><br>
+	- Requires <span class="green">No Skill</span>! Even Bailey Could Use It!
+	<br><br>
+	- Comes With a Lifetime Supply of Cloth For Repairs!
+	<br><br>
+	- Only <span class ="gold">£1000.00!</span>
+	<br><br>
+
+	<<if $money gte 100000>>
+		<<link [[Purchase sewing machine - Repair your clothes in your room! £1000|Tailor Shop]]>><<set $money -= 100000>><<set $sewingKit to 1>><<set $sewingBought to 1>><<endevent>><</link>>
+		<br>
+	<</if>>
+	<<link [[Go back|Tailor Shop]]>><<endevent>><</link>>
+
+:: Tailor Monthly Discard
+"Certainly <<if $player.gender_appearance is "m">>sir<<else>>madam<</if>>. We'll have the crate delivered. Fill it as soon as you're ready to sell them. Please bear in mind that we are not allowed to return any items. We will also only take items we can repair and resell."
+<br><br>
+
+<<set _value to 0>>
+<<for _label, _items range $wardrobe>>
+	<<for _i to 0; _i lt _items.length; _i++>>
+		<<if setup.clothes[_label][clothesIndex(_label,_items[_i])].shop.length is 0>>
+			<<continue>>
+		<</if>>
+		<<if _items[_i].outfitSecondary isnot undefined>>
+			<<continue>>
+		<</if>>
+		/* 北极星模组 */
+		<<set _value += Math.floor(getClothingCost(_items[_i],_label) * (_items[_i].integrity / clothingData(_label,_items[_i],'integrity_max')) / 3)>>
+	    /* 北极星 */
+	<</for>>
+<</for>>
+You think it will earn you <<printmoney `_value + 5000`>> currently after getting the deposit back.
+
+<br><br>
+<<if $money gte 5000>>
+	<<shopicon "tailor">><<link [[Confirm the sale and pay the £50 deposit|Tailor Monthly Driver]]>>
+		<<set $money -= 5000>>
+		<<set $tailorMonthlyService to "discard">>
+	<</link>>
+<<else>>
+	You can't afford the deposit.
+	<br>
+<</if>>
+<br>
+<<getouticon>><<link [[Back out of the sale|Tailor Shop]]>><<endevent>><</link>>
+
+:: Tailor Monthly Repair
+"Certainly, <<if $player.gender_appearance is "m">>sir<<else>>madam<</if>>. We'll have the crate delivered. Fill it as soon as you're ready for repairs. Please bear in mind that it will take <span class="gold">a day</span> before we get them back to you.
+Please make sure you don't buy too many new clothes once you send them to us, or our driver will have to take them back as a donation."
+<br><br>
+
+<<set _value to 0>>
+<<for _label, _items range $wardrobe>>
+	<<for _i to 0; _i lt _items.length; _i++>>
+		<<set _value += Math.floor(tailorClothingCost(_items[_i],_label) * (1 - (_items[_i].integrity / clothingData(_label,_items[_i],'integrity_max'))) * 1.25,_label)>>
+	<</for>>
+<</for>>
+You think it will cost you
+<<if _value gt 5000>>
+	<<printmoney `_value - 5000`>>
+<<else>>
+	nothing
+<</if>>
+currently with the deposit reducing the cost.
+
+<br><br>
+<<if $money gte 5000>>
+	<<shopicon "tailor">><<link [[Confirm the repair and pay the £50 deposit|Tailor Monthly Driver]]>>
+		<<set $money -= 5000>>
+		<<set $tailorMonthlyService to "repair">>
+	<</link>>
+<<else>>
+	You can't afford the deposit.
+<</if>>
+<br>
+<<getouticon>><<link [[Back out of the repair|Tailor Shop]]>><<endevent>><</link>>
+
+:: Tailor Monthly Driver
+The tailor picks up the crate and carries it into the back of the shop.
+<br><br>
+<<link [[Next|Tailor Shop]]>><<endevent>><</link>>
+
+:: Fix Outfit
+	<<if $exposed gte 1>>
+		You continue to hide while the tailor makes the needed repairs. After what feels like an eternity, <<he>> passed you back your <<print $outfitRepair.name>> and you slip it on.
+		<br><br>
+	<<else>>
+		You loiter around the shop until the Tailor calls you over for a few minor adjustments.
+		Just like that, your <<print $outfitRepair.name>> is as good as new.
+		<br><br>
+	<</if>>
+
+	<<set $worn[$outfitRepair.wornHalf].integrity = clothingData($outfitRepair.wornHalf,$worn[$outfitRepair.wornHalf],'integrity_max')>>
+	<<set makeMissingOutfit($outfitRepair)>>
+	<<unset $outfitRepair>>
+
+<<link [[Back|Tailor Shop]]>><<endevent>><</link>>

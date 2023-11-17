@@ -1,0 +1,141 @@
+:: Harvest Street
+
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "harvest">><<getTarget true>>
+You are on Harvest Street. There's a road leading out of town, and many of the buildings here deal with produce from the nearby farms. This part of town has a reputation for criminal activity.
+<<if Time.dayState is "day">>
+	<<if $weather is "rain">>
+		Water splatters the pavement as large vehicles pass.
+	<<elseif $weather is "snow">>
+		The constant traffic prevents snow from settling on the road.
+	<<else>>
+		There's always at least one large vehicle moving down the road.
+	<</if>>
+<<elseif Time.dayState is "dawn">>
+	<<if $weather is "rain">>
+		Heavy vehicles from outside town slosh through pools of water.
+	<<elseif $weather is "snow">>
+		Some of the heavy vehicles arriving from outside town are capped with snow.
+	<<else>>
+		Vehicles are already arriving from outside town.
+	<</if>>
+<<elseif Time.dayState is "dusk">>
+	<<if $weather is "rain">>
+		Rainwater falls from gutters in great curtains.
+	<<elseif $weather is "snow">>
+		Workers bundle against the cold.
+	<<else>>
+		The sun sets, but it will be a while before the workers here are done for the day.
+	<</if>>
+<<elseif Time.dayState is "night">>
+	<<if $weather is "rain">>
+		Pools fill at the edge of the road, splattering their contents over the pavement when a vehicle passes.
+	<<elseif $weather is "snow">>
+		Even at night the traffic keeps the road free of snow.
+	<<else>>
+		Even at night the street is busy.
+	<</if>>
+<</if>>
+<<streeteffects>>
+<br><br>
+<<if $exposed gte 1>>
+	<<exhibitionism "street">>
+<</if>>
+<<if $arousal gte $arousalmax>>
+	<<orgasmstreet>>
+<</if>>
+<<if $stress gte $stressmax and !$possessed>>
+	<<passoutstreet>>
+<<elseif $pubfame and $pubfame.task is "bailey" and $pubfame.bailey.fight is "ready">>
+	<<generateRole 0 0 "thug">><<generateRole 1 0 "thug">><<generateRole 2 0 "thug">><<generateRole 3 0 "thug">>
+	A group of <<group>> approaches you from an alleyway. You notice several passersby look away from them. The leader, a <<person1>><<person>>, grins darkly. "That's the one. We're earning our keep."
+	<br><br>
+
+	They march toward you, cracking their knuckles.
+	<br><br>
+
+	<<link [[Next|Bailey Sheet Fight]]>><<set $fightstart to 1>><</link>>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
+		<<eventsstreet>>
+	<<else>>
+		<<if $options.mapTop is true>>
+			<<map "harvest">>
+			<br>
+		<</if>>
+		<<if $averyPub is 1 and (Time.dayState is "day" or Time.dayState is "dusk")>>
+			<span class="blue">You see Avery's car parked across the street from the pub.</span>
+			<br><br>
+		<</if>>
+
+		<<if $brothel_escortjob isnot undefined>>
+			<<set _date to new DateTime($brothel_escortjob.date)>>
+			<<if Time.hour is _date.hour and Time.date.day is _date.day and $brothel_escortjob.escape is undefined>>
+				A fancy limousine is parked in front of the brothel, for your job on Danube Street. You are expected to get in the car.
+				<br>
+				<<link [[Take the limousine (1:00)|Brothel Escort Job Ride]]>><</link>>
+				<br><br>
+			<</if>>
+		<</if>>
+
+		Places of interest
+		<br>
+		<<if $brothelintro is 1>>
+			<<if $exposed gte 1>>
+				<<brothelicon>><<link [[Brothel (0:01)|Brothel Exposed]]>><<pass 1>><</link>>
+				<br>
+			<<else>>
+				<<brothelicon>><<link [[Brothel (0:01)|Brothel]]>><<pass 1>><</link>>
+				<br>
+			<</if>>
+		<<elseif $brothelknown is 1 and $exposed lte 0>>
+			<<brothelicon>><<link [[Enter suspicious building (0:05)|Brothel Intro]]>><<set $brothelintro to 1>><<pass 5>><</link>>
+			<br>
+		<</if>>
+		<<if $pubintro is 1 and $exposed lte 0>>
+			<<pubicon>><<link [[Pub (0:02)|Pub]]>><<pass 2>><</link>>
+			<br>
+		<<elseif $exposed lte 0>>
+			<<pubicon>><<link [[Pub (0:02)|Pub Intro]]>><<pass 2>><</link>>
+			<br>
+		<</if>>
+		<<if Time.dayState is "night">>
+			<<busstationicon>><<link [[Bus station (0:02)|Bus Station Entrance]]>><<pass 2>><</link>>
+		<<else>>
+			<<busstationicon>><<link [[Bus station (0:02)|Bus Station]]>><<pass 2>><</link>>
+		<</if>>
+		<br>
+		<<if Time.dayState isnot "night" and $exposed lt 1>>
+			<<factoryicon>><<link [[Factory (0:05)|Farmers Centre]]>><<pass 5>><</link>>
+			<br>
+		<</if>>
+		<br>
+		Road<br>
+		<<roadicon>><<link [[Leave town (0:05)|Farm Road 1]]>><<set $phase to 0>><<pass 5>><</link>>
+		<br><br>
+		<<if $exposed gte 1 and Time.dayState isnot "night">>
+		<<else>>
+			<<add_link "Travel<br>">><<hideDisplay>>
+			<<mer>>
+			<<elk>>
+			<<if $exposed lte 0>>
+				<<buswait>>
+			<</if>>
+			/* 北极星模组 */
+			<<if $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+				<<flywait>>
+			<</if>>
+			/* 北极星 */
+			<<loiter>>
+		<</if>>
+		<<add_link "<br>Alternate routes<br>">><<hideDisplay>>
+		<<industrial>>
+		<<stormdrain>>
+		<<displayLinks>>
+		<<if $options.mapTop isnot true>>
+			<br>
+			<<map "harvest">>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>

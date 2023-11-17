@@ -1,0 +1,732 @@
+:: Feats [widget]
+
+<<widget "earnFeat">>
+	<<if _args[0] and $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1>>
+		<<if $feats.currentSave[_args[0]] is undefined and (!$feats.soft or !setup.feats[_args[0]].softLockable) and (!$feats.pregnancyLocked or !setup.feats[_args[0]].pregnancyLockable) and (!$feats.pregnancySillyLocked or !setup.feats[_args[0]].pregnancySillyLockable)>>
+			<<set $feats.currentSave[_args[0]] to Date()>>
+
+			<<displayFeat _args[0]>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "updateFeats">>
+	<<if _passageCheck is "Start">>
+		<<set _recalledFeats to JSON.parse(localStorage.getItem("dolFeats"))>>
+	<</if>>
+	<<if _recalledFeats is undefined or _recalledFeats is null>>
+		<<set _recalledFeats to {points: 0}>>
+	<</if>>
+	<<set _points to 0>>
+	<<set _keys to Object.keys(setup.feats)>>
+	<<for _i to 0; _i lt _keys.length; _i++>>
+		<<set _gainPoints to false>>
+		<<if $feats.currentSave[_keys[_i]] isnot undefined>>
+			<<set _gainPoints to true>>
+			<<set _saveTime to getTimeNumber($feats.currentSave[_keys[_i]])>>
+			<<set _allSaveTime to getTimeNumber($feats.allSaves[_keys[_i]])>>
+
+			<<if _saveTime lt _allSaveTime>>
+				<<set $feats.allSaves[_keys[_i]] to $feats.currentSave[_keys[_i]]>>
+			<</if>>
+		<</if>>
+		<<set _allSaveTime to getTimeNumber($feats.allSaves[_keys[_i]])>>
+		<<set _recalledSaveTime to getTimeNumber(_recalledFeats[_keys[_i]])>>
+
+		<<if _allSaveTime gt _recalledSaveTime>>
+			<<if _recalledFeats[_keys[_i]] isnot undefined>>
+				<<set $feats.allSaves[_keys[_i]] to _recalledFeats[_keys[_i]]>>
+				<<set _gainPoints to true>>
+			<</if>>
+		<<else>>
+			<<if $feats.allSaves[_keys[_i]] isnot undefined>>
+				<<set _gainPoints to true>>
+			<</if>>
+		<</if>>
+		<<if _gainPoints is true>>
+			<<set _points += setup.feats[_keys[_i]].difficulty>>
+		<</if>>
+	<</for>>
+	<<set $feats.allSaves.points to _points>>
+
+	<!--Store a record of which clothes the player has unlocked-->
+	<<if _recalledFeats.specialClothes isnot undefined>>
+		<<set $feats.allSaves.specialClothes to _recalledFeats.specialClothes>>
+	<<elseif $feats.allSaves.specialClothes is undefined>>
+		<<set $feats.allSaves.specialClothes to {}>>
+	<</if>>
+	<<if $specialClothes>>
+		<<for $_label, $_value range $specialClothes>>
+			<<if $_value is "unlocked">>
+				<<set $feats.allSaves.specialClothes[$_label] to $_value>>
+			<</if>>
+		<</for>>
+	<</if>>
+
+	<<if _passageCheck is "Start">>
+	<<else>>
+		<<set localStorage.setItem("dolFeats",JSON.stringify($feats.allSaves))>>
+	<</if>>
+<</widget>>
+
+<<widget "setupFeats">>
+	<<if $featsBoosts is undefined or _args[0] is true>>
+		<<set _keys to Object.keys($feats.allSaves)>>
+
+		<<set _moneyFeats to _keys.count("Pocket Change") + _keys.count("Money Maker") + _keys.count("Tycoon") + _keys.count("Millionaire")>>
+		<<set _moneyFeatsLimit to (_moneyFeats * 10)>>
+		<<set _purityFeats to _keys.count("Angel") + _keys.count("Fallen Angel")>>
+
+		<<set _newLife to _keys.count("Broodmother Host") + _keys.count("Top Broodmother Host")>>
+		<<set _newLifeLimit to (_newLife * 20)>>
+
+		<<set _earSlimeFeats to _keys.count("Ear Slime Lover") + _keys.count("Ear Slime Amalgam")>>
+
+		<<set _tattoosFeats to _keys.count("A Living Canvas") + _keys.count("Billboard")>>
+
+		<<set _sexToysFeats to _keys.count("Opened Pandoras Box") + _keys.count("Opened Pandoras Cocks")>>
+
+		<<set $featsBoosts to {
+			upgrades:{
+				money:0,
+				grades:0,
+				skulduggery:0,
+				dancing:0,
+				swimming:0,
+				athletics:0,
+				tending:0,
+				greenThumb:0,
+				seduction:0,
+				purity:0,
+				impurity:0,
+				newLife:0,
+				aNewBestFriend:0,
+				tattoos:0,
+				defaultMoves: 0,
+				randomClothing:0,
+				specialClothing:0,
+				sexToys:0,
+			},
+			upgradeDetails:{
+				money:{cost:5, limit: _moneyFeatsLimit, minCount: 1, count:_moneyFeats, exclusive:""},
+				grades:{cost:15, limit: 30, minCount: 1, count:_keys.count("Perfect Record"), exclusive:""},
+				skulduggery:{cost:5, limit: 20, minCount: 1, count:_keys.count("Thief"), exclusive:""},
+				dancing:{cost:5, limit: 20, minCount: 1, count:_keys.count("May I have this Dance?"), exclusive:""},
+				swimming:{cost:5, limit: 20, minCount: 1, count:_keys.count("Aquanaut"), exclusive:""},
+				athletics:{cost:5, limit: 20, minCount: 1, count:_keys.count("Swift"), exclusive:""},
+				tending:{cost:5, limit: 20, minCount: 1, count:_keys.count("Green Fingered"), exclusive:""},
+				greenThumb:{cost:40, limit: 40, minCount: 1, count:_keys.count("Green Fingered"), exclusive:"", hidden:true},
+				seduction:{cost:5, limit: 20, minCount: 1, count:_keys.count("Seductress"), exclusive:""},
+				purity:{cost:20, limit: 100, minCount: 2, count:_purityFeats, exclusive:"impurity"},
+				impurity:{cost:20, limit: 100, minCount: 1, count:_keys.count("Demon"), exclusive:"purity"},
+				newLife:{cost:20, limit: _newLifeLimit, minCount: 1, count:_newLife, exclusive:""},
+				aNewBestFriend:{cost:10, limit: 20, minCount: 1, count:_earSlimeFeats, exclusive:""},
+				tattoos:{cost:5, limit: 25, minCount: 2, count:_tattoosFeats, exclusive:""},
+				defaultMoves:{cost:5, limit: 25, minCount: 1, count:_keys.count("A New Life"), exclusive:""},
+				randomClothing:{cost:1, limit: 20, minCount: 0, count:0, exclusive:""},
+				specialClothing:{cost:40, limit: 40, minCount: 1, count:_keys.count("Curious Attire"), exclusive:""},
+				sexToys:{cost:30, limit: 30 * _sexToysFeats, minCount: 1, count:_sexToysFeats, exclusive:""},
+			},
+			missing:{
+				money:"Unlock this boost by obtaining the 'Pocket Change' feat",
+				grades:"Unlock this boost by obtaining the 'Perfect Record' feat",
+				skulduggery:"Unlock this boost by obtaining the 'Thief' feat",
+				dancing:"Unlock this boost by obtaining the 'May I have this Dance?' feat",
+				swimming:"Unlock this boost by obtaining the 'Aquanaut' feat",
+				athletics:"Unlock this boost by obtaining the 'Swift' feat",
+				tending:"Unlock this boost by obtaining the 'Green Fingered' feat",
+				seduction:"Unlock this boost by obtaining the 'Seductress' feat",
+				purity:"Unlock this boost by obtaining the 'Walk Like an Angel' and 'Falling, Falling, Falling...' feats",
+				impurity:"Unlock this boost by obtaining the 'Devilish Looks' feat",
+				newLife:"Unlock this boost by obtaining a hidden feat (" + setup.feats["Broodmother Host"].hint + ")",
+				aNewBestFriend:"Unlock this boost by obtaining a hidden feat (" + setup.feats["Ear Slime Lover"].hint + ")",
+				tattoos:"Unlock this boost by obtaining the  'Billboard' and 'A Living Canvas' feats",
+				defaultMoves:"Unlock this boost by obtaining a hidden feat (" + setup.feats["A New Life"].hint + ")",
+				randomClothing:"",
+				specialClothing:"Unlock this boost by obtaining a hidden feat (" + setup.feats["Curious Attire"].hint + ")",
+				sexToys:"Unlock this boost by obtaining a hidden feat (" + setup.feats["Opened Pandoras Box"].hint + ")",
+			},
+			name:{
+				money:"Money",
+				grades:"School Grades",
+				skulduggery:"Skulduggery Grade",
+				dancing:"Dancing Grade",
+				swimming:"Swimming Grade",
+				athletics:"Athletics Grade",
+				tending:"Tending Grade",
+				greenThumb:"Green Thumb trait",
+				seduction:"Seduction grade",
+				purity:"Daily purity",
+				impurity:"Daily impurity",
+				newLife:"New Life",
+				aNewBestFriend:"A New Best Friend",
+				tattoos:"Tattoos",
+				defaultMoves:"Default Moves",
+				randomClothing:"Random Clothing",
+				specialClothing:"Special Clothing",
+				sexToys:"Sex Toys",
+			},
+			pointsUsed: 0,
+			clothingGender:"Either",
+			clothingCustomColors:false,
+			tattoos:{
+				1:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+				2:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+				3:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+				4:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+				5:{bodypart:"Random",tattoo:"Random",pen:"Tattoo"},
+			},
+			sexToys:[{},{},{},{},{},{}],
+		}>>
+	<</if>>
+<</widget>>
+
+<<widget "update_school_skills">>
+	<<for _subject range ["science", "english", "maths", "history"]>>
+		<<if V[_subject + 'trait'] gte 4>>
+			<<set V[_subject] to 1000>>
+		<<elseif V[_subject + 'trait'] gte 3>>
+			<<set V[_subject] to 700>>
+		<<elseif V[_subject + 'trait'] gte 2>>
+			<<set V[_subject] to 400>>
+		<<elseif V[_subject + 'trait'] gte 1>>
+			<<set V[_subject] to 200>>
+		<<else>>
+			<<set V[_subject] to 100>>
+		<</if>>
+	<</for>>
+<</widget>>
+
+<<widget "applyFeatsBoost">>
+	<<set _upgrades to $featsBoosts.upgrades>>
+	<<set _details to $featsBoosts.upgradeDetails>>
+	<<if $featsBoosts.pointsUsed gt 0>>
+		<<earnFeat "A New Life">>
+	<</if>>
+	<<if _upgrades.money gt 0>>
+		<<set $money += _upgrades.money * _details.money.count / _details.money.cost * 5000>>
+	<</if>>
+	<<if _upgrades.grades gt 0>>
+		<<set $sciencetrait += _upgrades.grades / _details.grades.cost * 1>>
+		<<set $englishtrait += _upgrades.grades / _details.grades.cost * 1>>
+		<<set $mathstrait += _upgrades.grades / _details.grades.cost * 1>>
+		<<set $historytrait += _upgrades.grades / _details.grades.cost * 1>>
+		<<update_school_skills>>
+	<</if>>
+	<<if _upgrades.skulduggery gt 0>>
+		<<set $skulduggery to _upgrades.skulduggery / _details.skulduggery.cost * 100>>
+		<<set $skulduggeryday to _upgrades.skulduggery / _details.skulduggery.cost * 100>>
+	<</if>>
+	<<if _upgrades.dancing gt 0>>
+		<<set $danceskill to _upgrades.dancing / _details.dancing.cost * 100>>
+	<</if>>
+	<<if _upgrades.tending gt 0>>
+		<<set $tending += _upgrades.tending / _details.tending.cost * 100>>
+	<</if>>
+	<<if _upgrades.swimming gt 0>>
+		<<set $swimmingskill += _upgrades.swimming / _details.swimming.cost * 100>>
+	<</if>>
+	<<if _upgrades.athletics gt 0>>
+		<<set $athletics += _upgrades.athletics / _details.athletics.cost * 100>>
+	<</if>>
+	<<if _upgrades.seduction gt 0>>
+		<<set $seductionskill to _upgrades.seduction / _details.seduction.cost * 100>>
+	<</if>>
+	<<if _upgrades.purity gt 0>>
+		<<set $featsPurityBoost to _upgrades.purity / _details.purity.cost>>
+	<</if>>
+	<<if _upgrades.impurity gt 0>>
+		<<set $featsPurityBoost to _upgrades.impurity / _details.impurity.cost * -1>>
+	<</if>>
+	<<if _upgrades.newLife gt 0 and $parasitepregdisable is "f">>
+		<<impregnateParasite "tentacle" 400>>
+		<<fertiliseParasites>>
+		<<set _pregnancy to $sexStats.anus.pregnancy>>
+		<<set _pregnancy.motherStatus to 2>>
+		<<set $pregnancyStats.parasiteDoctorEvents to 2>>
+		<<set _pregnancy.fetus[0].stats.gender to "Hermaphrodite">>
+		<<if _upgrades.newLife is 40>>
+			<<set _pregnancy.fetus[0].stats.growth to 7>>
+			<<set _pregnancy.fetus[0].stats.speed to 54>>
+		<</if>>
+		<<set _pregnancy.fetus[0].stats.lastEgg to Math.floor(_pregnancy.fetus[0].stats.growth / 3)>>
+	<</if>>
+	<<if _upgrades.aNewBestFriend gt 0>>
+		<<parasite left_ear slime>>
+	<</if>>
+	<<if _upgrades.aNewBestFriend gt 10>>
+		<<parasite right_ear slime>>
+	<</if>>
+	<<if _upgrades.greenThumb gt 0>>
+		<<set $backgroundTraits.pushUnique("greenthumb")>>
+		<<if $fertiliser>>
+			<<set $fertiliser.current++>>
+		<</if>>
+	<</if>>
+	<<if _upgrades.randomClothing gt 0>>
+		<<set _clothingItems to _upgrades.randomClothing * 3>>
+		<<set _options to {
+			head:[],
+			face:[],
+			neck:[],
+			hands:[],
+			upper:[],
+			lower:[],
+			under_upper:[],
+			under_lower:[],
+			legs:[],
+			feet:[]
+		}>>
+		<<set _equip to setup.clothingLayer.body>>
+		<<for _i to 0; _i lt _equip.length; _i++>>
+			<<set _slot to _equip[_i]>>
+			<<for _j to 0; _j lt setup.clothes[_slot].length; _j++>>
+				<<if (setup.clothes[_slot][_j].gender is "f" and $featsBoosts.clothingGender is "Male") or (setup.clothes[_slot][_j].gender is "m" and $featsBoosts.clothingGender is "Female")>>
+					<<continue>>
+				<</if>>
+				<<if setup.clothes[_slot][_j].outfitSecondary isnot undefined>>
+					<<continue>>
+				<</if>>
+				<<if setup.clothes[_slot][_j].shop.includes("clothing")>>
+					<<run _options[_slot].push(_j)>>
+				<</if>>
+			<</for>>
+		<</for>>
+		<<set _equip to ["head","face","neck","upper","upper","upper","upper","upper","lower","lower","lower","lower","lower","under_upper","under_upper","under_upper","under_lower","under_lower","under_lower","hands","legs","feet"]>>
+		<<for _i to 0; _i lt _clothingItems; _i++>>
+			<<set _slot to _equip.random()>>
+			<<set _index to _options[_slot].random()>>
+			<<set _item to clone(setup.clothes[_slot][_index])>>
+			<<if _item.colour_options.length gt 0>>
+				<<set _colors to clone(_item.colour_options)>>
+				<<if $featsBoosts.clothingCustomColors is false>>
+					<<run _colors.delete("custom")>>
+				<</if>>
+				<<set _item.colour to _colors.random()>>
+				<<if $featsBoosts.clothingCustomColors is true and _item.colour is "custom">>
+					<<set _item.colourCustom to customColour(random(0,360), (random(0,20)/10), (random(5,40)/10), (random(0,20)/10), (random(0,100)/100))>>
+				<</if>>
+			<</if>>
+			<<if _item.accessory_colour_options.length gt 0>>
+				<<set _colors to clone(_item.accessory_colour_options)>>
+				<<if $featsBoosts.clothingCustomColors is false>>
+					<<run _colors.delete("custom")>>
+				<</if>>
+				<<set _item.accessory_colour to _colors.random()>>
+				<<if $featsBoosts.clothingCustomColors is true and _item.accessory_colour is "custom">>
+					<<set _item.accessory_colourCustom to customColour(random(0,360), (random(0,20)/10), (random(5,40)/10), (random(0,20)/10), (random(0,100)/100))>>
+				<</if>>
+			<</if>>
+
+			<<set $_.outfitPrimary to _item.outfitPrimary>>
+			<<set $_.items to {}>>
+			<<run $_.items[_slot] to clone(_item)>>
+			<<if $_.outfitPrimary isnot undefined>>
+				<<for _labelf, _valuef range $_.outfitPrimary>>
+					<<for _j to 0; _j lt setup.clothes[_labelf].length; _j++>>
+						<<if _valuef is setup.clothes[_labelf][_j].name>>
+							<<set $_.items[_labelf] to clone(setup.clothes[_labelf][_j])>>
+							<<set $_.items[_labelf].colour to clone($_.items[_slot].colour)>>
+							<<set $_.items[_labelf].accessory_colour to clone($_.items[_slot].accessory_colour)>>
+							<<if $featsBoosts.clothingCustomColors is true and _item.colour is "custom">>
+								<<set $_.items[_labelf].colourCustom to clone($_.items[_slot].colourCustom)>>
+							<</if>>
+							<<if $featsBoosts.clothingCustomColors is true and _item.accessory_colour is "custom">>
+								<<set $_.items[_labelf].accessory_ColourCustom to clone($_.items[_slot].accessory_colourCustom)>>
+							<</if>>
+							<<break>>
+						<</if>>
+					<</for>>
+				<</for>>
+			<</if>>
+
+			<<if $_.items[_slot] isnot undefined and $wardrobe[_slot].length lt $wardrobe.space>>
+				<<for _labelf, _valuef range $_.items>>
+					<<run $wardrobe[_labelf].push(_valuef)>>
+				<</for>>
+			<<else>>
+				<<set _clothingItems += 1>>
+			<</if>>
+			<<unset _item>>
+		<</for>>
+	<</if>>
+
+	<<if _upgrades.tattoos gt 0>>
+		<<featsTattooOptions>>
+		<<set _totalTattoos to $featsBoosts.upgrades.tattoos / $featsBoosts.upgradeDetails.tattoos.cost>>
+		<<set _bodyPartOptions to ["forehead","left_cheek","right_cheek","left_shoulder","right_shoulder","back","breasts","left_bottom","right_bottom","left_thigh","right_thigh","pubic"]>>
+
+		/*Remove non-random locations*/
+		<<for _label, _value range $featsBoosts.tattoos>>
+			<<if _value.tattoo isnot "Random">>
+				<<set _bodyPart to _value.bodypart.toLowerCase()>>
+				<<set _bodyPart to _bodyPart.replace(" ", "_")>>
+				<<run _bodyPartOptions.delete(_bodyPart)>>
+			<</if>>
+		<</for>>
+
+		/*Add non-random bodyparts*/
+		<<for _label, _value range $featsBoosts.tattoos>>
+			<<if _label gt _totalTattoos>>
+				<<break>>
+			<</if>>
+			<<if _value.bodypart is "Random">>
+				<<continue>>
+			<</if>>
+			<<set _bodyPart to _value.bodypart.toLowerCase()>>
+			<<set _bodyPart to _bodyPart.replace(" ", "_")>>
+			<<run _bodyPartOptions.delete(_bodyPart)>>
+			<<if _value.tattoo is "Random">>
+				<<set _tattoo to _featsTattooAll.pluck()>>
+			<<else>>
+				<<set _tattoo to _value.tattoo>>
+			<</if>>
+			<<for _label2, _value2 range setup.bodywriting>>
+				<<if _value2.writing is _tattoo>>
+					<<add_bodywriting _bodyPart _label2 `_value.pen.toLowerCase()`>>
+					<<break>>
+				<</if>>
+			<</for>>
+		<</for>>
+		/*Add random bodyparts*/
+		<<for _label, _value range $featsBoosts.tattoos>>
+			<<if _label gt _totalTattoos>>
+				<<break>>
+			<</if>>
+			<<if _value.bodypart isnot "Random">>
+				<<continue>>
+			<</if>>
+			<<set _bodyPart to _bodyPartOptions.pluck()>>
+			<<if _value.tattoo is "Random">>
+				<<set _tattoo to _featsTattooAll.pluck()>>
+			<<else>>
+				<<set _tattoo to _value.tattoo>>
+			<</if>>
+			<<for _label2, _value2 range setup.bodywriting>>
+				<<if _value2.writing is _tattoo>>
+					<<add_bodywriting _bodyPart _label2 `_value.pen.toLowerCase()`>>
+					<<break>>
+				<</if>>
+			<</for>>
+		<</for>>
+		<<bodywritingExposureCheck true>>
+	<</if>>
+	<<if _upgrades.defaultMoves gt 0>>
+		<<set $maxDefaultActionSets to 2 + _upgrades.defaultMoves / _details.defaultMoves.cost>>
+	<</if>>
+	<<if _upgrades.specialClothing gt 0>>
+		<<set _unlocked to $feats.allSaves.specialClothes>>
+		<<specialClothesSetup>>
+		<<for $_label, $_value range _unlocked>>
+			<<set $specialClothes[$_label] to $_value>>
+		<</for>>
+	<</if>>
+	<<if _upgrades.sexToys gt 0>>
+		<<set _totalToys to _upgrades.sexToys / 10>>
+		<<set _indexList to []>>
+		<<run Object.values(setup.sextoys).forEach(toy => T.indexList.push(toy.index))>>
+		<<for _i to 0; _i lt _totalToys; _i++>>
+			<<if $featsBoosts.sexToys[_i].index isnot undefined and $featsBoosts.sexToys[_i].index isnot -1>>
+				<<set _sexToyIndex to $featsBoosts.sexToys[_i].index>>
+				<<set _sexToyColour to $featsBoosts.sexToys[_i].colour>>
+				<<run _indexList.delete(_sexToyIndex)>>
+			<<else>>
+				<<set _sexToyIndex to _indexList.pluck()>>
+			<</if>>
+			<<run console.log(_sexToyColour)>>
+			<<if !_sexToyColour or _sexToyColour is -1>>
+				<<set _sexToyColourOptions to Object.values(setup.sextoys).find(toy => toy.index is _sexToyIndex).colour_options>>
+				<<set _sexToyColour to _sexToyColourOptions[random(0, _sexToyColourOptions.length - 1)]>>
+			<</if>>
+			<<run sexShopOnBuyClick(_sexToyIndex, false, _sexToyColour, false)>>
+			<<unset _sexToyColour>>
+		<</for>>
+	<</if>>
+	/* Clean Up */
+	<<run delete $featsBoosts.name>>
+	<<run delete $featsBoosts.missing>>
+	<<run delete $featsBoosts.clothingCustomColors>>
+	<<run delete $featsBoosts.clothingGender>>
+	<<run delete $featsBoosts.upgradeDetails>>
+	<<run delete $featsBoosts.tattoos>>
+	<<run delete $featsBoosts.sexToys>>
+<</widget>>
+
+<<widget "earnAllFeats">>
+	<<specialClothesUpdate>>
+	<<if $feats.locked is false and $cheatdisable is "t" and $debug is 0 and $gamemode isnot "soft" and $alluremod gte 1 and $replayScene is undefined>>
+		<<if _args[0] is true>>
+			/*Rarely occurring feats*/
+			<<if Time.days gte 50>>
+				<<if $player.gender is "m">>
+					<<earnFeat "Being a Boy">>
+				<<elseif $player.gender is "f">>
+					<<earnFeat "Being a Girl">>
+				<<elseif $player.gender is "h">>
+					<<earnFeat "Being a Hermaphrodite">>
+				<</if>>
+
+				<<if Time.days gte 150>>
+					<<earnFeat "Being an Orphan">>
+				<</if>>
+
+				<<if $passoutstat is 0>>
+					<<earnFeat "Stressful Challenge">>
+					<<if Time.days gte 150>>
+						<<earnFeat "Long Stressful Challenge">>
+					<</if>>
+				<</if>>
+			<</if>>
+			<<if $awareness gte 500>>
+				<<earnFeat "Most Aware">>
+			<<elseif $awareness lte -199>>
+				<<earnFeat "Most Innocent">>
+			<</if>>
+			<<if $promiscuity gte 100 and $deviancy gte 100 and $exhibitionism gte 100>>
+				<<earnFeat "No More Control">>
+			<</if>>
+			<<if (!$player.vaginaExist or $vaginalskill gte 1000) and (!$player.penisExist or $penileskill gte 1000) and $oralskill gte 1000
+			and ($analskill gte 1000 or $analdisable is "t") and $handskill gte 1000 and $feetskill gte 1000 and $bottomskill gte 1000
+			and $thighskill gte 1000 and $chestskill gte 1000>>
+				<<earnFeat "Sex Specialist">>
+			<</if>>
+			<<if $submissive gte 2000>>
+				<<earnFeat "Perfect Sub">>
+			<<elseif $submissive lte 0>>
+				<<earnFeat "Defying the Odds">>
+			<</if>>
+			<<if $museumAntiques.museumCount is $museumAntiques.maxCount>>
+				<<earnFeat "It Belongs in a Museum">>
+			<</if>>
+			<<if ($robinromance gte 1 and $whitneyromance gte 1 and $kylarenglish gte 1) or ($robinromance gte 1 and $whitneyromance gte 1 and $sydneyromance gte 1) or ($robinromance gte 1 and $kylarenglish gte 1 and $sydneyromance gte 1) or ($kylarenglish gte 1 and $whitneyromance gte 1 and $sydneyromance gte 1)>>
+				<<earnFeat "Love Triangles">>
+			<</if>>
+			<<if $robinromance gte 1 and $whitneyromance gte 1 and $kylarenglish gte 1 and $sydneyromance gte 1>>
+				<<earnFeat "Love Trapezoids">>
+			<</if>>
+			<<if $cat gte 6>>
+				<<earnFeat "Neko">>
+			<</if>>
+			<<if $wolfgirl gte 6>>
+				<<earnFeat "Wolf">>
+			<</if>>
+			<<if $angel gte 6>>
+				<<earnFeat "Angel">>
+			<</if>>
+			<<if $fallenangel gte 2>>
+				<<earnFeat "Fallen Angel">>
+			<</if>>
+			/* 北极星模组 */
+			<<if $demonhunter gte 2>>
+				<<earnFeat "Demon Hunter">>
+			<</if>>
+			/* 北极星 */
+			<<if $demon gte 6>>
+				<<earnFeat "Demon">>
+			<</if>>
+			<<if $cow gte 6>>
+				<<earnFeat "Cattle">>
+			<</if>>
+			<<if $harpy gte 6>>
+				<<earnFeat "Harpy">>
+			<</if>>
+			<<if $fox gte 6>>
+				<<earnFeat "Fox">>
+			<</if>>
+			/* 北极星模组 */
+			<<if $dog gte 6>>
+				<<earnFeat "Dog">>
+			<</if>>
+			<<if $raccoon gte 6>>
+				<<earnFeat "Raccoon">>
+			<</if>>
+			<<if $dragon gte 6>>
+				<<earnFeat "Dragon">>
+			<</if>>
+			<<if $dolphin gte 6>>
+				<<earnFeat "Dolphin">>
+			<</if>>
+			<<if $lizard gte 3>>
+				<<earnFeat "Lizard">>
+			<</if>>
+			<<if $bear gte 6>>
+				<<earnFeat "Bear">>
+			<</if>>
+			<<if $deer gte 6>>
+				<<earnFeat "Deer">>
+			<</if>>
+			<<if $sheep gte 6>>
+				<<earnFeat "Sheep">>
+			<</if>>
+			<<if $bee gte 6>>
+				<<earnFeat "Bee">>
+			<</if>>
+			<<if $fish gte 6>>
+				<<earnFeat "Fish">>
+			<</if>>
+			<<if $horse gte 6>>
+				<<earnFeat "Horse">>
+			<</if>>
+			<<if $pig gte 6>>
+				<<earnFeat "Pig">>
+			<</if>>
+			<<if $spider gte 6>>
+				<<earnFeat "Spider">>
+			<</if>>
+			<<if $frog gte 6>>
+				<<earnFeat "Frog">>
+			<</if>>
+			/* 北极星 */
+			<<if $orgasmtrait gte 1 or $ejactrait gte 1 or $molesttrait gte 1 or $rapetrait gte 1 or $bestialitytrait gte 1
+			or $tentacletrait gte 1 or $voretrait gte 1 or $milkdranktrait gte 1 or $choketrait gte 1>>
+				<<earnFeat "A Special Trait">>
+			<</if>>
+			<<if $orgasmtrait gte 1 and $ejactrait gte 1 and $molesttrait gte 1 and $rapetrait gte 1 and $bestialitytrait gte 1
+			and $tentacletrait gte 1 and $voretrait gte 1 and $milkdranktrait gte 1 and $choketrait gte 1>>
+				<<earnFeat "A Special Trait Collector">>
+			<</if>>
+			<<if $sexStats.anus.pregnancy.motherStatus is 2 or $sexStats.vagina.pregnancy.motherStatus is 2>>
+				<<earnFeat "Broodmother Host">>
+			<</if>>
+			<<if $pregnancyStats.parasiteTypesSeen && $pregnancyStats.parasiteTypesSeen.length gte 14 and $pregnancyStats.parasiteVariantsSeen.length gte 2 and $pregnancyStats.parasiteBook is 3>>
+				<!-- typesSeen: fish, snake, slime, spider, maggot, worm, eel, wasp, bee, lurker, squid, slug, tentacle, vine -->
+				<!-- variantsSeen: pale, metal -->
+				<<earnFeat "Broodmother Zoologist">>
+			<</if>>
+			<<if $spraymax gte 7>>
+				<<earnFeat "Max Those Shots">>
+			<</if>>
+			<<if ($semen_volume gte 2000 and $semen_amount gte $semen_volume)
+			or ($milk_volume gte 2000 and $milk_amount gte $milk_volume)>>
+				<<earnFeat "Feeling Full">>
+			<</if>>
+			<<if $cool gte 400>>
+				<<earnFeat "Social Butterfly">>
+			<</if>>
+			<<if $cool lte 2 and !$backgroundTraits.includes("nerd")>>
+				<<earnFeat "Anti-Social Moth">>
+			<</if>>
+			<<if $delinquency lte 0>>
+				<<earnFeat "Teachers Pet">>
+			<<elseif $delinquency gte 1000>>
+				<<earnFeat "Teachers Nightmare">>
+			<</if>>
+			<<if $skin.forehead.writing and $skin.left_cheek.writing and $skin.right_cheek.writing and $skin.left_shoulder.writing and $skin.right_shoulder.writing
+			and $skin.breasts.writing and $skin.back.writing and $skin.pubic.writing and $skin.left_thigh.writing and $skin.right_thigh.writing>>
+				<<earnFeat "A Living Canvas">>
+			<</if>>
+			<<if $produce_sold gte 100>>
+				<<earnFeat "Hawker">>
+			<</if>>
+			<<if $produce_sold gte 1000>>
+				<<earnFeat "Vendor">>
+			<</if>>
+			<<if $produce_sold gte 5000>>
+				<<earnFeat "Merchant">>
+			<</if>>
+			<<if $plants_known.length gte 17>>
+				<<earnFeat "Seedy">>
+			<</if>>
+			<<if $daily.ex.road is 1 and $daily.ex.cream is 1 and $daily.ex.flyover is 1>>
+				<<earnFeat "A Lewd Adventure">>
+			<</if>>
+			<<if $athletics gte 1000>>
+				<<earnFeat "Swift">>
+			<</if>>
+			<<if $farm_stage gte 2>>
+				<<if $farm.beasts.horses gte 20 and $farm.beasts.cattle gte 20 and $farm.beasts.dogs gte 20 and $farm.beasts.pigs gte 20>>
+					<<earnFeat "Animal Tender">>
+				<</if>>
+			<</if>>
+			<<if $masochism_level gte 4 and $sadism_level gte 4>>
+				<<earnFeat "Sadomasochist">>
+			<</if>>
+			<<if $masochism_level gte 4>>
+				<<earnFeat "Twisted Desire">>
+			<</if>>
+			<<if $sadism_level gte 4>>
+				<<earnFeat "Served Hot">>
+			<</if>>
+			<<if $fame.sex lte 29 and $fame.prostitution lte 29 and $fame.rape lte 29 and $fame.bestiality lte 29 and $fame.exhibitionism lte 29 and $fame.pregnancy lte 29 and $fame.impreg lte 29
+			and $fame.scrap gte 1000 and $fame.good gte 1000 and $fame.business gte 1000 and $fame.social gte 1000 and $fame.model gte 1000 /* and $fame.pimp gte 1000 */>>
+				<<earnFeat "Shining Reputation">>
+			<</if>>
+
+			<<if Object.values($children).reduce((prev,curr) => {
+				prev.pushUnique(curr.type);
+				return prev;
+			}, []).length gte Object.keys(pregnancyGenerator).filter(type => type !== "parasite").length>>
+				<<earnFeat "Diversity of Life">>
+			<</if>>
+
+			<!-- Should be last -->
+			<<if $feats.allSaves.points gte 150>>
+				<<earnFeat "My Collection of Feats">>
+			<</if>>
+			<<if $feats.allSaves.points gte 300>>
+				<<earnFeat "My Timeless Collection of Feats">>
+			<</if>>
+			<<specialClothesUpdate>>
+		<</if>>
+		<<if $money gte 100000>>
+			<<earnFeat "Pocket Change">>
+		<</if>>
+		<<if $money gte 1000000>>
+			<<earnFeat "Money Maker">>
+		<</if>>
+		<<if $money gte 10000000>>
+			<<earnFeat "Tycoon">>
+		<</if>>
+		<<if $money gte 100000000>>
+			<<earnFeat "Millionaire">>
+		<</if>>
+		<<if $liquidoutsidecount gte 100
+		and ($analdisable is "t" or setup.bodyliquid.combined("anus") gte 5)
+		and (!$player.vaginaExist or setup.bodyliquid.combined("vagina") gte 5)
+		and setup.bodyliquid.combined("mouth") gte 5>>
+			<<earnFeat "Fully Covered">>
+		<</if>>
+		<<if $skulduggery gte 1000>>
+			<<earnFeat "Thief">>
+		<</if>>
+		<<if $danceskill gte 1000>>
+			<<earnFeat "May I have this Dance?">>
+		<</if>>
+		<<if $swimmingskill gte 1000>>
+			<<earnFeat "Aquanaut">>
+		<</if>>
+		<<if $seductionskill gte 1000>>
+			<<earnFeat "Seductress">>
+		<</if>>
+		<<if $tending gte 1000>>
+			<<earnFeat "Green Fingered">>
+		<</if>>
+		<<if $housekeeping gte 1000>>
+			<<earnFeat "Majordomo">>
+		<</if>>
+
+		<<if $baseAllure gte 7000 and $outside is 1 and $moonstate is 0>>
+			<<earnFeat "Alluring">>
+		<</if>>
+		<<if $science gte 1000 and $maths gte 1000 and $english gte 1000 and $history gte 1000>>
+			<<earnFeat "Perfect Record">>
+		<</if>>
+		<<if $earSlime.corruption gte 100>>
+			<<earnFeat "Ear Slime Lover">>
+		<</if>>
+		<<if $earSlime.corruption gte 100 and $earSlime.growth gte 200>>
+			<<earnFeat "Ear Slime Amalgam">>
+		<</if>>
+		<<if $feats.allSaves.points gte 300>>
+			<<earnFeat "My Timeless Collection of Feats">>
+		<</if>>
+		<<specialClothesUpdate>>
+	<</if>>
+<</widget>>
+
+<!--
+Paste in the console to get the total number of vrelcoins
+var count = 0;
+for (var i = 0; i < Object.keys(setup.feats).length;i++){
+	count += setup.feats[Object.keys(setup.feats)[i]].difficulty
+}-->

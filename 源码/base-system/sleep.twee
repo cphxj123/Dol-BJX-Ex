@@ -1,0 +1,653 @@
+:: Widgets Sleep [widget]
+
+<<widget "sleep">>
+	<<if $earSlime.corruption is 100 and $earSlime.growth gte 50 and $earSlime.focus is "none" and !$statFreeze and !$args[0] and $earSlimeTest>>
+		/* Doing events this way, means that npc's may still be loaded, so endevent or loading new npc's should not be done */
+		<<earSlimeFocusChoice>>
+		<<set _dreaming to true>>
+	<<else>>
+		<<sleephour>>
+		<<ruffleHairFromSleep>>
+	<</if>>
+<</widget>>
+
+<<widget "sleephour">>
+	<<if random(1, 2500) is 1>>
+		<<set _toast to 1>>
+	<</if>>
+	<<set $sleepHoursTotal to 0>>
+	<<set $_bonusFatigueLoss to 10>>
+	<!-- wearing sleep clothes -->
+	<<if $worn.upper.type.includes("sleep") or $worn.lower.type.includes("sleep")>>
+		<<set $_bonusFatigueLoss += 5>>
+	<</if>>
+	<!-- sleeping with others -->
+	<<if $bedGuest or $wolfbed is 1>>
+		<<set $_bonusFatigueLoss += 5>>
+	<</if>>
+	<!-- bonus for sleeping with Love Interests with the Mate For Life trait -->
+	<<if $bedGuest and $transformationParts.traits.mateForLife isnot "disabled" and isLoveInterest($bedGuest) and !$sleepWraith>>
+		<<set $_bonusFatigueLoss += 3>><<set $stress -= 10>><<set $trauma -= 1>><<set $arousal += 10>>
+	<</if>>
+	<!-- wearing any non-sleep clothing disables the sleep bonus (except under_upper and under_upper and anything else not listed here) -->
+	<<if !["over_upper", "over_lower", "upper", "lower", "over_head", "head", "face", "neck", "hands", "legs", "feet"].every(slot => $worn[slot].type.includes("naked") || $worn[slot].type.includes("sleep") || $worn[slot].type.includes("eerie"))>>
+		<<set $_bonusFatigueLoss to 0>>
+	<</if>>
+	<!-- sleeping in a poor/regular/comfy bed at home provides a -10/0/+10 bonus regardless of clothing -->
+	<<if $location is "home">>
+		<<set $_bed to Furniture.get('bed')>>
+		<<if $_bed.type.includes('comfy')>>
+			<<set $_bonusFatigueLoss += 10>>
+		<<elseif $_bed.type.includes('starter')>>
+			<<set $_bonusFatigueLoss -= 10>>
+		<</if>>
+	<</if>>
+	<!-- note: every hour of sleep gives a standard 250 fatigue reduction, so this bonus may not be all that much. -->
+
+	<!-- sleephour repeats this until you have slept for the selected number of hours -->
+	<!-- if you select "just sleep", then you wake up when tiredness hits 0, or after 10 hours. -->
+	<<for $sleephour gte 1 or $sleephour lte -1>>
+		<<set $sleephour -= 1>>
+
+		<<switch $location>>
+			<<case "home">>
+				<<set _robin to statusCheck("Robin")>>
+				<<set _kylar to statusCheck("Kylar")>>
+				<<if $sleepWraith>>
+					<!-- Do nothing. Wraith mimicking Robin guarantees an uninterrupted sleep -->
+
+				<<elseif $kylarenglish is 1 and _kylarStatus.includes("Love") and _kylarStatus.includes("Lust") and Time.dayState is "night" and $kylarbed is undefined and $robinbed is undefined and $rng gte 96 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+					<<set _sleepinterrupt to 1>>
+					<<set _kylarWake to 1>>
+					<<set $kylarSleepEvent to 1>>
+
+				<<elseif ($kylarenglish isnot 1 or $syndromekylar isnot 1) and !playerIsPregnant() and C.npc.Kylar.love lte 49 and C.npc.Kylar.rage gte 70 and Time.dayState is "night" and $kylarbed is undefined and $robinbed is undefined and $rng gte 96 and $weekly.kylarCreep isnot 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+					<<set $weekly.kylarCreep to 1>>
+					<<set _sleepinterrupt to 1>>
+					<<set _kylarWake to 2>>
+
+				<<elseif (($robinromance is 1 and _robin.lust gte 20) or (_robin.trauma gte 50 and $rng gte 51)) and !$robinbed and $robinwakeday isnot 1 and $kylarbed isnot 1 and $robinmissing is 0 /*and !$robin_kicked_out*/>>
+					<!-- Robin climbs into bed with you -->
+					<<if Time.hour gte 18 or Time.hour lte 6>>
+						<<set _sleepinterrupt to 1>>
+						<<set _robin.lovewake to 1>>
+						<<set $robinwakeday to 1>>
+					<</if>>
+				<<elseif _robin.love gte 100 and $robinbed is undefined and $robindebtknown isnot 1 and $kylarbed isnot 1 and $robinmissing is 0>>
+					<<if Time.hour gte 18 or Time.hour lte 6>>
+						<<set _sleepinterrupt to 1>>
+						<<set $robindebtwake to 1>>
+					<</if>>
+				<<elseif wraithSleepEventCheck()>>
+					<<wraithEvent>>
+
+				<<elseif $baileydefeatedchain gte 1 and ($rng * 100) gte (9900 - ($allure / 5))>>
+					<<set _sleepinterrupt to 1>>
+					<<set $baileyrapewake to 1>>
+				<<elseif $christmas is 1 and Time.monthDay is 25 and Time.hour lte 6 and $christmas_kylar is undefined and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+					<<set _sleepinterrupt to 1>>
+					<<set $christmas_kylar to 1>>
+				<<elseif Time.schoolDay and Time.hour is 7 and !$daily.baileyWake>>
+					<<set _sleepinterrupt to 1>>
+					<<set $daily.baileyWake to true>>
+				<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 20) and random(0,100) lt 3 and Time.dayState is "night" and $earSlime.eventTimer is 0 and $kylarbed isnot 1>>
+					<<set $slimeWake to 1>>
+					<<break>>
+				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
+				<</if>>
+			<<case "asylum">>
+				<<asylumeffects>>
+				<<if Time.hour is 6 or ($asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1) or ($asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1) or ($asylumstate is "assessment" and $daily.asylumAssessment isnot 1)>>
+					<<set _sleepinterrupt to 1>>
+				<<elseif Time.hour is 6 and $location is "asylum" or $asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1 and $location is "asylum" or $asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1 and $location is "asylum" or $asylumstate is "assessment" and $daily.asylumAssessment isnot 1 and $location is "asylum">>
+					<<set _sleepinterrupt to 1>>
+				<<elseif $suspicion gte 80 and random(1, 10) gte 10>>
+					<<set _sleepinterrupt to 1>>
+					<<set $rapewake to 1>>
+				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
+				<</if>>
+			<<case "prison">>
+				<<if Time.hour is 6>>
+					<<set _sleepinterrupt to 1>>
+					<<set $daily.prison.wake to true>>
+				<</if>>
+			<<case "alex_cottage">>
+				<<if wraithSleepEventCheck()>>
+					<<wraithEvent>>
+				<<elseif (Time.hour gte 21 or Time.hour lte 5) and $NPCName[$NPCNameList.indexOf("Alex")].lust gte 10 and $alexwake isnot 1>>
+					<<set $alexwake to 1>>
+					<<set _sleepinterrupt to 1>>
+				<<elseif $farm_attack_timer is 0 and Time.hour gte 21>>
+					<<set $remywake to 1>>
+					<<set _sleepinterrupt to 1>>
+				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
+
+				<<elseif (Object.values($children).find(child => child.mother === "Alex" && child.location === "alex_cottage") or Object.values($children).find(child => child.father === "Alex" && child.location === "alex_cottage")) and Time.dayState is "night" and !$weekly.alexNightTimeNursery and $rng gte 56>>
+					<<set _sleepinterrupt to 1>>
+					<<set $weekly.alexNightTimeNursery to 1>>
+					<<set _alexWake to 1>>
+
+				<</if>>
+			<<case "cabin">>
+				<<if wraithSleepEventCheck()>>
+					<<wraithEvent>>
+				<<elseif Time.hour lte 6 and $NPCName[$NPCNameList.indexOf("Eden")].lust gte 26 and $edenwake isnot 1>>
+					<<set $edenwake to 1>>
+					<<set _sleepinterrupt to 1>>
+				<</if>>
+			<<case "forest">>
+				<<if $location is "forest" and $wolfpackferocity gte 10 and $wolfwake isnot 1>>
+					<<set _sleepinterrupt to 1>>
+					<<set $wolfwake to 1>>
+				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
+				<</if>>
+			<<case "tower">>
+				<<if wraithSleepEventCheck() and $bird and $bird.mirror is 1>>
+					<<wraithEvent>>
+				<<elseif $bird.state is "hunting" and $bird.timer lte 0>>
+					<<set _sleepinterrupt to 1>>
+				<<elseif $bird.state is "home" and !$bird.satisfied and random(1, 10) is 10>>
+					<<set _sleepinterrupt to 1>>
+				<</if>>
+			<<case "wolf_cave">>
+				<<if wraithSleepEventCheck()>>
+					<<wraithEvent>>
+				<<elseif $wolfpackferocity gte 10 and $wolfwake isnot 1 and random(1,10) is 10>>
+					<<set _sleepinterrupt to 1>>
+					<<set $wolfwake to 1>>
+				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
+				<</if>>
+			<<case "pound">>
+				<<if Time.hour is 6 or Time.hour is 12 or Time.hour is 18>>
+					<<set _sleepinterrupt to 1>>
+				<<elseif !$bedGuest and !$wolfbed and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte 150 and random(0,100) lt 3>>
+					<<set _slimeWakeMasturbation to 1>>
+					<<break>>
+				<</if>>
+			<<case "island">>
+				<<if $island[$island.home].camouflage is "simple">>
+					<<set _rng to random(1, 160)>>
+				<<elseif $island[$island.home].camouflage is "basic">>
+					<<set _rng to random(1, 140)>>
+				<<elseif $island[$island.home].camouflage is "advanced">>
+					<<set _rng to random(1, 120)>>
+				<<else>>
+					<<set _rng to random(1, 100)>>
+				<</if>>
+				<<if $island.home is "rocky_hillock">>
+					<<if _rng lte 5 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_1 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<</if>>
+				<<elseif $island.home is "waterfall">>
+					<<if _rng lte 5 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_1 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<<elseif _rng lte 10 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_2 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<</if>>
+				<<elseif $island.home is "gulch">>
+					<<if _rng lte 5 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_1 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<<elseif _rng lte 10 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_2 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<<elseif _rng lte 15 and _sleepinterrupt isnot 1>>
+						<<set $island_wake_3 to 1>>
+						<<set _sleepinterrupt to 1>>
+					<</if>>					
+				<</if>>
+			/* 北极星模组 */
+			<<case "desert">>
+				<<if Time.hour is 6>>
+					<<set _sleepinterrupt to 1>>
+				<<else>>
+					<<set _sleepinterrupt to 0>>
+				<</if>>
+			/* 北极星 */
+		<</switch>>
+
+		<!-- this will stop sleep from happening, meaning no fatigue reduction or time passing -->
+		<<if _sleepinterrupt>>
+			<<break>>
+		<</if>>
+
+		<<if _wraithinterrupt is 1>>
+			<<set _sleepinterrupt to 1>>
+			<<break>>
+		<</if>>
+
+		<!-- Keep events above this comment -->
+		<<set $sleepHoursTotal += 1>><<set $sleepStat++>>
+
+		<!-- for "just sleep" option, if sleep is no longer required OR the player has slept for 10 hours, interrupt it. -->
+		<<if $sleephour lte -1 and ($tiredness lte 0 or $sleephour lte -11)>>
+			<<break>>
+		<</if>>
+
+		<!-- fatigue is lowered by 200 for every hour slept, and another 50 more if the player has no trauma. -->
+		<<set $tiredness -= 200>>
+		<<if !($sleeptrouble is 1 and $controlled is 0)>>
+			<<set $tiredness -= 50>>
+		<</if>>
+		<<if $location is "island">>
+			<<if $island[$island.home].curtains is "simple">>
+				<<set $tiredness -= 15>>
+			<<elseif $island[$island.home].curtains is "basic">>
+				<<set $tiredness -= 30>>
+			<<elseif $island[$island.home].curtains is "advanced">>
+				<<set $tiredness -= 45>>
+			<</if>>
+		<</if>>
+		<<set $tiredness -= $_bonusFatigueLoss>>
+
+		<<if $location is "tower">>
+			<<bird_pass 60>>
+		<<else>>
+			<<pass 1 hour>>
+		<</if>>
+		
+		/* 北极星模组 */
+		<<if $options.bjx_animal and ($sheep gte 6 or $bear gte 2 or $pig gte 6)>>
+			<<stress -500>>
+		<</if>>
+		/* 北极星 */
+
+		<<if $nightmares gte 1 and $controlled is 0>>
+			<<stress 6>>
+		<</if>>
+
+		<<sleep_clamp>>/*Prevents bugged out values affecting events in anyway, -2000 fatigue and -360 stress arnt helpful*/
+	<</for>>
+<</widget>>
+
+<<widget "sleepeffects">>
+	<<if $stress gte $stressmax>>
+		<<set $stress -= 2000>>
+		<<trauma 10>>
+		<span class="red">Your stress level reached a peak while you slept and has since subsided, but at cost to your mental health.</span>
+		<<lstress>><<gtrauma>>
+		<<ruffleHair>>
+		<<saveTempHairStyle>>
+		<br><br>
+	<</if>>
+	<<if !$sleepWraith and $bedGuest and $transformationParts.traits.mateForLife isnot "disabled" and isLoveInterest($bedGuest)>>
+		<span class="green">Sleeping with your chosen partner fulfills an instinctual desire.</span> <<lstress>><<ltrauma>><<garousal>>
+		<br><br>
+	<</if>>
+	<<if $scienceproject is "ongoing" and $sciencephallusknown isnot 1 and $promiscuity gte 35>>
+		<<set $sciencephallusknown to 1>>
+		A lewd thought comes to you as you wake up. <span class="gold">You've conceived the "local phalli" science project.</span> Check your journal for details.
+		<br><br>
+	<</if>>
+	<<unset $bedGuest>>
+<</widget>>
+
+<<widget "bedclotheson">>
+	<<switch _args[0]>>
+		<<case "bed" "Bed">>
+			<<set $_storeLocation to "bed">>
+			<<set $wardrobe_location to "wardrobe">>
+		<<case "Farm Bed">>
+			<<set $_storeLocation to "Farm Bed">>
+			<<set $wardrobe_location to "alexFarm">>
+		<<case "prison bed">>
+			<<set $_storeLocation to "prison bed">>
+			<<set $wardrobe_location to "prison">>
+		<<case "Temple Bunk Bed">>
+			<<set $_storeLocation to "Temple Bunk Bed">>
+			<<set $wardrobe_location to "temple">>
+		/* 北极星模组 */
+		<<case "Lake House Bed">>
+			<<set $_storeLocation to "Lake House Bed">>
+			<<set $wardrobe_location to "lakehouse">>
+		/* 北极星 */
+		<<default>>
+			Something went wrong with the "bedclotheson" widget, please report
+			<<run console.log('Something went wrong with the "bedclotheson" widget, please report')>>
+	<</switch>>
+	<<wardrobeSelection true>>
+	<<updateWornClothingLocation $wardrobe_location>>
+	<<if $wear_outfit is "clotheson">>
+		/*Was causing some wierdness when getting out of bed*/
+		/*<<undress $wardrobe_location>>*/
+		<<loadTempHairStyle>>
+		<<storeon $_storeLocation>>
+	<<elseif $wear_outfit isnot "none">>
+		<<storeon $_storeLocation>>
+		<<undress $wardrobe_location>>
+		<<wearoutfit>>
+	<</if>>
+	<<updateWornClothingLocation $wardrobe_location>>
+	<<set $wear_outfit to "none">>
+<</widget>>
+
+<<widget "slimeNoSleep">>
+	<<set $earSlime.eventTimer to 4>>
+	<<set _eventsList to ["go commando"]>>
+	<<if $earSlime.corruption gte 80>>
+		<<run _eventsList.push("have sex with someone or something")>>
+
+		<<if $earSlime.alwaysSleepNaked is false>>
+			<<run _eventsList.push("only sleep naked from now on")>>
+		<</if>>
+	<<else>>
+		<<run _eventsList.push("have sex with someone")>>
+	<</if>>
+	<<if ["home"].includes($location) and Time.dayState is "night" and between(Time.hour, 20, 24)>>
+		<<run _eventsList.push("go running or swimming for an hour")>>
+		<<if currentSkillValue("skulduggery") gt 200>>
+			<<set _eventsList.push("steal something")>>
+		<</if>>
+		<<if $exhibitionism gt 35>>
+			<<set _eventsList.push("go running or swimming naked for an hour")>>
+			<<set _eventsList.push("go running or swimming naked for two hours")>>
+			<<set _eventsList.push("study at the school library while naked for an hour")>>
+			<<set _eventsList.push("study at the school library while naked for two hours")>>
+		<</if>>
+	<</if>>
+	<<if $earSlime.growth gt 50>>
+		<<if $earSlime.focus is "pregnancy" and $forcedcrossdressingdisable is "f" and !$earSlime.forcedDressing>>
+			<<set _eventsList.push("only wear feminine clothes for a while")>>
+			<<if playerIsPregnant() and playerBellySize(true) gte 5>>
+				<<set _eventsList.push("only wear feminine clothes for a while")>>
+				<<set _eventsList.push("only wear feminine clothes for a while")>>
+			<</if>>
+		<</if>>
+		<<if $earSlime.focus is "impregnation" and $forcedcrossdressingdisable is "f" and !$earSlime.forcedDressing>>
+			<<set _eventsList.push("only wear masculine clothes for a while")>>
+			<<if !playerIsPregnant()>>
+				<<set _eventsList.push("only wear masculine clothes for a while")>>
+				<<set _eventsList.push("only wear masculine clothes for a while")>>
+			<</if>>
+		<</if>>
+		<<if ["pregnancy", "mixed"].includes($earSlime.focus) and ($player.vaginaExist or $analdisable is "f") and !playerIsPregnant()>>
+			<<if maleChance() gt 0 or beastMaleChance() gt 0>>
+				<<set _task to `get sperm into your ${$player.vaginaExist ? "vagina" : "anus"}`>>
+				<<run _eventsList.push(_task)>>
+				<<run _eventsList.push(_task)>>
+				<<if random(0,100) gte 50>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+				<</if>>
+			<</if>>
+			<<if $player.penisExist and $player.penissize gte 0 and $semen_volume gte 300 and !$earSlime.defyCooldown and $awareness gte 200>>
+				<<set _task to `get your own sperm into your ${$player.vaginaExist ? "vagina" : "anus"}`>>
+				<<run _eventsList.push(_task)>>
+				<<run _eventsList.push(_task)>>
+				<<if random(0,100) gte 50>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+					<<run _eventsList.push(_task)>>
+				<</if>>
+			<</if>>
+		<</if>>
+		<<if ["impregnation", "mixed"].includes($earSlime.focus)>>
+			<<if maleChance() lt 100 or beastMaleChance() lt 100>>
+				<<run _eventsList.push("ejaculate into someones vagina")>>
+				<<run _eventsList.push("ejaculate into someones vagina")>>
+				<<if random(0,100) gte 50>>
+					<<run _eventsList.push("ejaculate into someones vagina")>>
+					<<run _eventsList.push("ejaculate into someones vagina")>>
+					<<run _eventsList.push("ejaculate into someones vagina")>>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+	<<if $earSlime.growth gte 100 and $earSlime.defyCooldown gte 24>>
+		<<set $earSlime.event to "masturbate and orgasm at least ten times">>
+	<<elseif $earSlime.growth gte 100 and $earSlime.defyCooldown gte random(16, 30)>>
+		<<set $earSlime.event to "masturbate and orgasm at least five times">>
+	<<else>>
+		<<set _maxEvents to _eventsList.length - 1>>
+		<<set $earSlime.event to _eventsList[random(0,_maxEvents)]>>
+	<</if>>
+	<<set _tempEventHide to true>>
+	<<set _noSleep to $earSlime.event.includes("go running or swimming") or $earSlime.event.includes("study at the school") or $earSlime.event.includes("masturbate")>>
+
+	<span class="lewd">You feel the slime in your head command you to <<print $earSlime.event>><<if _noSleep>> before it allows you to sleep<</if>>.</span> It promises rewards if you comply, and threatens consequences if you do not.
+
+	<br><br>
+	<<link [[Obey|SleepSlimeEventObey]]>><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 1>><</link>><<gcorruption>><<lpain>><<lltrauma>><<lstress>>
+	<br>
+	<<link [[Defy|SleepSlimeEventDefy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<sub 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
+	<br>
+<</widget>>
+
+<<widget "slimeEventResult">>
+	<<if !$slimeBedExit>>
+		<<set $slimeBedExit to "Bed">>
+		<<set $slimeBedroomExit to "Bedroom">>
+	<</if>>
+	<<if $earSlime.event.includes("two hours")>>
+		<<set $earSlime.eventLength to 4>>
+	<<elseif $earSlime.event.includes("an hour")>>
+		<<set $earSlime.eventLength to 2>>
+	<</if>>
+	<<if $earSlime.event.includes("masturbate and orgasm at least")>>
+		/* Gets set to 0 on it being completed */
+		<<set $earSlime.defyCooldown += 82>>
+	<</if>>
+	<<if $earSlime.event.includes("go running or swimming") or $earSlime.event.includes("study at the school") or $earSlime.event.includes("masturbate")>>
+		<<set $earSlime.noSleep to true>>
+	<</if>>
+	<<if $earSlime.event is "only wear feminine clothes for a while">>
+		<<set $earSlime.event to "">>
+		<<if playerIsPregnant() and playerBellySize(true) gte 5>>
+			<<set $earSlime.forcedDressing to {type: "f", days: random(31, 62)}>>
+		<<else>>
+			<<set $earSlime.forcedDressing to {type: "f", days: random(3, 31)}>>
+		<</if>>
+	<<elseif $earSlime.event is "only wear masculine clothes for a while">>
+		<<set $earSlime.event to "">>
+		<<set $earSlime.forcedDressing to {type: "m", days: random(3, 31)}>>
+	<</if>>
+	<<if $earSlime.event is "only sleep naked from now on">>
+		<<strip>>
+		<<set $earSlime.alwaysSleepNaked to true>>
+		<<set $earSlime.event to "">>
+		You strip before getting into bed.
+		<br><br>
+		<<link [[Next|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+	<<elseif $earSlime.event is "go commando">>
+		<<if !playerHasStrapon() and !$worn.under_lower.outfitSecondary and $worn.under_lower.name isnot "naked">>
+			<<underlowerstrip>>
+			You strip your $worn.under_lower.name before getting into bed.
+		<<else>>
+			You lie back down into bed.
+		<</if>>
+		<br><br>
+		<<link [[Next|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+	<<elseif !$earSlime.noSleep>>
+		You lie back down into bed.
+		<br><br>
+		<<link [[Next|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+	<<else>>
+		You move away from your bed to do the task given to you.
+		<br><br>
+		<<link [[Next|$slimeBedroomExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+	<</if>>
+<</widget>>
+
+<<widget "slimeEventEnd">>
+	<<if _args[0]>>
+		<<if $earSlime.event.includes(_args[0]) and (!$earSlime.event.includes("naked") or $exposed is 2)>>
+			<<set $earSlime.eventLength -= 1>>
+			<<if $earSlime.eventLength lte 0>>
+				<<set $earSlime.event to "">>
+				<<set $earSlime.eventLength to 0>>
+				<<set $earSlime.noSleep to false>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "wraithEvent">>
+	<!-- this is because this event wakes the player up AFTER they have slept for an hour. -->
+	<<unset _sleepinterrupt>>
+
+	<<set _wraithinterrupt to 1>>
+	<<set $wraith.nightmare to 2>>
+	<<set $wraith.hunt to 0>>
+	<<set $foresthunt to 0>>
+<</widget>>
+
+<<widget "ruffleHairFromSleep">>
+	<!-- Roll a chance to wake up with ruffled hair -->
+	<!-- Chance is based on number of hours slept, with Trauma and Stress adding "calculated" hours -->
+	<!-- Trauma adds max 4.5, Stress 2 -->
+	<!-- Chances are ~5% at 8 hours, ~13% at 10 hours, 99% at 16.5 calculated hours -->
+
+	<!-- Math below uses rng of 1000, and calculates 75 instead of 750, for more granular probability -->
+
+	<!-- Use the below graph to calculate and demo -->
+	<!-- New Graph: https://www.desmos.com/calculator/xd73rdkx1v -->
+	<<if $ruffledisable is "f">>
+		<<set $_calcTrauma to ($trauma - $traumamax / 10) / 1000>>
+		<<if $_calcTrauma gte 0>>
+			<<set $_calcStress to $stress / 5000>>
+			<<set $_calcTotal to $_calcTrauma + $_calcStress + $sleepHoursTotal>>
+			<<set $_chance to $_calcTotal ** 4 / 75>>
+			<<rng 1000>>
+			<<if $_chance gt $rng>>
+				<span class="yellow">Your hair is tousled.</span>
+				<<ruffleHair>>
+				<<saveTempHairStyle>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "ruffleHair">>
+	<!-- Find a style group of current hair (loose, braid, etc.) and pick a random one from a list of corresponding 'ruffled' styles. If none found then keep current hair -->
+	<<if $ruffledisable is "f">>
+		<<set $_hair to setup.hair.hairtype.find(x => x.list.includes($hairtype))>>
+		<<set $_fringe to setup.hair.fringetype.find(x => x.list.includes($fringetype))>>
+		<<if $_hair>>
+			<<set $_rndhair to $_hair.devolve.random()>>
+		<</if>>
+		<<if $_fringe>>
+			<<set $_rndfringe to $_fringe.devolve.random()>>
+		<</if>>
+		<<set $hairtype to $_rndhair || $hairtype>>
+		<<set $fringetype to $_rndfringe || $fringetype>>
+	<</if>>
+<</widget>>
+
+<<widget "earSlimeFocusChoice">>
+	/* This event cannot run endevent or make changes to loaded npc's in anyway */
+	<<set _prevLocation to $location>>
+	<<set $location to "tentworld">>
+	<<set _pregnancyEnabled to $playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f">>
+	<<if $earSlime.dreamRejected>>
+		Oh, the dream in the tentacle plains again, you were correct that you wouldn't remember it outside the dream.
+		<<if $earSlime.dreamRejected gte 5>>
+			You feel like they are becoming less frequent the more you reject it.
+		<</if>>
+		<br><br>
+		Once again, 3 blurred figures of someone are in front of you. It reminds you that it is <span class="sub">choice that cannot be ignored or easily taken back</span> and that you should <span class="lewd">should reach towards one of them</span> to become your true self.
+		<<if $earSlime.dreamRejected gte 10>>
+			The voice seems more desperate in it's attempts in getting you to do what it asks.
+		<</if>>
+	<<else>>
+		You seem to wake in the tentacle plains, though with the knowledge that what your looking at isn't real and that you won't remember it at all.
+		<br><br>
+		All at once, 3 blurred figures of someone are in front of you. Something tells you that this is a <span class="sub">choice that cannot be ignored or easily taken back</span> and that you should <span class="lewd">should reach towards one of them</span> to become your true self.
+	<</if>>
+	<br><br>
+	The first thing you notice about one on the left,
+	<<if _pregnancyEnabled>>
+		is how heavily pregnant they are.
+		<<if !$player.vaginaExist and !(playerIsPregnant() and playerAwareTheyArePregnant()) and Object.values($children).find(child => child.mother === "pc")>>
+			You wonder how it could be you true self, you don't have a vagina.
+		<</if>>
+	<<else>>
+		is how feminine they look.
+	<</if>>
+	<<if $player.vaginaExist>>
+		<span class="lewd">Their vagina is constantly dripping fluid.</span>
+	<</if>>
+	<<if $breastsizemax gte 1>>
+		They have an <<print setup.breastsizes[$breastsizemax]>> pair of boobs<<if $breastfeedingdisable is "f">>, <span class="lewd">dripping milk</span> despite them not being interacted with<</if>>.
+	<</if>>
+	<<if $player.penisExist>>
+		Between their legs, you spot a small and opaque ball of slime blocking access to their penis. The voice tells you that despite it being useless and locked away, <span class="lewd">it will continue to pleasure you there.</span>
+	<</if>>
+
+	<br><br>
+	The first thing you notice about the one on the right,
+	<<if $player.penisExist>>
+		is how large their penis is and how it seems to be <span class="lewd">constantly dripping precum.</span>
+	<<else>>
+		is how they have a large penis-like parasite between their legs and how it is <span class="lewd">constantly dripping what looks like precum.</span>
+	<</if>>
+	They have a completely flat chest<<if _pregnancyEnabled>> and unlike the other two, is not pregnant<</if>>.
+	<<if $npcPregnancyDisable is "f">>
+		The voice tells you that you will be able to <span class="lewd">impregnate as many others as you desire.</span>
+	<<else>>
+		The voice tells you that you will be able to <span class="lewd">have far more fun with others as you desire.</span>
+	<</if>>
+
+	<br><br>
+	The one is the middle seems to be a mix of the others<<if _pregnancyEnabled>>, while still pregnant<</if>>, has a clearly less aroused
+	<<if $player.penisExist>>
+		penis.
+	<<else>>
+		penis-like parasite.
+	<</if>>
+	Their <<chest>> is exactly the same as yours<<if $breastfeedingdisable is "f">> and is completely clear of milk<</if>>. The voice tells you that you won't benefit or <span class="lewd">be pleasured</span> in the same way as the other two due to the lack of focus.
+
+	<br><br>
+	<<link [[Reach for the left one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "pregnancy">><<set $earSlime.growth++>><</link>><<if $player.gender is "m" and $analdisable is "t" and _pregnancyEnabled>><<note "With anal being disabled, pregnancy cannot occur for you" "italic">><</if>>
+	<br>
+	<<link [[Reach for the middle one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "mixed">><<set $earSlime.growth++>><</link>>
+	<br>
+	<<link [[Reach for the right one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "impregnation">><<set $earSlime.growth++>><</link>>
+	<br>
+	<<link [[Do nothing|$passage]]>><<set $location to _prevLocation>><<set $earSlime.growth -= 5 + Math.clamp($earSlime.dreamRejected, 0, 20)>><<set $earSlime.dreamRejected++>><</link>>
+<</widget>>
+
+:: SleepSlimeEventObey
+<<effects>>
+
+You obey the slime's demand.
+<<slimeEventResult>>
+
+:: SleepSlimeEventDefy
+<<effects>>
+<<if !$slimeBedExit>>
+	<<set $slimeBedExit to "Bed">>
+	<<set $slimeBedroomExit to "Bedroom">>
+<</if>>
+<<if $earSlime.defyCooldown>>
+	<<if $earSlime.growth gte 100>>
+		<<set $earSlime.defyCooldown += 2>>
+		You defy what the slime is demanding and get into bed without listening any further. However, <span class="red">it doesn't stop you, knowing that it can punish you in other ways.</span>
+	<<else>>
+		You try to defy what the slime is demanding and get into bed without listening any further. However, <span class="teal">it's still worn out from overpowering you earlier.</span> You feel it try, <span class="green">but fail,</span> to force your steps in the opposite direction.
+	<</if>>
+	<<set $earSlime.event to "">>
+	<br><br>
+	<<link [[Next|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+<<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
+	The slime is able to force you to comply with its demand.
+	<<slimeEventResult>>
+<<else>>
+	You are able to defy what the slime is demanding and get into bed without listening any further.
+	<<set $earSlime.event to "">><<set $earSlime.defyCooldown += 4>>
+	<br><br>
+	<<link [[Next|$slimeBedExit]]>><<unset $slimeBedExit>><<unset $slimeBedroomExit>><</link>>
+<</if>>

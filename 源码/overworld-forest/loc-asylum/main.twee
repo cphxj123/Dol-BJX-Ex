@@ -1,0 +1,3198 @@
+:: Asylum Intro
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<if $gamemode is "hard" and $asylumintro is 0>>
+	<<set $asylumintro to 1>>
+	<<if $ironmanmode isnot true>><<set $gamemode to "normal">><</if>>
+	<span class="gold">You survived <<print Time.days>> days. <<if $ironmanmode isnot true>>Hard mode disabled.<</if>></span>
+	<<set $hardmodedays to Time.days>>
+	<br><br>
+<</if>>
+<<if $asylumescaped is 1>>
+	<<set $asylumescaped to 0>>
+	<<set $suspicion to 80>><<set $asylumstatus to 40>><<set $asylumbound to 3>>
+<<else>>
+	<<set $suspicion to 20>><<set $asylumstatus to 0>><<set $asylumbound to 1>>
+<</if>>
+<<set $asylumkeycard to 0>>
+<<set $asylumdistracted to 0>>
+<<wash>>
+<<set $wardrobe_location to "asylum">>
+<<wardrobeSelection true>>
+<<if $asylumintro is 1>>
+	<<npc Harper>><<person1>>
+	<<bind>><<upperwear 35>>
+	You awaken on a bed in a white room. The walls and floor are padded. Doctor Harper stands over you.
+	"You're awake," <<he>> says. <<He>> jots something down on <<his>> clipboard. "Welcome back." Your arms are bound. "I'm sorry to admit we failed you last time. That won't happen again."
+	<br><br>
+	<<He>> looks back at <<his>> notes. "Do you remember the schedule? Sleep at <<ampm 22>>. Breakfast at <<ampm 6>>. You have two treatments scheduled per day, at <<ampm 10>> and <<ampm 15>>. You'll be assessed each evening at <<ampm 20>>. Don't worry if you forget, someone will remind you."
+	<br><br>
+	<<He>> rises to <<his>> feet and walks toward the exit. "You're free to explore the building during the day. Don't enter any doors marked for staff, and make sure to follow instructions. They're for your own good.
+	<<if $asylumstate is "sleep">>
+		For now, you should stay in your room until morning." The door shuts, and the lock clicks.
+	<<else>>
+		" <<He>> leaves the door open.
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<link [[Next|Asylum Cell]]>><</link>>
+	<br>
+<<else>>
+	<<set $asylumintro to 1>>
+	<<npc Harper>><<person1>>
+	<<bind>><<upperwear 35>>
+	You awaken on a bed in a white room. The walls and floor are padded. Doctor Harper stands over you.
+	<br><br>
+	"You're awake," <<he>> says. <<He>> jots something down on <<his>> clipboard. "There's nothing to be nervous about. You're here to get better." <<He>> crouches beside you. "We're in another hospital. In the forest." You can't move your arms. They're bound tight in front of you. "That's for your own safety. If you're good, we'll untie you in a day or two."
+	<br><br>
+	<<He>> looks back at <<his>> notes. "We follow a schedule here. Sleep at <<ampm 22>>. Breakfast at <<ampm 6>>. You have two treatments scheduled per day, at <<ampm 10>> and <<ampm 15>>. You'll be assessed each evening at <<ampm 20>>. Don't worry if you forget; someone will remind you."
+	<br><br>
+	<<He>> rises to <<his>> feet and walks toward the exit. "You're free to explore the building during the day. Don't enter any doors marked for staff, and make sure to follow instructions. They're for your own good.
+	<<if $asylumstate is "sleep">>
+		For now, you should stay in your room until morning." The door shuts, and the lock clicks.
+	<<else>>
+		" <<He>> leaves the door open.
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<i>You'll be released should your trauma or awareness become very low, but there are other ways to escape.</i>
+	<br><br>
+	<<link [[Next|Asylum Cell]]>><</link>>
+	<br>
+<</if>>
+
+:: Asylum Cell
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "asylum">>
+<<elseif $daily.eden.distract gte 1 and Time.hour is 21 and $daily.eden.distract isnot 4>>
+	<<npc Eden>><<person1>>
+	An ear-splitting bang pierces the air from some distance away. It drives the patients into a panicked frenzy, and security rush to investigate the explosion.
+	<br><br>
+	You seize the chance, and climb up the perimeter fence. You glance over your shoulder when half way up.
+	<<if $daily.eden.distract is 2>>
+		Security have vacated this part of the grounds <span class="green">and the guard tower search lights don't appear to be operational.</span> You climb over the fence and run into Eden a few seconds later. <<He>> grabs your arm and leads you back to the cabin.
+		<br><br>
+		<<link [[Next|Eden Asylum Rescue]]>><</link>>
+	<<else>>
+		Security have vacated this part of the grounds, <span class="red">but the guard tower search lights are on.</span> A beam lands on you, and you instinctively shield your face from the light. You hear a whistle, then a sharp pain in your shoulder. You black out before you hit the ground.
+		<br><br>
+		<<link [[Next|Eden Asylum Fail]]>><<pass 30>><</link>>
+	<</if>>
+<<elseif $asylumstate is "sleep">>
+	The door is locked. You're supposed to be in bed.
+	<br><br>
+	<<roomoptions>>
+	<<if Time.hour isnot 6>>
+		<<asylumicon  "bed">><<link [[Bed|Asylum Bed]]>><</link>>
+		<br><br>
+	<<else>>
+		You can't sleep until the alarm turns off.
+		<br><br>
+	<</if>>
+	<<if $eden_asylum_window is 1 and Time.hour gte 22>>
+		Eden should be watching. You could throw a towel up to your window to signal your location.
+		<br>
+		<<towelicon>><<link [[Throw towel|Eden Towel Throw]]>><</link>>
+		<br>
+	<</if>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		A padded cupboard containing your clothes protrudes from the wall, but you can't reach it with your arms bound.
+		<br>
+	<<else>>
+		A padded cupboard containing your clothes protrudes from the wall.
+		<br>
+		<<asylumicon "wardrobe">><<link [[Open|Asylum Wardrobe]]>><</link>>
+		<br>
+	<</if>>
+	<br>
+	/* 北极星模组 */
+	<<set $ghostIn to false>>
+	<<if $asylumstate isnot "sleep">>
+		<<getouticon>><<link [[离开|Asylum]]>><</link>>
+		<br>
+	<<elseif $options.bjx_eventTF and $asylumstate isnot "sleep" and $ghost gte 1>>
+		<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+		<br>
+		<<link [[穿越 (0:01)|Asylum]]>><<pass 1>><<set $ghostIn to true>><</link>>
+		<br>
+	<</if>>
+	/* 北极星 */
+	<br>
+	<<link [[Settings|Asylum Settings]]>><</link>>
+	<br>
+	<<attitudesControlCheck>>
+	<<if $attitudesControl.showGoldLink is true>>
+		<span class="goldLink"><<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>> </span><span class="red">!!</span>
+	<<else>>
+		<<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+	<</if>>
+	<br><br>
+<<elseif Time.hour is 6>>
+	An alarm buzzes through the building.
+	<br><br>
+	<<roomoptions>>
+	<<if Time.hour isnot 6>>
+		<<asylumicon  "bed">><<link [[Bed|Asylum Bed]]>><</link>>
+		<br><br>
+	<<else>>
+		You can't sleep until the alarm turns off.
+		<br><br>
+	<</if>>
+	<<if $eden_asylum_window is 1 and Time.hour gte 22>>
+		Eden should be watching. You could throw a towel up to your window to signal your location.
+		<br>
+		<<towelicon>><<link [[Throw towel|Eden Towel Throw]]>><</link>>
+		<br>
+	<</if>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		A padded cupboard containing your clothes protrudes from the wall, but you can't reach it with your arms bound.
+		<br>
+	<<else>>
+		A padded cupboard containing your clothes protrudes from the wall.
+		<br>
+		<<asylumicon  "wardrobe">><<link [[Open|Asylum Wardrobe]]>><</link>>
+		<br>
+	<</if>>
+	<br>
+	/* 北极星模组 */
+	<<if $asylumstate isnot "sleep">>
+		<<getouticon>><<link [[离开|Asylum]]>><</link>>
+		<br>
+	<<elseif $options.bjx_eventTF and $asylumstate isnot "sleep" and $ghost gte 1>>
+		<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+		<br>
+		<<link [[穿越 (0:01)|Asylum]]>><<pass 1>><</link>>
+		<br>
+	<</if>>
+	/* 北极星 */
+	<br>
+	<<link [[Settings|Asylum Settings]]>><</link>>
+	<br>
+	<<attitudesControlCheck>>
+	<<if $attitudesControl.showGoldLink is true>>
+		<span class="goldLink"><<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>> </span><span class="red">!!</span>
+	<<else>>
+		<<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+	<</if>>
+	<br><br>
+<<else>>
+	You are in your cell in the asylum. The walls and floor are padded. There's a window far above.
+	<br><br>
+	<<roomoptions>>
+	<<if Time.hour isnot 6>>
+		<<asylumicon  "bed">><<link [[Bed|Asylum Bed]]>><</link>>
+		<br><br>
+	<<else>>
+		You can't sleep until the alarm turns off.
+		<br><br>
+	<</if>>
+	<<if $eden_asylum_window is 1 and Time.hour gte 22>>
+		Eden should be watching. You could throw a towel up to your window to signal your location.
+		<br>
+		<<towelicon>><<link [[Throw towel|Eden Towel Throw]]>><</link>>
+		<br>
+	<</if>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		A padded cupboard containing your clothes protrudes from the wall, but you can't reach it with your arms bound.
+		<br>
+	<<else>>
+		A padded cupboard containing your clothes protrudes from the wall.
+		<br>
+		<<asylumicon  "wardrobe">><<link [[Open|Asylum Wardrobe]]>><</link>>
+		<br>
+	<</if>>
+	<br>
+	<<if Time.weekDay is 1 and $daily.massAttended isnot 1>>
+		<<if $fallenangel gte 2>>
+			<<link [[Pray (1:00)|Asylum Pray Fallen Angel]]>><<purity 63>><<pass 60>><<stress 10>><<set $daily.massAttended to 1>><</link>><<gggpurity>><<stress>>
+		<<elseif $angel gte 6>>
+			<<link [[Pray (1:00)|Asylum Pray Angel]]>><<purity 10>><<pass 60>><<stress -10>><<set $daily.massAttended to 1>><</link>><<gpurity>><<lstress>>
+		<<elseif $demon gte 6>>
+			<<link [[Reflect (1:00)|Asylum Pray Demon]]>><<purity -10>><<pass 60>><<stress 10>><<set $daily.massAttended to 1>><</link>><<lpurity>><<stress>>
+		<<else>>
+			<<link [[Pray (1:00)|Asylum Pray]]>><<purity 10>><<pass 60>><<stress -10>><<set $daily.massAttended to 1>><</link>><<gpurity>><<lstress>>
+		<</if>>
+	<</if>>
+	<br>
+	/* 北极星模组 */
+	<<if $asylumstate isnot "sleep">>
+		<<getouticon>><<link [[离开|Asylum]]>><</link>>
+		<br>
+	<<elseif $options.bjx_eventTF and $asylumstate isnot "sleep" and $ghost gte 1>>
+		<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+		<br>
+		<<link [[穿越 (0:01)|Asylum]]>><<pass 1>><</link>>
+		<br>
+	<</if>>
+	/* 北极星 */
+	<br>
+	<<link [[Settings|Asylum Settings]]>><</link>>
+	<br>
+	<<attitudesControlCheck>>
+	<<if $attitudesControl.showGoldLink is true>>
+		<span class="goldLink"><<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>> </span><span class="red">!!</span>
+	<<else>>
+		<<link [[Attitudes]]>><<set $attitudesExitPassage to $passage>><</link>>
+	<</if>>
+	<br><br>
+<</if>>
+
+
+:: Asylum Pray Fallen Angel
+You bow your head and reflect on the events that brought you here. The distant howls and screams other patients frequently interrupt your prayers, but you feel your dedication hasn't gone unnoticed.
+<br><br>
+<<link [[Next|Asylum Cell]]>><</link>>
+<br>
+:: Asylum Pray Angel
+You bow your head and close your eyes in prayer. The distant cries of other patients seem to fade away giving you some much needed peace.
+<br><br>
+<<link [[Next|Asylum Cell]]>><</link>>
+<br>
+:: Asylum Pray Demon
+You kneel and close your eyes. The silence is interrupted by distant cries of other patients. The harder you try to ignore them the more unnatural they seem to become. You can’t help but imagine the trauma they are going through.
+<br><br>
+<<link [[Next|Asylum Cell]]>><</link>>
+<br>
+:: Asylum Pray
+You bow your head and close your eyes in prayer. Distant cries frequently interrupt your meditation.
+<br><br>
+<<link [[Next|Asylum Cell]]>><</link>>
+<br>
+:: Eden Towel Throw
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<npc Eden>><<person1>>
+<<set $eden_asylum_window to 2>>
+You take a towel from your wardrobe and throw it up to the barred window as hard as you can. It dangles in the night air.
+<br><br>
+You wait a few minutes, then a rope flies between the bars. You tie the end around the door handle, and give it a tug. It tenses. Eden must be climbing.
+<br><br>
+A worried face appears at the bars. Eden gazes at you. <<He>> produces a saw from a bag at <<his>> side, and presses it against the metal.
+<br><br>
+	<<if $daily.eden.asylumDisarm is 2>>
+		<<unset $eden_asylum_window>>
+		<span class="green">The alarm does not sound.</span> Eden saws through the bars, before climbing down. Untying the rope from the door, you use it to climb out of the window and jump into Eden's waiting arms. <<He>> gathers the rope and saw, and leads you back to the cabin.
+		<br><br>
+		<<link [[Next|Eden Asylum Rescue]]>><</link>>
+	<<else>>
+		<<set $eden_asylum_window to 2>>
+		<span class="red">The room is bathed in red light,</span> and an alarm blares. Metal shutters snap in front of the bars, slicing through the rope.
+		<br><br>
+		<<link [[Next|Eden Towel Throw 2]]>><<endevent>><</link>>
+	<</if>>
+<br>
+
+:: Eden Towel Throw 2
+<<effects>>
+
+<<npc Harper>><<generate2>><<person2>>
+<<bind>><<upperwear 35>>
+You hear footsteps outside, and security barge through the door. A <<person>> pushes you to the bed while another examines the rope.
+<br><br>
+
+Doctor Harper enters. "It's okay," <<person1>><<he>> says sitting on the bed beside you. The <<person2>><<person>> continues to hold you down. <<person1>>"Someone tried to take you away. But you're safe." <<He>> looks towards the door, and nods.
+<br><br>
+
+More security arrive. They wrestle you into a straightjacket. "Just to make sure you're extra safe." Harper says. The alarm stops, and the lights turn white. You hear dogs barking from the grounds below.
+<br><br>
+
+Harper and security leave you alone in your room. The shutters remain.
+<br><br>
+
+<<link [[Next|Asylum Cell]]>><<endevent>><</link>>
+
+:: Asylum Bed
+
+<<effects>>
+You snuggle under the covers.
+<br><br>
+<<generateSleepLinks "Asylum Sleep">>
+<<link [[Climb out of bed|Asylum Cell]]>><<loadTempHairStyle>><</link>>
+<br><br>
+
+:: Asylum Sleep
+<<set _autosavehere to true>>
+<<sleep>>
+<<if _dreaming>>
+	/* <<earSlimeFocusChoice>> or similar widgets are running */
+<<else>>
+	<<effects>>
+	<<if _slimeWakeMasturbation is 1>>
+		<<set _masturbationExit to "Asylum Sleep">>
+		<<slimeWakeMasturbation>>
+	<<else>>
+		<<wakingEffects $sleepHoursTotal>>
+		<<if ["dryheaving","nausea"].includes(_wakingEffect)>>
+			You slept soundly, but now feel a little rough.
+			<br><br>
+		<<elseif $nightmares gte 1 and $controlled is 0>>
+			You <<if _wakingEffect>>dreamed of<<else>>dream you are<</if>> being hunted by something <<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>pale<<else>>dark<</if>> and terrible.
+		<<else>>
+			<<if $specialClothesEffects.bimboTotal gte random(100,1000) or $arousal gte ($arousalmax / 10) * 9>>
+				Your sleep <<if _wakingEffect>>was<<else>>is<</if>> plagued by dirty dreams.
+				<<arousal `$specialClothesEffects.bimboTotal / 10 * $sleepHoursTotal`>>
+				<<arousal `100 * $sleepHoursTotal`>>
+				<<if $arousal gte $arousalmax>>
+					They push you over the edge.
+					<<orgasm>>
+				<<else>>
+					<br><br>
+				<</if>>
+			<<elseif !_wakingEffect>>
+				You sleep soundly.
+				<br><br>
+			<<else>>
+				<br><br>
+			<</if>>
+		<</if>>
+		<<sleepeffects>>
+		<<if isPlayerNonparasitePregnancyEnding()>>
+			<<asylumeffects>>
+			<<pregnancyWatersBrokenPassout "asylum">>
+		<<elseif _sleepinterrupt>>
+			<<asylumeffects>>
+			<<if $rapewake is 1>>
+				<<set $rapewake to 0>>
+				<<generate1>><<generate2>><<person1>>
+				<<if _wakingEffect is "dryheaving">>
+					A <<person>> rubs your back. "Feeling better now?" <<he>> says. "Me and my friend here work very hard protecting you crazies from yourselves. How about you give us a little something in return?" <<He>> gropes you.
+				<<else>>
+					A <<person>> shakes you awake. "Wakey wakey," <<he>> says. "Me and my friend here work very hard protecting you crazies from yourselves. How about you give us a little something in return?" <<He>> gropes you.
+				<</if>>
+				<br><br>
+				<<link [[Next|Asylum Cell Rape]]>><<set $molestationstart to 1>><</link>>
+				<br>
+			<<elseif $asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1>>
+				<<set $daily.asylumTreatment1 to 1>>
+				<<generate1>><<person1>>
+				<<if _wakingEffect is "dryheaving">>
+					A <<person>> rubs your back. <<Hes>> a nurse.
+					<br><br>
+				<<else>>
+					A <<person>> shakes you awake. <<Hes>> a nurse.
+					<br><br>
+				<</if>>
+				<<asylumoptions>>
+				"Doctor says it's time for your treatment," <<he>> says. "Come with me."
+				<br><br>
+				<<endevent>>
+				<<asylumtreatments>>
+			<<elseif $asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1>>
+				<<set $daily.asylumTreatment2 to 1>>
+				<<generate1>><<person1>>
+				<<if _wakingEffect is "dryheaving">>
+					A <<person>> rubs your back. <<Hes>> a nurse.
+					<br><br>
+				<<else>>
+					A <<person>> shakes you awake. <<Hes>> a nurse.
+					<br><br>
+				<</if>>
+				<<asylumoptions>>
+				"Doctor says it's time for your treatment," <<he>> says. "Come with me."
+				<br><br>
+				<<endevent>>
+				<<asylumtreatments>>
+			<<elseif $asylumstate is "assessment" and $daily.asylumAssessment isnot 1>>
+				<<set $daily.asylumAssessment to 1>>
+				<<generate1>><<person1>>
+				<<if _wakingEffect is "dryheaving">>
+					A <<person>> rubs your back. <<Hes>> a nurse.
+					<br><br>
+				<<else>>
+					A <<person>> shakes you awake. <<Hes>> a nurse.
+					<br><br>
+				<</if>>
+				<<asylumoptions>>
+				"Doctor says it's time for your assessment," <<he>> says. "Come with me."
+				<br><br>
+				<<endevent>>
+				<<asylumassessment>>
+			<<else>>
+				<<if _wakingEffect is "dryheaving">>
+					A loud buzzing continues in the background.
+					<br><br>
+				<<else>>
+					A loud buzzing wakes you.
+					<br><br>
+				<</if>>
+				<br><br>
+				<<getouticon>><<link [[Get out of bed|Asylum Cell]]>><</link>>
+				<br><br>
+			<</if>>
+		<<else>>
+			<br><br>
+			<<getouticon>><<link [[Get out of bed|Asylum Cell]]>><</link>>
+			<br><br>
+		<</if>>
+		<<set $phase to 0>>
+	<</if>>
+<</if>>
+
+:: Asylum Settings [exitCheckBypass]
+<<set $settingsExitPassage to "Asylum Cell">>
+<<settings>>
+
+:: Asylum
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You are in the asylum, deep in the forest. The building is over a century old, and little of it has been renovated to modern standards. Security patrol the grounds between the building and surrounding fence.
+<<if $asylumstate is "sleep">>
+	You're supposed to be in your cell.
+	<br><br>
+<<else>>
+	Other patients are relaxing in the recreation room or exercising outside. Most keep to themselves.
+	<<if $o_long_and_beautiful gte 1 and $o_long_and_beautiful lte 7 and $rng % 4 == 0>>
+		A slim girl with very long, messy hair wanders out of sight <<print either("down a corridor.","into a private room.","into the cells.","in the garden.")>>
+	<</if>>
+	<br><br>
+	<<asylumstats>>
+<</if>>
+<<if $stress gte $stressmax>>
+	<<passoutasylum>>
+<<elseif $daily.eden.distract gte 1 and Time.hour gte 21 and $daily.eden.distract isnot 4>>
+	An ear-splitting bang pierces the air from some distance away. It drives the patients into a panicked frenzy, and security rush to investigate the explosion.
+	<br><br>
+	You seize the chance, and climb up the perimeter fence. You glance over your shoulder when half way up.
+	<<if $daily.eden.distract is 2>>
+		<<npc Eden>><<person1>>
+		<<unset $eden_asylum_fence>>
+		Security have vacated this part of the grounds <span class="green">and the guard tower search lights don't appear to be operational.</span> You climb over the fence and run into Eden a few seconds later. <<He>> grabs your arm and leads you back to the cabin.
+		<br><br>
+		<<link [[Next|Eden Asylum Rescue]]>><<pass 10>><</link>>
+	<<else>>
+		Security have vacated this part of the grounds, <span class="red">but the guard tower search lights are on.</span> A beam lands on you, and you instinctively shield your face from the light. You hear a whistle, then a sharp pain in your shoulder. You black out before you hit the ground.
+		<br><br>
+		<<link [[Next|Eden Asylum Fail]]>><<pass 30>><</link>>
+	<</if>>
+<<elseif $asylumstate is "firsttreatment" and $daily.asylumTreatment1 isnot 1>>
+	<<set $daily.asylumTreatment1 to 1>>
+	<<generateDoctor 1>><<person1>>A <<person>> approaches you. <<Hes>> a nurse.
+	<br><br>
+	<<asylumoptions>>
+	"Doctor says it's time for your treatment," <<he>> says. "Come with me."
+	<br><br>
+	<<endevent>>
+	<<asylumtreatments>>
+<<elseif $asylumstate is "secondtreatment" and $daily.asylumTreatment2 isnot 1>>
+	<<set $daily.asylumTreatment2 to 1>>
+	<<generateDoctor 1>><<person1>>A <<person>> approaches you. <<Hes>> a nurse.
+	<br><br>
+	<<asylumoptions>>
+	"Doctor says it's time for your treatment," <<he>> says. "Come with me."
+	<br><br>
+	<<endevent>>
+	<<asylumtreatments>>
+<<elseif $asylumstate is "assessment" and $daily.asylumAssessment isnot 1>>
+	<<set $daily.asylumAssessment to 1>>
+	<<generateDoctor 1>><<person1>>A <<person>> approaches you. <<Hes>> a nurse.
+	<br><br>
+	<<asylumoptions>>
+	"Doctor says it's time for your assessment," <<he>> says. "Come with me."
+	<br><br>
+	<<endevent>>
+	<<asylumassessment>>
+<<elseif $asylumstate is "exercise" and $daily.asylumExcercise isnot 1>>
+	<<set $daily.asylumExcercise to 1>>
+	<<generateDoctor 1>><<person1>>A <<person>> approaches you. <<Hes>> an orderly.
+	<br><br>
+	<<asylumoptions>>
+	"Time for exercise," <<he>> says. "Doctor's waiting."
+	<br><br>
+	<<endevent>>
+	<<npc Harper>><<person1>>
+	The doctor is indeed waiting outside. The other patients line up near <<him>>. <<Hes>> holding a whistle. "Time for your daily exercise," <<he>> says. "When I blow, I want you to run in a circle around the grounds. Don't stop until you hear me blow again."
+	<br><br>
+	<<He>> whistles, and you run. It's not too harsh a pace, but orderlies follow after and chastise those who fall behind.
+	<<gathletics>><<athletics 3>><<physique 3>><<pass 30>>
+	<br><br>
+	<<He>> whistles again, and the group stops. A few sit on the ground. "We're not done yet," <<he>> says.
+	<br><br>
+	<<link [[Next|Asylum Shower]]>><</link>>
+	<br>
+<<elseif Time.hour is 22>>
+	<<generateDoctor 1>><<person1>>"Bed time," a nurse announces. "Everyone get back in your cells."
+	<br><br>
+	<<asylumicon  "cell">><<link [[Go to cell (0:02)|Asylum Cell]]>><<pass 2>><<endevent>><</link>>
+	<br>
+	<<refuseicon>><<link [[Hide (1:00)|Asylum Hide]]>><<pass 60>><</link>>
+	<br>
+<<elseif $asylumstate is "sleep">>
+	<<asylumicon "door">><<link [[Staff door|Asylum Staff]]>><</link>>
+	<br>
+	<<asylumicon  "cell">><<link [[Cell|Asylum Cell]]>><</link>>
+	<br>
+<<else>>
+	<<if $exposed gte 1>>
+		<<dressasyouwereicon>><<link [[Ask for clothes|Asylum Towels]]>><<trauma 6>><<stress 3>><<suspicion 1>><</link>><<gsuspicion>><<gtrauma>><<gstress>>
+		<br>
+	<</if>>
+	<<if $daily.eden.distract is 1>>
+		<<investigateicon>><<link [[Search for a breaker room|Asylum Breaker]]>><</link>>
+		<br>
+	<</if>>
+	<<if $daily.eden.asylumDisarm is 1>>
+		<<investigateicon>><<link [[Search for an alarm system|Asylum Alarm]]>><</link>>
+		<br>
+	<</if>>
+	<<if $exposed gte 2 and $exhibitionism gte 75>>
+		<<if Time.hour is 6>>
+			<<foodicon "pancakes">><<link [[Breakfast (1:00)|Asylum Breakfast]]>><<asylumstatus 1>><<awareness -10>><<trauma -3>><<stress -6>><<pass 60>><</link>><<exhibitionist5>><<gcool>><<llawareness>><<ltrauma>><<lstress>>
+			<br>
+		<</if>>
+		<<exerciseicon>><<link [[Exercise outside (0:30)|Asylum Exercise]]>><<tiredness 3>><<stress -6>><<pass 30>><</link>><<exhibitionist5>><<gtiredness>><<lstress>><<gathletics>>
+		<br>
+		<<socialiseicon>><<link [[Socialise (0:30)|Asylum Socialise]]>><<asylumstatus 1>><<trauma -3>><<stress -6>><<pass 30>><</link>><<exhibitionist5>><<gcool>><<ltrauma>><<lstress>>
+		<br>
+		<<schoolicon "library">><<link [[Study (0:50)|Asylum Study]]>><<pass 50>><<schoolskill>><</link>><<exhibitionist5>><<gschool>>
+		<br>
+		<<gardenicon>><<link [[Garden (0:02)|Asylum Garden]]>><<pass 2>><</link>>
+		<br>
+	<<elseif $exposed gte 1 and $exhibitionism gte 35>>
+		<<if Time.hour is 6>>
+			<<foodicon "pancakes">><<link [[Breakfast (1:00)|Asylum Breakfast]]>><<asylumstatus 1>><<awareness -10>><<trauma -3>><<stress -6>><<pass 60>><</link>><<exhibitionist3>><<gcool>><<llawareness>><<ltrauma>><<lstress>>
+			<br>
+		<</if>>
+		<<exerciseicon>><<link [[Exercise outside (0:30)|Asylum Exercise]]>><<tiredness 3>><<stress -6>><<pass 30>><</link>><<exhibitionist3>><<gtiredness>><<lstress>><<gathletics>>
+		<br>
+		<<socialiseicon>><<link [[Socialise (0:30)|Asylum Socialise]]>><<asylumstatus 1>><<trauma -3>><<stress -6>><<pass 30>><</link>><<exhibitionist3>><<gcool>><<ltrauma>><<lstress>>
+		<br>
+		<<schoolicon "library">><<link [[Study (0:50)|Asylum Study]]>><<pass 50>><<schoolskill>><</link>><<exhibitionist3>><<gschool>>
+		<br>
+		<<gardenicon>><<link [[Garden (0:02)|Asylum Garden]]>><<pass 2>><</link>>
+		<br>
+	<<elseif $exposed is 0>>
+		<<if Time.hour is 6>>
+			<<foodicon "pancakes">><<link [[Breakfast (1:00)|Asylum Breakfast]]>><<asylumstatus 1>><<awareness -10>><<trauma -3>><<stress -6>><<pass 60>><</link>><<gcool>><<llawareness>><<ltrauma>><<lstress>>
+			<br>
+		<</if>>
+		<<exerciseicon>><<link [[Exercise outside (0:30)|Asylum Exercise]]>><<tiredness 3>><<stress -6>><<pass 30>><</link>><<gtiredness>><<lstress>><<gathletics>>
+		<br>
+		<<socialiseicon>><<link [[Socialise (0:30)|Asylum Socialise]]>><<asylumstatus 1>><<trauma -3>><<stress -6>><<pass 30>><</link>><<gcool>><<ltrauma>><<lstress>>
+		<br>
+		<<schoolicon "library">><<link [[Study (0:50)|Asylum Study]]>><<pass 50>><<schoolskill>><</link>><<gschool>>
+		<br>
+		<<gardenicon>><<link [[Garden (0:02)|Asylum Garden]]>><<pass 2>><</link>>
+		<br>
+	<</if>>
+	<<if $asylumstatus gte 80 and $asylumdistracted isnot 1>>
+		<<askicon>><<link [[Ask the patients to distract the orderlies|Asylum Distract]]>><<set $asylumdistracted to 1>><<asylumstatus -30>><</link>><<lllcool>>
+		<br>
+	<</if>>
+	<br>
+	<<asylumicon  "cell">><<link [[Cell (0:02)|Asylum Cell]]>><<pass 2>><</link>>
+	<br>
+<</if>>
+
+:: Asylum Breaker
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You wander around the asylum, looking for a breaker room. As luck would have it, you stumble upon one tucked away in an inconspicuous location.
+<br><br>
+Using the lock pick Eden gave you, you enter the breaker room, lock the door and access the control panel.
+<br><br>
+<<link [[Try to disable power to the search lights (0:30)|Asylum Disable]]>><<pass 30>><</link>> <<note "A higher science skill will make this more likely to succeed" "italic">>
+<br>
+<<link [[Leave|Asylum]]>><</link>>
+
+:: Asylum Disable
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<if random(1, 200) lte (currentSkillValue('science') + 100)>>
+	<<set $daily.eden.distract to 2>>
+	You successfully disable power to the guard tower search lights. Hopefully that'll buy you some time to escape.
+	<br><br>
+	<<link [[Next|Asylum]]>><</link>>
+<<else>>
+	You mistakenly flip a switch providing power to the recreation area. Quickly noticing your mistake, you flip it back on and sneak out before anyone catches you. Seems you'll need to try again.
+	<br><br>
+	<<link [[Next|Asylum]]>><</link>>
+<</if>>
+
+:: Asylum Alarm
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+After wandering the asylum for a while, you find a wireless alarm mounted to the wall somewhere relatively out-of-the-way. Grabbing a butterknife from the cafeteria, you use it unscrew the main panel. There seems to be a bunch of wires connecting the system to the main power source.
+<br><br>
+<<link [[Try to disconnect the alarm (0:30)|Asylum Disconnect]]>><<pass 30>><</link>> <<note "A higher science skill will make this more likely to succeed" "italic">>
+<br>
+<<link [[Leave|Asylum]]>><</link>>
+
+
+:: Asylum Disconnect
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<if random(1, 200) lte (currentSkillValue('science') + 100)>>
+	<<set $daily.eden.asylumDisarm to 2>>
+	You successfully disconnect the alarm system from its power source. Hopefully no one will be alerted to your escape.
+	<br><br>
+	<<link [[Next|Asylum]]>><</link>>
+<<else>>
+	You hear footsteps approaching from afar. You quickly re-attach the main panel and leave before you're caught. Seems you'll need to try again.
+	<br><br>
+	<<link [[Next|Asylum]]>><</link>>
+<</if>>
+
+:: Asylum Distract
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You ask for help distracting the orderlies. You have trouble finding anyone who will agree to it, until a <<generate1>><<person1>><<person>>. <<He>> looks at <<his>> friends, then back at you. "Alright," <<he>> says. "We'll make sure you get some proper alone time with the good Doctor." <i>Harper will not receive aid the next time you attack them.</i>
+<br><br>
+<<link [[Next|Asylum]]>><<endevent>><</link>>
+<br>
+
+:: Asylum Towels
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<generateDoctor 1>><<person1>><<set _towel to random(0,4)>>
+You sneak to a nurse. "Excuse me," you say.
+<<if $worn.upper.name is "straightjacket" or $worn.lower.name is "straightjacket bottom">>
+	<<He>> turns, and regards your ruined jacket with a
+	<<if ($beauty gte ($beautymax / 3) * 2) and _towel lte 1>>
+		smirk. <<covered>> "Can I have some clothes please?"
+		<br><br>
+		"Nah, you're hot." <<He>> pulls out a phone. "I wanna watch you go and ask someone else."
+		<<fameexhibitionism 2 "pic">>
+	<<else>>
+		frown. <<covered>> "Can I have some clothes please?"
+		<br><br>
+		"How did you manage that? No, never mind. I don't want to know." <<He>> makes a note on a clipboard. "I'll have to inform the doctor."<<set $suspicion += 1>><<gsuspicion>>
+		<br><br>
+		<<He>> removes the remains of your straightjacket<<if $leftarm is "bound" and $rightarm is "bound">>, letting your arms fall to your sides<</if>>. Your freedom is short-lived as <<he>> forces a fresh one onto you.
+		<<bind>><<upperwear 35>><<lowerwear 38>><<fameexhibitionism 1>>
+	<</if>>
+<<elseif ($beauty gte ($beautymax / 3) * 2) and _towel lte 3>> /* 1 in 5 to skip beauty*/
+	<<if _towel is 0>> /*1 in 4 chance*/
+		<<He>> turns, and smiles with open lust when <<he>> sees you. <<covered>> "Can I have some clothes please?"
+		<br><br>
+		"Nah, you're hot." <<He>> pulls out a phone. "I wanna watch you go and ask someone else."
+		<<fameexhibitionism 2 "pic">>
+	<<else>>
+		<<He>> turns, and smiles with open lust when <<he>> sees you. <<covered>> "Can I have some clothes please?"
+		<br><br>
+		"Seems like a shame, but sure," <<he>> nods, and wraps some around you.
+		<<unbind>><<upperwear 87>><<fameexhibitionism 1>>
+	<</if>>
+<<elseif $player.penissize gte 3>>
+	<<He>> turns, and smiles when <<he>> sees you. <<covered>> "Can I have some clothes please?"
+	<br><br>
+	"One moment," <<he>> says. <<He>> pulls out a phone and takes a quick photo of your <<genitals>>.
+	<<He>> nods at the screen, and then chucks a bundle of fabric at you. "Seems like a damn shame to cover that up."
+	<<unbind>><<upperwear 87>><<fameexhibitionism 2 "pic">>
+<<elseif $player.breastsize gte 7>>
+	<<He>> turns, and smiles when <<he>> sees you. <<covered>> "Can I have some clothes please?"
+	<br><br>
+	"One moment," <<he>> says. <<He>> pulls out a phone and takes a quick photo of your <<breasts>>.
+	<<He>> nods at the screen, and then chucks a bundle of fabric at you. "Seems like a damn shame to cover those up."
+	<<unbind>><<upperwear 87>><<fameexhibitionism 2 "pic">>
+<<elseif _towel gte 2>>
+	<<He>> turns, and seems completely unphased when <<he>> sees you. <<covered>> "Can I have some clothes please?"
+	<br><br>
+	<<He>> nods, and gives you a patient gown.
+	<<unbind>><<upperwear 87>><<fameexhibitionism 1>>
+<<else>>
+	<<He>> turns, and puts a hand to <<his>> mouth to conceal laughter when <<he>> sees you. <<covered>> "Can I have some clothes please?"
+	<br><br>
+	<<He>> nods, and gives you a patient gown.
+	<<unbind>><<upperwear 87>><<fameexhibitionism 1>>
+<</if>><br><br><<unset _towel>>
+<<link [[Next|Asylum]]>><<endevent>><</link>>
+<br>
+
+:: Asylum Exercise
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "asylumOutside">>
+<<elseif $NPCName[$NPCNameList.indexOf("Eden")].love gte 100 and ($edenfreedom is 1 and $edendays gte 2 and !$daily.eden.asylumRescue and $eden_asylum_fence isnot 1 and $leftarm isnot "bound" and $rightarm isnot "bound" and $trauma lte $traumamax / 2) or ($edenfreedom gte 2 and $edendays gte 8 and !$daily.eden.asylumRescue and $eden_asylum_fence isnot 1 and $leftarm isnot "bound" and $rightarm isnot "bound" and $trauma lte $traumamax / 2)>>
+	<<set $eden_asylum_fence to 1>>
+	<<set $daily.eden.asylumRescue to 1>>
+	You see movement among the trees, a lurking figure. It steps closer. <span class="green">It's Eden.</span>
+	<br><br>
+
+	<<npc Eden>><<person1>>
+	You jog up to the fence, and lean against it to catch your breath. Eden rushes into full view, emboldened by the sight of you.
+	<br><br>
+	<<He>> reaches through the bars and takes your hands. "I'm going to make a distraction," <<he>> says. "In a few minutes you'll hear an explosion on the other side of the building. Climb over the fence, and I'll lead you back to the cabin with me. Got it?"<<takeHandholdingVirginity "Eden" "romantic">>
+	<br><br>
+
+	<<getinicon>><<link [[Agree|Eden Distraction Plan]]>><</link>>
+	<br>
+	<<refuseicon>><<link [[Refuse|Eden Distraction Refuse]]>><</link>>
+	<br>
+<<elseif $exposed is 2>>
+	<<flaunting>> you run around the asylum grounds. Security keeps a close eye on you, and warn you off when you jog too close to the perimeter fence.
+	<<athletics 3>><<physique 3>>
+	<br><br>
+	Your <<lewdness>> on display makes you the centre of attention.
+	<<exhibitionism5>>
+	<<asylumevents>>
+<<elseif $exposed is 1>>
+	<<flaunting>> you run around the asylum grounds. Security keeps a close eye on you, and warn you off when you jog too close to the perimeter fence.
+	<<athletics 3>><<physique 3>>
+	<br><br>
+	Your <<lewdness>> on display makes you the centre of attention.
+	<<exhibitionism3>>
+	<<asylumevents>>
+<<else>>
+	<<if $leftarm is "bound" and $rightarm is "bound" and $worn.upper.name is "straightjacket">>
+		Despite the straightjacket, you persist in running around the asylum grounds.
+		<<if currentSkillValue('danceskill') + currentSkillValue('athletics') gte 1600>>
+			With your agile and athletic movement, you make it an excellent training session.
+			<<athletics 2>><<physique 5>>
+		<<elseif currentSkillValue('danceskill') + currentSkillValue('athletics') gte 1100>>
+			With your skillful movement, you can still get a decent training session.
+			<<athletics 2>><<physique 4>>
+		<<elseif currentSkillValue('danceskill') + currentSkillValue('athletics') gte 650>>
+			It's tricky but thanks to your reasonable agility and athleticism you can still get some kind of workout.
+			<<athletics 2>><<physique 2>>
+		<<else>>
+			You <<print either("almost immediately","soon")>>
+			<<if random(0,1)>>trip over a root and end up doing a sliding face-plant along the ground.
+			<<else>>trip on a stone and, off-balance, run face-first into a tree. Stunned, you fall back on the floor.
+			<</if>>
+			Several people clap.<<gpain>><<pain 6>><br>
+			Someone eventually helps you up. It wasn't much of a work out.
+			<<athletics 3>>
+		<</if>><br><br>
+		Security are amused by the sight of you, but still warn you off when you jog too close to the perimeter fence.
+		<br><br>
+		<<asylumevents>>
+	<<else>>
+		You run around the asylum grounds. Security keeps a close eye on you, and warn you off when you jog too close to the perimeter fence.
+		<<athletics 3>><<physique 3>>
+		<br><br>
+		<<asylumevents>>
+	<</if>>
+	<br><br>
+<</if>>
+
+:: Eden Asylum Ignore
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You decide to ignore the figure and focus on your workout.
+<br><br>
+<<link [[Next|Asylum Exercise]]>><</link>>
+
+
+:: Eden Distraction Refuse
+<<effects>>
+
+You shake your head. "It's too dangerous," you say.
+<br><br>
+
+"I'm not letting them keep you," Eden snarls. "But I'll find a safer way if you wish." <<He>> squeezes your hand, then turns and strides into the forest.
+<br><br>
+
+You return to your workout.
+<br><br>
+
+<<link [[Next|Asylum Exercise]]>><<endevent>><</link>>
+<br>
+
+:: Eden Distraction Plan
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<set $daily.eden.distract to 1>>
+<<npc Eden>><<person1>>
+You're about to agree to Eden's plan, but stop when you remember something. "The guard towers," you say. "They'll see me climb the fence."
+<br><br>
+Eden's face falls at this realisation. "I'll delay the distraction to <<ampm 21>>," <<he>> says. "They shouldn't see you then."
+<br><br>
+"How about their search lights?" you ask.
+<br><br>
+"There has to be a breaker room somewhere providing power. Before the explosion goes off, shut it down and meet me in the forest," <<he>> says, placing a lock pick in your hands and sneaking off.
+<br><br>
+<<link [[Next|Asylum Exercise]]>><</link>>
+<br>
+
+:: Eden Asylum Fail
+<<effects>>
+<<set $daily.eden.distract to 4>>
+
+<<npc Harper>><<generate2>><<person2>>
+<<bind>><<upperwear 35>>
+You awaken strapped to a bed. A light glares in your eyes. It dims to reveal an old <<person>> in a white coat. Doctor Harper stands beside <<him>>.
+<br><br>
+
+"No long term effects," The <<person>> says, stepping away.
+<br>
+"Good," Harper says. "You tried to climb the fence. Do you know how dangerous the forest beyond is? You're here so we can help you. For your own safety."
+<br><br>
+
+You try to stand, but you can't move your arms. "We've given you a jacket until you're a bit better," <<he>> continues, grabbing your shoulder. <<He>> helps you to your feet. You're in a small, dark room.
+<br><br>
+
+<<He>> steers you towards the door, then through it. You're pushed through another set of doors, into the patients communal area.
+<br><br>
+
+"Be well," Harper says, shutting the doors behind you.
+<br><br>
+
+<<link [[Next|Asylum]]>><<endevent>><</link>>
+<br>
+
+
+
+:: Asylum Socialise
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You chat with the other patients.
+<<if $exposed is 2>>
+	Your <<lewdness>> on display makes you the centre of attention.
+	<<exhibitionism5>>
+<<elseif $exposed is 1>>
+	Your <<lewdness>> on display makes you the centre of attention.
+	<<exhibitionism3>>
+<<else>>
+<</if>>
+<<if $asylumstatus gte 80>>
+	They're happy to speak with you.
+<<elseif $asylumstatus gte 20>>
+<<else>>
+	Most avoid you, but a few are willing to hear you out.
+<</if>>
+<<generate1>><<person1>><br>
+
+<<if $NPCName[$NPCNameList.indexOf("Eden")].love gte 100 and ($edenfreedom is 1 and $edendays gte 2 and !$daily.eden.asylumRescue and !$eden_asylum_window and $leftarm isnot "bound" and $rightarm isnot "bound" and $trauma lte $traumamax / 2) or ($edenfreedom gte 2 and $edendays gte 8 and !$daily.eden.asylumRescue and !$eden_asylum_window and $leftarm isnot "bound" and $rightarm isnot "bound" and $trauma lte $traumamax / 2)>>
+	<<set $daily.eden.asylumRescue to 1>>
+	<<set $eden_asylum_window to 1>>
+	<<set $daily.eden.asylumDisarm to 1>>
+	<br>
+	You look out the window, at the trees beyond the fence. You see movement, a figure lurking in the dark. <span class="green">It reminds you of Eden.</span>
+	<br><br>
+	<<endevent>>
+	<<npc Eden>><<person1>>
+	You open the window to get a clearer view. You hear a thud to your right. A bolt sticks out of the brickwork. There's paper wrapped around the shaft.
+	<br><br>
+	You glance behind you to make sure you're not being watched. Everyone seems preoccupied. You pull out the bolt, and unfurl the paper. The handwriting is crude, but legible.
+	<br><br>
+	<i>"I'm coming for you. Mark your window with a towel at <<ampm 22>>. - Eden"</i>
+	<br><br>
+	You look back out at the forest, but the figure is gone.
+	<br><br>
+	<<link [[Next|Asylum Eden Towel]]>><<endevent>><</link>>
+
+<<elseif $rng gte 95>>
+	<<if $rng % 2>>
+		"Best keep your nose clean," a <<person>> says. "If the staff are suspicious of you it'll be hard to do anything sneaky."
+	<<else>>
+		"Fair warning: it's us against them in here," a <<person>> tells you. "If you cosy up with those guards, nurses and doctors and all the other scum,
+		don't expect any quarter from the rest of us."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 90>>
+	There is a buzz of excitement in the room today. A popular patient has been cured and is being released. Patients crowd by the window
+	waving at a smiling <<person>>, as <<he>> stands with Dr Harper by the driveway.
+	<br><br>
+
+	Moments later, the gates open and a vehicle drives through. It circles round the driveway and stops by the grinning former-patient.
+	<<if $rng % 2>>
+		Oddly, the vehicle isn't a taxi or mini-bus. It looks more like an animal-hauler. The driver emerges to greet them.
+		<<if $fluid_forced_stat gte 100>>You recognise the driver from somewhere.<</if>>
+		With a final flurry of waves, the <<person>> is led into the back of the vehicle. A look of confusion finally crosses <<his>> face a moment before
+		<<he>> is hidden behind the closing door.
+		<br>
+		The driver bars and padlocks the door.
+		<<if $fluid_forced_stat gte 100>>
+			As the driver talks with Dr Harper, you suddenly remember <<him>> as one of Remy's farmhands.
+			Before you can say anything
+		<<else>>
+			After a brief exchange with Dr Harper
+		<</if>>
+		the driver clambers into the vehicle and drives away.
+	<<else>>
+		The <<person>> climbs into the waiting taxi, and waves back through the window. The engine sounds rises and the car pulls away
+		taking the <<person>> back to the town.
+	<</if>>
+	<br><br>
+	"Be well," you hear Dr Harper call after the departing vehicle.
+	<br>
+	The watching crowd disperses.
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 85>><<generate2>><<generate3>>
+<br>
+	"Be wary, friend!" a <<person>> fixes your eye. "Beware the door that's ajar!"
+	<br>
+	"You what, mate?" a <<person2>><<person>> nearby turns to <<person1>><<him>>. "You daft? 'ow can a door be a jar?"
+	<br>
+	"How can..? It just is. They don't close it properly. Almost like they want the unwary to-"
+	<br>
+	"Totally, man!" a <<person3>><<person>> nearby interrupts. "A door can totally be a jar. Like a giant jar. I mean, like, I never
+	thought of it that way, but the building is like, the cupboard. Full of jars. Which are doors. The door is the jar, literally.
+	And we're the... the jam trying to get out to the town, which is obviously the toast in this... this... ...analogy?
+	I mean, yeah - the door is the jar - I see it. I totally see it." <<He>> sounds quite sure of <<himself>>.
+
+	/*Disabled due to feedback
+	The <<person1>><<person>> squints between them, confused. Looking back at you restores <<his>> train of thought.
+	<br>
+
+	"Aye, beware that door, friend. Beware its inviting amaranthine glow; beware its seductive fragrance; beware the mellifluous winds that whisper of freedom beyond.
+	For if you pass that door, you'll find that freedom merely a mirage - a phantasm in those endless, shifting plains without."
+	<br>
+	The <<person2>><<person>> and the <<person3>><<person>> both gaze raptly at the <<person1>><<person>>.
+	<br>
+	"Without what?"
+	<br>
+	"There is no map," <<he>> goes on. "There is no 'right way' that you can learn. There is only Hunger. The endless, voracious hunger of those creatures.
+	Those creatures out there. And if you pass that way, <<if $player.gender_appearance is "f">>girl,<<else>>boy,<</if>> they will have you. This much I know."
+	<br><br>
+
+	<<He>> looks between <<his>> listeners.
+	<br>
+	"Most souls who pass that door, wake up back here, broken and abused. Missing a piece. A few never show up. Where do they go? Rumour would have it they escape.
+	Ha! No. No. Know what I think? I think they're Them now. I think, lost in the plains, they eventually surrender to that rapacious hunger and it transforms them.
+	Changes their very beings into those seeping, tentacles of lust. I think they wander the plains still, only now, they search for you."*/
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 80>>
+	"They pump gas into our rooms at night, I swear," a <<person>> says. "Makes us suggestible."
+	<<if $rng % 2>>
+		<br>
+		"<<print either("Don't need gas to make YOU suggestible!","You're a fine one to talk about making gas!")>>" a voice mutters snidely.
+		<br>
+		The <<person>> swears at them.
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 75>>
+	<<if $o_long_and_beautiful gte 1 and $o_long_and_beautiful lte 7>><<set $o_long_and_beautiful += 1>>
+		A thin girl with extremely long, messy, tangled hair stands by a window staring at the trees across the garden.
+		<br>
+		You stand next to her and try to strike up a conversation, but she doesn't respond at all. With her face mostly hidden
+		in a mass of long, tangled hair, it's hard to tell if she even hears you.
+		<br><br>
+
+		Through the window you notice a small plane passing low over the forest, or maybe the town beyond.
+		<br>
+		When you glance beside you again, the long-haired girl has vanished.
+	<<else>>
+		A <<person>> stands by a window overlooking the garden and the forest beyond. <<He>> points at a plane.
+		<br>
+		"So many planes fly over there," <<he>> says. "Every day."
+		<br><br>
+
+		Sure enough, out the window you notice a small plane passing quite low over the tree line.
+		<br>
+		"What do you reckon? Is that going over the forest or the town?"
+		<br>
+		<<if currentSkillValue('science') gte 400 and currentSkillValue('maths') gte 600>>
+			You take a couple of steps left and right; make a rough calculation in your head.
+			<br>
+			"Judging by the parallax, probably the town," you say.
+		<<else>>
+			You shrug.
+			<br>
+		<</if>>
+		<br>
+
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 70>>
+	<<if $rng %2>>
+		"I'm not a patient here, y'know? I'm a doctor," a <<person>> says. "I'm telling you I did- I did study in-
+		in- I studied lots of things. So many things. But no one believes me anymore. I came here as a doctor, but now-
+		Now even the other doctors they- they act like I'm a patient. They don't listen. No one listens. I..."
+		<<He>> grips your arm. "I Am Not Crazy."
+	<<else>>
+		"I don't know why I'm here," a <<person>> says. "I remember I got a coach into town. I arrived at the bus station. And I remember I didn't have
+		change for a taxi or bus home. I live near the Temple on Danube Street, so it's not far. Quite a nice walk by the Park, but... I didn't get that far.
+		I remember going out from the station and onto Elk Street... and then...
+		<<print either("","There was a sound and then...","Something... came over a fence and then...","There were guards in uniform, chasing something, and then...")>>
+		I woke up here. They say I did terrible things."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 65>>
+	"I used to work at the school," a <<person>> says.
+	<<if $rng %2>>
+		"I heard some disgusting rumours about that headteacher.
+		<<print either("They can't be true. It's probably just students trying to make trouble.","No smoke without fire, I say.","Someone should look into that.")>>"
+	<<else>>
+		"You should see the disgusting things that history teacher keeps in <<nnpc_his "Winter">> cupboard. One time a student was left in a- well, let's just say that if people knew the truth, <<nnpc_he "Winter">> would probably be sitting here with us."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 60>>
+	<<if $rng % 2>>
+		"Security is tight," a <<person>> says. "No way you're sneaking past them. Not without a distraction."
+	<<else>>
+		"Sometimes they put me in a straightjacket," a <<person>> says. "I'm so powerless. They can do whatever they want to me."
+		<br>
+		<<He>> smiles.
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 55>>
+	<<if $rng % 2>>
+		"Last year the patients were campaigning for a video game system here," a <<person>> says.
+		"<<print either("What's the point of that? Thankfully the doctors said no.","The doctors said it might be disruptive. But it's not like we've got anything better to do here.")>>"
+	<<else>>
+		"Sometimes," a <<person>> mutters as much to <<himself>> as you. "I just don't think the police in this town are really looking out for our best interests."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 50>>
+	"You're not sick," a <<person>> whispers to you. "None of us are. They're sick. Them.
+	<<if $rng % 2>>
+		They tell us we're sick so they can test their drugs on us. And no one will stop them. It's big pharma. It goes all the way to the top."
+	<<else>>
+		They lock people like us up because we're sane. We're a challenge to their power."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 45>>
+	<<if $rng % 2>>
+		"Some of the crazies in here will tell you the staff are all lizard-people bent on world domination."
+		The <<person>> shakes <<his>> head. "What rubbish. They're obviously aliens."
+	<<else>>
+		"Some of the nutcases around here will tell you the staff are all aliens preparing us to join a Galactic federation."
+		The <<person>> rolls <<his>> eyes. "Nonsense: they're clearly lizard-people."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 40>>
+	<<if $rng % 2>>
+		"It's bad in here," a <<person>> says. "But it's worse out there."
+	<<else>>
+		<<generate2>><<generate3>>
+		A <<person1>><<person>>, a <<person2>><<person>> and a <<person3>><<person>> plot their escape.
+		<br><br>
+		"How though?" the <<person>> asks. "How are you getting out?"
+		<br>
+		The <<person1>><<person>> looks wildly around the room. "With that thing!" <<he>> points at
+		<<print either("the coffee vendor.","a mysterious machine.","the water fountain.","a heavy wooden desk.")>>
+		"I'm gonna put that through the fuckin' window, that's how!"
+		<br>
+		"You're going to try to pick that up and throw it through the window?"
+		<br>
+		"Fuckin' right, I am!" the <<person>> says.
+		<br>
+		"By yourself?" the <<person2>><<person>> asks. "That?"
+		<br>
+		"Didn't I just say I would?"
+		<br>
+		"No way."
+		<br>
+		"Bollocks," the <<person3>><<person>> says. "I'll bet an oral fuck you can't do it!"
+		<br>
+		"What?"
+		<br>
+		"Yeah!"
+		<br>
+		"What?"
+		<br>
+		"Simple. If you do it I'll <<person1>><<if $NPCList[0].penis isnot "none">>suck you off<<else>>eat you out<</if>> right here," the <<person3>><<person>> says.
+		"No questions. If not, you do the <<if $NPCList[0].pronoun is $NPCList[2].pronoun>>same<<else>>equivalent<</if>> for me."
+		<br>
+		"Okay," the <<person1>><<person>> says. "You're on."
+		<br>
+		"Me too," the <<person2>><<person>> says. "I want in on this!"
+		<br>
+		"More the fuckin' merrier," the <<person1>><<person>> says. "I hope you bitches are ready for a big hairy <<if $NPCList[0].penis isnot "none">>cock<<else>>cunt<</if>> in your face!"
+		<br><br>
+
+		A couple of nearby guards watch on with amusement.
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 35>>
+	<<if $rng % 2>>
+		"Hello there," a <<person>> says. "Listen: if you see a patient around here who sounds like they swallowed a dictionary and keeps warning you about things,
+		I need you to punch them for me. I was in a terrible rush this morning and just didn't have the time."
+	<<else>>
+		"None of this <<print either("matters,","is real,","makes any difference,")>>" a <<person>> says. "We're all just
+		<<print either("living in some future supercomputer's artificial reality","NPCs in someone else's game","characters in a book","ghosts who don't realise we've died","katra passing through the infinite cycle of death and rebirth")>>
+		- but no one recognises the truth."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $o_long_and_beautiful gte 8 and $o_long_and_beautiful lte 9 and $hy_sibling and $hy_parent>> /* approx. 1/3 chance once right stage is reached. */
+	<<generate2>><<set $NPCList[0] to clone($hy_sibling)>><<set $NPCList[1] to clone($hy_parent)>><<person1>>
+	Everyone seems phased out today. No one is talking. As you slump into a chair trying to figure out what to do next,
+	a voice behind you starts singing an upbeat pop song from a year or so ago. <span class="teal">It sounds familiar.</span>
+	You turn around to find a <<person>> smiling at you.
+	<br><br>
+	"I thought that was you," <<he>> says.
+	<<if $hairlength gte 500>>
+		"I knew I recognised that long, beautiful hair."
+	<<else>>
+		"Your hair was so long and beautiful. Why did you cut it?"
+	<</if>>
+	<br>
+	After a moment, you place <<him>> as the shy <<person>> who braided your hair on Domus Street a while ago.
+	You hear raised voices from somewhere nearby.
+	<br>
+	"So this is where you've been hiding away?" <<he>> says.
+	<<if $chef_state gte 7 and ($chef_rework is undefined or $chef_rework is 0)>>
+		<<if $NPCName[$NPCNameList.indexOf("Sam")].gender>>"That man,<<else>>"That lady,<</if>>
+		Sam, the owner at Ocean Breeze, was offering the orphans money to find you.
+		The customers are furious about the lack of cream buns.
+	<<elseif $orphan_hope gte 25>>
+		"Those orphans were looking for you. Making search parties along the beach.
+	<<elseif $orphan_hope lte -10>>
+		"I don't blame you. The orphans seem miserable these days.
+	<<elseif $NPCName[$NPCNameList.indexOf("Kylar")].love gte 30 and $NPCName[$NPCNameList.indexOf("Kylar")].state is "active">>
+		"That shy <<nnpc_gendery "Kylar">> you hang out with was skulking around the street looking for you.
+	<<elseif $fame.exhibitionism gte 500>>
+		"I think the town's pervs have missed you. Some creep in a car offered me money to strip!
+	<<else>>
+		I thought I hadn't seen you around lately.
+	<</if>>
+	So have you met my sister? She's here. Very slim, long hair. I told you about her. Attacked at that beach party.
+	She's been here forever now. Her long hair used to be so beautiful but now no one-"
+	<br>
+	The voices behind raise sharply. A <<person2>><<person>> is arguing with one of the orderlies.
+	<br><br>
+	"That's <<if $NPCList[0].pronoun is "m">>Dad. He's<<else>>Mum. She's<</if>> telling them to take better care of my sister.
+	She seems to be getting worse again. She blames herself now and thinks she was 'asking for it.' One of the doctors keeps
+	telling her that too. Really upsets her. She doesn't talk to anyone now. Won't even see us anymore. And her hair is nasty now.
+	They don't even brush it. I'd do it, but she won't see me. It's so-"
+	<br><br>
+	"We're leaving," a hand grabs the <<person1>><<persons>> shoulder. "These useless-" The <<person2>><<person>> trails off as <<he>> looks at you.
+	"You? I remember you. With the long hair. You came knocking on our door looking for work. Helped out that time. So you're in here now?!
+	I hope you're okay. And I hope these... people are treating you well. We have to leave now. Good day."
+	<br>
+	<<He>> drags the waving <<person1>><<person>> toward the exit.
+	<br><br>
+	As you watch them leave, you notice a slim girl with long, messy hair watching from the door of the one of the therapy rooms.
+	With a loud buzz, the <<fullGroup>> are let out through a security door.
+	When you look back to the therapy room, the long-haired girl is nowhere to be seen.
+	<br><br>
+	<span class="teal">Is that the sister?</span><<set $o_long_and_beautiful to 10>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 30>>
+	<<if $rng % 2>>
+		"Stay out of the empty parts of the building," a <<person>> says. "Someone went there once, and vanished."
+	<<else>>
+		A <<person>> looks you up and down.
+		<br>
+		"If anyone attacks you, just let me know," <<he>> smiles. "I like to watch."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 25>>
+	<<if $chef_state gte 3>>
+		<<if $chef_state gte 7 and $rng gte 27>>
+			A <<person>> stares at you open mouthed.
+			<br>
+			"You're Sam's new chef from Ocean Breeze, aren't you?" <<he>> asks. "Oh my god, I can't believe you're here.
+			I miss those buns! I don't suppose you could make some in here? Could you?!"
+			<<lstress>><<stress -2>><<asylumstatus 2>><<gcool>>
+		<<else>>
+			"It's funny the things you miss in a place like this," a <<person>> tells you. "I miss the Ocean Breeze Cafe over on Cliff Street.
+			Sam had just hired some new chef who was making the most incredible cream buns."
+		<</if>>
+	<<else>>
+		"The one thing I miss," a <<person>> tells you. "Is sitting by the beach watching the swimmers.
+		There's this cafe called the Ocean Breeze there. If you ever get the chance, go. They have delicious cream buns. Ask for Sam."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 20>>
+	<<if $rng % 2>>
+		"Don't tell anyone," a <<person>> confides. "But I'm not ill. Not really. I pretend to be because I like it here. It's nice. Crazy would be going back out there."
+	<<else>>
+		"I know everyone says this here," a <<person>> says. "But I'm actually not crazy. I'm
+		<<print either("a Detective","a Detective Inspector","a Chief Inspector", "an Officer")>>
+		with the police. Back in the Met I was a big deal. Cracked a few big cases. Newspapers and everything. Was transferred here to clean things up."
+		<br>
+		<<He>> laughs bitterly.
+		<br>
+		"Can you believe that? It's true. We heard rumours about this place. Nasty things. So I was sent here to be the big shining
+		white knight, come to put away the bad guys. Instead they put away me. I have 'PTSD,' apparently."
+		<br>
+		<<He>> falls silent.
+		<br><br>
+
+		"Hey!" <<he>> says as you move to leave. "Do me a favour. If you get back out there: never trust the police in this town. There are some good apples,
+		but most are in with the criminals - by the time you know for sure it'll be too late. Like it was for me. Some of the doctors are in on it too.
+		People disappearing."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 15>>
+	<<if $rng % 2>>
+		"The doctor never calls on me anymore," a <<person>> grumbles. "I haven't had a session in weeks.
+		<<if $beauty gte ($beautymax / 3) * 2>>
+			I'll never get better because the doctors are always busy with pretty little things like you."
+			<<gstress>><<stress 1>>
+		<<else>>
+			We should complain! The doctors should help all of us, not just those attractive ones."
+		<</if>>
+	<<else>>
+		"That young doctor smelled like cow manure the other afternoon," a <<person>> whispers. "Does <<nnpc_he "Harper">> live on a farm or something!?"
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 10>>
+	<<if $rng % 2>>/*11 13*/
+		"The doctor makes me do such lewd things," a <<person>> says. "I used to hate it, but now I can't wait for the next treatment."
+	<<else>>
+		Everyone is busy with their own activities right now.
+		<br><br>
+		As you stand by a window, Dr Harper leads a naked <<personsimple>> into the recreation area.
+
+		Completely nude,
+		<<if $rng gte 14>>/*14*/
+			the <<person>> seems to believe <<he>> is a Doctor. Methodically, Harper leads <<him>> between different patients in the room asking
+			for a medical opinion. The <<person>> refers to an imaginary clipboard as <<he>> pronounces
+			<<if currentSkillValue('science') gte 500>>
+				earnest but meaningless pseudo-medical 'diagnoses' for these patients.
+			<<else>>
+				a medical diagnosis for each patient.
+			<</if>>
+			<br>
+			Whatever <<he>> says, Harper nods gravely and says, "I see. Thank you, Doctor." And leads <<him>> to another patient.
+			<br><br>
+
+			After the seventh or eighth patient, they leave together.
+		<<else>>/*10 12*/
+			except for a collar connected a lead in Harper's hand, the <<person>> crawls on <<his>> hands and knees, seemingly
+			believing <<he>> is a dog. As Harper leads <<him>> through the room <<he>> tries to crawl under tables and sniff patients'
+			legs.
+			<br><br>
+
+			In the middle of the room, Harper unclips the lead from the <<persons>> collar, allowing <<him>> to roam while Harper stops
+			to talk with one of the orderlies. As Harper chats, the <<person>> crawls between patients, getting them to stroke <<his>> head,
+			sniffing their groins, or rolling over so they can rub <<his>> tummy.
+			<br>
+
+			When
+			<<if $NPCList[0].penis isnot "none">> <<he>> suddenly raises <<his>> leg to pee against
+			<<else>> <<he>> suddenly squats to pee by
+			<</if>>
+			a table, Harper lunges across and grabs <<his>> collar. "That's enough now."
+			<br>
+			Harper quickly leads <<him>> from the room.
+		<</if>>
+		<br><br>
+		Many watch with amusement. Some with lust. A few with embarrassment.
+		<br>
+		Absolutely no one seems surprised.
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<elseif $rng gte 5>>
+	<<if $rng % 2>>
+		"That Harper isn't a Doctor," a <<person>> mutters. "Not really. When I first came here Harper was a patient like the rest of us.
+		But now suddenly Harper's our Doctor. THEY all play along, and everyone who might remember has conveniently forgotten. Or disappeared."
+		<br>
+		<<He>> looks sharply around.
+	<<else>>
+		A <<person>> is smiling at you. As you sit near <<him>> you notice one of <<his>> hands is under <<his>> clothes, rhythmically
+		<<if $NPCList[0].penis isnot "none">>rubbing <<his>> dick.<<else>>rubbing <<his>> pussy.<</if>>
+		<br><br>
+
+		"Stay right there," <<he>> breathes.
+		<<if $beauty gte ($beautymax / 3) * 2 and $rng % 3>>"Looking at you is helping a lot."
+		<<elseif $player.perceived_breastsize gte 6>><<He>> stares at your <<breasts>> as <<his>> hand moves faster.
+		<<elseif $physique gte ($physiquesize / 7) * 6>>"With those muscles you'd dominate me like the little <<if $NPCList[0].penis isnot "none">>bitch<<else>>whore<</if>> I am."
+		<<elseif $purity lte 400 or $awareness gte 500>>"Talk dirty to me. You look like you've seen it all."
+		<<elseif $beauty lte ($beautymax / 3)>>"Your ugly face'll help me last longer."
+		<<else>>The movement gets faster.
+		<</if>>
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<<else>>
+	"They bind our arms so tight," a <<person>> says.
+	<<if $rng % 2>>
+		"Can't do much like that. Not even open our own cupboards."
+	<<else>>
+		"Can't even masturbate. Sometimes I have to call to the guards to scratch that itch."
+	<</if>>
+	<br><br>
+	<<endevent>>
+	<<asylumevents>>
+<</if>>
+
+:: Asylum Eden Towel
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You think about the window above your room. Although the bars look unassuming, they're undoubtedly connected to an alarm system.
+<br><br>
+It seems that for this plan to work, you'll have to find and disable it.
+<br><br>
+<<link [[Next|Asylum]]>><</link>>
+
+:: Asylum Study
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You read old text books in the dusty library. Most of this should still apply.
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	Your arms are bound, so
+	<<if $asylumstatus gte 60>>
+		a nearby patient helps you with turning pages.
+	<<else>>
+		you resort to flipping the pages with your nose.
+	<</if>>
+<<elseif $asylumstatus gte 80>>
+	Other patients greet you and make space for you at their table.
+<<elseif $asylumstatus gte 60>>
+	Several nearby patients smile or nod in greeting.
+<</if>>
+<br><br>
+
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "asylumLibrary">>
+<<else>>
+	<<if $exposed is 2>>
+		Your <<lewdness>> on display makes you the centre of attention.
+		<<exhibitionism5>>
+	<<elseif $exposed is 1>>
+		Your <<lewdness>> on display makes you the centre of attention.
+		<<exhibitionism3>>
+	<<else>>
+	<</if>>
+	<<if $rng gte 81>>
+		<<generateDoctor 1>><<person1>>A <<person>> dressed as an orderly stops beside you. "Would you like some assistance?" <<he>> asks.
+		<br><br>
+		<<link [[Accept|Asylum Study Help]]>><<schoolskill>><</link>><<gschool>>
+		<br>
+		<<link [[Refuse|Asylum]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		<<asylumevents>>
+	<</if>>
+<</if>>
+
+:: Asylum Study Help
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You nod. The orderly pulls a chair close and sits down.
+<br><br>
+<<He>> helps you with the material. <<Hes>> quite knowledgeable.
+<br><br>
+<<link [[Thank|Asylum Study Thank]]>><<set $suspicion -= 1>><</link>><<lsuspicion>>
+<br>
+<<if $leftarm isnot "bound" and $rightarm isnot "bound">>
+<<link [[Rest a hand on their thigh|Asylum Study Thigh]]>><</link>><<promiscuous1>>
+<</if>>
+<br>
+
+:: Asylum Study Thank
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<if $speech_attitude is "meek">>
+	"Thank you for the help," you say. "I couldn't have understood it without you."
+<<elseif $speech_attitude is "bratty">>
+	"Thanks for the help," you say.
+<<else>>
+	"Thanks," you say. "It's kind of you to help."
+<</if>>
+<br><br>
+The <<person>> smiles. "Anytime," <<he>> says. "I need to get back to work. You look after yourself."
+<br><br>
+<<link [[Next|Asylum]]>><<endevent>><</link>>
+<br>
+
+:: Asylum Study Thigh
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You rest a hand on their thigh as they explain something to you. Their voice wavers. You ignore their glance in your direction. You keep your focus on the book in front of you, as if nothing were amiss.
+<<promiscuity1>>
+<<link [[Thank|Asylum Study Thank]]>><</link>>
+<br>
+<<if $promiscuity gte 35>>
+	<<if $NPCList[0].penis isnot "none">>
+		<<link [[Open fly|Asylum Study Hand]]>><<set $phase to 0>><</link>><<promiscuous3>>
+		<br>
+	<<else>>
+		<<link [[Lift skirt|Asylum Study Hand]]>><<set $phase to 1>><</link>><<promiscuous3>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Asylum Study Hand
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<famesex 1>>
+<<if $phase is 0>>
+	You unzip <<his>> fly.
+<<else>>
+	You lift <<his>> skirt.
+<</if>>
+<<if $NPCList[0].penis isnot "none">>
+	<<bodyliquid "rightarm" "semen">>
+	<<Hes>> already hard beneath. You run your fingers along <<his>> shaft, and feel <<him>> tremble under your touch. <<He>> shoots furtive glances around the library, but none of the patients or staff have noticed.
+	<br><br>
+	Your fingers reach <<his>> glans, and a moan escapes <<his>> lips. <<He>> presses a hand to <<his>> mouth. <<He>> doesn't last much longer before a wave of pleasure spasms through <<him>> and <<he>> erupts on your hand.
+	<br><br>
+<<else>>
+	<<Hes>> already wet beneath. You run your fingers along <<his>> slit, and feel <<him>> tremble under your touch. <<He>> shoots furtive glances around the library, but none of the patients or staff have noticed.
+	<br><br>
+	Your fingers reach <<his>> clit, and a moan escapes <<his>> lips. <<He>> presses a hand to <<his>> mouth. <<He>> doesn't last much longer before a wave of pleasure spasms through <<him>> and <<he>> cums on your hand.
+	<br><br>
+<</if>>
+<<if $phase is 0>>
+	You zip up <<his>> trousers and withdraw your hand.
+<<else>>
+	You tug down <<his>> skirt and withdraw your hand.
+<</if>>
+<<if $speech_attitude is "meek">>
+	"You've been kind to me," you whisper. "It's only fair I'm kind too."
+<<elseif $speech_attitude is "bratty">>
+	"Thanks for the help," you whisper.
+<<else>>
+	"You helped me," you whisper. "I hope that's thanks enough."
+<</if>>
+<br><br>
+<<He>> nods, still blushing. "I-I need to get back to work," <<he>> says. <<He>> stumbles out of the room.
+<br><br>
+<<link [[Next|Asylum]]>><<endevent>><</link>>
+<br>
+
+:: Asylum Breakfast
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You sit down and enjoy breakfast with the other patients.
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	Your arms are bound, so
+	<<if $asylumstatus gte 66>>
+		a nearby patient helps you to eat.
+		<br>
+		"We've got to look out for each other in here."
+		<br>
+	<<elseif $asylumstatus gte 33>>
+		you find yourself pressing your face against your plate.
+	<<else>>
+		you find yourself pressing your face against your plate.
+		A person nearby <<print either("grabs your head and pushes your face into your food.","mimics how you're eating while pulling dumb faces.","points at you and laughs.","makes a lewd comment about the way you're eating a sausage.")>>
+		Many others laugh.
+	<</if>>
+<</if>>
+The food is good, and leaves you feeling warm and happy. It's not just you. The other patients seem more social.
+<br><br>
+<<if isPlayerNonparasitePregnancyEnding()>>
+	<<pregnancyWatersBrokenPassout "asylumCafe">>
+<<elseif $exposed is 2>>
+	Your <<lewdness>> on display makes you the centre of attention.
+	<<exhibitionism5>>
+<<elseif $exposed is 1>>
+	Your <<lewdness>> on display makes you the centre of attention.
+	<<exhibitionism3>>
+<<elseif $asylumstatus gte 80>>
+	Other patients seem eager to chat with you.
+<<elseif $asylumstatus gte 60>>
+	Several nearby patients talk with you over breakfast.
+<<elseif $asylumstatus gte 40>>
+	The nearest patients begrudgingly talk with you.
+<<else>>
+	However, anything you say is met with stony silence.
+<</if>>
+<br>
+<<asylumevents>>
+
+:: Asylum Staff
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You approach the staff door with a keycard lock.
+<<if $asylumkeycard is 1>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		You have the keycard, but you can't use it with your arms bound.
+	<<else>>
+		You could open it with the keycard if you wanted.
+	<</if>>
+<<else>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		With your arms bound, you couldn't reach it even if you had the keycard.
+	<<else>>
+		If you had the keycard you could open it.
+	<</if>>
+<</if>>
+<br><br>
+<<if $asylumkeycard is 1>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+	<<else>>
+		<<link [[Open|Asylum Open]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+/* 北极星模组 */
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Asylum Open]]>><<pass 1>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<link [[Back|Asylum]]>><</link>>
+<br>
+
+:: Asylum Open
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You open the door and peek through.
+<<if $asylumstate is "sleep">>
+	The hallway beyond is dark and empty. You tiptoe through.
+	<br><br>
+	You explore the staff area of the asylum, dodging the occasional patrol. You come to a room filled with screens. Cameras showing the inside of each cell. A couple of patients are masturbating.
+	<br><br>
+	One screen reads "<span class="red">Aphrodisiac ministration active: 3%</span>" There are many unmarked buttons and dials beneath it.
+	<br><br>
+	<<link [[Try to turn it up (1:00)|Asylum Cameras]]>><<pass 60>><</link>> <<note "A higher science skill will make this more likely to succeed. Will trigger an escape sequence if successful." "italic">>
+	<br>
+	<<link [[Leave|Asylum]]>><</link>>
+	<br>
+<<else>>
+	The hallway beyond is busy with staff performing their duties. You'll be seen if you stay here. Perhaps it'll be deserted at night.
+	<br><br>
+	<<link [[Next|Asylum]]>><</link>>
+<</if>>
+
+:: Asylum Cameras
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<if random(1, 1000) lte (currentSkillValue('science') + 100)>>
+	<<if currentSkillValue('science') gte 400>>
+		You try to work out how to operate the machine. There's a logic to it, and through trial and error you discover how to turn up the aphrodisiac. Without warning, an alarm blares. The screen now reads "<span class="red">WARNING Aphrodisiac ministration active: 2000%</span>" You hear shouting.
+		<br><br>
+	<<else>>
+		You try to work out how to operate the machine. You resort to pushing buttons and turning dials at random. Without warning, an alarm blares. The screen now reads "<span class="red">WARNING Aphrodisiac ministration active: 2000%</span>" You hear shouting.
+		<br><br>
+	<</if>>
+	<<link [[Next|Asylum Escape]]>><</link>>
+	<br>
+<<else>>
+	You try to work out how to operate the machine, but it doesn't respond to anything.
+	<br><br>
+	<<if $asylumstate is "sleep">>
+		<<link [[Try again (1:00)|Asylum Cameras]]>><<pass 60>><</link>>
+		<br>
+		<<link [[Stop|Asylum]]>><</link>>
+		<br>
+	<<else>>
+		You hear voices outside the room. They pass by, but you'll be discovered soon if you stay. You sneak out.
+		<br><br>
+		<<link [[Next|Asylum]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Asylum Escape
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You return to the patient's area, taking cover in alcoves whenever frantic security run by. You arrive, and behold a scene of chaos. Cell doors stand open, their occupants loose. Some members of security have already fallen, their uniforms stripped. Several patients assault each one. Their colleagues try to rescue them, but their batons are no match for the patient's numbers and lust. Many of the patients satisfy themselves with the fallen security personnel, but others fuck each other on tables, chairs or just the floor.
+<br><br>
+You look out the window. The towers are unmanned and the patrols missing as all hands arrive to contain the threat. Doctor Harper enters from a door opposite, surrounded by security. Now's your chance.
+<br><br>
+You run through the front door unobstructed, and across the grounds. You climb the fence and escape into the forest.
+<br><br>
+<<endevent>>
+<<asylumescape>>
+<<link [[Next|Forest]]>><<set $forest to 100>><</link>>
+<br>
+
+:: Asylum Hide
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You squeeze beneath a chair in the recreation room and wait. The lights turn off, leaving you alone in the dark.
+<br><br>
+<<endevent>>
+<<link [[Next|Asylum]]>><</link>>
+
+:: Asylum Shower
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<if $rng gte 71>>
+	Harper leads you and the other patients indoors, to the showers. "The water should be on," <<he>> says. "Hygiene is important. I want to see everyone wash."
+	<br><br>
+	<<He>> rests a hand on your shoulder as the other patients strip. "As I said, hygiene is important. You wouldn't mind if I take care to personally ensure yours is up to standard?"
+	<br><br>
+	<<link [[Accept|Asylum Shower Accept]]>><<strip>><<wash>><<stress 6>><<arousal 1800>><<set $suspicion -= 1>><<npcincr Harper love 1>><</link>><<exhibitionist1>><<gstress>><<garousal>><<lsuspicion>>
+	<br>
+	<<link [[Refuse|Asylum Shower Refuse]]>><<set $suspicion += 1>><<npcincr Harper love -1>><</link>><<gsuspicion>>
+	<br>
+<<else>>
+	Harper leads you and the other patients indoors, to the showers. "The water should be on," <<he>> says. "Hygiene is important. I want to see everyone wash."
+	<br><br>
+	Most of the patients are used to this, and strip without a problem. Some hesitate. Harper sends the orderlies to help them out of their clothes.
+	<br><br>
+	<<link [[Strip and find somewhere secluded|Asylum Shower Secluded]]>><<strip>><<wash>><</link>><<exhibitionist1>>
+	<br>
+	<<if $exhibitionism gte 15>>
+		<<link [[Strip and wash around others|Asylum Shower Wash]]>><<strip>><<wash>><</link>><<exhibitionist2>>
+		<br>
+	<</if>>
+	<<link [[Sneak away|Asylum]]>><<endevent>><<suspicion 5>><</link>><<ggsuspicion>>
+	<br>
+<</if>>
+
+:: Asylum Shower Refuse
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You shake your head. Harper frowns, but doesn't pressure you. <<He>> notices some of the other patients hesitate to undress. <<He>> sends the orderlies to help them out of their clothes.
+<br><br>
+<<link [[Strip and find somewhere secluded|Asylum Shower Secluded]]>><<strip>><<wash>><</link>><<exhibitionist1>>
+<br>
+<<if $exhibitionism gte 15>>
+	<<link [[Strip and wash around others|Asylum Shower Wash]]>><<strip>><<wash>><</link>><<exhibitionist2>>
+	<br>
+<</if>>
+<<link [[Sneak away|Asylum]]>><<endevent>><<suspicion 5>><</link>><<ggsuspicion>>
+<br>
+
+:: Asylum Shower Accept
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You nod. Harper smiles and begins to disrobe you. <<His>> movements are clinical. <<covered>> <<He>> folds your clothes in a neat pile and picks up a sponge as you step under the shower.
+/* 北极星模组 */
+<<if $options.bjx_eventTF and $slime gt 0>>
+    <br>
+    <span class='red'>你忍受着皮肤上的刺痛。</span>
+    <br>
+    <<violence 20>>
+<</if>>
+/* 北极星 */
+<<exhibitionism1>>
+You stand still as <<he>> scrubs your body from top to bottom, focusing first on your neck, arms, torso, stomach, back, legs, then up to your butt. <<He>> scrubs more softly. You try to breathe normally.
+<br><br>
+<<He>> presses the sponge against your <<genitals>>. You stifle a yelp. <<He>> stands right behind you, making sure no one else can see what is happening. Using the sponge <<he>> strokes and massages you, sending waves of pleasure up your spine.
+<br><br>
+In a moment of weakness you release a sensual sigh. <<He>> places two fingers over your mouth, signalling that you need to keep quiet.
+<br><br>
+<<if $arousal gte $arousalmax>>
+	<<orgasm>>
+	You arch your back in <<his>> grip, stifling a moan as <<he>> continues to gently massage you mid-orgasm.
+	<br><br>
+<</if>>
+By the time <<he>> stops, your legs feel weak. <<He>> pecks you on the cheek as the bathing session comes to a close.
+<br><br>
+<<link [[Next|Asylum]]>><<clotheson>><<endevent>><</link>>
+<br>
+
+:: Asylum Shower Secluded
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You strip slowly, just fast enough to keep the orderlies at bay. By the time your <<lewdness>> is exposed the other patients are already in the showers proper. You follow after them, but find somewhere secluded where you won't be watched. You wash quickly, and get dressed before the other patients finish.
+/* 北极星模组 */
+<<if $options.bjx_eventTF and $slime gt 0>>
+    <br>
+    <span class='red'>你忍受着皮肤上的刺痛。</span>
+    <br>
+    <<violence 20>>
+<</if>>
+/* 北极星 */
+<<exhibitionism1>>
+<<endevent>>
+<<link [[Next|Asylum]]>><<clotheson>><</link>>
+<br>
+
+:: Asylum Shower Wash
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<generate2>><<generate3>>
+<<if $o_long_and_beautiful gte 1 and $o_long_and_beautiful lte 7 and $rng % 3 == 0>><<set $o_long_and_beautiful += 1>>
+	As you strip, two orderlies, a <<person2>><<person>> and a <<person3>><<person>> march toward a slender girl with long, messy, matted hair sat near you.
+	<br>
+	"Strip," the <<person>> barks. "Now."
+	<br>
+	She doesn't move. The <<person2>><<person>> grabs her shoulder and yanks at her top, at which the girl abruptly screeches and claws at the <<persons>> face.
+	The <<person3>><<person>> quickly grabs the girl's hair, firmly yanks back her head and drags her back to the floor. The long-haired girl goes down hard,
+	but then flails frantically on the ground, screeching and clawing in every direction as they struggle to pin her down.
+	<br>
+	You glance at Doctor Harper who is looking anywhere but here right now.
+	<br>
+	With the girl pinned, the orderlies start to remove her clothes. Just as abruptly the girl falls silent. Looking down at her, her body has gone limp,
+	tears stream from her eyes as they strip her.
+	<br>
+	Dr Harper is still studiously looking elsewhere.
+	<br>
+	"Why do you make us do this every time," the <<person2>><<person>> spits as <<he>> removes the last of the girl's underwear. "You think we get off on this?"
+	<br>
+	"And wash your damn hair," the <<person3>><<person>> adds. They shake their heads.
+	<br>
+	The girl lies completely nude and completely unmoving, tears streaming from empty, vacant eyes.
+	<br><br>
+
+	"What are you looking at?" the <<person2>><<person>> glares at you. "Do YOU need our help as well?"
+	<br>
+	<<if $speech_attitude is "meek">>
+		"Sorry," you say, quickly stripping. You run to Harper. "Doctor, is- is it okay if I stay to help that girl. I- I think I know her."
+		<br>
+		Harper looks confused at you for a moment. "Yes. Yes, okay. Just make sure you don't miss your wash. Hygiene is important."
+	<<elseif $speech_attitude is "bratty">>
+		"DOCTOR Harper," you shout. Harper turns. "I think your two geniuses here
+		<<if currentSkillValue('science') gte 600>>
+			can't recognise a post-traumatic trigger reaction.
+		<<else>>
+			are just making things worse.
+		<</if>>
+		Can I stay here and look after my friend?"
+		<br>
+		Harper looks confused at you for a moment. "Yes. Yes, okay. Just make sure neither of you miss your wash. Hygiene is important."
+	<<else>>
+		You quickly finish stripping and jog across to Harper.
+		<br>
+		"Doctor, please. Look at that girl.
+		<<if currentSkillValue('science') gte 600>>That looks like a post-traumatic trigger reaction and <</if>>I think those two are just making things worse.
+		Is it okay if I stay back to help her. I- I think I kind of know her."
+		<br>
+		Harper looks curious for a moment. "Yes. Yes, okay. Just make sure you don't miss your wash. Hygiene is important."
+	<</if>>
+	<br>
+	Harper signals for the orderlies to leave you alone.
+	<<exhibitionism2>>
+	<<endevent>>
+	<<link [[Next|Asylum Shower Wash Hair]]>><</link>>
+<<else>>
+	You strip and enter the showers proper. You stand in the middle of a large room and wash alongside the other patients.
+	/* 北极星模组 */
+	<<if $options.bjx_eventTF and $slime gt 0>>
+	    <br>
+	    <span class='red'>你忍受着皮肤上的刺痛。</span>
+	    <br>
+	    <<violence 20>>
+    <</if>>
+    /* 北极星 */
+	You notice a <<person2>><<person>> and <<person3>><<person>> checking you out, but most don't pay you any attention.
+	You head back to your clothes, dry yourself and get dressed.
+	<<exhibitionism2>>
+	<<endevent>>
+	<<link [[Next|Asylum]]>><<clotheson>><</link>>
+	<br>
+<</if>>
+
+
+:: Asylum Shower Wash Hair
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<pass 25>>
+Completely naked, you sit for a time with the slim, long haired girl. You don't touch her, you just keep quietly talking to her.
+<<if currentSkillValue('english') gte 500>>
+	After a time, you notice her looking at you. Your eloquence seems to be getting through.
+	<<if $o_long_and_beautiful lt 9>>
+		<<set $o_long_and_beautiful += 1>>
+	<</if>>
+<<else>>
+	After a time, she seems to come round.
+<</if>>
+<br><br>
+/* 北极星模组 */
+最后，她低声说: "好吧。"你们一起淋浴，洗澡。
+<<if $options.bjx_eventTF and $slime gt 0>>
+    <br>
+    <span class='red'>你忍受着皮肤上的刺痛。</span>
+    <br>
+    <<violence 20>>
+<</if>>
+房间里只有你们两个，其他人早就洗完了。长发女孩
+/* 北极星 */
+<<if $o_long_and_beautiful gte 6>>
+	talks to you a little about her life in the asylum as she washes.
+<<elseif $o_long_and_beautiful gte 4>>
+	washes properly. A few times you think she might be smiling at you.
+<<else>>
+	no longer seems to notice you as she quickly washes.
+<</if>>
+You head back to your clothes, dry yourself and get dressed.
+<br><br>
+<<link [[Next|Asylum]]>><<clotheson>><</link>>
+<br>
+
+
+:: Asylum Harper Sex
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<promiscuity1>>
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+<<effects>>
+<<effectsman>><<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if _combatend>>
+	<span id="next"><<link [[Next|Asylum Harper Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Asylum Harper Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Asylum Harper Sex Finish
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<if $enemyhealth lte 0>>
+	You push <<him>> away from you. <<He>> looks angry, but soon regains <<his>> composure. "You still have some issues with anger management," <<he>> says. "But that's not why you were here. I'd like to keep seeing you on Fridays, at the hospital. There's a vehicle waiting to take you back to town. Be well."
+	<br><br>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<He>> lies on top of you for a moment, breathing deeply. <<He>> steps away and fixes <<his>> clothing. "T-there's a vehicle waiting to take you back to town. I'd like to keep seeing you on Fridays, at the hospital. Be well."
+<<else>>
+	<<He>> looks angry, but soon regains <<his>> composure. "If only I could keep you until I finished the treatment," <<he>> sighs. "There's a vehicle waiting to take you back to town. I'd like to keep seeing you on Fridays, at the hospital. Be well."
+<</if>>
+<br><br>
+<<clothesontowel>>
+<<endcombat>>
+<<if $suspicion gte 80>>
+	A group of orderlies lead you away from Harper's office, through the main area of the asylum.
+<<elseif $suspicion gte 20>>
+	A pair of orderlies lead you away from Harper's office, through the main area of the asylum.
+<<else>>
+	A nurse leads you away from Harper's office, through the main area of the asylum.
+<</if>>
+<<if $asylumstatus gte 80>>
+	The other patients wave you goodbye.
+<<elseif $asylumstatus gte 20>>
+	The other patients ignore you.
+<<else>>
+	The other patients sneer at you.
+<</if>>
+You go through a staff door, then through a larger double door and into a waiting car.
+<br><br>
+The car starts, and drives through the iron gates into the forest. It's a dark, overgrown road. You don't move very fast. The driver says nothing.
+<br><br>
+<<pass 60>>
+You emerge from the wood far from town, but the road curves north through moor and farmland. You soon arrive back at civilisation. The bustle of Harvest Street greets you. You continue until the orphanage comes into view.
+<br><br>
+<<asylumend>>
+<<endevent>>
+<<link [[Next|Asylum Return]]>><</link>>
+
+:: Asylum Harper Shove
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You shove the doctor away from you. <<He>> looks angry, but soon regains <<his>> composure. "You still have some issues with anger management," <<he>> says. "But that's not why you were here. I'd like to keep seeing you on Fridays, at the hospital. There's a vehicle waiting to take you back to town. Be well."
+<br><br>
+<<if $suspicion gte 80>>
+	A group of orderlies lead you away from Harper's office, through the main area of the asylum.
+<<elseif $suspicion gte 20>>
+	A pair of orderlies lead you away from Harper's office, through the main area of the asylum.
+<<else>>
+	A nurse leads you away from Harper's office, through the main area of the asylum.
+<</if>>
+<<if $asylumstatus gte 80>>
+	The other patients wave you goodbye.
+<<elseif $asylumstatus gte 20>>
+	The other patients ignore you.
+<<else>>
+	The other patients sneer at you.
+<</if>>
+You go through a double door and into a waiting car.
+<br><br>
+The car starts, and drives through the iron gates into the forest. It's a dark, overgrown road. You don't move very fast. The driver says nothing.
+<br><br>
+<<pass 60>>
+You emerge from the wood far from town, but the road curves north through moor and farmland. You soon arrive at civilisation. The bustle of Harvest Street greets you. You continue until the orphanage comes into view.
+<br><br>
+<<asylumend>>
+<<endevent>>
+<<link [[Next|Asylum Return]]>><</link>>
+
+:: Asylum Return
+
+<<set $outside to 0>><<set $location to "home">><<effects>>
+<<if $NPCName[$NPCNameList.indexOf("Robin")].init is 1 and $robinmissing is 0>>
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 80>>
+		You enter the orphanage and head to your room. You don't meet anyone. There's a small cake sat on the windowsill with a note attached.
+		<br><br>
+		"Welcome home!
+		<br>
+		- Robin"
+		<br><br>
+	<<elseif $NPCName[$NPCNameList.indexOf("Robin")].trauma gte 20>>
+		You enter the orphanage and head to your room. You find <<npc Robin>><<person1>>Robin waiting. <<He>> jumps to <<his>> feet and hugs you. "Bailey said the hospital phoned," <<he>> says. "They told us you were coming back." <<He>> pulls away and smiles. "They wouldn't let me visit. I got you something." <<He>> drops to <<his>> knees and pulls something out from under your bed. It's a small cake.
+		<br><br>
+		"I had to hide it." <<He>> hugs you again. "Welcome home. I missed you."
+		<br><br>
+		You chat with <<him>> a while. <<He>> asks about where you stayed. What your room was like, if the food was good, if the people were nice. You're not sure how much to tell <<him>>. "I need to go," <<he>> says after a while. "Bailey gave me chores." <<He>> waves goodbye as <<he>> leaves.
+		<<ltrauma>><<lstress>><<trauma -12>><<stress -12>>
+		<br><br>
+	<<else>>
+		A face appears in a window as you approach the orphanage. It's Robin. <<npc Robin>><<person1>><<He>> runs at you once you're inside, and almost knocks you over with <<his>> hug. "Bailey said the hospital phoned," <<he>> says. "They told us you were coming back." <<He>> pulls away and smiles. "They wouldn't let me visit. I got you something. Come with me." <<He>> takes your hand and tugs you after <<him>>.
+		<br><br>
+		<<He>> drops to <<his>> knees once in your room, and pulls something out from under your bed. It's a small cake. "I had to hide it." <<He>> hugs you again. "Welcome home. I missed you."
+		<br><br>
+		You chat with <<him>> a while. <<He>> asks about where you stayed. What your room was like, if the food was good, if the people were nice. You're not sure how much to tell <<him>>. "I need to go," <<he>> says after a while. "Bailey gave me chores." <<He>> waves goodbye as <<he>> leaves.
+		<<ltrauma>><<lstress>><<trauma -12>><<stress -12>>
+		<br><br>
+	<</if>>
+<<else>>
+	You enter the orphanage and head to your room. You don't meet anyone.
+	<br><br>
+<</if>>
+
+<<endevent>>
+<<link [[Next|Bedroom]]>><</link>>
+<br>
+
+:: Asylum Truth
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You point at the <<persons>> hiding place. The <<person2>><<person>> crouches beside it and reaches in, pulling the struggling <<person1>><<person>> out by the arm. "Doctor Harper said you need to stay," <<person2>><<he>><<person1>>says as <<he>> drags <<him>> away. "It's for your own good."
+<br><br>
+<<endevent>>
+<<link [[Next|Asylum]]>><</link>>
+<br>
+
+:: Asylum Lie
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+The <<person2>><<person>> frowns at you, but doesn't push the matter. Once gone, the <<person1>><<person>> emerges and gives you a thankful bow.
+<br><br>
+<<endevent>>
+<<link [[Next|Asylum]]>><</link>>
+<br>
+
+:: Asylum Intervene
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You pull the <<person1>><<persons>> arm away from the <<person2>><<person>>. They both look shocked. "Don't touch me," the <<person1>><<person>> says. "Just who do you think you are?" The <<person2>><<person>> gives you a grateful smile.
+<br><br>
+<<endevent>>
+<<link [[Next|Asylum]]>><</link>>
+<br>
+
+:: Asylum Flirt
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+You smile back at the <<person>>. <<He>> walks over and you have a pleasant chat.
+<<promiscuity1>>
+<<link [[Say goodbye|Asylum]]>><<endevent>><</link>>
+<br>
+<<if $promiscuity gte 15>>
+	<<link [[Seduce|Asylum Seduce]]>><</link>><<promiscuous2>>
+	<br>
+<</if>>
+
+:: Asylum Seduce
+
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<set $seductiondifficulty to 6000>>
+<<seductioncheck>>
+<br><br>
+<<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><</if>><<seductionskilluse>>
+<br><br>
+You lean closer to the <<person>>. "There are a lot of quiet places here," you whisper. "Who knows what one could get up to."
+<<promiscuity2>>
+<<if $seductionrating gte $seductionrequired>>
+	<<He>> glances around, and takes you by the hand. <<He>> leads you to an empty room, then turns and embraces you.
+	<br><br>
+	<<link [[Next|Asylum Sex]]>><<set $sexstart to 1>><</link>>
+	<br>
+<<else>>
+	"I-It was nice meeting you," <<he>> says. <<He>> walks away.
+	<br><br>
+	<<endevent>>
+	<<link [[Next|Asylum]]>><</link>>
+	<br>
+<</if>>
+
+:: Asylum Sex
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 50>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Asylum Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Asylum Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Asylum Sex Finish
+
+<<set $outside to 1>><<set $location to "asylum">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	"The doctor told me to be more accepting of advances," <<he>> says. "I've been missing out."
+	<br><br>
+	<<He>> kisses your cheek and departs.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $enemyhealth lte 0>>
+	You shove the <<person>> away from you and escape into the hallway.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<<elseif $finish is 1>>
+	"The doctor told me to be more accepting of advances," <<he>> says. "I've been missing out."
+	<br><br>
+	<<He>> kisses your cheek and departs.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+<</if>>
+<br><br>
+<<link [[Next|Asylum]]>><</link>>
+
+:: Asylum Cell Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Asylum Cell Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Asylum Cell Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Asylum Cell Rape Finish
+
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	"Don't go whining to no one," the <<person1>><<person>> says. "Not that they'll believe you." The pair laugh as the cell door locks with a click. <<tearful>> you lie back on the bed.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Asylum Cell]]>><</link>>
+<<else>>
+	The <<group>> recoil in pain. "Come on," the <<person2>><<person>> says. "There are easier <<girls>> than this." The cell door locks with a click. <<tearful>> you lie back on the bed.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Asylum Cell]]>><</link>>
+<</if>>
+
+:: Asylum Exposure Accept
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"O-Okay," you say. "You can show me."
+<<elseif $speech_attitude is "bratty">>
+	"Sure," you say. "I'll take a look."
+<<else>>
+	"Okay," you say. "You can show me."
+<</if>>
+<br><br>
+
+The <<person>> hesitates, then unfolds <<his>> gown, revealing <<his>>
+<<if $pronoun is "m">>
+	<<if $NPCList[0].penis isnot "none">>
+		<<print $NPCList[0].penisdesc>>.
+	<<else>>
+		pussy.
+	<</if>>
+<<else>>
+	<<if $NPCList[0].penis isnot "none">>
+		<<print $NPCList[0].breastsdesc>> and <<print $NPCList[0].penisdesc>>.
+	<<else>>
+		<<print $NPCList[0].breastsdesc>>.
+	<</if>>
+<</if>>
+
+<<He>> shuts <<his>> eyes and stands there, hands clutching <<his>> sides. <<He>> counts under <<his>> breath.
+<br><br>
+
+With a sigh, <<he>> bends over and retrieves <<his>> grown, wrapping it around <<him>> with haste. "Th-thank you," <<he>> says before hurrying away.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Asylum]]>><</link>>
+<br>
+
+:: Asylum Exposure Refuse
+<<effects>>
+
+You shake your head. The <<person>> looks relieved for a moment, but <<his>> ordeal isn't over. <<He>> leaves to find someone else to offer <<himself>> to.
+<br><br>
+
+<<endevent>>
+<<link [[Next|Asylum]]>><</link>>
+<br>
+
+:: Asylum Exposure Shut
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"O-Okay," you say, loud enough for the staff to hear. "You can show me."
+<<elseif $speech_attitude is "bratty">>
+	"Sure," you say, loud enough for the staff to hear. "I'll take a look."
+<<else>>
+	"Okay," you say, loud enough for the staff to hear. "You can show me."
+<</if>>
+You close your eyes.
+<br><br>
+
+You hear the shuffle of the <<persons>> gown fall to the floor. <<He>> starts counting under <<his>> breath. <<He>> reaches ten, then you hear another shuffle.
+<br><br>
+
+"Thank you!" <<he>> says. You open your eyes. The <<person>> smiles, looking relieved. "Thank you." <<He>> hurries away.
+<br><br>
+
+<<endevent>>
+<<link [[Next|Asylum]]>><</link>>
+<br>
+
+:: Asylum Exposure Peek
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"O-Okay," you say. "You can show me."
+<<elseif $speech_attitude is "bratty">>
+	"Sure," you say. "I'll take a look."
+<<else>>
+	"Okay," you say. "You can show me."
+<</if>>
+You pretend to close your eyes, though you really keep them a little open. Enough to see.
+<br><br>
+
+The <<person>> hesitates, then unfolds <<his>> gown, revealing <<his>>
+<<if $pronoun is "m">>
+	<<if $NPCList[0].penis isnot "none">>
+		<<print $NPCList[0].penisdesc>>.
+	<<else>>
+		pussy.
+	<</if>>
+<<else>>
+	<<if $NPCList[0].penis isnot "none">>
+		<<print $NPCList[0].breastsdesc>> and <<print $NPCList[0].penisdesc>>.
+	<<else>>
+		<<print $NPCList[0].breastsdesc>>.
+	<</if>>
+<</if>>
+
+<<He>> shuts <<his>> eyes and stands there, hands clutching <<his>> sides. <<He>> counts under <<his>> breath.
+<br><br>
+
+With a sigh, <<he>> bends over and retrieves <<his>> grown, wrapping it around <<him>> with haste. "Thank you!" <<he>> says. You pretend to open your eyes. The <<person>> smiles, looking relieved. "Thank you." <<He>> hurries away.
+<br><br>
+
+<<link [[Next|Asylum]]>><<endevent>><</link>>
+<br>
+
+:: Asylum Garden
+<<effects>>
+
+Each patient is given a bed of soil to work as they please. Many are untended, but some hold small, beautiful displays.
+<br><br>
+
+<<plot_effects>>
+
+<<if $asylum_plot_intro is 1>><<unset $asylum_plot_intro>>
+	<<plots_init asylum 1 earth 3 small>>
+<</if>>
+
+<<display_plot asylum>>
+
+<<if !$plants_known.includes("poppy")>>
+	<<icon "tending/poppy.png">> <<link [[Search for seeds (0:30)|Asylum Garden Seeds]]>><<set $plants_known.push("poppy")>><<pass 30>><</link>>
+	<br>
+<<elseif $rng % 4 == 0 and $o_long_and_beautiful gte 1 and $o_long_and_beautiful lte 7>>/*1 in 4 chance if in right stage*/
+	<<if $o_long_and_beautiful lt 9>><<set $o_long_and_beautiful += 1>><</if>>
+	<br>
+	A girl with long, messy, matted hair seems to be watching from a plot nearby.
+	<<if currentSkillValue('tending') gte 600>>She might be impressed by your tending skills. It's hard to tell.<<if $o_long_and_beautiful lt 9>><<set $o_long_and_beautiful += 1>><</if>><</if>>
+<</if>>
+<br>
+
+<<getouticon>><<link [[Leave|Asylum]]>><</link>>
+<br>
+
+<<unset $event_trigger>>
+
+:: Asylum Garden Seeds
+<<effects>>
+
+Much of grounds are untended, with wild poppies growing from the exterior fence all the way up to the building. You gather some seeds.
+<br><br>
+
+<span class="gold">You can now grow <<icon "tending/poppy.png">> poppies.</span>
+<br><br>
+
+<<link [[Next|Asylum Garden]]>><</link>>
+<br>
+
+
+:: Asylum Fake Treatment Accept
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<set $phase to 0>>
+You agree to go with them. The pair lead you to a door marked 'staff only,' where more orderlies are waiting.
+<br>
+They open the door, leading you into a bright but empty cell. A large mirror covers one wall.
+<br><br>
+<<link [[Next|Asylum Fake Treatment]]>><</link>>
+
+
+
+:: Asylum Fake Treatment Refuse
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<set $phase to 1>>
+You refuse to go with them, and start to walk away.
+<<if $physiqueSuccess>>
+	The <<person2>><<person>> tries to grab you, <span class="green">but you shove <<him>> away and escape into the midst of a group of patients.</span>
+	<br><br>
+	The orderlies don't seem ready to make a scene in front of the other
+	<<if $asylumstatus gte 20>>
+		<<if $asylumstatus gte 75>>
+			patients, and the other patients gather around you to form a protective shield.<<suspicion 2>> The orderlies
+		<<else>>
+			patients. They <<suspicion 1>>
+		<</if>>
+		scowl and walk away.<<gsuspicion>>
+		<br><br>
+		<<link [[Next|Asylum]]>><</link>>
+	<<else>>
+		patients, but then <span class="red">all the other patients move away from you.</span>
+		<<if $speech_attitude is "bratty">>
+			As you try to move with the crowd, another patient trips you and leaves you sprawled on the floor.
+		<</if>>
+		The <<person2>><<person>> and the <<person1>><<person>> grab you and together lead you to a door marked 'staff only'
+		where more orderlies wait.
+		<br>
+		They open the door, leading you into a bright but empty cell. A large mirror covers one wall.
+		<br><br>
+		<<link [[Next|Asylum Fake Treatment]]>><</link>>
+	<</if>>
+	<br>
+<<elseif $asylumstatus gte 75>>
+	<span class="red">The <<person2>><<person>> grabs you and tackles you to the floor.</span>
+	The <<person>> is grappling you into an armlock, when, <span class="green">with a yell, <<he>> is lifted into the air and hurled across the room.</span>
+	You see the <<person1>><<person>> also backing away as a number of patients gather around you.
+	<br>
+	After a moment, the <<person>> scowls at you and walks away. <<suspicion 2>><<gsuspicion>>
+	<br><br>
+	The other patients nod, smile and pat your on the shoulder as they go back to what they were doing.
+	<br><br>
+	<<link [[Next|Asylum]]>><</link>>
+	<br>
+<<else>>
+	<span class="red">The <<person2>><<person>> grabs you and tackles you to the floor.</span>
+	Before you can recover <<he>> has you painfully armlocked, and together they lead you to a door marked 'staff only'
+	where more orderlies are waiting.<<gpain>><<pain 2>>
+	<br>
+	They open the door, leading you into a bright but empty cell. A large mirror covers one wall.
+	<br><br>
+	<<link [[Next|Asylum Fake Treatment]]>><</link>>
+	<br>
+<</if>>
+
+
+
+:: Asylum Fake Treatment
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+"Doctor Harper's behind that one-way mirror," the <<person1>><<person>> says, pointing at the mirror.
+"Observing and taking complete notes of everything that happens here. Doctor Harper stressed that this
+is an important part of your assessment so you need to be on your best behaviour.
+<<if $phase is 1>>Especially after the way you behaved just now.<</if>> Understood?"
+<br>
+
+<<if $speech_attitude is "meek">>
+	"Yes, <<sir>>," you say. "I understand."
+<<elseif $speech_attitude is "bratty">>
+	You glare at them, saying nothing.
+<<else>>
+	You nod.
+<</if>>
+<br><br>
+<<set $ft_count to 5>>
+<<if $rng gte 66 and $lactating gte 1 and $breastfeedingdisable is "f" and $milk_amount gte 500>>
+	<<set $ft_event to "milk">><<person2>>
+	<<if $worn.upper.name isnot "straightjacket">>
+		<<bind>><<upperwear 35>>
+		The <<person>> puts a medical straightjacket on you, binding your arms.
+	<</if>>
+	<br><br>
+	You are led to the wall opposite the mirror - you notice a number of steel chain-links embedded in the wall at different heights.
+	The <<person1>><<person>> turns you around so you are facing into the room. A large number of orderlies have gathered near the door.
+	The <<person>> pushes you back against the wall, while the <<person2>><<person>> clips the back of your straightjacket to the links on the wall
+	- once at the waist and once at the neck - locking you standing in place. The <<person>> unfastens something at the side of your straightjacket,
+	and the <<person1>><<person>> pulls at the front. A section comes away, leaving your arms bound but your
+	<<if !$worn.under_upper.type.includes("naked")>>
+		<<undertop>> exposed. The <<person>> grabs your $worn.under_upper.name and pulls it up, fully exposing your <<breasts>>.
+	<<else>>
+		<<breasts>> fully exposed.
+	<</if>>
+	<<He>> gives one of your breasts a squeeze and a jet of milk squirts out.
+	<br><br>
+	"A number of our patients suffer from eating disorders," the <<person>> says. "As part of their treatment, and yours,
+	in a few moments, they will be led into this room and will drink from you. Doctor Harper says it's very important for you to relax
+	and think about how you are helping to nourish and sustain others. This hood will hide your face to protect your dignity."
+	<br><br>
+	The hood is placed over your head, plunging you into darkness.
+	<br>
+	Almost immediately, lips clamp around your <<nipples>>.
+	<br><br>
+	<<link [[Next|Asylum Fake Treatment Milked]]>><<set $ft_count to 8>><</link>>
+<<elseif $rng gte 33 and !playerChastity()>>
+	<<set $ft_event to "masturbation">>
+	The <<person2>><<person>>
+	<<if $worn.upper.name isnot "straightjacket">>
+		<<bind>><<upperwear 35>>
+		puts a medical straightjacket on you that binds your arms,
+	<<else>>
+		checks your straightjacket,
+	<</if>>
+	<<if $worn.under_lower.type.includes("naked") and $worn.genitals.type.includes("naked")>>
+		and
+	<<else>>
+		<<if !$worn.under_lower.type.includes("naked")>>
+			<<set _undies to $worn.under_lower.name>>
+		<<elseif !$worn.genitals.type.includes("naked")>>
+			<<set _undies to $worn.genitals.name>>
+		<</if>>
+		<<underlowerstrip>>removes your _undies, and
+	<</if>>
+	leads you in front of the mirror. A chair is placed behind you.
+	<br>
+	"Have a seat," the <<person1>><<person>> says as hands pull you down. The <<person2>><<person>> attaches your straightjacket to the chair
+	as the <<person1>><<person>> ties your calves and ankles to the chair legs, forcing your knees apart.
+	<br><br>
+	<<generate3>><<generate4>><<generate5>>
+	<<if $o_long_and_beautiful gte 1 and $o_long_and_beautiful lte 7>><<set $o_long_and_beautiful += 1>> /*Modifies person 4 enough */
+		<<set $NPCList[3].description to "long-haired">><<set $NPCList[3].adult to 0>><<set $NPCList[3].gender = "f">><<set $NPCList[3].pronoun = "f">>
+	<</if>>
+
+	A moment later a <<person4>><<person>> is led in and set up similarly beside you. Finally,
+	a <<person5>><<person>> is set up similarly beside <<person4>><<him>>.
+	<br><br>
+	<<person1>>"This is a trust exercise. Despite your obvious vulnerability, you need to learn that the world doesn't want to hurt you.
+	Mostly it just wants to make you feel good. All of you believe you are victims. Instead you need to learn to accept approaches as... opportunities."
+	<br>
+	The <<person4>><<person>> next to you struggles against <<his>> bindings.
+	<br>
+
+	A <<person3>><<person>> walks behind the chair-bound <<person5>><<person>>. The <<person2>><<person>> moves behind the chair-bound
+	<<person4>><<person>> next to you. Finally the <<person1>><<person>> moves behind you.
+	<br><br>
+	"Begin."
+	<br><br>
+	<<link [[Next|Asylum Fake Treatment Masturbation]]>><<set $ft_count to 20>><<set $ft_five to random(11,15)>><<set $ft_four to random(5,10)>><</link>>
+<<else>>
+	<<set $ft_event to "bukkake">>
+	<<if $worn.upper.name isnot "straightjacket">>
+		<<bind>><<upperwear 35>>
+		The <<person>> puts a medical straightjacket on you, binding your arms.
+	<</if>>
+	You are led to the wall opposite the mirror - you notice a number of steel chain-links embedded in the wall at different heights.
+	The <<person>> turns you around so you are facing into the room. A large number of orderlies have gathered near the door.
+	The <<person>> pushes you down to a kneeling position, backed against the wall, while the <<person2>><<person>> clips the back of your straightjacket
+	to the links on the wall and binds your feet, fixing you in place.
+	<br><br>
+	"The doctors believe an irrational phobia of sexual fluids is driving your condition," the <<person1>><<person>> tells you.
+	"Our staff have kindly agreed to help with an exposure therapy approach."
+	<br>
+	<<if maleChance() gte 1 and $cbchance lt 100 or maleChance() lt 100 and $dgchance gte 1>>
+		Glancing back you see a number of the orderlies already have their dicks out.
+	<</if>>
+	<br><br>
+	The <<person>> <<if $NPCList[0].penis isnot "none">>unzips and pulls out <<his>> erect cock,<<else>>pulls down <<his>> orderly uniform, exposing <<his>> already wet pussy,<</if>>
+	"Let's begin."
+	<br><br>
+	<<link [[Next|Asylum Fake Treatment Bukkake]]>><</link>>
+<</if>>
+
+
+:: Asylum Fake Treatment Milked
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<pass 5>>
+<<set _they_drink to either("Anonymous mouths continue to hungrily suck milk from you.","Hungry mouths lap at your nipples.","Mouths suck and massage milk from your teats.","Mouths clamp to your breasts as unseen people drink from you.","They suck milk from you insatiably.")>>
+<<if $ft_count is 8>>
+	They drink thirstily from your breasts. After a time, the mouth on the <<print either("left","right")>> finishes and leaves.
+	Another mouth quickly replaces them. A minute or so later, this happens on the other side.
+	<<garousal>><<arousal 200 "breasts">>
+	<<if $arousal gte $arousalmax>>
+		<<orgasm>>
+	<</if>>
+	<br><br>
+	<<milk_amount -200>>
+	<<link [[Next|Asylum Fake Treatment Milked]]>><<set $ft_count -= 1>><</link>>
+<<elseif $ft_count gte 1>>
+	<<if $milk_amount gte 300>>
+		_they_drink <<garousal>><<arousal 250 "breasts">>
+		<<set _rand to random(1,10)>>
+		<br>
+		<<if _rand is 1>>
+			An anonymous hand <<print either("gently","roughly","rhythmically","persistently","sensuously")>> <<print either("fondles","rubs","teases")>> your <<genitals>>.
+			<<garousal>><<arousal 200 "genitals">>
+		<<elseif _rand is 2>>
+			One of them bites your <<nipple>>.
+			<<ggpain>><<pain 8>>
+		<<elseif _rand is 3>>
+			A tongue playfully circles and teases your <<nipple>> between sucks.
+			<<ggarousal>><<arousal 400 "breasts">>
+		<<elseif _rand is 4>>
+			Someone flicks your <<nipple>>.
+			<<gpain>><<pain 3>>
+		<<elseif _rand is 5>>
+			The people to your left and right seem to be working together as their mouths suck and squeeze your <<nipples>> in perfect rhythm.
+			<<ggarousal>><<arousal 400 "breasts">>
+		<<elseif _rand is 6>>
+			One mouth barely drinks, preferring to blow and then lick at your <<nipple>>.
+			<<ggarousal>><<arousal 500 "breasts">>
+		<<elseif _rand is 7>>
+			A hand painfully slaps your breast.
+			<<ggpain>><<pain 8>>
+			<br>
+			"Hey! Take it easy," a voice says.
+			<br>
+			"Sorry."
+			<br>
+		<<elseif _rand is 8>>
+			<<set _random_milk to random(50, 100)>>
+			As one sucks, they squeeze your <<breasts>> with their hands to force out more milk.<<milk_amount `-_random_milk`>>
+		<</if>>
+		<br>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>>
+			Mouths clamp to your <<nipples>>, sucking hard as you cum.
+		<</if>>
+		<br>
+		<<set _random_milk to random(200,300)>>
+		<<link [[Next|Asylum Fake Treatment Milked]]>><<milk_amount `-_random_milk`>><<set $ft_count -= 1>><</link>>
+	<<elseif $milk_amount gte 50>>
+		As yet another greedy mouth tries to <<print either("suck","suck and squeeze")>> the milk from your breasts
+		you start to run dry. Soon you are getting close to dry on both sides. Hands and mouths work harder to squeeze and suck milk from you.
+		<<ggarousal>><<arousal 400 "breasts">><<gpain>><<pain 3>>
+		<br>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>>
+		<</if>>
+		<br><br>
+		<<set _random_milk to random(200,300)>>
+		<<link [[Next|Asylum Fake Treatment Milked]]>><<milk_amount `-_random_milk`>><<set $ft_count -= 1>><</link>>
+	<<else>>
+		Even though you are nearly dry, thirsty mouths insistently <<print either("suck at","pull at","try to suck milk from")>> your <<breasts>>.
+		Your nipples feel sore and tender as they suck the last of the milk from you.
+		<<ggarousal>><<arousal 500 "breasts">><<gpain>><<pain 8>>
+		<br>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>>
+		<</if>>
+		<br><br>
+		<<link [[Next|Asylum Fake Treatment Milked]]>><<set $milk_amount to 0>><<set $ft_count to 0>><</link>>
+	<</if>>
+<<else>>
+	<<if $milk_amount gt 0>>Finally one mouth leaves and none replace it. The mouth on the other side drinks for another minute or so, before also leaving.
+		<<ggarousal>><<arousal 400 "breasts">>
+	<<else>>
+		No more come to you.
+	<</if>>
+	<br>
+	<<if $arousal gte $arousalmax>>
+		<<orgasm>>
+	<<elseif $arousal gte ($arousalmax / 5) * 4>>
+		Your bare nipples tingle in the air.
+		<br>
+		<<if $speech_attitude is "meek">>
+			"More," you whimper. "Please, more."
+			<br>
+		<</if>>
+	<</if>>
+	Your breasts feel a lot lighter. <<llstress>><<stress 18>>
+	<br><br>
+	"Uhm... okay," the <<person>> says loudly. "Get these patients out."
+	<br>
+	The door opens and <<if currentSkillValue('science') gte 600 or currentSkillValue('skulduggery') gte 600>>closes suspiciously quickly.<<else>>closes.<</if>>
+	<br><br>
+	The hood lifts off your head and the straightjacket is closed to cover your <<breasts>>.
+	As the <<person2>><<person>> releases you from the wall, the <<person1>><<person>> talks to you.
+	<br><br><br>
+	<<link [[Next|Asylum Fake Treatment Finish]]>><<unset $ft_count>><</link>>
+<</if>>
+
+
+:: Asylum Fake Treatment Masturbation
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<pass 5>>
+<<set _respond to either("grunt","gasp","groan","inhale sharply","pant","moan")>>
+<<set _ly to either("busily","energetically","frantically","resolutely","fanatically","quickly","furiously","relentlessly")>>
+<<set _ly2 to either("busily","energetically","frantically","resolutely","fanatically","quickly","furiously","relentlessly")>>
+<<set _stimulates_him to either("milks <<his>> cock","rubs <<his>> cock","fondles <<his>> cock","plays with <<his>> dick","milks <<his>> dick")>>
+<<set _stimulates_her to either("fingers <<his>> pussy","rubs <<his>> quim","fondles <<his>> quim","fingers <<his>> cunt","fingers <<his>> quim")>>
+<<set _is_done to either("whimpers gently.","continues to pant.","is still breathing heavily.","sofly whimpers.")>>
+<<if $ft_count lte ($ft_four - 2)>><<set _crowd = "Some orderlies are still watching. Others are openly exchanging money. A few have left.">>
+<<elseif $ft_count lt $ft_four>><<set _crowd="Some orderlies are cheering. They are again exchanging money. Do they gamble on this?">>
+<<elseif $ft_count is $ft_four>><<set _crowd="A number of orderlies shout at the <<person4>><<person>> in disbelief. Others cheer.">>
+<<elseif $ft_count lt ($ft_five - 2)>><<set _crowd="Some of the orderlies shout encouragement to you. Others shout to the <<person4>><<person>>.">>
+<<elseif $ft_count lt $ft_five>><<set _crowd="Some orderlies seem disappointed, others seems amused. You think you see money exchanging hands.">>
+<<elseif $ft_count is $ft_five>><<set _crowd="Several orderlies groan or shout in disappointment. More cheer and laugh.">>
+<<elseif $ft_count gt 18>><<set _crowd="The crowd of orderlies shout encouragement at you, the <<person4>><<person>> and the <<person5>><<person>>.<br>'Hang in there!'<br>'You can do it.'<br>">>
+<<elseif $ft_count is 0>>
+	There is an air of disappointment as the <<person1>><<person>> leaves you.
+<<elseif $ft_count%2>><<set _crowd = either("The crowd of orderlies watch.","The crowd jostle to get a better view.","The crowd shouts encouragement.")>>
+<<else>><<set _crowd = "">>
+<</if>>
+<br>
+
+<<if $ft_count is 20>>
+	The <<person1>><<person>> grabs you, one hand rubbing your chest, the other reaching for your <<genitals>>. <<arousal 100 "breasts">><<arousal 100 "genitals">>
+	<<if $arousal gte $arousalmax>>
+		<<orgasm>>
+		<<set $ft_count to -10>>
+	<</if>>
+	<br>
+	_crowd
+	<br><br>
+	<<link [[Let yourself enjoy it|Asylum Fake Treatment Masturbation]]>><<arousal 200>><<set $ft_count -=1>><</link>><<garousal>>
+	<br>
+	<<link [[Resist|Asylum Fake Treatment Masturbation]]>><<arousal -100>><<set $ft_count -=1>><</link>>
+	<br>
+<<elseif $ft_count gte 1>>
+	<<if $ft_count is 19>>
+		The <<person1>><<person>> slips a hand under the straightjacket to tease your <<nipple>>, while the other grabs your <<genitals>>. <<arousal 200 "breasts">><<arousal 100 "genitals">>
+	<<elseif $ft_count gt $ft_five>>
+		<<if $rng>>
+			You hear the <<person4>><<person>> _respond as the <<person2>><<person>>
+			<<person4>><<if $NPCList[0].penis isnot "none">>_stimulates_him.<<else>>_stimulates_her.<</if>>
+		<<else>>
+			You hear the <<person5>><<person>> _respond as the <<person3>><<person>>
+			<<person5>><<if $NPCList[0].penis isnot "none">>_stimulates_him.<<else>>_stimulates_her.<</if>>
+		<</if>>
+		The <<person1>><<persons>> hands continue to work your <<genitals>> and your <<breasts>>.<<arousal 200 "breasts">><<arousal 200 "genitals">>
+	<<elseif $ft_count is $ft_five>>
+		You hear the <<person5>><<person>> moan loudly, and <<if $NPCList[0].penis isnot "none">>see a spurt of cum fly toward the mirror and<<else>>see squirts of female ejaculate<</if>> splatter on the floor.
+		<br>
+		Some of the orderlies cheer. You see them excitedly passing money between each other.
+		<br>
+		The <<person2>><<person>> moves both hands to focus on your <<genitals>> and continues with renewed intensity. <<arousal 600 "genitals">>
+	<<elseif $ft_count gt $ft_four>>
+		<<if $rng>>
+			You hear the <<person4>><<person>> _respond as the <<person2>><<person>>
+			<<person4>>_ly <<if $NPCList[0].penis isnot "none">>_stimulates_him.<<else>>_stimulates_her.<</if>>
+		<</if>>
+		The <<person1>><<persons>> hands continue to _ly2 work your <<genitals>>. <<arousal 600 "genitals">>
+	<<elseif $ft_count is $ft_four>>
+		The <<person4>><<person>> beside you starts to shudder as, silently, <<he>> cums
+		<<if $NPCList[0].penis isnot "none">>sending a large spurt of cum toward the mirror
+		<<else>>squirting hard
+		<</if>>and making a mess of the floor in front of <<him>>.
+		<br>
+		More orderlies cheer. You see them excitedly passing money between each other.
+		<br>
+		With a sigh, the <<person1>><<person>> eases up on your <<genitals>>. <<arousal 300 "genitals">>
+	<<else>>/*last one standing*/
+		The <<person1>><<person>> continues working your <<genitals>> with both hands.
+		<<set $ft_count to -20>>
+		<<if $arousal gte $arousalmax>><<set $arousal to 9900>><</if>>
+	<</if>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasm>>
+		<<set $ft_count to -10>>
+	<</if>>
+	<br>
+	_crowd
+	<br><br>
+	<<if $ft_count gte 0 or $ft_count is -20>>
+		<<link [[Let yourself enjoy it|Asylum Fake Treatment Masturbation]]>><<arousal 200>><<set $ft_count -=1>><</link>><<garousal>>
+		<br>
+		<<link [[Resist|Asylum Fake Treatment Masturbation]]>><<arousal -100>><<set $ft_count -=1>><</link>>
+		<br>
+	<<else>>
+		<<link [[Cool off|Asylum Fake Treatment Masturbation]]>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<<if $ft_count is 0>>
+		The <<person1>><<person>> finally gives up.
+		<br>
+		"I can't do it," <<he>> says. "<<pShe>> won't cum."
+	<<elseif $ft_count lte -20>> /* you won */
+		The <<person1>><<person>> finally gives up.
+		<br>
+		"I can't do it," <<he>> says. "<<pShe>> won't cum."
+	<<elseif $ft_count lte -10>> /*someone else won*/
+		As your orgasm resides you hear cheering. You notice the orderlies seem to be exchanging something.
+		<br>
+
+		The <<person1>><<person>> wanders into the crowd of orderlies, where they hand <<him>> something. <<He>> smiles back at you.
+		A few moments later, the <<person4>><<person>> beside you starts to shudder as, silently, <<he>> cums
+		<<if $NPCList[0].penis isnot "none">>sending a large spurt of cum toward the mirror <<else>>squirting hard<</if>>
+		and making a mess of the floor in front of <<him>>.
+		<br>
+		More orderlies cheer. You see them excitedly passing things between each other.
+	<</if>>
+	<br><br>
+	Finally, you are released from the chair. The <<person1>><<person>> starts to speak.
+	<br><br>
+	<<link [[Listen|Asylum Fake Treatment Finish]]>><<unset $ft_count>><<unset $ft_five>><<unset $ft_four>><</link>>
+<</if>>
+
+
+:: Asylum Fake Treatment Bukkake
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<pass 5>>
+<<if $ft_count is 5>>
+	The <<fullGroup>> rub themselves off in front of you.
+	Soon the <<person>> cums, squirting <<if $NPCList[0].penis isnot "none">><<bodyliquid "face" "semen">>semen across<<else>><<bodyliquid "face" "goo">>suddenly in<</if>> your face.
+	Another orderly takes <<his>> place as the <<person1>><<person>> reaches climax. The <<person>> stares into your eyes as
+	<<he>> cums, <<his>> fluids splattering against your cheek and running down the collar of your straightjacket.
+	<br>
+	Two more orderlies take <<his>> place.<<if $NPCList[0].penis isnot "none">><<bodyliquid "neck" "semen">><<else>><<bodyliquid "neck" "goo">><</if>>
+	<br><br>
+	<<if $arousal gte $arousalmax>>
+		<<orgasm>>
+	<</if>>
+	<br><br>
+	<<link [[Next|Asylum Fake Treatment Bukkake]]>><<set $ft_count -= 1>><</link>>
+<<elseif $ft_count gte 1>>
+	<<if $NPCList[0].penis isnot "none">>
+		<<print either("They keep coming and cumming.","You try to keep your mouth shut, but breathing through your nose means you have to smell it.","You're surrounded by grunts and throbbing genitals.","You keep your eyes shut to avoid getting cum in them.")>>
+		<<set _goo to "semen">>
+	<<else>>
+		<<print either("They keep coming and cumming.","You try to keep your mouth shut, but it seeps through your lips regardless.","You're surrounded by grunts and slick genitals.","You keep your eyes shut to avoid getting cum in them.")>>
+		<<set _goo to "goo">>
+	<</if>>
+	<br>
+	<<set _rand to random(1,9)>>
+	<<if _rand lte 6>>
+		<<if _rand is 1>>
+			Two orderlies manage to simultaneously cum on your face.
+			<<faceejacstat>><<ejacstat>><<faceejacstat>><<ejacstat>><<set $hygiene += 500>><<bodyliquid "face" _goo>>
+		<<elseif _rand is 2>>
+			One orderly shoves a hand between your legs and roughly gropes your <<genitals>>.
+			<<arousal 200 "genitals">><<pain 5>>
+		<<elseif _rand is 3>>
+			<<if $NPCList[0].penis isnot "none">>
+				One orderly shoves your head against the wall and grinds <<his>> cock against your face until <<he>> ejaculates over you.
+			<<else>>
+				One orderly shoves your head against the wall and grinds <<his>> cunt against your face until <<his>> fluids run over you.
+			<</if>>
+			<<faceejacstat>><<ejacstat>><<set $hygiene += 500>><<bodyliquid "face" _goo>>
+		<<elseif _rand is 4>>
+			Two orderlies masturbate to orgasm either side of you.
+			<<hairejacstat>><<ejacstat>><<bodyliquid "hair" _goo>><<neckejacstat>><<ejacstat>><<set $hygiene += 500>><<bodyliquid "neck" _goo>>
+		<<elseif _rand is 5>>
+			One orderly pulls your head up by your hair and <<if $NPCList[0].penis isnot "none">>ejaculates<<else>>squirts<</if>> down the front of your straightjacket.
+			<<pain 5>><<chestejacstat>><<ejacstat>><<set $hygiene += 500>><<bodyliquid "chest" _goo>>
+		<<else>>
+			One orderly deliberately <<if $NPCList[0].penis isnot "none">>shoots <<his>> load<<else>>squirts <<his>> juices<</if>> in your eye, and
+			<<pain 5>><<faceejacstat>><<ejacstat>><<set $hygiene += 500>><<bodyliquid "face" _goo>>
+		<</if>>
+
+		<<if _rand % 3 ==2>>
+			As you try to breathe, you end up taking a mouthful of juices from another.
+			<<oralejacstat>><<ejacstat>><<if $NPCList[0].penis isnot "none">><<cumswallow "human">><</if>>
+		<<elseif _rand % 3 == 1>>
+			You hear a grunt as juices squirt down your neck.
+			<<neckejacstat>><<ejacstat>><<set $hygiene += 500>><<bodyliquid "neck" _goo>>
+		<<else>>
+			A moment later you feel hot juices soak your hair.
+			<<hairejacstat>><<ejacstat>><<set $hygiene += 500>><<bodyliquid "hair" _goo>>
+		<</if>>
+	<<elseif _rand is 7 and (maleChance() gte 1 and $cbchance lt 100 or maleChance() lt 100 and $dgchance gte 1)>>
+		One orderly tries to shove their cock in your mouth. They're jerked away by another.
+		<br>
+		"May I remind everyone that any attempt at any kind of penetration will result in removal." <<lstress>><<stress -2>>
+		<br>
+	<</if>><<unset _rand>>
+	<br>
+
+	<<if $speech_attitude is "meek">>
+		<span class="sub">Being degraded like this makes you feel horny.</span><<ggarousal>><<arousal 666>>
+	<<elseif $speech_attitude is "bratty">>
+		<span class="brat">You find this 'treatment' humiliating.</span><<garousal>><<arousal 200>><<gstress>><<stress 2>>
+	<<else>>
+		<<garousal>><<arousal 200>>
+	<</if>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasm>>
+	<</if>>
+	<br><br>
+	<<link [[Next|Asylum Fake Treatment Bukkake]]>><<set $ft_count -= 1>><</link>>
+<<else>>
+	Finally, there are no more.
+	<br>
+	<<if $arousal gte $arousalmax>>
+		<<orgasm>>
+	<<elseif $arousal gte ($arousalmax / 4) * 3 and $submissive gte 1150>>
+		"More," you whimper.
+		<br>
+	<</if>>
+	You feel soaked as fluids ooze down you.
+	<br><br>
+	<<link [[Next|Asylum Fake Treatment Finish]]>><<unset $ft_count>><</link>>
+<</if>>
+
+
+:: Asylum Fake Treatment Finish
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+
+"Excellent. Doctor Harper's very pleased with your progress. The doctor asked me to tell you not to mention this treatment to anyone.
+It's very important for your treatment. If you mention it to anyone - even to Doctor Harper <<nnpc_himself "Harper">> - <<nnpc_he "Harper">>
+will be very angry and it will set back your progress. This should be kept secret. Understood?"
+<br>
+
+<<if $speech_attitude is "meek">>
+	You meekly nod.
+<<elseif $speech_attitude is "bratty">>
+	You wait for <<him>> to get to the point.
+<<else>>
+	You nod once.
+<</if>>
+<br><br>
+
+<<if $phase is 1 and ($ft_event is "bukkake" or $ft_event is "milk" or $ft_event is "masturbation")>>
+	"Should I take this off?" the <<person2>><<person>> asks, tugging on the straightjacket.
+	<br>
+	<<if $ft_event is "bukkake">>
+		"After the fuss <<pshe>> made about coming here?" <<person1>><<he>> shakes <<his>> head.
+		"Let <<phim>> learn <<pher>> place walking around looking like that for a while."
+		<br>
+		The <<person2>><<person>> laughs.
+	<<else>>
+		"After the fuss <<pshe>> made about coming here?" <<person1>><<he>> shakes <<his>> head. "This one needs to learn some obedience."
+	<</if>>
+<<else>>
+	The <<person2>><<person>> removes the straightjacket.
+	<<unbind>><<exposure>><<upperwear 87>>
+<</if>>
+<br><br>
+
+<<if $NPCList[3].description is "long-haired">>
+	<<person4>>The <<person>> is led past you - it feels like you make eye-contact, but it is hard to tell with her face hidden behind her long, matted, messy hair.
+<</if>>
+
+<<if $ft_event is "milk">>
+	As you leave, you notice many of the orderlies have something white around their lips or chin.
+	<br><br>
+<<elseif $ft_event is "masturbation">>
+	As you leave, you notice many orderlies grouped together passing money between them. Some seem happy, others less so.
+	<<print either("One looks","Several look","One glances")>> <<print either("accusingly","crossly","cheerfully","lustfully","hungrily")>> at you.
+	<br><br>
+<</if>>
+<<endevent>><<unset $ft_event>>
+<<link [[Leave|Asylum]]>><</link>>
+
+:: Pregnancy Birth Asylum
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<set $first_birth to !$pregnancyStats.humanToysUnlocked>>
+<<npc "Harper">><<person1>>
+<<setKnowsAboutPregnancy "pc" "Harper">>
+
+You awaken in a hospital bed. Several blurry figures move around. One leans closer, <<his>> features coalescing into those of Doctor Harper. "Please don't be alarmed, but your waters have broken. You're still in the asylum."
+<br><br>
+
+<<if $exposed lt 2>>
+	"Please undress," the doctor says.
+<<else>>
+	"Please take a deep breath," the doctor says.
+<</if>>
+<<if playerChastity("hidden")>>
+	<<He>> notices your <<print $worn.genitals.name>>, and opens a chest-high cupboard. <<He>> retrieves a tool shaped like a pair of prongs, but bulkier. "We need to remove that device. This won't hurt."
+	<br><br>
+	<<He>> grasps your <<print $worn.genitals.name>> with the prongs, and presses a button on the handle. You hear a whirring noise within the tool, <span class="pink">and they snap the metal.</span>
+	<<set $worn.genitals.type.push("broken")>>
+<</if>>
+<br><br>
+<<wash>><<undress "asylum_birth">><<upperwear 87 "pink">>
+
+<<link [[Next|Pregnancy Birth Asylum 2]]>><</link>>
+<br>
+
+:: Pregnancy Birth Asylum 2
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+
+The midwife places a mask over your face. You feel your consciousness fade. Several other figures appear around you, their forms ablur.
+<br><br>
+
+<<set _pregnancy to getPregnancyObject()>>
+<<if _pregnancy.totalBirthEvents gte 5>>
+	<<set _min to 15>>
+	<<set _max to 60>>
+<<elseif _pregnancy.totalBirthEvents gte 3>>
+	<<set _min to 30>>
+	<<set _max to 120>>
+<<else>>
+	<<set _min to 60>>
+	<<set _max to 180>>
+<</if>>
+
+<<set _max to Math.floor(_max * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
+<<set _min to Math.floor(_min * (1 + Math.floor(_pregnancy.fetus.length * 0.2)))>>
+
+<<set _timeCalc to random(_min, _max)>>
+<<set _hours to Math.floor(_timeCalc / 60)>>
+<<set _minutes to _timeCalc % 60>>
+
+<<switch playerNormalPregnancyType()>>
+	<<case "human">>
+		Harper's voice floats through the fog. "Normal human<<if !$player.vaginaExist>>, abnormal delivery<</if>>, but keep the others on the line, just in case..."
+		<br><br>
+
+		The pain grows as time seems to rapidly speed up and slow down. You hear the words "breathe" and "push" many times, and you do your best to comply.
+		<br><br>
+
+		<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Asylum 3]]>><<endevent>><<pass _timeCalc>><<playerPrebirth>><</link>>
+	<<case "wolf">>
+		Harper's voice floats through the fog. "Not human. This will be an abnormal delivery. Follow my instructions to the letter..."
+		<br><br>
+
+		The pain grows as time seems to rapidly speed up and slow down. You hear the words "breathe" and "push" many times, and you do your best to comply.
+		<br><br>
+
+		<<link [["Next ("+_hours+":"+(_minutes lt 10 ? "0": "")+_minutes+")"| Pregnancy Birth Asylum Wolf]]>><<endevent>><<pass _timeCalc>><<playerPrebirth>><</link>>
+<</switch>>
+
+:: Pregnancy Birth Asylum 3
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<endevent>>
+<<generate1>><<person1>>
+<<set $litter_size to getPregnancyObject().fetus.length>>
+You awaken in another room. A smiling midwife stands beside your bed,
+<<if $litter_size is 1>>
+	holding a bundled baby in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you the baby. They sit in your arms, eyes shut, chest rising and falling with gentle breaths.
+	<br><br>
+
+	"We've run all the tests," the midwife says. "There's not a single health problem. Have you thought of a name?"
+	<br><br>
+
+<<elseif $litter_size is 2>>
+	holding two bundled babies in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you one, and then the other. One sits in each of your arms, eyes shut, chests rising and falling with gentle breaths.
+	<br><br>
+
+	"We've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+
+<<else>>
+
+	holding a trio of bundled babies in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you one, and then another. One sits in each of your arms. The midwife holds the third right in front of your chest. Their eyes are shut, their chests rising and falling with gentle breaths.
+	<br><br>
+
+	"We've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+<</if>>
+
+<<set $bornChildrenIds to []>>
+<<run getPregnancyObject().fetus.forEach(child => $bornChildrenIds.push(child.childId))>>
+<<set $recentBirthId to getPregnancyObject().fetus[0].birthId>>
+<<birthUi "pc" "asylum" "home" "Pregnancy Birth Asylum 4" 120>>
+
+:: Pregnancy Birth Asylum 4
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+<<set _pregFame to ($litter_size * 5)>>
+<<famepregnancy _pregFame>>
+<<if $litter_size is 1>>
+
+	You cradle your baby for a while longer, enjoying <<childhis>> tiny breaths and movements. <<childHe>> spends most of the time sleeping, but opens <<childhis>> eyes occasionally, and gazes into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth>>
+		<<He>> teaches you how to change <<childname>>'s nappy, and how to bathe <<childhim>>.
+	<<else>>
+		<<He>> assists you with changing <<childname>>'s nappy, and bathing <<childhim>>.
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your baby in the meantime."
+	<br><br>
+	You want nothing more than to hold <<childname>>, but you find yourself dozing all the same.
+	<br><br>
+<<elseif $litter_size is 2>>
+	You cradle your babies for a while longer, enjoying their tiny breaths and movements. They spend most of the time sleeping, but open their eyes occasionally, and gaze into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth>>
+		<<He>> teaches you how to change their nappies and how to bathe them.
+	<<else>>
+		<<He>> assists you with changing their nappies, and with bathing them.
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your babies in the meantime."
+	<br><br>
+	You want nothing more than to hold the twins, but you find yourself dozing all the same.
+	<br><br>
+<<elseif $litter_size is 3>>
+	You cradle your babies for a while longer, enjoying their tiny breaths and movements. They spend most of the time sleeping, but open their eyes occasionally, and gaze into yours.
+	<br><br>
+	The midwife returns.
+
+	<<if $first_birth>>
+		<<He>> teaches you how to change their nappies, and how to bathe them.
+	<<else>>
+		<<He>> assists you with changing their nappies, and with bathing them.
+	<</if>>
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your babies in the meantime."
+	<br><br>
+	You want nothing more than to hold the triplets, but you find yourself dozing all the same.
+	<br><br>
+<</if>>
+
+<<link [[Next|Pregnancy Birth Asylum 5]]>><<storeon "asylum_birth">><<pass 24 hour>><<stress -40>><</link>>
+<br><br>
+
+:: Pregnancy Birth Asylum 5
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+
+<<if $litter_size gte 2>><<childrenNames $bornChildrenIds>> lie<<else>><<childname>> lies<</if>> in a cradle while the midwife helps you stand.
+
+<<if $first_birth or playerNormalPregnancyTotal() is 0>>
+	You feel your insides drop as you stand, but <<he>> assures you that's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 1, 2)>>
+	You feel your insides drop as you stand. You remember this feeling from your last birth, and know it's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without people inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 3, 7)>>
+	You feel your insides drop as you stand. You're still not used to the feeling.
+	<br><br>
+
+	You get walking again quite easily. It's a little awkward, but the transition isn't as bad as it used to be. It's still easier to move around when there isn't another human inside you.
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif between(playerNormalPregnancyTotal(), 8, 49)>>
+	You stand up without a hitch. There's hardly any difference in feeling anymore, although you do feel much more nimble.
+	<br><br>
+
+	<<He>> looks impressed at your mobility, only keeping an arm around you for stability. "I don't see many people get back up that quickly. You must be hardy!"
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif playerNormalPregnancyTotal() gte 50>>
+	You stand up without assistace, feeling empty inside. You already miss the feeling of being pregnant.
+	<br><br>
+
+	<<He>> stares at you, mouth agape, as you walk without any assistance. You throw your clothes back on quickly.
+	<br><br>
+
+	"Y-you should be good to go," <<he>> says.
+<</if>>
+<<if $innocencestate is 1 or $trauma lte $traumamax / 10>>
+	"Doctor Harper has completed your discharge papers, and you're being released. Someone's waiting for you outside. Your <<if $NPCName[$NPCNameList.indexOf("Bailey")].pronoun is "f">>mum<<else>>dad<</if>> I think."
+	<br><br>
+	<<removeBabyIntro "pc" "Bailey" $recentBirthId>>
+	<<link [[Next|Pregnancy Birth Asylum End]]>><<endevent>><<unset $recentBirthId>><</link>>
+<<else>>
+	"Your children will be sent to the orphanage for temporary care until your release, at which point they will be returned to your custody, once you're deemed mentally fit."
+	<br><br>
+	<<setBabyIntro "pc" "Bailey" $recentBirthId>>
+	<<link [[Next|Pregnancy Birth Asylum 6]]>><<endevent>><<unset $recentBirthId>><</link>>
+<</if>>
+
+:: Pregnancy Birth Asylum 6
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+
+You're returned to your cell. You alreasy miss the embrace of <<childrenNames $bornChildrenIds>>. You feel a renewed sense of determination to leave this place. <<stress -10>><<llstress>><<trauma -10>><<lltrauma>>
+<br><br>
+
+<<link [[Next|Asylum Cell]]>><<unset $litter_size>><<unset $first_birth>><<endevent>><<unset $bornChildrenIds>><</link>>
+<br>
+
+:: Pregnancy Birth Asylum End
+<<set $outside to 0>><<set $location to "asylum">><<effects>>
+<<asylumend>>
+
+<<npc "Bailey">><<person1>>
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+Bailey waits for you in front of the asylum. <<He>> smiles when <<he>> sees you. It almost looks real. "We've a place prepared," <<he>> says.
+<<if $litter_size is 1>>
+
+<<elseif $litter_size is 2>>
+	"For both of them."
+<<else>>
+	"For all three of them."
+<</if>>
+<<He>> leads you outside, where <<his>> car waits. <<He>> holds open the passenger door for you, before climbing in the other side.
+<br><br>
+The engine comes to life.
+<!-- Bailey may not know about all your pregnancies -->
+<<set _knownPregnancyCount to knowsAboutPregnancyTotal("pc","Bailey","home")>>
+<<if _knownPregnancyCount is 1>>
+	"You're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a week.<<if $litter_size gte 2>> Each.<</if>>"
+	<br><br>
+	"They don't leave the nursery," <<he>> adds as <<he>> drives from the asylum car park into the forest. "Ever."
+<<elseif _knownPregnancyCount lte 4>>
+	"Remember that you're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a week.<<if $litter_size gte 2>> Each.<</if>>"
+	<br><br>
+<<else>>
+	"You're an irresponsible slut," <<he>> says. "Remember that if I have to intervene in the care of your offspring, it'll cost you an extra <span class="red">£100</span> a week.<<if $litter_size gte 2>> Each.<</if>>"
+<</if>>
+<<if $baileydefeatedchain gte 3>>
+	You see <<him>> sneer, but only for a brief instant. "I'd rather not make someone else take care of your twerps, but if you keep being a difficult little shit, don't think you'll be allowed to see them again."
+<</if>>
+<br><br>
+
+<<if $litter_size is 1>>
+	<<link [[Tell Bailey your baby's name|Pregnancy Birth Hospital 7]]>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[Just hold the baby tight|Pregnancy Birth Hospital 7]]>><</link>>
+	<br>
+<<else>>
+	<<link [[Tell Bailey your babies' names|Pregnancy Birth Hospital 7]]>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[Just hold your babies tight|Pregnancy Birth Hospital 7]]>><</link>>
+	<br>
+<</if>>
+
+:: Pregnancy Birth Asylum Wolf
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<endevent>>
+<<generate1>><<person1>>
+<<set $litter_size to getPregnancyObject().fetus.length>>
+<<set _baby_type to getPregnancyObject().fetus[0].type>>
+You awaken in another room. You hear faint whimpering. A smiling midwife stands beside your bed,
+<<if $litter_size is 1>>
+	holding a bundled _baby_type pup in <<his>> arms.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, passing you the pup. They sit in your arms, eyes shut, chest rising and falling with gentle breaths.
+	<br><br>
+
+	"We've run all the tests," the midwife says. "There's not a single health problem. Have you thought of a name?"
+	<br><br>
+
+<<else>>
+	pushing a cot with <<number $litter_size>> _baby_type pups inside.
+	<br><br>
+
+	"Looks like mummy's awake," <<he>> says, pushing the cot into your reach. You hold them one by one, their eyes shut, chests rising and falling with gentle breaths.
+	<br><br>
+
+	"We've run all the tests," the midwife says. "There's not a single health problem. Have you thought of their names?" the midwife asks.
+	<br><br>
+
+<</if>>
+
+<<set $bornChildrenIds to []>>
+<<run getPregnancyObject().fetus.forEach(child => $bornChildrenIds.push(child.childId))>>
+
+<<birthUi "pc" "asylum" "wolf_cave" "Pregnancy Birth Asylum Wolf 2" 180>>
+
+:: Pregnancy Birth Asylum Wolf 2
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+<<getChildrenIds>><<childSelect _childrenIds.last()>>
+<<famebestiality $litter_size>>
+<<if $litter_size is 1>>
+
+	You cradle your <<childtype>> for a while longer, enjoying <<childhis>> tiny breaths and movements. <<childHe>> spends most of the time sleeping, but opens <<childhis>> eyes occasionally, and gazes into yours.
+	<br><br>
+	The midwife returns.
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your pup in the meantime."
+	<br><br>
+	You want nothing more than to hold <<childname>>, but you find yourself dozing all the same.
+	<br><br>
+<<else>>
+	You cradle your pups for a while longer, enjoying their tiny breaths and movements. They spend most of the time sleeping, but open their eyes occasionally, and gaze into yours.
+	<br><br>
+	The midwife returns.
+	"Let me know when you're feeling sleepy," <<he>> says. "You need your rest as well, and we can take care of your pups in the meantime."
+	<br><br>
+	You want nothing more than to hold them, but you find yourself dozing all the same.
+	<br><br>
+<</if>>
+
+<<link [[Next|Pregnancy Birth Asylum Wolf 3]]>><<storeon "asylum_birth">><<pass 24 hour>><<stress -40>><</link>>
+<br>
+
+:: Pregnancy Birth Asylum Wolf 3
+<<set $outside to 0>><<set $location to "asylum">><<asylumeffects>><<effects>>
+
+<<if $litter_size gte 2>><<childrenNames $bornChildrenIds>> lie<<else>><<childname>> lies<</if>> in a cradle while the midwife helps you stand.
+
+<<if $first_birth or playerNormalPregnancyTotal() is 0>>
+	You feel your insides drop as you stand, but <<he>> assures you that's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without wolves inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 1, 2)>>
+	You feel your insides drop as you stand. You remember this feeling from your last birth, and know it's normal.
+	<br><br>
+
+	Despite the pain, you feel a lot more comfortable walking than you did before the birth. You'd forgotten how easy it is to move without wolves inside you.
+	<br><br>
+
+	The midwife helps you to dress.
+<<elseif between(playerNormalPregnancyTotal(), 3, 7)>>
+	You feel your insides drop as you stand. You're still not used to the feeling.
+	<br><br>
+
+	You get walking again quite easily. It's a little awkward, but the transition isn't as bad as it used to be. It's still easier to move around when there isn't a litter of wolves inside you.
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif between(playerNormalPregnancyTotal(), 8, 49)>>
+	You stand up without a hitch. There's hardly any difference in feeling anymore, although you do feel much more nimble.
+	<br><br>
+
+	<<He>> looks impressed at your mobility, only keeping an arm around you for stability. "I don't see many people get back up that quickly. You must be hardy!"
+	<br><br>
+
+	The midwife still insists on helping you dress.
+<<elseif playerNormalPregnancyTotal() gte 50>>
+	You stand up without assistace, feeling empty inside. You already miss the feeling of being pregnant.
+	<br><br>
+
+	<<He>> stares at you, mouth agape, as you walk without any assistance. You throw your clothes back on quickly.
+	<br><br>
+
+	"Y-you should be good to go," <<he>> says.
+<</if>>
+"The pups will be released into the forest once they can fend for themselves."
+<br><br>
+
+<<link [[Next|Pregnancy Birth Asylum 6]]>><<endevent>><</link>>
+<br>

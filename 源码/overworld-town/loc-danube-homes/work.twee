@@ -1,0 +1,2558 @@
+:: Danube House Knock
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+You walk up to one of the mansions and knock on the door.
+<br><br>
+<<if $rng lte 30>> /* Default case*/
+
+	There's no response.
+	<br><br>
+
+	<<link [[Break in|Danube House Lock]]>><</link>>
+	<br>
+	<<link [[Go to the next house (0:02)|Danube House Knock]]>><<pass 2>><</link>>
+	<br>
+	<<link [[Stop|Danube Street]]>><</link>>
+	<br>
+
+<<elseif $unlocked is true>>
+	/*To return this housekeeping check? 
+	- Remove `$unlocked is true` and place 
+	- Add `danube_housekeeping is undefined`*/
+
+	<<if $danube_housekeeping is undefined>>
+		<<generate1>><<person1>>A <<person>> answers the door. "You're not one of the guests I'm expecting," <<he>> says. "What can I do for you?"
+		<br><br>
+		<<link [[Ask for work|Danube House Intro]]>><</link>>
+		<br>
+		<<link [[Say you've got the wrong address and leave|Danube Street]]>><<endevent>><</link>>
+		<br>
+	
+	<</if>>
+
+<<else>>
+	<<cleareventpool>>
+
+	<<set $phase to 0>>
+	<<addinlineevent "Danube Party Pre-Intro">>
+		<<generate1>><<generate2>><<person2>>A <<person>> answers the door. "You aren't who we were expecting," <<he>> says.
+		<<set $phase to 1>>
+	<</addinlineevent>>
+	<<addinlineevent "Danube Attic Pre-Intro">>
+		<<generate1>><<person1>>A <<person>> answers the door. "I do not like being disturbed. Speak," <<he>> says.
+		<<set $phase to 2>>
+	<</addinlineevent>>
+	<<addinlineevent "Danube Tea Pre-Intro">>
+		<<generate1>><<person1>>A <<person>> answers the door. <<He>> examines you head to feet before speaking. "Such a fine thing," <<he>> says. "Is there anything I can do for you?"
+		<<set $phase to 3>>
+	<</addinlineevent>>
+	<<addinlineevent "Danube Garden Pre-Intro">>
+		<<generate1>><<generate2>><<person1>>A <<person>> answers the door. "My <<person2>><<master>> does not like being disturbed," <<he>> says. "Out with it."
+		<<set $phase to 4>>
+	<</addinlineevent>>
+	<<addinlineevent "Danube Doll Pre-Intro">>
+		<<generatey1>><<person1>>A <<person>> answers the door. <<He>> opens it slightly and peeks through the gap. <<He>> doesn't say anything.
+		<<set $phase to 5>>
+	<</addinlineevent>>
+	<<addinlineevent "Danube Tutor Pre-Intro">>
+		<<generatey1>><<generate2>><<person2>>A <<person>> answers the door. "Can I help you?" <<he>> asks.
+		<<set $phase to 6>>
+	<</addinlineevent>>
+	<<if $breastfeedingdisable is "f" and maleChance() lt 100>>
+		<<addinlineevent "Danube Breast Pre-Intro">>
+			<<generatef1>><<person1>>A <<person>> answers the door. <<Hes>> wearing nothing but a shirt and panties. "Can I help you?" <<he>> asks.
+			<<set $phase to 7>>
+		<</addinlineevent>>
+	<</if>>
+	<<addinlineevent "Danube Catperson Pre-Intro">>
+		<<generate1>><<person1>>A <<person>> answers the door.
+		<<if $fame.bestiality gte 400>>
+			<<His>> eyes light up when <<he>> sees you. "Oh, I know you. You've a talent for animal care, haven't you?"
+		<<else>>
+			"Oh, hello. What can I do for you?" <<he>> asks.
+		<</if>>
+		<<set $phase to 8>>
+	<</addinlineevent>>
+	/* 北极星模组 */
+	<<if $days gte 30 and $hivemember is 0>>
+        <<addinlineevent "Danube Taylor Mom">>
+        	<<set $TaylorMissing to 1>>
+        	你走到一栋很好看的房子前并敲门。一个眼睛红肿，看起来很伤心的女人开了门。"孩子，你有什么事情吗？"
+        	<br><br>
+        
+        	<<link [[询问发生了什么事|Missing Poster]]>><</link>>
+        	<br>
+        	<<link [[说你敲错门了，然后离开|Danube Street]]>><</link>>
+        	<br>
+        <</addinlineevent>>
+	<</if>>
+	/* 北极星 */
+
+	<<runeventpool>>
+
+	<br><br>
+	<<if $phase is 0>>
+		<<errorp "Eventpool selection failed! Please export your save on this screen and report this bug.">>
+	<<elseif $phase is 8>>
+		<<link [[Ask for work|Danube Catperson Intro]]>><</link>>
+	<<else>>
+		<<link [[Ask for work|Danube House Work]]>><</link>>
+	<</if>>
+	<br>
+	<<link [[Say you've got the wrong address and leave|Danube Street]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Danube House Work
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+<<if $phase is 1>>
+	<<if $rng gte 1>>
+
+		<<He>> pauses for a moment, considering. "Our help hasn't arrived, but you look... fit," <<he>> says.
+		"I'm throwing a party and need someone to distribute refreshments. You'll get <<printmoney 6000>> for two hours work."
+		<<He>> rummages in something to <<his>> left, out of your view, before producing a small waist apron. "<<printmoney 15000>>, if you wear this."
+		<br><br>
+
+		You look more closely at the apron. It's such a slight thing it would be little protection against spillages, and would barely cover more than your crotch.
+		<br><br>
+
+		"It wouldn't do much to protect your other clothes, which is why you shouldn't wear any." <<He>> smiles. "Hence the extra pay. So what do you think?"
+		<br><br>
+
+		<<if $exhibitionism gte 55>>
+			<<link [[Agree to work in the apron|Danube Apron]]>><<housekeeping 1 400>><</link>><<exhibitionist4>><<ghousekeeping 400>>
+			<br>
+		<<else>>
+			You aren't lewd enough to take up <<his>> scandalous offer.
+			<br><br>
+		<</if>>
+		<<link [[Agree to work in normal clothes|Danube Party]]>><<housekeeping 1 400>><</link>><<ghousekeeping 400>>
+		<br>
+		<<link [[Refuse|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<<else>>
+
+		"There's nothing," <<he>> says. "Now if you'll excuse me, I have a party to get back to." <<He>> shuts the door.
+		<br><br>
+
+		<<link [[Try another house|Danube House Knock]]>><<endevent>><</link>>
+		<br>
+		<<link [[Stop|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<</if>>
+<<elseif $phase is 2>>
+	<<if $rng gte 1>>
+
+		"You're an insolent little thing," <<he>> says.
+		"But as it happens I do need something. There's a family heirloom in my attic I need retrieved.
+		I can't do it myself, it's too dusty up there. It will take up to an hour and I'll give you <<printmoney 2500>> for finding it."
+		<br><br>
+
+		<<link [[Accept|Danube Attic]]>><<housekeeping 1 400>><</link>><<ghousekeeping 400>>
+		<br>
+		<<link [[Refuse|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<<else>>
+
+		"Insolent whelp," <<he>> says. "Begone."
+		<br><br>
+
+		<<link [[Try another house|Danube House Knock]]>><<housekeeping 1 400>><<endevent>><</link>><<ghousekeeping 400>>
+		<br>
+		<<link [[Stop|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<</if>>
+<<elseif $phase is 3>>
+	<<if $rng gte 1>>
+
+		The <<person>> smiles. "There's nothing I need," <<he>> says. "But I'll give you <<printmoney 2500>> to join me for tea. It will take about an hour."
+		<br><br>
+
+		<<link [[Accept|Danube Tea]]>><<housekeeping 1 400>><</link>><<ghousekeeping 400>>
+		<br>
+		<<link [[Refuse|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<<else>>
+
+		"There's nothing I need," <<he>> says, "But don't be afraid to call again, sweetie."
+		<br><br>
+
+		<<link [[Try another house|Danube House Knock]]>><<housekeeping 1 400>><<endevent>><</link>><<ghousekeeping 400>>
+		<br>
+		<<link [[Stop|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<</if>>
+<<elseif $phase is 4>>
+	<<if $rng gte 1>>
+
+		<<person1>><<He>> stares down <<his>> nose at you.
+		"There is something," <<he>> says, "We have a problem with weeds growing and strangling our other plants. We would give you <<printmoney 12000>> for four hours work."
+		<br><br>
+
+		<<link [[Enter|Danube Garden]]>><<tending 1>><</link>><<gtending>>
+		<br>
+		<<link [[Refuse|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<<else>>
+
+		"No," <<he>> says, and slams the door shut.
+		<br><br>
+
+		<<link [[Try another house|Danube House Knock]]>><<endevent>><</link>>
+		<br>
+		<<link [[Stop|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<</if>>
+<<elseif $phase is 5>>
+	<<if $rng gte 1>>
+
+		<<His>> demeanour changes. "I'm hosting a tea party and there's a spare seat," <<he>> says with enthusiasm.
+		"I'll give you <<printmoney 2500>> if you fill in for the missing guest. It will take forty minutes."
+		<br><br>
+
+		<<link [[Accept (0:40)|Danube Doll]]>><<housekeeping 1 400>><</link>><<ghousekeeping 400>>
+		<br>
+		<<link [[Refuse|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<<else>>
+
+		<<He>> wordlessly slams the door shut.
+		<br><br>
+
+		<<link [[Try another house|Danube House Knock]]>><<endevent>><</link>>
+		<br>
+		<<link [[Stop|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<</if>>
+<<elseif $phase is 6>>
+	<<if $rng gte 1>>
+		<<schooleffects>>
+		<<if !["first","second","third","lunch","fourth","fifth"].includes($schoolstate)>>
+			<<set $rng1 to random(3)>>
+			<<He>> looks at you with interest. "Our <<person1>><<daughter>> is preparing for
+			<<switch $rng1>>
+				<<case 0>>a science
+				<<case 1>>a maths
+				<<case 2>>an English
+				<<case 3>>a history
+			<</switch>>
+			exam. Perhaps you could tutor <<him>> for an hour? We'll pay between <<printmoney 1000>> and <<printmoney 15000>>. Depends how good you are."
+			<br><br>
+
+			<<link [[Accept (1:00)|Danube Tutor]]>><<housekeeping 1 400>><</link>><<ghousekeeping 400>>
+			<br>
+			<<link [[Refuse|Danube Street]]>><<endevent>><</link>>
+			<br>
+		<<else>>
+			"I'm interested in a tutor, but I'm afraid my <<person1>><<daughter>> is in school at the moment." <<person2>><<He>> pauses and looks you over. "Shouldn't you be in school yourself?" <<gstress>><<stress 2>>
+			<br><br>
+
+			<<link [[Try another house|Danube House Knock]]>><<endevent>><</link>>
+			<br>
+			<<link [[Stop|Danube Street]]>><<endevent>><</link>>
+			<br>
+		<</if>>
+
+	<<else>>
+
+		<<He>> shakes <<his>> head. "There's nothing we need, thanks."
+		<br><br>
+
+		<<link [[Try another house|Danube House Knock]]>><<endevent>><</link>>
+		<br>
+		<<link [[Stop|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<</if>>
+<<else>>
+
+	<<He>> smiles. "You look thirsty," <<he>> says. "And my chest is so heavy." <<He>> cups <<his>> $NPCList[0].breastdesc. "Take the burden off me and I'll give you <<printmoney 500>>."
+	<br><br>
+
+	<<if $awareness gte 200>>
+		<span class="blue"><<He>> wants you to drink from <<his>> breast.</span>
+		<br><br>
+	<<else>>
+		You aren't sure what <<he>> means. <<He>> recognises your confusion. "I want you to suckle from my breast," <<he>> adds.
+		<br><br>
+	<</if>>
+
+	<<if $promiscuity gte 35>>
+		<<link [[Accept (0:15)|Danube Breast]]>><<pass 15>><<breastfed>><</link>><<promiscuous3>><<lpurity>>
+		<br>
+	<<else>>
+		You are not promiscuous enough to accept <<his>> offer.
+		<br><br>
+	<</if>>
+
+	<<link [[Refuse|Danube Street]]>><<endevent>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube House Intro
+<<effects>>
+
+"The usual help is sick today," <<he>> says. "I've guests arriving soon, expecting food, and haven't the time to get everything ready. I'll pay you <<printmoney 4000>> to set the table while I finish in the kitchen. They'll arrive in fifteen minutes."
+<br><br>
+<<He>> narrows <<his>> eyes. "My guests have certain expectations, however," <<he>> continues. "High expectations. I hope you know your way around a table."
+<br><br>
+
+<<link [[Accept (0:15)|Danube House Intro 2]]>><<pass 15>><</link>>
+<br>
+<<link [[Refuse|Danube Street]]>><<endevent>><</link>>
+<br>
+
+:: Danube House Intro 2
+<<effects>>
+
+The <<person>> shows you into a tasteful dining room. You smell garlic. Steam floats into the room from the next. "Everything's in the cupboard there," <<he>> says. "It's a normal
+<<if Time.hour gte 18>>
+	dinner.
+<<elseif Time.hour gte 15>>
+	tea.
+<<elseif Time.hour gte 12>>
+	luncheon.
+<<elseif Time.hour gte 10>>
+	brunch.
+<<else>>
+	breakfast.
+<</if>>
+Nothing fancy. I'll be in the kitchen. Let me know when you're done."
+<br><br>
+You open the cupboard, and find a collection of stacked plates, along with cutlery.
+<<if $housekeeping gte 300>>
+	You lay out the plates, cutlery, and napkins, with plenty of time to spare. You enter the steaming kitchen, and find the <<person>> rushing this way and that, as pots boil over and smoke rises from the oven.
+	<br><br>
+	<<set $danube_housekeeping to 1>>
+	<<link [[Next|Danube House Intro Success]]>><</link>>
+	<br>
+<<else>>
+	The <<person>> didn't specify how many guests are expected, so you lay a plate in front of each seat, followed by the cutlery.
+	<br><br>
+
+	<<link [[Next|Danube House Intro Fail]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube House Intro Success
+<<effects>>
+
+You assist the <<person>> in the kitchen. You're so efficient that <<he>> steps aside, watching the window for <<his>> expected guests. "They're here," <<he>> says. "We cut it close. It's a good thing you appeared when you did," <<he>> hands you <<moneyGain 40>>. "I'll be sure to let my friends know how useful you are. I'm well-connected, and word spreads fast."
+<br><br>
+
+<<He>> ushers you through a side entrance, so you won't be seen.
+<br><br>
+
+<span class="gold">You can now find work by knocking on doors on Danube Street.</span>
+<br><br>
+
+<<link [[Next|Danube Street]]>><<set $eventskip to 1>><<endevent>><</link>>
+<br>
+
+:: Danube House Intro Fail
+<<effects>>
+
+<span class="red">"No no no!"</span> the <<person>> says when <<he>> arrives to examine your handiwork. "The cutlery is the wrong way round. There are plates missing. Is that a-" <<he>> steadies <<himself>> against a chair. "A <i>table</i>spoon? There?! This won't do. Won't do at all. Out, out at once!"
+<br><br>
+
+You show yourself out, unpaid, leaving the <<person>> to set the table how <<he>> likes.
+<br><br>
+
+<i><span class="red">You won't be able to take any jobs on Danube Street until you have at least a </span><span class="purple">D+</span> <span class="red">housekeeping skill.</span></i>
+<br><br>
+
+<<link [[Next|Danube Street]]>><<endevent>><</link>>
+<br>
+
+:: Danube Breast
+<<effects>>
+You blush, but nod.
+
+The lady steps back, and you enter <<his>> house. It's small for Danube Street, but still spacious and neat.
+<br><br>
+The <<person>> sits down on a cushion-laden sofa. <<He>> pulls off <<his>> shirt without hesitation, exposing <<his>> $NPCList[0].breastsdesc.
+<<He>> now wears only the pair of panties. <<He>> beckons you over.
+<br><br>
+You sit down next to <<him>>, and blush more deeply as she gently guides your head towards her breast.
+You shift to access her chest better, and move your lips over her nipple. Sweet, creamy milk leaks out as soon as your tongue touches <<his>> bud.
+You suckle. It tastes sweet and warm. A calmness falls over you. <<His>> free hand creeps up your thigh.
+<<promiscuity3>>
+After a while, the milk stops flowing. You look up.
+<br><br>
+"You can do the other one too, if you want," <<he>> says. "But you don't have to. I'll still pay you."
+<br><br>
+
+<<link [[Stop|Danube Breast Stop]]>><</link>>
+<br>
+<<link [[Continue (0:15)|Danube Breast Continue]]>><<pass 15>><<breastfed>><</link>><<ggarousal>><<lpurity>>
+<br>
+
+:: Danube Breast Stop
+<<effects>>
+You shake your head. The <<person>> hands you the money you were promised, and you return to Danube street.
+<br><br>
+You've made <<moneyGain 5>>.
+<br><br>
+<<endevent>>
+
+<<link [[Next|Danube Street]]>><</link>>
+
+:: Danube Breast Continue
+<<effects>>
+
+You lean toward <<his>> other breast, and suckle. <<He>> laughs, and inches <<his>> hand further up your thigh. <<He>> touches your <<groin>>.
+<br><br>
+
+<<if $player.gender_appearance is "m" and !$player.penisExist>>
+	"Oh my," <<he>> says. "You're keeping something hidden down there. Don't worry. I can keep a secret." <<He>> explores further.
+<<elseif $player.gender_appearance is "f" and $player.penisExist>>
+	"Oh my," <<he>> says. "You're keeping something hidden down there. Don't worry. I can keep a secret." <<He>> explores further.
+<<else>>
+<</if>>
+
+<<if playerChastity("hidden")>>
+	"Trying to stay pure?" <<he>> questions while withdrawing <<his>> hand.
+	<<set _arousal to "low">>
+<<elseif $player.penisExist>>
+	<<set _canDrinkCum to true>>
+	<<if $worn.genitals.name is "chastity parasite">>
+		"Odd, what is this?" <<he>> asks while massaging and squeezing your chastity parasite as you suckle.
+		<<set _arousal to "high">>
+		<<set _canDrinkCum to false>>
+	<<elseif playerChastity("cage")>>
+		"Cute," <<he>> says. <<He>> while <<if $player.ballsExist>>massaging your balls<<else>>withdrawing <<his>> hand<</if>> as you suckle.
+		<<set _arousal to "low">>
+	<<elseif $player.penissize gte 4>>
+		"Ah!" <<He>> withdraws <<his>> hand and stares at your crotch. <<He>> looks startled.
+		"How are you so big? Sorry, I don't mean to be rude." <<He>> returns <<his>> hand and continues to stroke as you suckle.
+	<<elseif $player.penissize gte 3>>
+		"You're pretty big." <<he>> coos. <<He>> strokes your length as you suckle.
+	<<elseif $player.penissize gte 2>>
+		<<He>> strokes your length as you suckle.
+	<<elseif $player.penissize gte 1>>
+		"Cute," <<he>> says. <<He>> strokes your length as you suckle.
+	<<else>>
+		<<He>> laughs. "It's so tiny. Sorry, I don't mean to be rude." <<He>> strokes your length with just one finger as you suckle.
+	<</if>>
+	<<if $player.vaginaExist>>
+		<<He>> frowns as <<his>> fingers find your <<pussy>>. "Is that what I think it is?" <<he>> asks. "You do have a lot of secrets."
+	<</if>>
+<<else>>
+	<<He>> strokes your clit as you suckle.
+<</if>>
+<<if _arousal is "high">>
+	<<arousal 2000 "genitals">><<gggarousal>>
+<<elseif _arousal is "low">>
+	<<arousal 600 "genitals">><<garousal>>
+<<else>>
+	<<arousal 1200 "genitals">><<ggarousal>>
+<</if>>
+/* Note: Add some dialog describing the player orgasming from this if it puts them at max arousal? */
+/* Not sure why a simple scene was not added at least */
+<br><br>
+<<if $arousal gte $arousalmax>>
+	You briefly stop drinking as your pushed over the edge.
+	<<if _canDrinkCum>><<set _released to calculateSemenReleased()>><</if>>
+	<<orgasm>>
+	<<if $femaleclimax or _deniedOrgasm>><<set _canDrinkCum to false>><</if>>
+	<<if _canDrinkCum and _released gte 1>>
+		<<if random(0,100) gte 50>>
+			<<He>> smiles at you, "Oh you spilt some, let me help you with that." Carefully feeding it to you from <<his>> hand.
+			<<semenswallowedstat _released>>
+			<<bodyliquid "mouth" "semen" 1>>
+			<<set $hunger -= _released>>
+			<<set $thirst -= _released>>
+		<<else>>
+			<<He>> smiles at you after swallowing your cum, "I'm glad we were both able to get release from sharing our milk."
+		<</if>>
+	<<else>>
+		<<He>> smiles at you, "I'm glad we were both able to get release."
+	<</if>>
+	<br><br>
+	You continue to drink for another several minutes, until the leaking slows to a trickle.
+<<else>>
+	This continues for several minutes, until the leaking slows to a trickle.
+<</if>>
+
+<<He>> pulls <<his>> shirt back on and shows you to the door, where <<he>> hands you more money than was promised.
+<br><br>
+
+You've made <<moneyGain 10>>.
+<br><br>
+<<endevent>>
+
+<<link [[Next|Danube Street]]>><</link>>
+
+:: Danube Apron
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<undress "danubeparty">>
+
+<<set $lowertemp to "init">><<lowerwear 4>>
+<<set $worn.lower.colour to either("black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "white", "yellow")>>
+
+<<exposure>>
+
+You enter the mansion. You hear voices and the clinking of glasses further in.
+<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
+	Noticing your bound <<boundBodyParts>>, <<he>> gives you a strange smile.
+	"It's not that kind of party. Not this time.<<if _boundparts.includes("arm")>> You'll at least need your hands.<</if>>"
+	<br>
+	<<He>> moves behind you and a moment later <span class="green">your limbs fall free.</span>
+	<<unbind>>
+	<br><br>
+<</if>>
+<<He>> passes you the apron and gestures to the door on your left.
+"You can get changed in the pantry," <<he>> says.
+"When you're ready, go through the door opposite and you'll find some platters. Take each in turn and offer them to the guests.
+Now if you'll excuse me, I need to get back to being a good <<print ($pronoun is "m" ? "host" : "hostess")>>."
+<br><br>
+
+You enter the room as instructed.
+It's small enough that getting changed is difficult, but you <<nervously>> remove your clothing and wrap the apron around your waist.
+It almost feels like you're wearing nothing at all. You wish you had a mirror to examine yourself properly.
+<br><br>
+
+Properly attired and with a tray of champagne in one hand, you enter the main room where the party is being held.
+A <<person1>><<person>> gasps and drops their glass, the sound of its shattering drawing more attention.
+Soon everyone in the room is watching you, murmuring amongst themselves.
+You offer another glass to the <<person>>, who doesn't take <<his>> eyes off your <<lewdness>> as <<he>> takes from the tray.
+<<exhibitionism4>><<fameexhibitionism 30>>
+
+<<link [[Next|Danube Apron2]]>><</link>>
+<br>
+
+:: Danube Party
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+You enter the mansion. You hear voices and the clinking of glasses further in.
+"There's some platters in the kitchen," <<he>> gestures to the door on your right.
+<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
+	"Take each in turn and offer them to the guests."
+	<br><br>
+	Noticing your bound <<boundBodyParts>>, <<he>> gives you a strange smile.
+	"It's not that kind of party. Not this time.<<if _boundparts.includes("arm")>> You'll at least need your hands.<</if>>"
+	<br>
+	<<He>> moves behind you and a moment later <span class="green">your limbs fall free.</span>
+	<<unbind>>
+	<br><br>
+	"Now if you'll excuse me," <<he>> goes on. "I need to get back to being a good <<print ($pronoun is "m" ? "host" : "hostess")>>."
+<<else>>
+	"Take each in turn and offer them to the guests. Now if you'll excuse me, I need to get back to being a good <<print ($pronoun is "m" ? "host" : "hostess")>>."
+<</if>>
+<br><br>
+
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+<<if $danger gte (9900 - $allure)>>
+
+	You begin the job as instructed.
+	Most guests pay you little attention, few even so much as look at you as they take from the proffered tray or politely decline the offer.
+	An hour into the job however, a <<person1>><<person>> takes an interest in you. You notice <<him>> watching you from across the room.
+	<br><br>
+	<<pass 1 hour>>
+	You offer <<him>> a glass of champagne.
+	"No thanks, darling."
+	As you turn to leave, <<he>> wraps an arm around your waist and grabs your <<bottom>> with <<his>> free hand.
+	<br><br>
+
+	<<link [[Endure it|Danube Party Endure]]>><<stress 6>><<trauma 6>><<sub 1>><</link>><<gtrauma>><<gstress>>
+	<br>
+	<<link [[Struggle free|Danube Party Struggle]]>><<stress -12>><<trauma -6>><<def 1>><</link>><<ltrauma>><<lstress>>
+	<br>
+
+<<else>>
+	You begin the job as instructed.
+	No one pays you much attention, few even so much as look at you as they take from the proffered tray or politely decline the offer.
+	After two hours the party seems to be winding down, and the <<person>> approaches you. "Thanks for the help. Here." <<He>> hands you <<moneyGain 60>>.
+	<br><br>
+
+	<<pass 2 hours>>
+
+	<<link [[Next|Danube Street]]>><<endevent>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Party Endure
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+You grit your teeth and bear it. The <<person>> pulls you closer and fondles your <<bottom>> for a few moments.
+Other guests turn and watch the spectacle, not quite sure what to make of it. You hear nervous laughter.
+<br><br>
+
+"That's enough, let the poor <<girl>> go," says the <<person2>><<person>>. The <<person1>><<person>> releases you, but gives you a parting spank as <<he>> does.
+<br><br>
+
+After another hour the party seems to be winding down, and the <<person2>><<person>> approaches you.
+"Thanks for the help. Here's extra for the trouble." <<He>> hands you <<moneyGain 90>>.
+<br><br>
+
+<<pass 1 hour>>
+<<endevent>>
+
+<<link [[Next|Danube Street]]>><</link>>
+<br>
+
+:: Danube Party Struggle
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+You stomp hard on the <<persons>> foot, and <<he>> shouts, tumbling backwards to the ground where <<he>> rolls around in pain.
+Laughter erupts among the assembled guests.
+<br><br>
+
+"Serves the perv right."
+<br><br>
+
+The <<person2>><<person>> grips your arm and leads you out the room. "You've ruined my party," <<he>> says. "Get out. And no, you're not seeing a penny. Shoo!"
+<br><br>
+
+<<endevent>>
+<<link [[Next|Danube Street]]>><</link>>
+<br>
+
+:: Danube Apron2
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<if maleChance() is 0>>
+	<<set _elite to "women">>
+<<elseif maleChance() is 100>>
+	<<set _elite to "men">>
+<<else>>
+	<<set _elite to "elite">>
+<</if>>
+
+You continue your task, and people eventually go back to mingling, though you still feel eyes on you at all times.
+At one point you catch a reflection of yourself, a nearly naked <<girl>> surrounded by well-dressed _elite.
+
+<<if $liquidcount gte 30>>Wearing so little, the copious sexual fluids coating your skin are obvious to all.
+<<elseif $player.bodyliquid.anus.semen + $player.bodyliquid.vagina.semen gte 3>>The apron does nothing to hide the semen running down from between your legs.
+<<elseif $semencount gte 10>>Wearing so little, the semen on your body is obvious to all.
+<<elseif $goocount gte 10>>Lewd tentacle slime gleams on your skin, obvious to all.
+<<elseif $nectarcount gte 10>>Sweet nectar sticks to your skin, obvious to all.
+<<elseif $liquidcount gte 10>>Wearing so little, the lewd sexual fluids on your skin are clearly visible.
+<<elseif $wolfgirl gte 6>>You notice the guests check out your wolf tail.
+<<elseif $wolfgirl gte 4 and (!["hidden", "disabled"].includes($transformationParts.wolf.pubes) or !["hidden", "disabled"].includes($transformationParts.wolf.pits))>>Wearing so little, the wolfish hair covering your body is visible to all.
+<<elseif $physique gte ($physiquesize * 5/7)>>Wearing so little shows off your <<bellyDescription "pc">> and your firm, powerful physique.
+<<elseif $beauty gte ($beautymax * 4/7)>>Wearing so little shows off your natural good looks and charm.
+<</if>><<garousal>><<arousal 600>>
+<br><br>
+
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+<<if $danger gte (9900 - $allure) and $eventskip is 0>>
+
+	You offer the <<person1>><<person>> another drink, but as <<he>> reaches out for it <<he>> slaps the tray,
+	throwing the glasses into the air and tipping their contents all over you.
+	"Oops, I'm so clumsy!" <<he>> says, as the liquid drips from your skin and seeps into your apron.
+	<br><br>
+
+	People are staring at you with a hungry look in their eyes. More so than normal.
+	You look down and see the deluge has made your apron completely transparent. You feel your face heat up at this new humiliation.
+	You're suddenly struck by just how exposed and vulnerable you are. <<covered>>
+	<br><br>
+
+	The <<person>> continues. "I'm ever so sorry. Let me help get that wet thing off of you..."
+	<br><br>
+	<<pass 1 hour>>
+	<<link [[Next|Danube Apron Molestation]]>><<set $molestationstart to 1>><</link>>
+	<br>
+
+<<else>>
+
+	<<pass 2 hours>>
+	After a couple of hours the party seems to be winding down.
+	The <<person2>><<person>> approaches you. "Thank you, that'll give them something to remember. Here." <<He>> hands you <<moneyGain 150>>.
+	<br><br>
+
+	<<endevent>>
+
+	You return to the pantry and put your clothes back on.
+	<br><br>
+
+	<<link [[Next|Danube Street]]>><<storeon "danubeparty">><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Apron Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<set $enemyno to 1>><<set $enemynomax to 1>><<maninit>>
+	<<set $NPCList[1].penis to "none">>
+	<<set $NPCList[1].lefthand to "none">>
+	<<set $NPCList[1].righthand to "none">>
+	<<set $NPCList[1].mouth to "none">>
+	<<set $NPCList[1].vagina to "none">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Danube Apron Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Apron Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Apron Molestation Finish
+<<if $enemyhealth lte 0>>
+
+	The <<person>> winces in pain. "<<pShe>> is a feisty one," <<he>> says.
+	<br><br>
+
+	<<person2>>"That's enough," says the <<person>>. <<He>> grasps your arm and drags you from the room.
+	"That'll be all," <<he>> says when you're alone. "I didn't want a scene like this. Take your money and go." <<He>> hands you <<moneyGain 150>>.
+	<br><br>
+
+	<<tearful>> you return to the pantry and put your clothes back on.
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><<storeon "danubeparty">><</link>>
+	<br>
+
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>><<famerape 30>>
+
+	<<He>> turns to the <<person2>><<person>> "How much for this one?" <<person1>><<he>> says.
+	<br><br>
+
+	"I'm only renting <<phim>>."
+	<br><br>
+
+	"Pity."
+	<br><br>
+
+	The <<person2>><<person>> takes you by your arm and drags you from the room.
+	"That'll be all," <<he>> says when you're alone. "Thanks for being a good sport. Here's a little something extra." <<He>> hands you <<moneyGain 300>>.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<endevent>>
+
+	<<tearful>> you return to the pantry and put your clothes back on.
+	<br><br>
+	<<pass 1 hour>>
+	<<link [[Next|Danube Street]]>><<storeon "danubeparty">><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Attic
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+The <<person>> leads you up a flight of stairs and tugs on a trapdoor in the ceiling. It opens in a shower of dust and a ladder falls out.
+"The antique is a painting of an ancestor. They look a lot like me so you should know when you've found it."
+<<He>> leaves you to ascend the creaky ladder alone.
+<br><br>
+
+You cough as you reach the top and peer through the murk. There's a lot of old furniture, but you don't see any paintings.
+It might be in one of the boxes stacked about the room. There's a gigantic cobweb in one corner, about twice your size. You hope whatever made it isn't around.
+<br><br>
+
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+<<if $danger gte (9900 - $allure)>>
+
+	<<if $swarmdisable is "f" and $spiderdisable is "f" and $rng gte 1>>
+
+		<<pass 30>>
+		After half an hour of fruitless searching you spot it, in the corner of the room behind the spider web.
+		You look for a way round, but that part of the room is completely blocked off. Something moves in the darkness above the web.
+		Looking up you see several large, twitching egg sacs, each the size of your head.
+		<br><br>
+
+		<<link [[Abandon your task|Danube Abandon]]>><</link>>
+		<br>
+		<<link [[Break through the web|Danube Spiders]]>><<set $molestationstart to 1>><</link>>
+		<br>
+
+	<<else>>
+
+		<<pass 1 hour>>
+		You spend an hour searching the attic, until you've explored every inch. There's no sign of the painting.
+		<br><br>
+
+		<<link [[Abandon your task|Danube Abandon]]>><</link>>
+		<br>
+
+	<</if>>
+
+<<else>>
+
+	You search for an hour before you find the painting hidden inside one of the boxes. It's heavier than it looks, but you manage to carry it down the ladder.
+	The <<person>> must have heard it creak as <<he>> soon arrives beside you.
+	"That's it. Thank you," <<he>> says as <<he>> takes the painting and hands you <<moneyGain 25>>.
+	<<His>> smile turns sour as <<he>> notices your dust-covered clothing. "Please leave, before you make a mess of the carpet."
+	<br><br>
+
+	<<pass 1 hour>>
+	<<endevent>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Abandon
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+You climb down the ladder and find the <<person>> already waiting for you. "I see you don't have my heirloom. A pity. Get out before you get dust on my carpet."
+<br><br>
+
+<<if $rng gte 81>>
+	<<link [[Ask for payment|Danube Attic Molestation]]>><<set $molestationstart to 1>><</link>>
+<<else>>
+	<<link [[Ask for payment|Danube Payment]]>><</link>>
+<</if>>
+<br>
+<<link [[Leave quietly|Danube Street]]>><<endevent>><</link>>
+<br>
+
+:: Danube Spiders
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<molested>>
+	<<controlloss>>
+
+	You try to pull apart the web, but your hands get stuck.
+	You manage to pull them free, but the rest of your body becomes tangled in the process, leaving you suspended in the air.
+	Your struggling causes one of the egg sacs to fall from its perch.
+	It breaks apart on the wooden floor, releasing thousands of tiny, live spiders, which start crawling up the web toward you.
+	<br><br>
+
+	<<set $combat to 1>>
+	<<set $enemytype to "swarm">>
+	<<swarminit "spiders" "sac" "slipping" "break" "steady" 1 9>>
+	<<set $timer to 30>>
+<</if>>
+
+<<if $timer gte 25>>
+	The old timbers above the web creak. If this keeps up they'll break.
+<<elseif $timer gte 20>>
+	Splinters break from the ceiling.
+<<elseif $timer gte 10>>
+	The wood continues to break down.
+<<elseif $timer gte 1>>
+	The wooden ceiling creaks ominously.
+<<else>>
+	A wooden beam breaks from the ceiling and the web tumbles to the ground.
+<</if>>
+<br><br>
+
+<<swarmeffects>>
+<<swarm>>
+<<swarmactions>>
+
+<<if $timer lte 0>>
+	<span id="next"><<link [[Next|Danube Spiders Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Spiders]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Attic Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>><<npcspank>><<npcidlegenitals>>
+	"How dare you," <<he>> says, outraged. "I think you need a lesson in manners." <<He>> grabs your arms and bends you over the banister.
+	<br><br>
+	<<set $enemyanger += 100>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or $enemyanger lte 0>>
+	<span id="next"><<link [[Next|Danube Attic Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Attic Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Payment
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+"Where did you learn your manners?" <<he>> asks. "Just take your money and begone." <<He>> hands you <<moneyGain 25>>.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Danube Street]]>><</link>>
+<br>
+
+:: Danube Attic Molestation Finish
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<ejaculation>>
+	"I hope that teaches you to be behave around your betters. Now get out." <<tearful>> you leave the building.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<<elseif $enemyhealth lte 0>>
+
+	<<He>> recoils in pain and you squirm from <<his>> grip. <<tearful>> you run from the building.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<<elseif $enemyanger lte 0>>
+
+	"I hope that teaches you to be behave around your betters. Now get out." <<tearful>> you leave the building.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+<</if>>
+
+:: Danube Spiders Finish
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+Startled by the collapse, the spiders flee into the darker places of the room. <<tearful>> you struggle to your feet and peel the remaining web from your body. There's nothing stopping you from retrieving the painting.
+<br><br>
+
+<<clothesontowel>>
+
+<<person1>>It's heavier than it looks, but you manage to carry it down the ladder. The <<person>> must have heard it creak as <<he>> soon arrives beside you. "That's it. Thank you," <<he>> says as <<he>> takes the painting and hands you <<moneyGain 25>>. <<His>> smile turns sour as <<he>> notices your dust-covered clothing. "Please leave, before you make a mess of the carpet."
+<br><br>
+
+<<pass 1 hour>>
+<<endcombat>>
+
+<<link [[Next|Danube Street]]>><</link>>
+<br>
+
+:: Danube Tea
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+The <<person>> leads you to <<his>> garden,
+<<switch $weather>>
+	<<case "rain">> where a table has already been set, sheltered from the rain by a white parasol.
+	<<case "snow">> where a table has already been set, sheltered from the snow by a white parasol.
+	<<default>> where a table has already been set.
+<</switch>>
+A teapot and some cups sit there along with a plate of biscuits, and a bowl of strawberries and cream.
+The <<person>> takes a seat and gestures for you to do the same.
+<br><br>
+
+<<if $rightarm is "bound" or $leftarm is "bound">>
+	"Help yourself," <<he>> gestures toward the food and drinks. When you don't reach for anything, <<he>> looks confused. "Are you... Wait, why..?! You can't have tea with your arms bound, can you dear?"
+	<br><br>
+	A brief look of exasperation passes over <<his>> face. <<He>> gets up and walks around behind you. <span class="green">Your limbs fall free.</span>
+	<br>
+	<<unbind>>
+	"Is that your idea of fun?" <<he>> asks with a bemused smile. "I suppose I'm out of touch. I just don't understand the games you young people play nowadays."
+	<br><br>
+<</if>>
+
+<<He>> rambles enthusiastically for a while as you nod along politely, occasionally eating something and sipping your tea. It's hard not to slip into a doze.
+<br><br>
+
+<<if $player.bodyliquid.mouth.semen + $player.bodyliquid.face.semen + $player.bodyliquid.hair.semen gte 4>>
+	At one point <<he>> hands you a napkin. "You have some, ah... cream...
+	<<if $player.bodyliquid.mouth.semen gte 2>>
+		running down your chin," <<he>> says politely.
+		<<bodyliquid "mouth" "semen" -1>>
+	<<elseif $player.bodyliquid.face.semen gte 2>>
+		you got it up there on your cheek, somehow!" <<he>> says.
+		<<bodyliquid "face" "semen" -1>>
+	<<else>>
+		somehow you got it in your hair, you clumsy <<girl>>," <<he>> exclaims.
+		<<bodyliquid "hair" "semen" -1>>
+	<</if>>
+	<<gstress>>
+	<br><br>
+	Blushing, you use the napkin to clean up a little. From the way <<hes>> still rambling, you don't think <<he>> realises it's anything other than cream.
+	<br><br>
+	<<stress 1>>
+<<elseif $deviancy gte 35 and $rng % 3 is 0>>
+	As <<he>> natters, <<his>> pet approaches you. It seems tense, so you pet it and give it a lewd grope. It sits happily on your lap.
+	"An animal lover, I see," <<he>> smiles. "Mittens doesn't normally like strangers."
+	<br><br>
+	You feel more relaxed.
+	<<lstress>><<stress -1>>
+<<elseif fameTotal() gte 2000 and $rng % 2>>
+	<<He>> stops abruptly.
+	"You look familiar," <<he>> says. "Do I know you from somewhere?"
+	<br><br>
+	You tense. Half the town knows you from somewhere. You feign an innocent shrug.
+	<<gstress>><<stress 2>>
+	<br><br>
+	"Oh it doesn't matter," <<he>> says, returning to <<his>> story.
+	<br><br>
+<</if>>
+
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+<<if $danger gte (9900 - $allure)>>
+
+	<<pass 30>>After thirty minutes <<he>> shifts <<his>> chair closer to yours.
+	"I've been so lonely since my <<spouse>> died," <<he>> says, now uncomfortably close.
+	"I've almost forgotten what it feels like." <<He>> reaches out and gropes your <<breasts>>.
+	<br><br>
+
+	<<if $promiscuity gte 15>>
+		<<link [[Allow it|Danube Tea Sex]]>><<set $sexstart to 1>><</link>><<promiscuous2>>
+		<br>
+		<<link [[Offer yourself for money|Danube Tea Offer]]>><</link>><<promiscuous2>>
+		<br>
+	<</if>>
+
+	<<link [[Push away|Danube Tea Push]]>><</link>>
+	<br>
+
+<<else>>
+
+	<<pass 1 hour>>The <<person>> looks at <<his>> watch. "An hour already?" <<he>> says. "Thank you for the company. Here." <<He>> hands you <<moneyGain 25>>.
+	<br><br>
+
+	<<link [[Next|Danube Street]]>><<endevent>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Tea Push
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<if $rng gte 81>>
+
+	"No," <<he>> says. "I'm paying you good money to be here, you'll show me respect." <<He>> grabs you with more force.
+	<br><br>
+
+	<<link [[Next|Danube Tea Sex]]>><<set $molestationstart to 1>><</link>>
+	<br>
+
+<<else>>
+
+	<<He>> recoils from you as if stung. "I'm so sorry," <<he>> says. "I don't know what came over me."
+	<<He>> hands you <<moneyGain 25>>. "If you'll excuse me, I need to be alone."
+	<br><br>
+
+	<<link [[Next|Danube Street]]>><<endevent>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Tea Sex
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<set $enemyanger += 40>>
+<<elseif $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 40>>
+	<<promiscuity2>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Danube Tea Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Tea Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Tea Sex Finish
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<ejaculation>>
+	"Thank you for cooperating. Here's your money." <<tearful>> you take the <<moneyGain 25>> and leave.
+	<br><br>
+
+	<<if $phase is 1>>
+		<<tipreceive>><<set $prostitutionstat += 1>>
+		<<fameprostitution 1>>
+	<</if>>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+
+	<<He>> recoils in pain, giving the chance you need. <<tearful>> you run through the building and back out onto the street.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<<elseif $finish is 1>>
+
+	"That's a shame. Here's your money, now leave." <<tearful>> you take the <<moneyGain 25>> and leave.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Tea Offer
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<set $seductiondifficulty to 4000>>
+<<seductioncheck>>
+<br><br>
+<<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><</if>><<seductionskilluse>>
+<br><br>
+
+<<if $seductionrating gte $seductionrequired>>
+
+	<<set $tipmod to 2>><<tipset>>
+
+	Fingers shaking, <<he>> looks in <<his>> <<wallet>>. "I'll give you <<printmoney $tip>>," <<he>> says. "Please, I need this."
+	<br><br>
+
+	<<link [[Accept|Danube Tea Sex]]>><<set $sexstart to 1>><<set $phase to 1>><</link>>
+	<br>
+	<<link [[Refuse|Danube Tea Refuse]]>><</link>>
+	<br>
+
+<<else>>
+	<<rng>>
+	<<if $rng gte 81>>
+
+		"We already agreed on your price," <<he>> says, grabbing you with more force.
+		<br><br>
+
+		<<link [[Next|Danube Tea Sex]]>><<set $molestationstart to 1>><</link>>
+		<br>
+
+	<<else>>
+
+		"I'm sorry," <<he>> says. "But I think you should take your money and leave. I didn't realise I let a whore in."
+		<<He>> hands you <<moneyGain 25>> and gestures for you to leave.
+		<br><br>
+
+		<<link [[Next|Danube Street]]>><<endevent>><</link>>
+		<br>
+
+	<</if>>
+<</if>>
+
+:: Danube Tea Refuse
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<if $rng gte 81>>
+
+	"You're right, we agreed on £15," <<he>> says, grabbing you with more force.
+	<br><br>
+
+	<<link [[Next|Danube Tea Sex]]>><<set $molestationstart to 1>><</link>>
+	<br>
+
+<<else>>
+
+	"I'm sorry," <<he>> says. "But I think you should take your money and leave. I didn't realise I let such a whore in." <<He>> hands you <<moneyGain 25>> and gestures for you to leave.
+	<br><br>
+
+	<<link [[Next|Danube Street]]>><<endevent>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Garden
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+You are led to the sprawling back garden, the extent of which is concealed by several poorly-kept hedgerows.
+"Just do what you can. Don't be lazy though," <<He>> points at a kennel surrounded by bones.
+<<if $rightarm is "bound" or $leftarm is "bound" or $feetuse is "bound">>
+	"Brutus is... Wait. What? What's going on with your <<if $leftarm is "bound" or $rightarm is "bound">>arms<</if>><<if ($leftarm is "bound" or $rightarm is "bound") and $feetuse is "bound">> and <</if>><<if $feetuse is "bound">>legs<</if>>? Are they tied up?"
+	<br><br>
+	<<He>> <<if $rightarm is "bound" or $leftarm is "bound">>spins you around to look at your bound arms<<elseif $feetuse is "bound">>crouches to look at your bound legs<</if>> and
+
+	<<set $NPCList[1] to clone($NPCList[0])>>
+	<<clearsinglenpc 0>>
+	<<generate3>>
+	<<beastNEWinit 1 dog>>
+	<<if $rng gte 25 and ($monster is 1 or $bestialitydisable is "f")>> <!-- Modified for Beast People -->
+		growls with irritation. "Is this a joke to you? Wasting my time? What work can you do like that?"
+		<br><br>
+
+		<<person2>><<He>> grabs your shoulder and marches you toward the exit. <<He>> stops when a <<person3>><<person>> appears at the side door. <<He>> beckons the <<person2>><<person>> over, and they exchange a few whispered words. <<He>> turns you back to the garden
+		<br><br>
+
+		"Since you're being paid to work, the <<if $NPCList[2].pronoun is "m">>Lord<<else>>Lady<</if>> of the House has thought of one job you're perfectly equipped for."
+		<br>
+		By the kennel, <<he>> suddenly shoves you to the floor. "Brutus!" <<He>> whistles. You hear a heavy bounding run. A nose sniffs at your butt. "Hey Brutus! We've brought you a new friend!"
+		<br><br>
+
+		<<link [[Next|Danube Garden Bitch]]>><<set $molestationstart to 1>><<pass 10>><</link>>
+		<br>
+	<<else>>
+		sighs with exasperation. "Well you're not going to get any work done like that are you?"
+		<br><br>
+		<span class="green">Your limbs fall free.</span>
+		<br>
+		<<unbind>>
+		"I don't know what's wrong with young people nowadays. As I was saying..."
+		<br><br>
+		<<link [[Continue|Danube Garden]]>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	"Brutus is watching."
+	<br><br>
+
+	You kneel in front of one of the hedges and get to work removing the weeds.
+
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (9900 - $allure)>>
+		<<rng>>
+		<<if $rng gte 81 and $tentacledisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
+			<<pass 2 hours>>
+			You work at it for two hours, and barely seem to make a dent. It's almost as if the weeds grow back as fast as you remove them. You reach in to try to remove a large shrub at its roots, but your hand gets stuck. You try to free it with your other hand, but that gets stuck too. Green tendrils emerge, animated by some force.
+			<br><br>
+
+			<<link [[Struggle|Danube Tentacles]]>><<set $molestationstart to 1>><</link>>
+			<br>
+			<<link [[Soothe|Danube Garden Soothe]]>><</link>><<tendingdifficulty 1 1200>>
+			<br>
+
+		<<elseif $rng gte 61>> <!-- Modified for BEast People -->
+			<<pass 2 hours>>
+			<<if $monster is 1 or $bestialitydisable is "f">>
+				<!-- Jimmy: Using per NPC instead of cloning, to ensure orderness of event history. -->
+				<<saveNPC 0 "danube_garden_0">>
+				<<endevent>>
+				<<loadNPC 1 "danube_garden_0">>
+				<<clearNPC "danube_garden_0">>
+				<<beastNEWinit 1 dog>>
+				You work at it for two hours, and barely seem to make a dent. It's almost as if the weeds grow back as fast as you remove them. You're reaching in to remove a large shrub at its roots when something prods your <<bottom>>. You turn to look, but <<bhe>> has already mounted you.
+				<br><br>
+
+				<<link [[Next|Danube Dog]]>><<set $molestationstart to 1>><</link>>
+				<br>
+			<<else>>
+				<<pass 2 hours>>
+				You work at it for two hours, and barely seem to make a dent. It's almost as if the weeds grow back as fast as you remove them. You notice movement above, and see a <<person2>><<person>> at the window, watching you. It's pretty creepy.
+				<<gstress>><<stress 6>>
+				<br><br>
+
+				<<pass 2 hours>>
+				Over the next two hours you barely seem to make a dent. It's almost as if the weeds grow back as fast as you remove them. Regardless, the <<person1>><<person>> seems satisfied, and hands you <<moneyGain 100>>.
+				<<physique 6>>
+				<br><br>
+
+				<<link [[Next|Danube Street]]>><<endevent>><</link>>
+				<br>
+			<</if>>
+
+		<<else>>
+
+			<<pass 2 hours>>
+			You work at it for two hours, and barely seem to make a dent. It's almost as if the weeds grow back as fast as you remove them. You notice movement above, and see a <<person2>><<person>> at the window, watching you. It's pretty creepy.
+			<<gstress>><<stress 6>>
+			<br><br>
+
+			<<pass 2 hours>>
+			Over the next two hours you barely seem to make a dent. It's almost as if the weeds grow back as fast as you remove them. Regardless, the <<person1>><<person>> seems satisfied, and hands you <<moneyGain 100>>.
+			<<physique 6>>
+			<br><br>
+
+			<<link [[Next|Danube Street]]>><<endevent>><</link>>
+			<br>
+
+		<</if>>
+
+	<<else>>
+
+		<<pass 4 hours>>
+		You work at it for four hours, and barely seem to make a dent. It's almost as if the weeds grow back as fast as you remove them. Regardless, the <<person>> seems satisfied, and hands you <<moneyGain 100>>.
+		<<physique 6>>
+		<br><br>
+
+		<<link [[Next|Danube Street]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Danube Garden Soothe
+<<effects>>
+
+You hum a gentle tune.
+<<if $tendingSuccess>>
+
+	<<pass 2 hours>>
+
+	<span class="green">The tendrils loosen their grasp,</span> and you pull yourself free.
+	<br><br>
+
+	You continue your work. Now wary, you stay far from the denser foliage. After another two hours the <<person>> seems satisfied, and hands you <<moneyGain 100>>.
+	<<physique 6>>
+	<br><br>
+	<<link [[Next|Danube Street]]>><<endevent>><</link>>
+	<br>
+
+<<else>>
+	<<endevent>>
+	<span class="red">It's no use.</span> The tendrils tighten their grip.
+	<br><br>
+
+	<<link [[Next|Danube Tentacles]]>><<set $molestationstart to 1>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Tentacles
+<<set $outside to 1>><<set $location to "town">>
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<set $combat to 1>>
+	<<set $enemytype to "tentacles">>
+	<<molested>>
+	<<controlloss>>
+
+	<<tentaclestart 6 15 "root" "vine" true>>
+	<<set $tentacles[0].shaft to "leftarm">><<set $leftarm to "tentgrappled">><<set $lefttarget to "tentacles">>
+	<<set $tentacles[1].shaft to "rightarm">><<set $rightarm to "tentgrappled">><<set $righttarget to "tentacles">>
+
+<</if>>
+
+<<statetentacles>>
+
+
+<<effects>>
+<<effectstentacles>>
+<<tentacles>>
+<<actionstentacles>>
+
+<<if $tentacles.active lte ($tentacles.max / 2)>>
+	<span id="next"><<link [[Next|Danube Tentacles Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Tentacles]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Tentacles Finish
+<<effects>>
+
+The roots lose interest in you, and disappear into the soil. <<tearful>> you untangle yourself from the plants and vines surrounding you.
+
+<<clothesontowel>>
+
+<<pass 2 hours>>
+
+You continue your work. Now wary, you stay far from the denser foliage. After another two hours the <<person>> seems satisfied, and hands you <<moneyGain 100>>.
+
+<br><br>
+<<endcombat>>
+
+<<physique 6>>
+<br><br>
+
+<<link [[Next|Danube Street]]>><</link>>
+<br>
+
+:: Danube Dog
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $NPCList[0].stance to "top">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Danube Dog Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Dog]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Dog Finish
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<beastejaculation>>
+
+	Satisfied, the <<beasttype>> returns to its kennel.
+
+	<br><br>
+
+	<<clothesontowel>>
+	<<pass 2 hours>>
+
+	<<tearful>> you continue your work. Now wary, you keep the kennel in your field of view at all times. After another two hours the <<person2>><<person>> seems satisfied, and hands you <<moneyGain 100>>.
+
+	<br><br>
+
+	<<endcombat>>
+	<<physique 6>>
+	<br><br>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<<else>>
+
+	The <<beasttype>> flees back to its kennel.
+
+	<br><br>
+
+	<<clothesontowel>>
+	<<pass 2 hours>>
+
+	<<tearful>> you continue your work. Now wary, you keep the kennel in your field of view at all times. After another two hours the <<person2>><<person>> seems satisfied, and hands you <<moneyGain 100>>.
+
+	<br><br>
+
+	<<endcombat>>
+	<<physique 6>>
+	<br><br>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Garden Bitch
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $phase to 3>>
+<</if>>
+
+<<effects>>
+<<if $phase lt 0>>
+	The <<person2>><<person>> and <<person3>><<person>> stand over you, looking down at the spectacle.
+	<<set $phase += 1>> /* in all other cases, $phase decreases by one. Adding 1 here cancels out the following -1. */
+<<elseif $orgasmdown gte 1>>
+	<<if $phase % 2>>
+		<<if $NPCList[0].gender is "m" and $vaginastate is "penetrated">>"Keep going, Brutus," the <<person2>><<person>> says, "She's squealing for your seed!"
+		<<elseif $NPCList[0].gender is "m" and ($vaginastate is "imminent" or $vaginastate is "entrance")>>"Now, Brutus!" the <<person2>><<person>> says, "Fuck her! She needs it!"
+		<<elseif $penisstate is "penetrated">>"Good girl, Brutus," the <<person2>><<person>> says, "You milked that stud!"
+		<<elseif $NPCList[0].gender is "m" and $penisstate is "otheranus">>"Bad boy, Brutus," the <<person2>><<person>> says, "You're supposed to be the stud!"
+		<<elseif $penisstate is "othermouth" or $penisstate is "othermouthimminent" or $penisstate is "othermouthentrance">>"Brutus!" the <<person3>><<person>> says, "Stop licking! That's not food!"
+		<<else>>"Good <<if $NPCList[0].gender is "m">>boy<<else>>girl<</if>>, Brutus," the <<person3>><<person>> says, "You made your bitch squeal!"
+		<</if>>
+	<<else>>
+		"You were right, <<person3>><<Master>>. Look, the <<bitch>> is getting off on it!"
+		<br>
+		<<if $fame.bestiality gte 400>>
+			"Indeed," <<he>> says. "I recognised <<phim>>. <<pShes>> a well known 'animal-lover'."
+		<<else>>
+			"Well even I didn't expect <<phim>> to enjoy it this much."
+		<</if>>
+	<</if>>
+	<br>
+	You feel utterly humiliated.
+	<<combattrauma 3>><<famebestiality 10>>
+<<elseif ($vaginastate is "imminent" or $anusstate is "imminent")>>
+	<<if $phase % 2>>"That's right, Brutus," the <<person2>><<person>> says, "Get it in there."<<else>>"Go on, Brutus. One hard push."<</if>>
+<<elseif ($penisstate is "othermouthentrance" or $penisstate is "othermouthimminent")>>
+	<<if $phase % 2>>
+		"Don't worry boy," the <<person3>><<person>> says. "Brutus doesn't bite!"
+		<br>
+		"But <<if $pronoun is "m">>m'Lord',<<else>>m'Lady<</if>>, What about that time with the..?"
+		<br>
+		"Ssh!"
+	<<else>>
+		"That's brave," the <<person2>><<person>> says. "Putting it in there. With all those teeth."
+	<</if>>
+<<elseif ($vaginastate is "penetrated" or $anusstate is "penetrated")>>
+	<<if $phase % 2>>"That's right, Brutus," the <<person2>><<person>> says, "<<if $pregnancyspeechdisable is "f">>Breed<<else>>Fuck<</if>> your bitch."<<else>>"Harder Brutus! Make <<phim>> yelp."<</if>>
+<<elseif $penisstate is "penetrated">>
+	<<if $phase % 2>>"That's right, Brutus," the <<person2>><<person>> says, "Ride your stud."<<else>>"Good girl! Make <<phim>> yelp."<</if>>
+<<elseif $penisstate is "otheranus">>
+	<<if $NPCList[0].gender is "m">>
+		<<if $phase % 2 is 0>>
+			"Well that... isn't quite what I expected."
+		<<else>>
+			"Boy! That's animal abuse!"
+			<br>
+			"It's okay," the <<person3>><<person>> says. "Brutus seems to like it."
+		<</if>>
+	<<else>>
+		<<if $phase % 2>>
+			"Look at Brutus's face! I don't she think was expecting that hole!"
+		<<else>>
+			"Wrong hole boy."
+			<br>
+			"It's okay," the <<person3>><<person>> shrugs. "Look though... Brutus seems to like it."
+		<</if>>
+	<</if>>
+<<elseif $penisstate is "othermouth">>
+	<<if $phase % 2>>
+		"Well there's something you don't see every day."
+	<<else>>
+		"How kind," the <<person2>><<person>> says. "He's giving the dog a bone!"
+		<br>
+		The <<person3>><<person>> rolls <<his>> eyes.
+	<</if>>
+<<elseif $mouthstate is "othervagina">>
+	<<if $phase % 2>>
+		"No, Brutus," the <<person2>><<person>> says. "Stop. That's too-"
+		<br>
+		"Leave it!" The <<person3>><<person>> snaps. "We're paying <<phim>> aren't we? I want to see this."
+	<<else>>
+		"How's that dog pussy taste?" the <<person2>><<person>> jeers. "Still feeling smart trying to waste my time? Huh?"
+		<br>
+		The <<person3>><<person>> rolls <<his>> eyes. "<<pShe>> can't exactly answer right now."
+	<</if>>
+<<elseif $mouthstate is "penetrated">>
+	<<if $phase % 2>>
+		"No, Brutus," the <<person2>><<person>> says. "Stop. That's too-"
+		<br>
+		"Leave it!" The <<person3>><<person>> snaps. "We're paying <<phim>> aren't we? I want to see this."
+	<<else>>
+		"Still feel smart with a mouth full of <<beasttype>> dick?!" the <<person2>><<person>> jeers.
+		<br>
+		The <<person3>><<person>> smirks. "Listen! I think <<pshes>> trying to answer."
+	<</if>>
+<<else>>
+	The <<person2>><<person>> and <<person3>><<person>> stand over you, looking down at the spectacle.
+	<<set $phase += 1>> /* in all other cases, $phase decreases by one. Adding 1 here cancels out the following -1. */
+<</if>>
+<<set $phase -= 1>>
+
+<<effectsman>>
+<br><br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Danube Garden Bitch Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Garden Bitch]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Garden Bitch Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+
+	<<beastejaculation>>
+
+	Satisfied, the <<beasttype>> yawns and returns to its kennel.
+	<br><br>
+
+	The <<person2>><<person>> helps you to your feet and <span class="green">you feel your limbs come free.</span>
+	<<unbind>>
+	<br>
+
+	<<clotheson>>
+
+	A <<moneyGain 240>> is pressed into your hand.
+	<br>
+	"Brutus needed that. <<moneyGainDisplay 50>>'s the going rate for a bitch, so as far I'm concerned we're even. Get out of here."
+	<br><br>
+
+	You are pushed into the street and the door slams behind. <<tearful>> you gather yourself.
+	<br><br>
+
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><<pass 10>><<set $eventskip to 1>><</link>>
+
+<<else>>
+
+	The <<beasttype>> whimpers and flees back to its kennel.
+	<br><br>
+
+	<<clotheson>>
+
+	The <<person2>><<person>> drags you to your feet. "Seems you're not even any good for that. Get out of here. You're not getting a penny for the trouble you've caused."
+	<br><br>
+
+	You are shoved into the street, still bound. <<tearful>> you gather yourself.
+	<br><br>
+
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><<set $eventskip to 1>><<pass 10>><</link>>
+<</if>>
+
+:: Danube Doll
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<He>> leads you upstairs to <<his>> bedroom, where a table waits.
+Various dolls and teddy bears ring the table, sitting as if attending, and a toy tea set sits on top. <<He>> sits and gestures for you to do likewise.
+<br><br>
+
+You sit opposite <<him>>, between a doll missing one eye and a grey bear.
+"Ladies and gentlemen," <<he>> says, addressing the assembled toys. "Let me introduce my friend from abroad."
+<<He>> points at you. "Please make <<phim>> feel welcome." <<He>> picks up the empty teapot and starts mock pouring it into the cups.
+<br><br>
+
+This continues for a time.
+The <<person>> talks about some fantastical story of adventure and intrigue, and occasionally responds to one of <<his>> toys as if they spoke.
+You don't say much, but <<he>> seems content.
+
+<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+<<if $danger gte (9900 - $allure)>>
+
+	<<pass 20>>After twenty minutes <<he>> gives you a devious look.
+	"Did I mention that where my friend is from, they take tea in their underwear?" You don't like where this is going.
+	"<<pShe>> is being polite, but <<pshe>> would be much more comfortable in less clothes. You should undress."
+	<br><br>
+
+	<<if $worn.under_lower.type.includes("naked") and !playerChastity()>>
+		<<if $exhibitionism gte 75>>
+			You're self-conscious about your lack of underwear. The thought of exposing yourself excites you.
+			<br><br>
+
+			<<link [[Strip|Danube Doll Strip]]>><<set $phase to 1>><</link>><<exhibitionist5>>
+			<br>
+		<<else>>
+			You're self-conscious about your lack of underwear. There's no way you could strip naked.
+			<br><br>
+		<</if>>
+
+	<<elseif $worn.under_lower.type.includes("naked") and playerChastity()>>
+		<<if $exhibitionism gte 75>>
+			You're self-conscious about your $worn.genitals.name. The thought of stripping down to it excites you.
+			<br><br>
+
+			<<link [[Strip|Danube Doll Strip]]>><<set $phase to 2>><</link>><<exhibitionist5>>
+			<br>
+		<<else>>
+			You're self-conscious about your $worn.genitals.name. There's no way you could strip down to it.
+			<br><br>
+		<</if>>
+
+	<<elseif $player.gender_appearance is "f">>
+		<<if $exhibitionism gte 55>>
+			You're self-conscious about your <<breasts>>. The thought of exposing yourself excites you.
+			<br><br>
+
+			<<link [[Strip|Danube Doll Strip]]>><<set $phase to 3>><</link>><<exhibitionist4>>
+			<br>
+		<<else>>
+			You're self-conscious about your <<breasts>>. There's no way you could expose yourself.
+			<br><br>
+		<</if>>
+
+	<<elseif $player.breastsize gte 3>>
+		<<if $exhibitionism gte 55>>
+			You're self-conscious about your <<breasts>>. The thought of exposing yourself excites you.
+			<br><br>
+
+			<<link [[Strip|Danube Doll Strip]]>><<set $phase to 4>><</link>><<exhibitionist4>>
+			<br>
+		<<else>>
+			You're self-conscious about your <<breasts>>. There's no way you could expose yourself.
+			<br><br>
+		<</if>>
+	<<else>>
+		<<if $exhibitionism gte 15>>
+			The thought of stripping excites you, and you'd still have your $worn.under_lower.name.
+			<br><br>
+
+			<<link [[Strip|Danube Doll Strip]]>><<set $phase to 5>><</link>><<exhibitionist2>>
+			<br>
+		<<else>>
+			There's no way you would do such a humiliating thing.
+			<br><br>
+		<</if>>
+	<</if>>
+
+	<<link [[Refuse|Danube Doll Refuse]]>><</link>>
+	<br>
+
+<<else>>
+
+	<<pass 40>>After forty minutes, <<he>> stands up. "If you would excuse me, my friend has business elsewhere."
+	You follow <<him>> back to the front door, where <<he>> hands you <<moneyGain 25>> and bids you goodbye.
+	<br><br>
+
+	<<link [[Next|Danube Street]]>><<endevent>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Doll Refuse
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<if $rng gte 81>>
+
+	"I insist," <<he>> says, lunging across the table and grabbing your <<outfit>>.
+	<br><br>
+
+	<<link [[Next|Danube Doll Molestation]]>><<set $molestationstart to 1>><</link>>
+	<br>
+
+<<else>>
+
+	"As I said, <<pshe>> is ever so polite," <<he>> says, but seems a bit upset by your refusal.
+	<br><br>
+
+	<<pass 20>>After twenty minutes, <<he>> stands up. "If you would excuse me, my friend has business elsewhere."
+	You follow <<him>> back to the front door, where <<he>> hands you <<moneyGain 25>> and bids you goodbye.
+	<br><br>
+
+	<<link [[Next|Danube Street]]>><<endevent>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Doll Strip
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<fameexhibitionism 1>>
+
+<<if $phase is 1>>
+
+	<<flaunting>> you <<nervously>> remove your <<outfit>>.
+	The <<person>> gasps when your <<genitals_are>> revealed.
+	Once naked, you sit back at the table. Your nudity impacts <<his>> behaviour, <<he>> can't keep <<his>> eyes off you.
+	<<He>> makes excuses to cross the room so <<he>> can look at you from other angles and sneak peeks at your <<undies>>.
+	<<exhibitionism5>>
+
+<<elseif $phase is 2>>
+
+	<<flaunting>> you <<nervously>> remove your <<outfit>>.
+	The <<person>> gasps when your $worn.genitals.name. is revealed. "What exotic underwear!" <<he>> exclaims.
+	Once naked, you sit back at the table. Your nudity impacts <<his>> behaviour, <<he>> can't keep <<his>> eyes off you.
+	<<He>> makes excuses to cross the room so <<he>> can look at you from other angles and sneak peeks at your <<undies>>.
+	<<exhibitionism5>>
+
+<<elseif $phase is 3>>
+
+	<<if $player.gender is "m">>
+		You <<nervously>> remove your <<outfit>>, your feminine appearance making you exceptionally self-conscious.
+		Once stripped down to your $worn.under_lower.name, you sit back at the table.
+		Your exposure impacts <<his>> behaviour, <<he>> can't keep <<his>> eyes off you.
+		<<He>> makes excuses to cross the room so <<he>> can look at you from other angles and sneak peeks at your <<undies>>.
+		<<exhibitionism4>>
+	<<else>>
+		You <<nervously>> remove your <<outfit>>.
+		Once stripped down to your $worn.under_lower.name, you sit back at the table.
+		Your exposure impacts <<his>> behaviour, <<he>> can't keep <<his>> eyes off you.
+		<<He>> makes excuses to cross the room so <<he>> can look at you from other angles and sneak peeks at your <<undies>>.
+		<<exhibitionism4>>
+	<</if>>
+
+<<elseif $phase is 4>>
+
+	You <<nervously>> remove your <<outfit>>.
+	The <<person>> gasps as your <<breasts>> <<if $player.breastsize gte 2>>flop out<<else>>are exposed<</if>>.
+	"You're a girl!, <<he>> exclaims. You feel your face flush.
+	Once stripped down to your $worn.under_lower.name, you sit back at the table.
+	Your exposure impacts <<his>> behaviour, <<he>> can't keep <<his>> eyes off you.
+	<<He>> makes excuses to cross the room so <<he>> can look at you from other angles and sneak peeks at your <<undies>>.
+	<<exhibitionism4>>
+
+<<elseif $phase is 5>>
+
+	You <<nervously>> remove your <<outfit>>.
+	Once stripped down to your $worn.under_lower.name, you sit back at the table.
+	Your exposure impacts <<his>> behaviour, <<he>> can't keep <<his>> eyes off you.
+	<<He>> makes excuses to cross the room so <<he>> can look at you from other angles and sneak peeks at your <<undies>>.
+	<<exhibitionism2>>
+
+<</if>>
+
+<<pass 20>>After twenty minutes, <<he>> stands up. "If you would excuse me, my friend has business elsewhere."
+You follow <<him>> back to the front door, where <<he>> hands you <<moneyGain 50>> and bids you goodbye.
+<br><br>
+
+<<clotheson>>
+
+<<link [[Next|Danube Street]]>><<endevent>><</link>>
+<br>
+
+:: Danube Doll Molestation
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>><<npcstrip>><<npcidlegenitals>><<set $enemyanger += 40>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($worn.upper.type.includes("naked") and $worn.lower.type.includes("naked"))>>
+	<span id="next"><<link [[Next|Danube Doll Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Doll Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Doll Molestation Finish
+<<set $outside to 0>><<set $location to "town">><<effects>>
+
+<<if $worn.lower.type.includes("naked") and $worn.upper.type.includes("naked")>>
+
+	The <<person>> stands back to leer at you. <<covered>> "That's better," <<he>> says as <<he>> sits back down. Unable to leave like this, you follow suit.
+	<br><br>
+
+	Your exposure impacts <<his>> behaviour, <<he>> can't keep <<his>> eyes off you. <<He>> makes excuses to cross the room so <<he>> can look at you from other angles and sneak peeks at your <<undies>>.
+	<br><br>
+
+	<<pass 20>>After twenty minutes, <<he>> stands up. "If you would excuse me, my friend has business elsewhere." You follow <<him>> back to the front door, where <<he>> hands you <<moneyGain 25>> and bids you goodbye.
+	<br><br>
+
+	<<clothesontowel>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<<elseif $enemyarousal gte $enemyarousalmax>>
+
+	<<ejaculation>>
+	<<He>> grimaces. "I'm sorry," <<he>> says. "I've been such a rude host. Here." <<He>> hands you <<moneyGain 25>>. <<tearful>> you leave the building.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<<elseif $enemyhealth lte 0>>
+
+	<<He>> falls in pain and starts screaming for help. <<tearful>> you run from the building.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Danube Street]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Danube Tutor
+
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+<<set _subject to ["science", "maths", "English", "history"][$rng1]>>
+You enter the lounge. The <<person2>><<person>> briefly quizzes you on _subject.
+<<switch $rng1>>
+	<<case 0>>
+		<<if $sciencetrait lte 0>>
+			You don't understand the questions. You smile as <<he>> rattles off words that don't even sound like English. You can't answer anything <<he>> asks.
+			<br><br>
+			<<He>> shakes <<his>> head. "Still..." <<he>> says. "It is revision and it'll help <<person1>><<him>> focus.
+			<<He>> will probably learn something just explaining things to you."
+			<br><br>
+			<<person2>><<He>> hands you <<moneyGain 20>>.
+			<<set $phase to 0>>
+		<<elseif $sciencetrait lte 1>>
+			<<His>> questions are tricky, and you struggle to answer many.
+			For a minute or two, <<he>> starts teaching you the truth about
+			<<print either(
+				"government chemtrails.", "fluoride in the water.", "homeopathy.",
+				"the Van Allen belt and the Moon landing Hoax.", "how 'safe' vaccines are.", "chemicals in the water."
+			)>>
+			You listen with interest.
+			<br><br>
+			"Of course, your school will never tell you about this stuff," <<he>> says, handing you <<moneyGain 50>>. "Go on then. Through there."
+			<<set $phase to 1>>
+		<<elseif $sciencetrait lte 2>>
+			You're able to answer all of <<his>> questions, though some are tricky.
+			<<He>> eagerly tells you some of <<his>> pet theories. They mostly sound like pseudoscience.
+			<br><br>
+			"Okay," <<he>> says, handing you <<moneyGain 120>>. "You know what you're talking about."
+			<<set $phase to 2>>
+		<<else>>
+			<<His>> questions are trivial and you answer them with ease.
+			Over the next minute or two, you effortlessly eviscerate several of <<his>> pseudoscientific 'theories' and misconceptions.
+			<br><br>
+			"Wow," <<he>> says, handing you the full <<moneyGain 150>>. "You're something else."
+			<<set $phase to 3>>
+		<</if>>
+	<<case 1>>
+		<<if $mathstrait lte 0>>
+			You barely understand the questions and have no idea how to calculate answers.
+			<br><br>
+			<<He>> shakes <<his>> head. "Still..." <<he>> says.
+			"I suppose working with someone like you will give <<person1>><<him>> confidence. <<He>> could learn something explaining things to you."
+			<br><br>
+			<<person2>><<He>> hands you <<moneyGain 20>>.
+			<<set $phase to 0>>
+		<<elseif $mathstrait lte 1>>
+			A few of <<his>> questions are straight-forward, but <<he>> loses you with statistics and algebra.
+			<br><br>
+			"You can help with the basics," <<he>> says, handing you <<moneyGain 50>>. "Go on then. Through there."
+			<<set $phase to 1>>
+		<<elseif $mathstrait lte 2>>
+			You're able to answer most of <<his>> questions, though for a couple you need paper.
+			<br><br>
+			"Okay," <<he>> says, handing you <<moneyGain 120>>. "You know what you're talking about."
+			<<set $phase to 2>>
+		<<else>>
+			<<His>> questions are trivial and you answer them with ease. Over the next minute or two, you effortlessly explain several mathematical concepts.
+			<br><br>
+			"Wow," <<he>> says, handing you the full <<moneyGain 150>>. "Go teach my <<person1>><<daughter>> to be like that."
+			<<set $phase to 3>>
+		<</if>>
+	<<case 2>>
+		<<if $englishtrait lte 0>>
+			First <<he>> asks you about those old plays written in poetry that doesn't rhyme.
+			When you explain that you don't know much about old books, <<he>> asks about your "Gramma." You start to tell <<him>> about your grandmother.
+			<br><br>
+			<<He>> laughs in your face. <<if $rapestat gte 5>>It's rude, but at least <<he>> isn't trying to rape you.<<else>>It's rude.<</if>>
+			<br><br>
+			<<He>> shakes <<his>> head. "Explaining the basics to you will be good English practise."
+			<br><br>
+			<<person2>><<He>> hands you <<moneyGain 20>>.
+			<<set $phase to 0>>
+		<<elseif $englishtrait lte 1>>
+			A few of <<his>> questions are okay, but <<he>> soon loses you with medieval literature and advanced grammar.
+			<br><br>
+			"You can help with the basics," <<he>> says, handing you <<moneyGain 50>>. "Go on then. Through there."
+			<<set $phase to 1>>
+		<<elseif $englishtrait lte 2>>
+			You're able to answer most of <<his>> questions, though it's clear <<he>> knows more modern literature than you.
+			<br><br>
+			"Okay," <<he>> says, handing you <<moneyGain 120>>. "You know what you're talking about. Go tutor."
+			<<set $phase to 2>>
+		<<else>>
+			<<His>> questions are trivial and you answer them with ease.
+			Over the next minute or two,
+			a discussion on how grammar changes over time turns into a brief debate on whether grammar should be modern and fluid or fixed and traditional.
+			<br><br>
+			"Very interesting," <<he>> says, handing you the full <<moneyGain 150>>. "Persuasive too. Please teach my <<person1>><<daughter>> some of that eloquence."
+			<<set $phase to 3>>
+		<</if>>
+	<<case 3>>
+		<<if $historytrait lte 0>>
+			You smile as <<he>> rattles off various dates, events and 'important' events from history. Some of it sounds familiar but you can't answer any questions.
+			<br><br>
+			<<He>> shakes <<his>> head. "You barely know what happened last week." <<He>> shrugs.
+			"Revision and recounting will help <<person1>><<him>> focus. <<He>> will learn something just explaining the basics to you."
+			<br><br>
+			<<person2>><<He>> hands you <<moneyGain 20>>.
+			<<set $phase to 0>>
+		<<elseif $historytrait lte 1>>
+			<<His>> questions are quite tricky, and you struggle to answer many.
+			<br><br>
+			"You can help with the basics," <<he>> says, handing you <<moneyGain 50>>. "Go on then. Through there."
+			<<set $phase to 1>>
+		<<elseif $historytrait lte 2>>
+			You're able to answer all of <<his>> questions, though it's clear <<he>> knows certain time periods in more detail.
+			<br><br>
+			"Okay," <<he>> says, handing you <<moneyGain 120>>. "You know what you're talking about. Go tutor."
+			<<set $phase to 2>>
+		<<else>>
+			<<His>> questions are trivial and you answer them with ease. You go on to tell <<him>> some historical facts about <<his>> own street that <<he>> never knew.
+			<br><br>
+			"Amazing," <<he>> says, handing you the full <<moneyGain 150>>. "You're quite the scholar. Please, go ahead."
+			<<set $phase to 3>>
+		<</if>>
+<</switch>>
+<br><br>
+You work for an hour teaching the <<person1>><<person>> about _subject
+<<if $phase is 0>>
+	as best you can. <<He>> is far more advanced than you, and spends most of the time explaining the basics.
+	The <<person>> seems annoyed that <<his>> time has been wasted on this. However, the <<person2>><<person>> does thank you as you leave.
+<<elseif $phase is 1>>
+	as best you can. It mostly works as group study, as the <<person>> is at about the same level as you.
+	<br><br>
+	The <<person2>><<person>> thanks you as you leave.
+<<elseif $phase is 2>>
+	to the best of your ability. The <<person>> is quite behind you in this topic, and at times you struggle to explain the trickier concepts.
+	<br><br>
+	The <<person2>><<person>> smiles and thanks you as you leave.
+<<elseif $phase is 3>>
+	in detail. You are able to explain the topic in simple terms, and <<he>> overcomes problems <<he>> has been struggling with for a while.
+	<br><br>
+	The <<person2>><<person>> smiles and thanks you as you leave. "Great job! Please come back anytime."
+<</if>>
+<br><br>
+<<link [[Leave (1:00)|Danube Street]]>><<pass 60>><<endevent>><</link>>
+<br>
+
+:: Danube Catperson Intro
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+The <<person>> smiles. "Your timing is perfect! Please, come in." <<He>> gestures you into the house. Inside is a mess. It smells funny.
+<br><br>
+
+<<He>> whistles,
+
+<<saveNPC 0 "danube_cat_owner">>
+<<endevent>>
+<<beastNEWinit 3 cat>>
+<<saveNPC 0 "danube_cat_0">><<saveNPC 1 "danube_cat_1">><<saveNPC 2 "danube_cat_2">>
+
+prompting the arrival of three <<beastsplural>>.
+
+<<endevent>>
+<<loadNPC 0 "danube_cat_owner">>
+
+"These are my babies," <<person1>><<he>> purrs. "I need to fetch them some things. I'll give <<printmoney 3500>> to watch the little rascals while I'm out." <<He>> nuzzles one on the nose. "Maybe more, if they like you!"
+<br><br>
+
+<<link [[Accept (1:30)|Danube Catperson Accept]]>><</link>>
+<br>
+<<link [[Refuse|Danube Catperson Refuse]]>><</link>>
+<br>
+
+:: Danube Catperson Refuse
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+You refuse the <<persons>> offer and leave <<him>> to console <<his>> pets.
+<br><br>
+
+<<clearNPC "danube_cat_owner">>
+<<clearNPC "danube_cat_0">>
+<<clearNPC "danube_cat_1">>
+<<clearNPC "danube_cat_2">>
+
+<<link [[Next|Danube Street]]>><<endevent>><</link>>
+<br>
+
+:: Danube Catperson Accept
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+"Marvelous! I'll be quick as I can." <<He>> pauses halfway through the door. "Don't worry about feeding them. They're needy things, but they just had their <<if Time.dayState is "dawn">>breakfast<<elseif Time.dayState is "day">>lunch<<else>>dinner<</if>>."
+<br><br>
+
+With those words, <<hes>> gone.
+<br><br>
+
+<<endevent>>
+<<loadNPC 0 "danube_cat_0">><<loadNPC 1 "danube_cat_1">><<person1>>
+
+<<if $monster is 1 or $bestialitydisable is "f">>
+	<<link [[Next|Danube Catperson Accept 2]]>><<set $danubecathappiness to 0>><</link>>
+	<br>
+<<else>>
+	<<link [[Next|Danube Catperson Safe]]>><</link>>
+	<br>
+<</if>>
+
+:: Danube Catperson Safe
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+The job is uneventful. The <<beastsplural>> are skittish, and spend the whole hour and a half hiding from you.
+
+<<endevent>>
+<<loadNPC 0 "danube_cat_owner">><<person1>>
+
+You're relieved when the <<person>> returns, if only to end your boredom.
+<br><br>
+
+"Where are you, my darlings?" <<he>> calls out. There's no response. "Odd. They're usually quite social."
+<br><br>
+
+<<He>> sets <<moneyGain 35>> aside, before shuffling past in search of <<his>> pets. You take the money leave.
+
+<<clearNPC "danube_cat_owner">>
+<<clearNPC "danube_cat_0">>
+<<clearNPC "danube_cat_1">>
+<<clearNPC "danube_cat_2">>
+
+<<link [[Next|Danube Street]]>><<endevent>><<pass 60>><</link>>
+<br>
+
+:: Danube Catperson Accept 2
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+The job starts slow. They're skittish with you around, but you're content to leave them be.
+<br><br>
+
+About half an hour in, you hear a shrill cry from the kitchen.
+You rush in to find <<print ($NPCList[0].pronoun isnot $NPCList[1].pronoun and $monster ? "a" : "two")>> <<beastsplural>> poking into the pantry.
+<br><br>
+
+<<if $monster is 1>>
+	"You, <<girl>>," the larger <<beasttype 0>> growls. <<bHe 0>> holds out a bag of food. "Open it."
+<<else>>
+	The larger <<beasttype 0>> paws at a bag of food, growling.
+<</if>>
+<br><br>
+
+You were told not to feed them, but they look hungry.
+<br><br>
+
+<<if $deviancy gte 35>>
+	<<link [[Satisfy a different appetite|Danube Catperson Feed]]>><<set $phase to 3>><</link>><<deviant3>>
+	<br>
+<</if>>
+<<link [[Tell them no|Danube Catperson Feed]]>><<set $phase to 2>><</link>><<difficulty 65>>
+<br>
+<<link [[Feed them|Danube Catperson Feed]]>><<set $phase to 1>><</link>><<dancedifficulty 1 300>>
+<br>
+
+:: Danube Catperson Feed
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<switch $phase>>
+	<<case 1>>
+		<<if $speech_attitude is "meek">>
+			"Okay then," you say. "If that's what you want."
+		<<elseif $speech_attitude is "bratty">>
+			"Whatever it takes to get you to shut up," you grunt.
+		<<else>>
+			"Alright," you say. "Let's get you guys fed."
+		<</if>>
+		You tear into the bag. Before you can pour it, the impatient <<beasttype>> pounces!
+		<br><br>
+
+		You see it coming,
+		<<if $danceSuccess>>
+			<span class="green">and dodge out of the way.</span> <<bHe>> misses you and crashes into the other <<person2>><<beasttype>>. You take the opportunity to fill the bowls.<<stress -6>><<lstress>>
+			<br><br>
+
+			The sound of food falling into place cuts off a fight between the <<beastsplural>>. They scurry for their food, though not without a hiss or two.
+			<br><br>
+
+			Finished with their meal, the <<beastsplural>> go back to lounging. You do the same.
+		<<else>>
+			<span class="red">but <<bhes>> too fast.</span> <<bHe>> slams into you. The bag slips from your grasp, spilling food everywhere.<<pain 15>><<stress 5>><<ggpain>><<gstress>>
+			<br><br>
+
+			The <<beastsplural>> help themselves to the mess.
+			<<if $speech_attitude is "meek">>
+				"S-sorry for being slow," you mumble.
+			<<elseif $speech_attitude is "bratty">>
+				"Pricks," you grumble, sending a middle finger <<bhis>> way.
+			<<else>>
+				"Impatient little buggers," you grumble.
+			<</if>>
+			<br><br>
+
+			You clean up as best you can while the <<beastsplural>> gorge themselves. You hope the owner won't be upset.
+		<</if>>
+		<br><br>
+
+		<<link [[Next|Danube Catperson Sofa]]>><<endevent>><<pass 60>><</link>>
+		<br>
+	<<case 2>>
+		You tell the two no. They stare for a few seconds,
+		<<if random(1, 100) gte 36>>
+			<span class="green">before slinking out of the pantry.</span>
+			<<if $monster is 1>>
+				"Master would have," the <<person2>><<beasttype>> mutters as <<bhe>> passes.
+			<</if>>
+			<br><br>
+
+			With the <<beastsplural>> placated, you return to the sofa.
+			<br><br>
+
+			<<link [[Next|Danube Catperson Sofa]]>><<endevent>><<pass 60>><</link>>
+			<br>
+		<<else>>
+			<span class="red">then hiss.</span>
+			<<if $monster is 1>>
+				"You don't tell us no," the <<beasttype>> says.
+			<</if>>
+			<<bHe>> pounces onto you, knocking you to the ground.
+			<br><br>
+
+			<<link [[Next|Danube Catperson Feed Sex]]>><<set $molestationstart to 1>><</link>>
+		<</if>>
+	<<case 3>>
+		You drop to the floor and adopt a suggestive pose.
+		<br><br>
+
+		"I'm not supposed to feed you," you coo. "But a treat won't hurt."
+		<<deviancy3>>
+
+		The <<beastsplural>> slowly approach, purring.
+		<br><br>
+
+		<<link [[Next|Danube Catperson Feed Sex]]>><<set $sexstart to 1>><</link>>
+	<<default>>
+		You look at the two and, unsure what to do, go back to what you were doing before. The two don't stop their chants, but you hold through your indifference and eventually, they stop and peace returns.
+		<br><br>
+
+		<<link [[Next|Danube Catperson Sofa]]>><<endevent>><<pass 60>><</link>>
+		<br>
+<</switch>>
+<br>
+
+:: Danube Catperson Sofa
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+<<loadNPC 0 "danube_cat_2">>
+
+You flop down on the sofa. An hour passes. As you await the owner's return, a <<beasttype>> creeps into your peripheral.
+<br><br>
+
+You don't pay <<bhim>> any mind, until <<bhe>> creeps closer. With a hiss, <<bhe>> unsheathes <<bhis>> claws.<<stress 5>><<gstress>>
+<br><br>
+
+<<if $deviancy gte 15>>
+	<<link [[Seduce|Danube Catperson Claws Sex]]>><<set $sexstart to 1>><</link>><<deviant2>>
+	<br>
+<</if>>
+<<link [[Soothe|Danube Catperson Claws]]>><<set $phase to 2>><</link>><<tendingdifficulty 1 300>>
+<br>
+<<link [[Avoid|Danube Catperson Claws]]>><<set $phase to 1>><</link>><<dancedifficulty 1 300>>
+<br>
+
+:: Danube Catperson Claws
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<if $phase is 1>>
+	You leap up,
+	<<if $danceSuccess>>
+		<span class="green">quick enough to avoid the <<beasttype>>.</span><<stress -6>><<lstress>>
+		<br><br>
+
+		<<bHe>> curls up and settles into the vacant spot on the sofa, unbothered by <<bhis>> failed assault. You find another seat.
+	<<else>>
+		<span class="red">but you're not quick enough.</span> <<bHis>> claws sink into your skin.<<pain 3>><<stress 6>><<gpain>><<gstress>>
+		<br><br>
+
+		Seeming proud of <<bhimself>>, the <<beasttype>>
+		<<if $monster is 1>>
+			laughs <<bhis>> way out of the room.
+		<<else>>
+			scurries away.
+		<</if>>
+		You settle back into your seat, nursing your wound.
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Danube Catperson Payment]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You stretch your hand out to the <<beasttype>>. You stop short before making contact.
+	<<bHe>> gives your fingers a cautious sniff, then
+	<<if $tendingSuccess>>
+		<span class="green">licks you.</span><<stress -6>><<lstress>>
+	<<else>>
+		<span class="red">bites you.</span><<pain 15>><<stress 6>><<ggpain>><<gstress>>
+	<</if>>
+	<br><br>
+
+	Satisfied, the <<beasttype>> prances off.
+	<br><br>
+
+	<<link [[Next|Danube Catperson Payment]]>><<endevent>><</link>>
+<</if>>
+
+:: Danube Catperson Feed Sex
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<beastTrainGenerate>>
+<<elseif $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<beastTrainGenerate>>
+	<<if $NPCList[0].penis isnot "none">>
+		You remain on your knees as the <<beasttype 0>> mounts you.
+		<<set $position to "doggy">><<set $NPCList[0].stance to "top">>
+	<<else>>
+		The <<beasttype 0>> flips you onto your back, and mounts you.
+		<<set $position to "missionary">><<set $NPCList[0].stance to "top">>
+	<</if>>
+<</if>>
+
+<br>
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Danube Catperson Feed Sex End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Catperson Feed Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Catperson Feed Sex End
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<if $enemyhealth lte 0>>
+	<<beastwound>>
+	<<if $combatTrain.length gt 0>>
+		The <<beasttype>> recoils in pain and fear, but the other is eager for a go.
+		<<combatTrainAdvance>>
+		<<set $danubecathappiness -= 1>>
+		<br><br>
+		<<link [[Next|Danube Catperson Feed Sex]]>><</link>>
+		<br>
+	<<else>>
+		The <<beasttype>> recoils in pain and fear.
+		<<combatTrainAdvance>>
+		<<set $danubecathappiness -= 1>>
+		<br><br>
+
+		<<link [[Next|Danube Catperson Feed Sex End]]>><<set $finish to 1>><</link>>
+		<br>
+	<</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<if $combatTrain.length gt 0>>
+		Satisfied, the <<beasttype>> moves
+		<<combatTrainAdvance>>
+		and the other takes <<bhis>> turn.
+		<<set $danubecathappiness += 1>>
+		<br><br>
+
+		<<link [[Next|Danube Catperson Feed Sex]]>><</link>>
+		<br>
+	<<else>>
+		Satisfied, the <<beasttype>> moves away from you.
+		<<combatTrainAdvance>>
+		<<set $danubecathappiness += 1>>
+		<br><br>
+
+		<<link [[Next|Danube Catperson Feed Sex End]]>><<set $finish to 1>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<<set _consensual to $consensual>>
+
+	<<if $enemywounded is 0 and $enemyejaculated gte 2>>
+		The <<beasttype>> kicks <<bhis>> <<if $monster isnot 1>>hind<</if>> leg at you as they prowl out of the kitchen. You're left spent and shivering on the tile.
+		<br><br>
+
+		<<tearful>> you struggle to your feet.
+	<<elseif $enemywounded is 1 and $enemyejaculated is 1>>
+		The <<beasttype>> takes cover behind the other. <<bHe>> hisses, and the pair retreat, leaving you spent.
+		<br><br>
+
+		<<tearful>> you struggle to your feet.
+	<<elseif $enemywounded gte 2 and $enemyejaculated is 0>>
+		The <<beastsplural>> retreat with a hiss, scrambling over each other in their haste to escape.
+		<br><br>
+
+		<<tearful>> you scurry out of the kitchen.
+	<<else>>
+		The <<beasttype>> looks annoyed. <<bHe>> prowls towards you, but receives a swat from the other. A fight breaks out.
+		<br><br>
+
+		<<tearful>> you slink out of the kitchen while they're distracted.
+	<</if>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<if _consensual is 1>>
+		<<link [[Next|Danube Catperson Sofa]]>><<pass 60>><</link>>
+		<br>
+	<<else>>
+		<<link [[Next|Danube Catperson Flee]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Danube Catperson Claws Sex
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+
+	You run your hands up and down your chest. The <<beasttypes>> claws retract. Sensing your intent, <<bhe>> leaps onto the couch and mounts you.
+	<<deviancy2>>
+	<<if $NPCList[0].penis isnot "none">>
+		<<set $position to "doggy">><<set $NPCList[0].stance to "top">>
+	<<else>>
+		<<set $position to "missionary">><<set $NPCList[0].stance to "top">>
+	<</if>>
+<</if>>
+
+<br>
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Danube Catperson Claws Sex End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Danube Catperson Claws Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Danube Catperson Claws Sex End
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+
+	Satisfied, the <<beasttype>> curls up in your lap.
+	<<set $danubecathappiness += 1>>
+	<br><br>
+
+	<<tearful>> you settle back into your seat.
+<<elseif $enemyhealth lte 0>>
+	The <<beasttype>> retreats with a hiss.
+	<br><br>
+
+	<<tearful>> you slump back down on the sofa.
+	<<set $danubecathappiness -= 1>>
+<<else>>
+	The <<beasttype>> growls, but curls up on the sofa without a fight.
+	<br><br>
+
+	<<tearful>> you find yourself another seat.
+<</if>>
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Danube Catperson Payment]]>><</link>>
+<br>
+
+:: Danube Catperson Flee
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+
+You run for the door, but your fingers stop shy of the handle. You need the money.
+<br><br>
+
+<<link [[Stay (1:00)|Danube Catperson Sofa]]>><<pass 60>><</link>>
+<br>
+<<link [[Leave|Danube Catperson Flee 2]]>><</link>>
+<br>
+
+:: Danube Catperson Flee 2
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+<<loadNPC 0 "danube_cat_owner">><<person1>>
+
+The <<person>> can deal with the mess <<himself>>. You throw the door open and rush outside.
+<br><br>
+
+<<clearNPC "danube_cat_owner">>
+<<clearNPC "danube_cat_0">>
+<<clearNPC "danube_cat_1">>
+<<clearNPC "danube_cat_2">>
+
+<<link [[Leave|Danube Street]]>><<unset $danubecathappiness>><<endevent>><</link>>
+<br>
+
+:: Danube Catperson Payment
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "danube">>
+<<loadNPC 0 "danube_cat_owner">><<person1>>
+
+<<if $danubecathappiness isnot 0>>
+	<<set _catPay to (35 + ($danubecathappiness * 15))>>
+<</if>>
+
+You hear a voice from the door. "I'm back!" It's the <<person>>. <<His>> pets surround <<him>>,
+<<if $danubecathappiness gte 1>>
+	purring with delight.
+	<br><br>
+
+	"Did you make a new friend?" <<he>> coos. "You think <<pshe>> deserves a little reward, hm?"
+	<br><br>
+
+	<<He>> hands you <<moneyGain _catPay>>. "A little extra," <<he>> says as <<he>> ushers you outside. "Do come back sometime. They're so fond of you!"
+<<elseif $danubecathappiness lte -1>>
+	howling and hissing.
+	<br><br>
+
+	The <<person>> fixes you with a glare. You're thrown outside before you can get a word in.
+	<br><br>
+
+	<<He>> drops <<moneyGain _catPay>> at your feet before slamming the door shut. You can make out muffled blubbering on the other side. You take the money and hurry away.
+<<else>>
+	mewling impatiently.
+	<br><br>
+
+	"Settle down, darlings. <<Mummy>>'s home," <<he>> coos, kneeling down to tend to the purring mass.
+	<br><br>
+
+	<<He>> sets <<moneyGain 35>> aside without so much as looking at you. You take the money and leave.
+<</if>>
+<br><br>
+
+<<clearNPC "danube_cat_owner">>
+<<clearNPC "danube_cat_0">>
+<<clearNPC "danube_cat_1">>
+<<clearNPC "danube_cat_2">>
+
+<<link [[Leave|Danube Street]]>><<unset $danubecathappiness>><<endevent>><</link>>
+<br>

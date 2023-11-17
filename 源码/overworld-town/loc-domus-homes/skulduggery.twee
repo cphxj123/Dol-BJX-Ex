@@ -1,0 +1,744 @@
+:: Domus House Lock
+
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "domus">><<set $lock to 100>>
+The door is locked tight.
+<br><br>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<link [[Break in (0:05)|Domus House Sneak]]>><<pass 5>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+/* 北极星模组 */
+<<set $ghostIn to false>>
+<<if $options.bjx_eventTF and $ghost gte 1>>
+	<span class ='wraith'>只要你集中精力，就能穿越这扇门。</span>
+	<br>
+	<<link [[穿越 (0:01)|Domus House Sneak]]>><<pass 1>><<set $ghostIn to true>><</link>>
+	<br>
+<</if>>
+/* 北极星 */
+<<link [[Leave|Domus Street]]>><</link>>
+<br>
+
+:: Domus House Sneak
+
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">>
+/* 北极星模组 */
+<<if $ghostIn>>
+	你成功地穿门而入。
+<<else>>
+	你成功地撬开门锁，推门而入。
+<</if>>
+/* 北极星 */
+<<if $skulduggery lt 200>>
+	<<skulduggeryskilluse>>
+<<else>>
+	<span class="blue">There's nothing more you can learn from locks this simple.</span>
+<</if>>
+<br><br>
+You sneak around the house and look for anything of value.
+<<if $rng gte 81>>
+	<!-- Modified for Beast People -->
+	<<beastNEWinit 1 dog>>
+	<<if $monster is 1 or $bestialitydisable is "f">>
+		A low growl interrupts you, and a <<beasttype>> emerges from the darkness. <<bHe>> starts to bark.
+		<br><br>
+		<<if $deviancy gte 15>>
+			<<link [[Try to calm it|Domus House Dog]]>><<set $phase to 0>><<set $sexstart to 1>><<generate2>><</link>><<deviant2>>
+			<br>
+		<</if>>
+		<<link [[Fight|Domus House Dog]]>><<set $molestationstart to 1>><<set $phase to 0>><<generate2>><</link>>
+		<br>
+		<<link [[Run|Domus House Run]]>><<transform cat 1>><</link>>
+		<br><br>
+	<<else>>
+		A low growl interrupts you, and a dog emerges from the darkness. It starts to bark.
+		<br><br>
+		You flee out the house, the dog snapping at your heels. It doesn't chase you beyond the front door, content to bark into the <<if Time.dayState is "night">>night<<else>>street<</if>>.
+		<<beastescape>>
+		<br><br>
+		<<link [[Next|Domus Street]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<elseif $rng gte 61>>
+	You find a safe with a combination lock.
+	<br><br>
+	<<link [[Try to open it|Domus House Safe]]>><</link>>
+	<br>
+	<<link [[Leave|Domus Street]]>><</link>>
+	<br>
+<<elseif $rng gte 56>>
+	<<generate1>><<person1>>
+	As you creep through a darkened room a low voice startles you.
+	<br><br>
+	"You're welcome to keep looking around, sweetheart, but there's nothing here. Nothing you'd want. This street is good people, but we haven't got much.
+	If you want a mark that's worth something head over to Danube. Nice big places over there. Full of nice stuff."
+	<br>
+	A lighter sparks twice, lighting up a <<person>>. Third time, the cigarette in <<his>> mouth catches. A point of glowing red in the dark.
+	<br><br>
+	"I used to be a thief," <<he>> says. "Just be careful. Thieving's good for a while. Lots of good stuff for free. Nice life. Thought I was untouchable.
+	Ha. You pay for it in the end. In this town you always pay. One way or another. Pillory is brutal. Prison's worse. Far worse. Nowadays, I cut the middleman.
+	Can make easy money spreading your legs in this town. Easier than penal time. And at least you get to choose who. Keep some control. Prison's brutal."
+	<br><br>
+	A trail of smoke winds your way. It tickles your throat making you cough.
+	<br><br>
+	"Sorry," <<he>> says. "Filthy habit. Need to quit. Anyway, there's nothing here. Go see for yourself. Rather that than you come stumbling around here another day.
+	Go on, look around all you want. Take whatever. I can get more. Knock yourself out. Baby's sleeping in that room there though. Hasn't been down an hour yet.
+	Don't wake him, okay? That's all I ask."
+	<br>
+	You quietly move away.
+	<br>
+	"Growing up in this town, the little fucker's gonna need all the rest he can get," <<he>> mutters, seemingly to <<himself>>. "Poor little bastard."
+	<br><br>
+	You find nothing and leave empty handed.
+	<br><br>
+	<<endevent>>
+	<<link [[Leave|Domus Street]]>><</link>>
+	<br>
+<<elseif $rng gte 51>>
+	While searching a room for valuables you find a drawer containing a number of phones. Most are used but all are fairly new.
+	<<if currentSkillValue('skulduggery') gte 500>>
+		Your knowledge of the skulduggerous lets you quickly determine that these are stolen phones.
+		Stealing them again should not be a crime. It's not like they can report someone stealing their stolen goods.
+		<br><br>
+		<<link [[Take them|Domus Street]]>><<set $blackmoney += 60>><</link>>
+	<<else>>
+		Why would someone have so many nearly new phones? How odd.
+		<br><br>
+		<<link [[Take it|Domus Street]]>><<set $blackmoney += 60>><<crimeUp 60 "thievery">><</link>><<crime "thievery">>
+	<</if>>
+	<br>
+	<<link [[Leave|Domus Street]]>><</link>>
+	<br>
+<<elseif $rng gte 41>>
+	<<generate1>><<person1>>You're rummaging through the lounge when you hear footsteps approaching. You take cover behind the curtains, just before a <<person>> enters the room. <<He>> sits down and switches on the television like <<he>> plans to be there awhile.
+	<br><br>
+	<<link [[Sneak out|Domus House Sneak 2]]>><</link>>
+	<br>
+	<<link [[Wait (0:30)|Domus House Wait]]>><<pass 30>><</link>>
+	<br>
+<<elseif $rng gte 31>>
+	You're searching the lounge for valuables when you notice that one step sounds hollow.
+	<<if currentSkillValue('skulduggery') gte 500>>Suspecting a hidden stash,<<else>>Confused,<</if>> you look under the rug and find a trap door.
+	Lifting it up and peering down, it seems there is a set of steps leading down to an underground room.
+	<br>
+	You cannot make out anything in the darkness.
+	<br><br>
+	<<link [[Climb down|Domus House Dungeon]]>><</link>>
+	<br>
+	<<link [[Leave|Domus Street]]>><</link>>
+	<br>
+<<elseif $rng gte 21>>
+	<<switch $rng % 4>>
+		<<case 3>>
+			<<set _bigthing to "an extremely state of the art gaming system">><<set _thebits to "the curved UHD screens, the surround-speaker system, the gaming chair with integrated controller">>
+			<<set _littlething to "large collection of hentai games">><<set _blackmoney to 50>>
+		<<case 2>>
+			<<set _bigthing to "a powerful home media centre">><<set _thebits to "the huge cinema screen, the integrated speaker system, the sofa-chair with integrated control-panel">>
+			<<set _littlething to "huge porn collection">><<set _blackmoney to 80>>
+		<<case 1>>
+			<<set _bigthing to "an immersive VR anime system">><<set _thebits to "the VR headset, anime-themed fittings and furniture, the sensory-feedback gloves">>
+			<<set _littlething to "imported box of anime-themed 'used panties'">><<set _blackmoney to 50>>
+		<<default>>
+			<<set _bigthing to "a covert Government monitoring station">><<set _thebits to "the spy-cam screens, the cell-phone intercept equipment, the internet monitors and taps">>
+			<<set _littlething to "set of 'Top Secret' government files relating to 'Project Dark Elk'">><<set _blackmoney to 110>>
+	<</switch>>
+	The house is almost entirely bare. You are almost ready to leave when you stumble across an entire room dedicated to _bigthing.
+	Unfortunately, most of it - _thebits - is far too difficult to extract or far too bulky to steal.
+	<br>
+	Thankfully, the _littlething next to the chair is far easier to steal and should be worth something on the black markets.
+	<br><br>
+	<<link [[Take it|Domus Street]]>><<set $blackmoney += _blackmoney>><<crimeUp _blackmoney "thievery">><</link>><<crime "thievery">>
+	<br>
+	<<link [[Leave|Domus Street]]>><</link>>
+	<br>
+<<elseif $rng gte 16>>
+	There's nothing of value in the entire house. Even the beds are just greasy sheets over old soiled mattresses on bare wooden floors.
+	<<print either("It's actually kind of tragic.","It's almost sad.","Three kids, one adult, and one mouldy half-loaf of bread in the cupboard.")>>
+	<br><br>
+	You can't steal from these people. You should probably leave <i>them</i> money.
+	<br><br>
+	<<if $money gte 10000>>
+		<<link [[Leave £100|Domus Leave Money]]>><<set $phase to 0>><<set $money -= 10000>><<stress -6>><<trauma -6>><</link>><<lstress>><<ltrauma>>
+		<br>
+	<</if>>
+	<<if $money gte 50000>>
+		<<link [[Leave £500|Domus Leave Money]]>><<set $phase to 1>><<set $money -= 50000>><<stress -24>><<trauma -12>><</link>><<llstress>><<lltrauma>>
+		<br>
+	<</if>>
+	<<if $money gte 100000>>
+		<<link [[Leave £1000|Domus Leave Money]]>><<set $phase to 2>><<set $money -= 100000>><<stress -50>><<trauma -18>><</link>><<lllstress>><<llltrauma>>
+		<br>
+	<</if>>
+	<<link [[Just leave|Domus Street]]>><</link>>
+	<br>
+<<else>>
+	<<rng>>
+	<<if $rng gte 91>>
+		You don't find much, just some loose change worth <<moneyGainDisplay 1 true true>>.
+		<br><br>
+		<<link [[Take it|Domus Street]]>><<set $money += _money_gain>><<crimeUp `_money_gain / 100` "petty">><</link>><<crime "petty">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<<elseif $rng gte 81>>
+		You don't find much, just some loose change worth <<moneyGainDisplay 2 true true>>.
+		<br><br>
+		<<link [[Take it|Domus Street]]>><<set $money += _money_gain>><<crimeUp `_money_gain / 100` "petty">><</link>><<crime "petty">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<<elseif $rng gte 71>>
+		You find <<moneyGainDisplay 5 true true>> hidden in a drawer.
+		<br><br>
+		<<link [[Take it|Domus Street]]>><<set $money += _money_gain>><<crimeUp `_money_gain / 100` "petty">><</link>><<crime "petty">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<<elseif $rng gte 61>>
+		You find a nice-looking brooch in a drawer.
+		<br><br>
+		<<link [[Take it|Domus Street]]>><<set $blackmoney += 5>><<crimeUp 5 "thievery">><</link>><<crime "thievery">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<<elseif $rng gte 51>>
+		You find <<moneyGainDisplay 10 true true>> under a cushion on the sofa.
+		<br><br>
+		<<link [[Take it|Domus Street]]>><<set $money += _money_gain>><<crimeUp `_money_gain / 100` "petty">><</link>><<crime "petty">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<<elseif $rng gte 41>>
+		You find a necklace on a stool beside the coat stand.
+		<br><br>
+		<<link [[Take it|Domus Street]]>><<set $blackmoney += 10>><<crimeUp 10 "thievery">><</link>><<crime "thievery">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<<elseif $rng gte 31>>
+		You find <<moneyGainDisplay 15 true true>> lying on the kitchen worktop.
+		<br><br>
+		<<link [[Take it|Domus Street]]>><<set $money += _money_gain>><<crimeUp `_money_gain / 100` "petty">><</link>><<crime "petty">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<<elseif $rng gte 21>>
+		You find a set of silverware.
+		<br>
+		<<link [[Take it|Domus Street]]>><<set $blackmoney += 15>><<crimeUp 15 "thievery">><</link>><<crime "thievery">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<<elseif $rng gte 11>>
+		You find a pair of gold cufflinks in a coat pocket.
+		<br><br>
+		<<link [[Take them|Domus Street]]>><<set $blackmoney += 20>><<crimeUp 20 "thievery">><</link>><<crime "thievery">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<<else>>
+		You find <<moneyGainDisplay 30 true true>> in a pot beside the front door.
+		<br><br>
+		<<link [[Take it|Domus Street]]>><<set $money += _money_gain>><<crimeUp `_money_gain / 100` "petty">><</link>><<crime "petty">>
+		<br>
+		<<link [[Leave|Domus Street]]>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Domus House Dog
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<set $enemyno to 1>>
+	<<set $enemynomax to 1>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $enemytrust -= 40>><<set $enemyanger += 20>>
+	<<enable_rescue>>
+<<elseif $sexstart is 1>>
+	<<set $enemyno to 1>>
+	<<set $enemynomax to 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<set $enemytrust -= 40>>
+	You drop to the floor and adopt a mating posture. The <<beasttype>> calms down, and other instincts are roused by your display.
+	<<deviancy2>>
+	<<enable_rescue>>
+<</if>>
+<<effects>>
+<<if between($phase,1,2) and $orgasmdown gte 2>>
+	<<set $phase += 2>>
+	<<person2>>"Wow," says the <<person>>. "Being my <<beasttype>>'s bitch is making you cum. Maybe this isn't such a punishment for you after all, it's where you belong." You feel utterly humiliated.<<famebestiality 1>>
+	<br><br>
+<<elseif $phase gte 1>>
+	<<person2>>The <<person>> sits on the sofa, watching you.
+	<br><br>
+<</if>>
+<<effectsman>>
+<<if ($phase % 2) and $alarm is 1>>
+	<<alarmstate '<span class="red"><<person2>>The <<person>> laughs. "What\'s the matter, bitch? <<person1>>Is <<bhe>> too big for you?"</span><<person1>>' 1>>
+	<<set $alarm to 0>>
+	<<set $phase += 1>>
+<<else>>
+	<<alarmstate '<span class="red">Your screams go unanswered.</span>'>>
+<</if>>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if $phase is 0>>
+	<<if _combatend>>
+		<span id="next"><<link [[Next|Domus House Dog Finish]]>><</link>></span><<nexttext>>
+	<<else>>
+		<span id="next"><<link [[Next|Domus House Dog]]>><</link>></span><<nexttext>>
+	<</if>>
+<<else>>
+	<<if _combatend>>
+		<span id="next"><<link [[Next|Domus House Dog Finish 2]]>><</link>></span><<nexttext>>
+	<<else>>
+		<span id="next"><<link [[Next|Domus House Dog]]>><</link>></span><<nexttext>>
+	<</if>>
+<</if>>
+
+:: Domus House Run
+
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "domus">>
+You flee out the house, the <<beasttype>> snapping at your heels. <<bHe>> doesn't chase you beyond the front door, content to continue barking into the <<if Time.dayState is "night">>night<<else>>street<</if>>.
+<<beastescape>>
+<br><br>
+<<link [[Next|Domus Street]]>><<endevent>><</link>>
+<br>
+
+:: Domus House Dog Finish
+
+<<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	The <<beasttype>> barks happily and walks over to the window.
+	<<tearful>> you rise to your feet.
+	<br><br>
+	<<saveNPC 0 domus_skul_dog>>
+	<<clotheson>>
+	<<endcombat>>
+	<<loadNPC 0 domus_skul_dog>>
+	<<clearNPC domus_skul_dog>>
+	The <<beasttype>> pacified, you notice <<bhis>> collar glinting. You look closer and see it's encrusted with jewels.
+	<br><br>
+	<<link [[Take it|Domus House Collar]]>><<crimeUp 50 "thievery">><</link>><<crime "thievery">>
+	<br>
+	<<link [[Leave|Domus Street]]>><<endevent>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	The <<beasttype>> cowers and rolls over in submission.
+	<<tearful>> you rise to your feet.
+	<br><br>
+	<<saveNPC 0 domus_skul_dog>>
+	<<clotheson>>
+	<<endcombat>>
+	<<loadNPC 0 domus_skul_dog>>
+	<<clearNPC domus_skul_dog>>
+	The <<beasttype>> pacified, you notice <<bhis>> collar glinting. You look closer and see it's encrusted with jewels.
+	<br><br>
+	<<link [[Take it|Domus House Collar]]>><<crimeUp 50 "thievery">><</link>><<crime "thievery">>
+	<br>
+	<<link [[Leave|Domus Street]]>><<endevent>><</link>>
+	<br>
+<<elseif $alarm is 1 and $rescue is 1>>
+	<<set $rescue to 0>>
+	<<if $NPCList[0].stance is "top">>
+		<<person2>>You hear footsteps coming towards you. "What you got there, <<print $NPCList[0].pronouns.boy>>?" says a <<person>>.
+		<<He>> laughs when <<he>> sees you. "Serves you right, sneaking around my property like that." <<He>> takes a seat. "Don't mind me."
+		<br><br>
+		<<link [[Next|Domus House Dog]]>><<set $phase to 1>><</link>>
+	<<else>>
+		<<person2>>"What you got there boy?" says a <<person>>.
+		<<He>> laughs when <<he>> sees you. "Serves you right, sneaking around my property like that. But I have a better idea." <<He>> grabs the <<beasttype>> by the collar and hauls it off you.
+		<<saveNPC 1 domus_skul_dog_owner>>
+		<<endcombat>>
+		<<famebestiality 1>>
+		<<loadNPC 0 domus_skul_dog_owner>>
+		<<clearNPC domus_skul_dog_owner>>
+		<br><br>
+		<<link [[Next|Domus House Sneak Molestation]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	The <<beasttype>> backs away from you. <<bHe>> growls at you again, but doesn't move. <<tearful>> you glance around. You see nothing of value.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Leave|Domus Street]]>><</link>>
+	<br>
+<</if>>
+
+:: Domus House Collar
+
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">>
+The <<beasttypes>> ears twitch, but other than that <<bhe>> makes no move as you remove <<bhis>> collar. You leave the premises with your prize in hand.
+<br><br>
+<<set $blackmoney += 50>>
+<br><br>
+<<link [[Leave|Domus Street]]>><<endevent>><</link>>
+<br>
+
+:: Domus House Sneak Molestation
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+<<effects>>
+<<effectsman>><<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+<<if _combatend>>
+	<span id="next"><<link [[Next|Domus House Sneak Molestation Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Domus House Sneak Molestation]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Domus House Dog Finish 2
+
+<<set $outside to 0>><<set $location to "town">><<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	<<person2>>The beast barks happily and walks over to the window, where it sits. "It's nice to see a bitch get <<bred>> like that," says the <<person>>. <<He>> walks over to you before you can recover and grabs your neck. <<He>> drags you to the front door and hefts you onto the porch. "If I see you again you'll get far worse." The door slams shut.
+	<<tearful>> you rise to your feet.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Domus Street]]>><<endevent>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	<<person2>>The beast cowers and rolls over in submission.
+	<<tearful>> you escape the room before the <<person>> can react.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Domus Street]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<person1>>The <<beasttype>> backs away from you. <<bHe>> growls at you again, but sits down by the window.
+	<<person2>>The <<person>> sighs. "Not even giving me a good show, huh?" <<He>> walks over to you before you can recover and grabs your neck. <<He>> drags you to the front door and hefts you onto the porch. "If I see you again you'll get far worse." The door slams shut.
+	<<tearful>> you rise to your feet.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Domus Street]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Domus House Sneak Molestation Finish
+<<if $enemyhealth lte 0>>
+	You knock the <<person>> into one of <<his>> chairs. <<tearful>> you escape outside.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Domus Street]]>><</link>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	"Serves you right," <<he>> says, grabbing you by the neck. "You're lucky I don't get the police involved." <<He>> drags you to the front door and shoves you out, where you tumble to the ground. <<tearful>> you rise to your feet.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Domus Street]]>><</link>>
+<</if>>
+
+:: Domus House Safe
+
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">><<set $lock to 400>>
+The safe doesn't look too fancy.
+<br><br>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<span class="green">The lock looks easy to pick.</span>
+	<br><br>
+	<<link [[Break in (0:05)|Domus House Safe Open]]>><<pass 5>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
+	<br>
+<<else>>
+	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
+	<br><br>
+<</if>>
+<<link [[Leave|Domus Street]]>><</link>>
+<br>
+
+:: Domus House Safe Open
+
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">>
+<<if $skulduggery lt 500>>
+	<<skulduggeryskilluse>>
+<<else>>
+	<span class="blue">There's nothing more you can learn from locks this simple.</span>
+<</if>>
+<br><br>
+<<if $rng gte 10>>
+	You successfully open the safe, and find <<moneyGainDisplay 30 true true>> inside.
+	<br><br>
+	<<link [[Take it|Domus Street]]>><<set $money += _money_gain>><<crimeUp `_money_gain / 100` "thievery">><</link>><<crime "thievery">>
+	<br>
+	<<link [[Leave|Domus Street]]>><</link>>
+	<br>
+<<else>>
+	You successfully open the safe, and find an expensive-looking watch inside.
+	<br><br>
+	<<link [[Take it|Domus Street]]>><<set $blackmoney += 100>><<crimeUp 100 "thievery">><</link>><<crime "thievery">>
+	<br>
+	<<link [[Leave|Domus Street]]>><</link>>
+	<br>
+<</if>>
+
+:: Domus House Wait
+
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">>
+<<if $rng gte 61>>
+	You stay behind the curtain, remaining as still and quiet as possible. After thirty minutes, the <<person>> gets up, stretches, and walks to the kitchen. You start creeping out, but notice <<he>> left <<his>> phone lying on the sofa.
+	<br><br>
+	<<link [[Take it|Domus Street]]>><<crimeUp 30 "thievery">><<endevent>><<set $blackmoney += 30>><</link>><<crime "thievery">>
+	<br>
+	<<link [[Leave|Domus Street]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	You stay behind the curtain, remaining as still and quiet as possible. After thirty minutes, the <<person>> gets up, stretches, and walks to the kitchen. You creep outside.
+	<br><br>
+	<<link [[Leave|Domus Street]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Domus House Sneak 2
+
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">>
+The <<person>> can't see you from where <<he>> sits, so you slowly start to creep out.
+<br><br>
+<<if $rng gte 81>>
+	As you tiptoe past the back of <<his>> chair, <<he>> reaches back and grabs you. "Thought I couldn't hear you?" <<he>> says, hauling you onto <<his>> lap. "I think you need to be taught a lesson."
+	<br><br>
+	<<link [[Next|Domus House Sneak Molestation]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<<else>>
+	<<He>> remains glued to <<his>> television, letting you slip out with no difficulty.
+	<br><br>
+	<<link [[Leave|Domus Street]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Domus House Dungeon
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">>
+<<set $resc to 0>>
+You creep down into the cool depths.
+<br><br>
+As your eyes adjust, you notice light from further inside. You close the trapdoor behind you. An acrid smell hits you as you continue. Sweat, and something else. The room is lit by a single orange bulb, mounted above a metal door, bolted shut from this side.
+<br><br>
+You can make out a number of podiums with cameras on top. Most are set around a single metal-frame bed. It looks like a prison bed. There are no covers. Just a bare mattress covered in sinister stains.
+<br><br>
+A set of handcuffs hangs from the headboard. Several more sets, along with chains and ropes, lie in a tidy pile on the bed.
+Next to that, a nasty looking metal hook lies on top of a heap of rags and towels.
+<br><br>
+Another camera is pointed at a wall covered with a clean, white sheet. A box nearby is filled with expensive camera equipment.
+<br><br>
+Studio lights are dotted around the room. At the moment these are off and only cast sinister shadows.
+<br><br>
+You think you hear breathing behind the door.
+<br><br>
+<<link [[Get out. Now.|Domus House Dungeon 2]]>><<set $phase to 0>><</link>>
+<br>
+<<link [[Steal equipment and escape|Domus House Dungeon 2]]>><<set $phase to 1>><<crimeUp 50 "thievery">><<set $blackmoney += 50>><</link>><<crime "thievery">>
+<br>
+<<link [[Open door|Domus House Prisoner]]>><</link>>
+<br>
+<br>
+
+:: Domus House Dungeon 2
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">>
+<<set _risk to 0>>
+<<if $phase is 0>>
+	<<set _risk to 10>>
+	You head straight for the exit.
+<<elseif $phase is 1>>
+	<<set _risk to 25>>
+	Grabbing as much of the equipment as you can conceal, you head for the exit.
+<</if>>
+<br><br>
+<<rng>>
+You open the trapdoor and peek out.
+<<if $rng gt _risk>>
+	The room remains empty and silent. You climb from the trapdoor, close it and silently escape the property.
+	<br><br>
+	<<link [[Leave|Domus Street]]>><<unset $resc>><</link>>
+<<else>>
+	The room looks empty. Climbing out, <span class="red">hands seize you.</span>
+	<br><br>
+	<<link [[Next|Domus House Dungeon Rape]]>><<set $molestationstart to 1>><</link>>
+<</if>>
+<br>
+
+:: Domus House Dungeon Rape
+
+<<if $molestationstart is 1>>
+	<<generate1>><<person1>>A <<person>> pins you down.
+	<br>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<set $rescue to 0>>/*no rescue possible*/
+	<<set $dun_counter to 1>>
+<</if>>
+<<effects>>
+<<effectsman>>
+
+<<if $alarm is 1>>
+	<<set $alarm to 0>>
+	<<switch $dun_counter>>
+	<<case 1>>
+		"Soundproofed walls," <<he>> breathes. "So I can enjoy the screams."
+	<<case 2>>
+		"Keep screaming!" <<he>> whispers. "It makes it hotter."
+		<<set $enemyarousal += 10>>
+	<<case 3>>
+		"Scream harder!" <<he>> growls. "You're turning me on."
+		<<set $enemyarousal += 20>>
+	<<case 4>>
+		"Scream!" <<he>> growls. "Like I'm hurting you."
+		<<set $enemyarousal += 20>>
+	<<default>>
+		"I own you bitch!" <<he>> grunts. "Scream!"
+		<<set $enemyarousal += 30>>
+	<</switch>>
+	<<if $NPCList[0].lefthand is "mouth" or $NPCList[0].righthand is "mouth">>
+		<br><span class="teal"><<He>> releases <<his>> hand from your mouth.</span>
+		<<set $NPCList[0].righthand to 0>>
+		<<set $NPCList[0].lefthand to 0>>
+		<<set $mouthuse to 0>>
+	<</if>>
+	<<set $enemytrust -= 20>><<set $enemyanger -= 30>>/*reduce rate of anger/distrust*/
+	<<set $dun_counter += 1>>
+	<br><br>
+<</if>>
+<<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Domus House Dungeon Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Domus House Dungeon Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Domus House Dungeon Rape Finish
+<<effects>><<unset $dun_counter>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"Shame the basement suite is full, otherwise I'd keep you," <<he>> says. "Go on, scram."
+	<br><br>
+
+	<<tearful>> you recover.
+	<br><br>
+
+	<<if $resc is 1>>
+		Seeing you defeated, the frightened prisoner must have returned to their underground cell.
+		<br><br>
+	<</if>>
+
+	You leave the house.
+<<elseif $enemyhealth lte 0>>
+
+	You knock the <<person>> back. Staggering back, <<he>> steps into the empty space of the still-open trapdoor. With a loud crash and louder cursing <<he>> disappears beneath.
+
+	<<if $resc is 1>>
+		The frightened prisoner narrowly dodges <<him>> and frantically clambers up. Together you flee the house. Once clear, the prisoner thanks you.
+		"You probably saved my life."
+		<br><br>
+		As the prisoner limps away, you feel a warm glow and a weight lifted from you for the good you have done.
+		<<lstress>><<ltrauma>><<gcontrol>><<stress -2>><<trauma -4>><<control 10>>
+	<<else>>
+		You swiftly escape.
+	<</if>>
+	<br><br>
+
+	<<tearful>> you recover.
+<</if>>
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Domus Street]]>><<unset $resc>><</link>>
+<br>
+
+:: Domus House Prisoner
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">>
+<<set _risk to 10>><<set $resc to 1>><<generateyv1>><<person1>>
+You unbolt the door. Behind, curled up like a dog, sleeping naked on the bare floor, you find a <<person>>. <<His>> body is covered in marks and bruises.
+<<He>> snorts, and two wild eyes stare up at you.
+<br>
+<<if currentSkillValue('english') gte (350+$rng)>>
+	With a few carefully chosen words, <span class="green">you reassure <<him>> that you are a friend</span>, and that you are here to help. <<He>> smiles up at you.
+<<elseif $purity gte (750 + $rng)>>
+	Somehow sensing the purity radiating from you, <span class="green"><<he>> trusts you</span>. You would never hurt <<him>>. <<He>> smiles up at you.
+<<else>>
+	You stare, lost for words. Without warning, <<he>> howls, and cowers in the corer. It takes a couple of minutes for you to calm <<him>>, and convince <<him>> that you're a friend.
+	<br><br>
+	<span class="red">You hope noone heard.</span>
+	<<set _risk += 35>>
+<</if>>
+<br><br>
+
+<<rng>>
+You lead <<him>> from the room, and hand <<him>> the towels from the bed. <<He>> covers <<himself>>. Together, you creep up the steps and open the trapdoor.<<famegood 2>>
+<br><br>
+<<if $rng gt _risk>>
+	The room above is still empty and silent. Together, you escape the property.
+	<br><br>
+	Once clear, the <<person>> thanks you for saving <<his>> life. With a wave and a smile, <<he>> limps towards Danube street.
+	<br>
+	You feel good.
+	<<lstress>><<ltrauma>><<gcontrol>><<stress -2>><<trauma -4>><<control 10>>
+	<br><br>
+	<<endevent>>
+	<<link [[Leave|Domus Street]]>><<unset $resc>><</link>>
+<<else>>
+	The room above looks empty. <span class="red">Hands seize you as you climb out.</span>
+	<br><br>
+	<<endevent>>
+	<<link [[Next|Domus House Dungeon Rape]]>><<set $molestationstart to 1>><</link>>/*End event clears out prisoner before combat*/
+<</if>>
+<br>
+
+:: Domus Leave Money
+<<set $outside to 0>><<set $location to "town">><<effects>><<set $bus to "domus">>
+
+You leave
+<<if $phase is 0>>
+	£100
+<<elseif $phase is 1>>
+	£500
+<<else>>
+	£1000
+<</if>>
+on the counter for them to find. You hope it will help.
+<br><br>
+
+<<link [[Leave|Domus Street]]>><<endevent>><</link>>
+<br>

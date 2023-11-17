@@ -1,0 +1,1319 @@
+:: Traits [widget]
+<<widget "traits">>
+	<<set _traitLists to [
+		{
+			title: "General Traits",
+			traits: [
+				{
+					name: "Virgin",
+					colour: "green",
+					has: $player.virginity.vaginal is true and $player.virginity.penile is true,
+					text: "Your purity recovers faster. Your virginity might be worth something.",
+				},
+				{
+					name: "Chastity Vow",
+					colour: "blue",
+					has: $player.virginity.temple is true,
+					text: "Lost when your <<if $player.penisExist>>penis is enveloped<</if>><<if $player.penisExist and $player.vaginaExist>> or your <</if>><<if $player.vaginaExist>>vagina is penetrated<</if>>. The temple will know.",
+				},
+				{
+					name: "Broken Vow",
+					colour: "red",
+					has: $player.virginity.temple isnot true and $temple_rank isnot "prospective" and $temple_rank isnot undefined,
+					text: "The temple will know.",
+				},
+				{
+					name: "Rite of Promise: $templePromised",
+					colour: "blue",
+					has: $templePromised isnot "" and $player.virginity.temple is true,
+					text: "You've been bound to another member of the temple. Sex with this person will not break your vows.",
+				},
+				{
+					name: "Broken Promise: $templePromised",
+					colour: "red",
+					has: $templePromised isnot "" and $player.virginity.temple isnot true,
+					text: "The temple will know.",
+				},
+				{
+					name: "Purity boost",
+					colour: "green",
+					has: $featsPurityBoost gt 0,
+					text: () => {
+						let dailyPurity = 1;
+						/* 北极星模组 */
+						if (V.fallenangel >= 2 && V.fallenangel <= 4) dailyPurity -= 10;
+						/* 北极星 */
+						if (V.player.virginity.vaginal === true && V.player.virginity.penile === true) dailyPurity += 2;
+						if (dailyPurity + V.featsPurityBoost > 0) return "You are gaining purity daily.";
+						if (dailyPurity + V.featsPurityBoost === 0) return "You are not gaining purity daily.";
+						return "You are losing purity daily.";
+					},
+					text: "You are gaining purity daily.",
+				},
+				{
+					name: "Impurity boost",
+					colour: "red",
+					has: $featsPurityBoost lt 0,
+					text: () => {
+						let dailyPurity = 1;
+						/* 北极星模组 */
+						if (V.fallenangel >= 2 && V.fallenangel <= 4) dailyPurity -= 10;
+						/* 北极星 */
+						if (V.player.virginity.vaginal === true && V.player.virginity.penile === true) dailyPurity += 2;
+						if (dailyPurity + V.featsPurityBoost > 0) return "You are gaining less purity daily.";
+						if (dailyPurity + V.featsPurityBoost === 0) return "You are not gaining purity daily.";
+						return "You are losing purity daily.";
+					},
+				},
+				{
+					name: "Crossdresser",
+					colour: "pink",
+					has: $backgroundTraits.includes("crossdresser") and $player.gender is "m",
+					text: "Stress decays faster while dressed as a girl, but slower when dressed as a boy.",
+				},
+				{
+					name: "Crossdresser",
+					colour: "lblue",
+					has: $backgroundTraits.includes("crossdresser") and $player.gender is "f",
+					text: "Stress decays faster while dressed as a boy, but slower when dressed as a girl.",
+				},
+				{
+					name: "Lustful",
+					colour: "lewd",
+					has: $backgroundTraits.includes("lustful"),
+					text: "Arousal increases over time, and needs to be managed.",
+				},
+				{
+					name: "Green Thumb",
+					colour: "green",
+					has: $backgroundTraits.includes("greenthumb"),
+					text: "More bountiful crops and no decay when using fertiliser.",
+				},
+				{
+					name: () => V.submissive <= 850 ? "Dendrophile" : "Plant Lover",
+					colour: "lewd",
+					has: $backgroundTraits.includes("plantlover"),
+					text: "Plants are everything to you. Plantpeople and plant-based tentacles no longer require hallucinations to encounter. You get a bonus to tending, as your trauma increases.",
+				},
+				{
+					name: "Nectar Addict",
+					colour: "red",
+					has: $backgroundTraits.includes("plantlover"),
+					text: "You're more vulnerable to aphrodisiacs and alcohol. You draw nourishment from nectar. Drinking it invigorates your body, improving physique and reducing stress. Failing to consume nectar for an extended period will take its toll on your body, and eventually cause this trait and the <<if $submissive lte 850>><span class='lewd'>Dendrophile</span><<else>><span class='lewd'>Plant Lover</span><</if>> trait to disappear.<span class='hidden'></span>",
+				},
+                {
+                    name: "Pregnant",
+                    colour: "lewd",
+                    has: playerIsPregnant() and playerAwareTheyArePregnant(),
+                    text: () => playerBellySize() lt 10 or playerNormalPregnancyTotal() gte 50 ? "You are with child." : "You are with child. Some skills will suffer as your belly grows.",
+                },
+				{
+					name: "First Time Mother",
+					colour: "lewd",
+					has: playerNormalPregnancyTotal() is 1,
+					text: "You have given birth to your first child. Reduces the physical penalties for being pregnant.",
+				},
+				{
+					name: "Second Time Mother",
+					colour: "lewd",
+					has: playerNormalPregnancyTotal() is 2,
+					text: "You have given birth to children two times now. Reduces the physical penalties for being pregnant.",
+				},
+				{
+					name: "Mother",
+					colour: "lewd",
+					has: between(playerNormalPregnancyTotal(), 3, 7),
+					text: "You have some good experiences of being a mother. Moderately reduces the physical penalties for being pregnant.",
+				},
+				{
+					name: "Broodmother",
+					colour: "lewd",
+					has: between(playerNormalPregnancyTotal(), 8, 49),
+					text: "You have given birth to many, many children. Greatly reduces the physical penalties for being pregnant.",
+				},
+				{
+					name: "Gaia",
+					colour: "gold",
+					has: playerNormalPregnancyTotal() gte 50,
+					text: "You have given a birth to a veritable dynasty of children. No physical penalties for being pregnant.",
+				},
+				{
+					name: "Parasite Broodmother",
+					colour: "lewd",
+					has: $sexStats.anus.pregnancy.motherStatus is 2 or $sexStats.vagina.pregnancy.motherStatus is 2,
+					text: "You've become host to an endless number of little critters<<if $sexStats.anus.pregnancy.motherStatus is 2 and $sexStats.vagina.pregnancy.motherStatus is 2>> <span class='lewd'>in multiple places in your body</span><</if>><span class='hidden'></span>",
+				},
+				{
+					name: "Parasite Mother",
+					colour: "lewd",
+					has: ($sexStats.anus.pregnancy.motherStatus is 1 or $sexStats.vagina.pregnancy.motherStatus is 1) and !($sexStats.anus.pregnancy.motherStatus is 2 or $sexStats.vagina.pregnancy.motherStatus is 2),
+					text: "You have given birth to little critters<<if $sexStats.anus.pregnancy.motherStatus is 1 and $sexStats.vagina.pregnancy.motherStatus is 1>> <span class='lewd'>in multiple places in your body</span><</if>><span class='hidden'></span>",
+				},
+				{
+					name: "Lactating",
+					colour: "blue",
+					has: $lactating gte 1 and $breastfeedingdisable is "f",
+					text: "Your breasts are ready to be milked.",
+				},
+				{
+					name: "Milk Factory",
+					colour: "blue",
+					has: $lactating gte 1 and $breastfeedingdisable is "f" and $milk_volume gte 1000,
+					text: "Your breasts are able to hold a tremendous amount of milk.",
+				},
+				{
+					name: "Sperm bank",
+					colour: "blue",
+					has: $semen_volume gte 1000 and $player.penisExist,
+					text: "You carry a tremendous amount of semen.",
+				},
+				{
+					name: "Possessed",
+					colour: "wraith",
+					has: $possessed,
+					text: "Your body is not your own.",
+				},
+				/* 北极星模组 */
+				{
+					name: "狼<<girl>>",
+					colour: "grey",
+					has: $wolfgirl gte 6,
+					text: ($options.bjx_animal ? '野性的灵魂与你融为一体，伤害敌人使你兴奋，你的施虐每天都会上升。同时解锁"咆哮"行动，可以威慑敌人或用于调情' : "野性的灵魂与你融为一体，随着时间的推移，你的反抗也会随之增加，同时你的耳朵和尾巴会让你更显眼"),
+				},
+				{
+					name: "猫<<girl>>",
+					colour: "grey",
+					has: $cat gte 6,
+					text: ($options.bjx_animal ? '你有一种舔舐奶油的冲动，带着淫秽液体跳舞时解锁"理毛"动作。同时你迅捷灵敏，大幅增强舞蹈能力，且舞蹈时能够躲避霉运' : '你有一种舔舐奶油的冲动。身上带着淫秽液体跳舞时会解锁"理毛"动作，同时你的耳朵和尾巴也使你更显眼'),
+				},
+				{
+					name: () => {
+						if(V.player.gender_appearance is "m"){
+							if(V.player.gender is "f"){
+								return "公牛男孩(♀)";
+							}
+							return "公牛男孩";
+						}else{
+							if(V.player.gender is "m"){
+								return "奶牛女孩(♂)";
+							}
+							return "奶牛女孩";
+						}
+					},
+					colour: "brat",
+					has: $cow gte 6,
+					text: ($options.bjx_animal ? "你渴望被挤奶。牛奶和精液量增加，某些身体部位会增长。同时你的意志无比坚韧，意志不会每天衰减" : "你渴望被挤奶。牛奶和精液量得到增加，同时某些身体部位可能会增长。你的角、耳朵和尾巴会让你更加显眼"),
+				},
+				{
+					name: () => V.hallucinations gte 2 || V.bestialitydisable is "t" ? "哈比" : "鸟<<girl>>",
+					colour: "grey",
+					has: $harpy gte 6,
+					text: ($options.bjx_animal ? '天空在召唤，你的翅膀足以带你翱翔天际，解锁"唱歌"行动，可以大幅减少对方愤怒' : "天空在召唤"),
+				},
+				{
+					name: () => {
+						if(V.player.gender_appearance is "m"){
+							if(V.player.gender is "f"){
+								return "狐狸(♀)";
+							}
+							return "狐狸";
+						}else{
+							if(V.player.gender is "m"){
+								return "雌狐(♂)";
+							}
+							return "雌狐";
+						}
+					},
+					colour: "",
+					style: `background: linear-gradient(to right,#fe9000 0%, #ffffff 100%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $fox gte 6,
+					text: ($options.bjx_animal ? '你天生媚骨，一颦一笑勾人心魄，大幅提高容貌且更具吸引力。同时解锁"撒娇"行动，大幅增加对方信任' : "你有占取他人财物的强烈冲动。这将加强偷窃能力，同时你的耳朵和尾巴使你更加诱人，且更具吸引力"),
+				},
+				/* 北极星 */
+				{
+					name: "Fangs",
+					colour: "def",
+					has: $transformationParts.traits.fangs isnot "disabled",
+					text: "Biting is three times as effective.",
+				},
+				/* 北极星模组 */
+				{
+					name: "锐利的眼神",
+					colour: "gold",
+					has: $transformationParts.traits.sharpEyes isnot "disabled",
+					text: "没有谁能逃过你的眼睛，+5%诡术",
+				},
+				{
+					name: "蜥蜴之眼",
+					colour: "gold",
+					has: $options.bjx_animal and $transformationParts.lizard.eyes isnot "disabled",
+					text: "你的眼睛不会放过每处细微，+5%诡术",
+				},
+				{
+					name: "龙睛",
+					colour: "gold",
+					has: $options.bjx_animal and $transformationParts.dragon.eyes isnot "disabled",
+					text: "你的眼睛甚至比鹰眼还要犀利，+10%诡术",
+				},
+				{
+					name: "龙翼",
+					colour: "gold",
+					has: $options.bjx_animal and $transformationParts.dragon.wings isnot "disabled",
+					text: "你是天空的主宰者，你可以快速飞越整个小镇",
+				},
+				{
+					name: "龙性本淫",
+					colour: "gold",
+					has: $options.bjx_animal and $dragon gte 6,
+					text: '你可以在对手高潮后强行再做一次，对方越虚弱成功率越高',
+				},
+				{
+					name: "大容量肺",
+					colour: "lblue",
+					has: $options.bjx_animal and $transformationParts.traits.lungs isnot "disabled",
+					text: "你现在可以屏息更长时间",
+				},
+				{
+					name: "盗圣本能",
+					style: `background: linear-gradient(to bottom,#FFFFF0 0%, #00000F 150%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $options.bjx_animal and $raccoon gte 6,
+					text: "你每天都会产生一种新的犯罪冲动，当天进行此类犯罪时不会留下证据",
+				},
+				{
+					name: "易容术",
+					style: `background: linear-gradient(to bottom,#FFFFF0 0%, #00000F 150%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $options.bjx_animal and $transformationParts.traits.incognito isnot "disabled",
+					text: "你擅长易容伪装，你的美貌和秀发将不会增加你的诱惑力",
+				},
+				{
+					name: "受虐之羊",
+					colour: "green",
+					has: $options.bjx_animal and $sheep gte 6,
+					text: "你是天生的受虐狂，你渴望疼痛，你的受虐狂会每日增加",
+				},
+				{
+					name: "蜂之毒刺",
+					colour: "yellow",
+					has: $options.bjx_animal and $transformationParts.bee.tail is "default",
+					text: "你可以用尾巴刺击敌人，造成伤害并注入毒素，使之逐渐失去生命",
+				},
+				{
+					name: "森林是我家",
+					colour: "green",
+					has: $options.bjx_animal and $deer gte 6,
+					text: "你受到森林的庇护，可以在森林中自由穿梭，并避开潜在的危险",
+				},
+				{
+					name: "香甜之梦",
+					colour: "purple",
+					has: $options.bjx_animal and ($sheep gte 6 or $bear gte 2 or $pig gte 6),
+					text: "你睡得无比安稳，做甜甜的美梦，减少大量压力",
+				},
+				{
+					name: "蜥蜴再生",
+					colour: "brat",
+					has: $options.bjx_animal and $lizard gte 6,
+					text: "你拥有强大的再生力，在危机时刻可以迅速恢复生命力",
+				},
+				{
+					name: "水战精通",
+					colour: "blue",
+					has: $options.bjx_animal and $dolphin gte 6,
+					text: "你对海洋无比熟悉，精通水战，在水中战斗时可以造成更高伤害",
+				},
+				{
+					name: "聪明伶俐",
+					colour: "blue",
+					has: $options.bjx_animal and $dolphin gte 6,
+					text: "你变得聪明伶俐，记忆力增强，学科水平提高，且学科成绩不再随时间下降",
+				},
+				{
+					name: "大海是我家",
+					colour: "blue",
+					has: $options.bjx_animal and $fish gte 6,
+					text: "你是大海的宠儿，在水里会感到安逸与轻松，逐渐减少压力",
+				},
+				{
+					name: "摇尾祈怜",
+					colour: "pink",
+					has: $options.bjx_animal and $transformationParts.dog.tail is "default",
+					text: "战斗中你可以摇动尾巴，讨好对方，每次战斗第一次摇尾巴还会增加对方好感",
+				},
+				{
+					name: "蜘蛛毒牙",
+					colour: "purple",
+					has: $options.bjx_animal and $spider gte 6,
+					text: "你的牙齿充满剧毒，咬敌人时会同时注入毒素，使之逐渐失去生命",
+				},
+				{
+					name: "蜘蛛丝",
+					colour: "purple",
+					has: $options.bjx_animal and $transformationParts.spider.tail is "default",
+					text: "你可以每天储存蛛丝，在战斗中从尾部射出，网住束缚敌人",
+				},
+				{
+					name: "蛙之捕食",
+					colour: "green",
+					has: $options.bjx_animal and $frog gte 6,
+					text: "你的舌头又长又灵活，你可以用它捕食一些小型蚊虫",
+				},
+				{
+					name: "肥力便便",
+					colour: "green",
+					has: $options.bjx_animal and $pig gte 6,
+					text: "你的便便充满肥力，每天三次，你可以用之给土地施肥",
+				},
+				{
+					name: "龙息",
+					style: `background: linear-gradient(to bottom,#FFFFF0 0%, #FF0000 150%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $options.bjx_animal and $dragon gte 6,
+					text: "你的龙族天性被完全唤醒，使你可以向袭击者喷火",
+				},
+				{
+					name: "熊壮",
+					style: `background: linear-gradient(to bottom,#FFFFFF 0%, #997950 150%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $options.bjx_animal and $bear gte 6,
+					text: "你的小身体蕴含着大力量，天生巨力，体格大大增加",
+				},
+				{
+					name: "强健大腿",
+					colour: "def",
+					has: $options.bjx_animal and $transformationParts.traits.kicks isnot "disabled",
+					text: "你的踢击非常致命",
+				},
+				{
+					name: "蛙蹼",
+					colour: "lblue",
+					has: $options.bjx_animal and $transformationParts.traits.webbedfeet isnot "disabled",
+					text: "你的游泳水平提高",
+				},
+				{
+					name: "长舌",
+					colour: "lewd",
+					has: $options.bjx_animal and $transformationParts.traits.longtongue isnot "disabled",
+					text: "你的舌头又长又灵活，能在遭遇战时增强舔舐效果",
+				},
+				{
+					name: "灵敏的鼻子",
+					colour: "green",
+					has: $options.bjx_animal and $transformationParts.traits.strongnose isnot "disabled",
+					text: "你可以嗅出有活性的植物样本，从而提高收获量",
+				},
+				{
+					name: "活力四射",
+					style: `background: linear-gradient(to bottom,#FFFF00 50%, #00000F 150%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $options.bjx_animal and $transformationParts.traits.vigorous isnot "disabled",
+					text: "你的耐力和运动能力近乎超人",
+				},
+				{
+					name: "水生",
+					style: `background: linear-gradient(to bottom,#FFFFFF 30%, #000FFF 140%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $options.bjx_animal and $fish gte 6 or $options.bjx_eventTF and $ghost is 4,
+					text: "你可以从水中吸收氧气，并可以在水中说话",
+				},
+				{
+					name: "冲击吸收",
+					colour: "green",
+					has: $options.bjx_eventTF and $slime gt 0,
+					text: "如果条件允许，你柔韧的身体可以抵抗攻击，并在战斗结束后自行恢复",
+				},
+				{
+					name: "感性粘液",
+					colour: "purple",
+					has: $options.bjx_eventTF and $slime is 2,
+					text: "你体内的春药会在你使用性技时增强对方的性奋增长",
+				},
+				{
+					name: "腐蚀",
+					colour: "def",
+					has: $options.bjx_eventTF and $slime is 1,
+					text: "下水道中的有害物质渗透到了你的体内。你在遭遇战时的反抗行动得到加强",
+				},
+				{
+					name: "坚不可摧",
+					colour: "blue",
+					has: $options.bjx_eventTF and $slime is 3,
+					text: "你史莱姆化的身体是纯净无瑕的，你对疼痛的忍耐力无人能及",
+				},
+				{
+					name: "滑溜溜",
+					colour: "green",
+					has: $options.bjx_eventTF and $slime gt 0,
+					text: "尝试逃脱 <i>抓握</i> 更容易成功，但是捆绑和镣铐不行",
+				},
+				{
+					name: "粘液身体",
+					colour: "green",
+					has: $options.bjx_eventTF and $slime gt 0,
+					text: "你史莱姆化的身体不再需要你主动呼吸，但长时间与水接触会让你溶化",
+				},
+				{
+					name: "无实体",
+					colour: "wraith",
+					has: $options.bjx_eventTF and $transformationParts.ghost.eyes isnot "disabled",
+					text: "上锁的门对你不再是障碍",
+				},
+				{
+					name: "孢子信息素",
+					colour: "yellow",
+					has: $options.bjx_eventTF and $mushroom gt 0,
+					text: "你身上的孢子散发着信息素，可以驱散人和动物避开你，也可以用于催情增强诱惑效果",
+				},
+				{
+					name: "夜猫子",
+					colour: "yellow",
+					has: $options.bjx_eventTF and $mushroom gt 0,
+					text: "你可以在室内或夜间缓缓治愈伤痛和缓解压力",
+				},
+				{
+					name: "保护伞",
+					colour: "yellow",
+					has: $options.bjx_eventTF and $mushroom gt 0,
+					text: "你的蘑菇帽可以作为防雨头套",
+				},
+				{
+					name: "真菌绽放",
+					colour: "yellow",
+					has: $options.bjx_eventTF and $mushroom gt 0,
+					text: "你可以在镜子前生成有机的蘑菇服装",
+				},
+				{
+					name: "无尽成长",
+					colour: "yellow",
+					has: $options.bjx_eventTF and $mushroom gt 0,
+					text: "你的身体正在储存营养，如果你能储存足够多的营养，你可以进化自身并强化蘑菇能力",
+				},
+				{
+					name: "死域霜寒",
+					colour: "lblue",
+					has: $options.bjx_eventTF and $ghost is 2,
+					text: "在非自愿的战斗中，你会释放极寒光环，持续伤害敌人",
+				},
+				/* 北极星 */
+				{
+					name: "Heterochromia",
+					colour: "",
+					style: `background: linear-gradient(to right,${setup.colours.eyes_map[$rightEyeColour].canvasfilter.blend} 0%, ${setup.colours.eyes_map[$leftEyeColour].canvasfilter.blend} 100%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $heterochromia is 1,
+					text: "Your eyes are two different colours.",
+				},
+				/* 北极星模组 */
+				{
+					name: "强壮的双角",
+					colour: "def",
+					has: !$options.bjx_animal and ($cow gte 2 and $demon lt 2) or $options.bjx_animal and ($chimera.demoncow.horns isnot "default" and ($transformationParts.cow.horns isnot "disabled" or $transformationParts.sheep.horns isnot "disabled" or $transformationParts.dragon.horns isnot "disabled")),
+					text: "头槌不会再伤害到你自己",
+				},
+				{
+					name: "深色利角",
+					colour: "def",
+					has: !$options.bjx_animal and ($cow lt 2 and $demon gte 2) or $options.bjx_animal and ($chimera.demoncow.horns isnot "default" and ($transformationParts.demon.horns isnot "disabled" or $transformationParts.deer.horns isnot "disabled")),
+					text: "头槌会造成双倍的伤害",
+				},
+				{
+					name: "复合犄角",
+					colour: "def",
+					has: !$options.bjx_animal and ($cow gte 2 and $demon gte 2) or $options.bjx_animal and ($chimera.demoncow.horns is "default"),
+					text: "你的头槌无人能挡。现在头槌可以造成四倍的伤害，且不会对你造成伤害",
+				},
+				/* 北极星 */
+				{
+					name: "Mate For Life",
+					colour: "",
+					style: `background: linear-gradient(to right,#e646c6 0%, #ffffff 100%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;`,
+					has: $transformationParts.traits.mateForLife isnot "disabled",
+					text: "Gain bonuses when sleeping or copulating with your Love Interest. Changing Love Interests causes stress and trauma.",
+				},
+				/* 北极星模组 */
+				{
+                	name: "混沌真谛",
+                	colour: "grey",
+                	has: $options.bjx_divine and $fallenangel is 6,
+                	text: '你于光暗之中寻到了混沌的真谛，你能在每天恢复童贞时治愈自身，且当你失去童贞时，你可以爆发混沌之力，无视任何压力',
+                },
+                {
+                	name: "永恒救赎",
+                	colour: "black",
+                	has: $options.bjx_divine and $fallenangel is 5,
+                	text: '你于堕落中寻找到了永恒的救赎，你的童贞能够在每天自动恢复，且当你失去童贞时，你可以短暂爆发混沌之力，清除所有压力',
+                },
+				{
+					name: "混沌天使",
+					colour: "grey",
+					has: $options.bjx_divine and $fallenangel gte 5,
+					text: '世界并非黑白分明，混沌才是世界真相。当你抓住触手时，你可以吞噬它获取力量。解锁"报应"行动，每场战斗可用一次，增加你的伤害50%',
+				},                
+				{
+					name: "堕天使",
+					colour: "black",
+					has: $fallenangel gte 3,
+					text: ($options.bjx_divine ? '世界是如此残酷，虽然你觉得自己越来越不纯洁，但你不会放弃努力。每次遭遇战时解锁一次 "报应 "行动，伤害提高 50%' : '世界是如此残酷，虽然你觉得自己越来越不纯洁，但你不会放弃努力'),
+				},
+				{
+					name: "堕天使",
+					colour: "black",
+					has: $fallenangel is 2,
+					text: ($options.bjx_divine ? '这个世界如此残酷，你觉得自己越来越不纯洁了。每次遭遇时解锁一次 "报应 "行动，伤害提高 50%' : '这个世界如此残酷，你觉得自己越来越不纯洁了'),
+				},
+				{
+					name: "神圣天使",
+					colour: "gold",
+					has: $angel gte 6,
+					text: '你散发着纯洁的光芒，每次战斗时可解锁一次"宽恕"行动，' + ($options.bjx_divine ? '消除并阻止本场战斗获得任何创伤。' : '消除本场战斗已经获得的创伤') + '但要小心，失去你的贞操会使你失去这一特性，并使你的光环破碎',
+				},
+				{
+					name: "惩戒天使",
+					colour: "gold",
+					has: $options.bjx_divine and $angel gte 5,
+					text: '作为天使，你有责任给予罪人惩戒，破除其贪嗔痴，令其醒悟。你的攻击会同时减少敌人的性奋，且敌人愤怒值低于20%时，你的攻击可以造成双倍伤害',
+				},
+				{
+					name: "圣洁光辉",
+					colour: "gold",
+					has: $angel gte 4,
+					text: '你非常的纯洁，这将解锁"放逐"行为，使用次数基于你的天使化程度。这可以对一个触手造成重创，而且在达到最大纯洁时，其强度会大大增加。今日所剩次数：($angelBanish / $angelBanishMax)',
+				},
+				{
+					name: () => {
+						if(V.player.gender_appearance is "m"){
+							if(V.player.gender is "f"){
+								return "魅影(♀)";
+							}
+							return "魅影";
+						}else{
+							if(V.player.gender is "m"){
+								return "魅魔(♂)";
+							}
+							return "魅魔";
+						}
+					},
+					colour: "purple",
+					has: $options.bjx_divine and $demon gte 2 or $demon gte 6,
+					text: ($options.bjx_divine ? '你失去了所有纯洁，被内射时可以吸收精华恢复状态，内射或破处别人会使你感到愉悦。每次遭遇时解锁一次 "诱惑 "行动，使敌人高度性奋' : '你失去了所有纯洁，每当有东西在你体内射精，或者你在别人体内射精时，你会减少创伤。触手能减少压力和疼痛，但不再减少创伤。注意，当你没有以最低纯洁度结束一天时将增加大量压力'),
+				},
+				{
+					name: "魅魔欲望",
+					colour: "purple",
+					has: $options.bjx_divine and $demon gte 6,
+					text: '战斗中你的对手高潮后，你可以引诱其再做一次♡',
+				},
+				{
+					name: "百练之躯",
+					colour: "red",
+					has: $options.bjx_divine and $demonhunter gte 6,
+					text: '你的身体适应了高潮时的感觉，高潮不再剥夺你的行动能力',
+				},
+				{
+					name: "摄魂之眼",
+					colour: "red",
+					has: $options.bjx_divine and $demonhunter gte 5,
+					text: '你的眼睛摄人心灵，结合哈勃那学得的催眠音波，每次战斗时可解锁一次"催眠"行动，阻止对方以任何方式到达高潮',
+				},
+				{
+					name: "恶魔猎手",
+					colour: "red",
+					has: $options.bjx_divine and $demonhunter gte 2,
+					text: '你的体液发生了变异，变得炽热而有腐蚀性。当你高潮时会获得极大满足，射出的爱液可以造成大量伤害。但要小心，非触手的体液对你来说过于纯洁，纳入体内可能会伤害自身',
+				},
+				{
+					name: "强健羽翼",
+					colour: "gold",
+					has: !$options.bjx_animal and ($harpy gte 6 and $birdFly gte 1) or $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled"),
+					text: ($options.bjx_animal ? "使你能从空旷处起飞，并可乘风而行" : "使你能从高处滑翔，并在顺风处飞行"),
+				},
+				{
+					name: "翅膀",
+					colour: "grey",
+					has: !$options.bjx_animal and !($harpy gte 6 and $birdFly gte 1) and ($angel gte 6 or $fallenangel gte 2 or $demon gte 6 or $harpy gte 6) or $options.bjx_animal and !($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled") and ($transformationParts.angel.wings isnot "disabled" or $transformationParts.fallenAngel.wings isnot "disabled" or $transformationParts.demon.wings isnot "disabled" or $transformationParts.bee.wings isnot "disabled" or $transformationParts.bird.wings isnot "disabled"),
+					text: "使你能从高处滑翔",
+				},
+				/* 北极星 */
+				{
+					name: "Meek",
+					colour: "meek",
+					has: $submissive gte 1150 and $submissive lt 1500,
+					text: 'Unlocks the "Moan" action.',
+				},
+				{
+					name: "Submissive",
+					colour: "sub",
+					has: $submissive gte 1500,
+					text: 'Unlocks the "Moan" action.',
+				},
+				{
+					name: "Bratty",
+					colour: "brat",
+					has: $submissive lte 850 and $submissive gt 500,
+					text: 'Unlocks the "Demand" action.',
+				},
+				{
+					name: "Defiant",
+					colour: "def",
+					has: $submissive lte 500,
+					text: 'Unlocks the "Demand" action.',
+				},
+				{
+					name: "Innocent",
+					colour: "blue",
+					has: $innocencestate is 1,
+					text: "You're flattered that so many people want to spend time with you. This trait will disappear should you run out of innocence, and any trauma you've accumulated will be applied. Being attacked and low control will reduce innocence.",
+				},
+				{
+					name: "Guilty Masochist",
+					colour: "blue",
+					has: $masochism_level is 1,
+					text: "Provides a small resistance to most sources of pain. Those sources increase arousal instead.",
+				},
+				{
+					name: "Masochist",
+					colour: "purple",
+					has: $masochism_level is 2,
+					text: "Provides resistance to most sources of pain. Those sources increase arousal instead.",
+				},
+				{
+					name: "Hardened Masochist",
+					colour: "pink",
+					has: $masochism_level is 3,
+					text: "Provides strong resistance to most sources of pain. Those sources increase arousal instead.",
+				},
+				{
+					name: "Drooling Masochist",
+					colour: "red",
+					has: $masochism_level is 4,
+					text: "Provides incredible resistance to most sources of pain. Those sources increase arousal instead.",
+				},
+				{
+					name: "Guilty Sadist",
+					colour: "blue",
+					has: $sadism_level is 1,
+					text: "Your defiant acts inflict a little more pain. Inflicting pain increases arousal.",
+				},
+				{
+					name: "Sadist",
+					colour: "purple",
+					has: $sadism_level is 2,
+					text: "Your defiant acts inflict more pain. Inflicting pain increases arousal.",
+				},
+				{
+					name: "Hardened Sadist",
+					colour: "pink",
+					has: $sadism_level is 3,
+					text: "Your defiant acts inflict much more pain. Inflicting pain increases arousal.",
+				},
+				{
+					name: "Vengeful Sadist",
+					colour: "red",
+					has: $sadism_level is 4,
+					text: "Your defiant acts are far more dangerous. Inflicting pain increases arousal.",
+				},
+				{
+					name: "Farmer",
+					colour: "green",
+					has: $farm_stage gte 6,
+					text: "You know your way around a barn. Your physique is easier to maintain.",
+				},
+				{
+					name: "Knowledge: Islander language",
+					colour: "",
+					has: $islander_language gte 100,
+					text: "You can understand and speak the tongue of the islanders.",
+				},
+				{
+					name: "Knowledge: Quicksand",
+					colour: "",
+					has: $quicksand gte 5,
+					text: "You know how to react when stuck in the stuff.",
+				},
+			],
+		},
+		{
+			title: "Special Traits",
+			traits: [
+				{
+					name: () => V.submissive <= 850 ? "Hedonist" : "Orgasm Addict",
+					colour: "lewd",
+					has: $orgasmtrait gte 1,
+					/* 北极星模组 */
+					text: "大量的高潮已经产生了生理上的影响，现在的你高潮会更加" + ($demonhunter gte 1 ? "容易" : "困难") + "，且高潮可以缓解更多的压力",
+					/* 北极星 */
+				},
+				{
+					name: "Asphyxiophilia",
+					colour: "lewd",
+					has: $choketrait gte 1,
+					text: "You've come to love the feeling of lack of oxygen. Getting choked makes sex more pleasurable.",
+				},
+				{
+					name: () => V.submissive <= 850 ? "Cumoisseur" : "Cum Dump",
+					colour: "lewd",
+					has: $ejactrait gte 1,
+					text: "You've become accustomed to the scent of ejaculate and can take advantage of its calming effect. Your stress is reduced hourly depending on how much slime and semen covers you.",
+				},
+				{
+					name: () => V.submissive <= 850 ? "Graceful" : "Plaything",
+					colour: "lewd",
+					has: $molesttrait gte 1,
+					text: "You've learned to better cope with psychological trauma. Being molested no longer removes your sense of control (rape still does).",
+				},
+				{
+					name: () => V.submissive <= 850 ? "Survivor" : "Fucktoy",
+					colour: "lewd",
+					has: $rapetrait gte 1,
+					text: "You've been raped so much, but you've learned how to cope. Trauma increases more slowly.",
+				},
+				{
+					name: () => V.submissive <= 850 ? "Tamer" : "Bitch",
+					colour: "lewd",
+					has: $bestialitytrait gte 1,
+					text: "Animals have tried to <<if $pregnancyspeechdisable is 'f'>>breed<<else>>mate<</if>> with you so often that you're used to it. Trauma increases more slowly when attacked by animals.",
+				},
+				{
+					name: () => V.submissive <= 850 ? "Witch" : "Prey",
+					colour: "lewd",
+					has: $tentacletrait gte 1,
+					text: "Many tentacles have had their way with your body. Trauma increases more slowly when attacked by tentacles.",
+				},
+				{
+					name: () => V.submissive <= 850 ? "Daredevil" : "Tasty",
+					colour: "lewd",
+					has: $voretrait gte 1,
+					text: "You've found your way into the belly of many a creature. They'll have a harder time swallowing you as they savour your taste.",
+				},
+				{
+					name: () => V.submissive <= 850 ? "Milk Enthusiast" : "Milk Addict",
+					colour: "lewd",
+					has: $milkdranktrait gte 1,
+					text: "You take full advantage of the nutrition in fresh breast milk. Drinking it invigorates your body, improving physique.",
+				},
+			],
+		},
+		{
+			title: "School Traits",
+			traits: [
+				{
+					name: "Passable Science",
+					colour: "blue",
+					has: $sciencetrait is 1,
+					text: "Pain is slightly easier to cope with.",
+				},
+				{
+					name: "Decent Science",
+					colour: "lblue",
+					has: $sciencetrait is 2,
+					text: "Pain is moderately easier to cope with.",
+				},
+				{
+					name: "Good Science",
+					colour: "teal",
+					has: $sciencetrait is 3,
+					text: "Pain is easier to cope with.",
+				},
+				{
+					name: "Excellent Science",
+					colour: "green",
+					has: $sciencetrait is 4,
+					text: "Pain is much easier to cope with.",
+				},
+				{
+					name: "Passable Maths",
+					colour: "blue",
+					has: $mathstrait is 1,
+					text: "You make 25% more from tips and negotiated fees.",
+				},
+				{
+					name: "Decent Maths",
+					colour: "lblue",
+					has: $mathstrait is 2,
+					text: "You make 50% more from tips and negotiated fees.",
+				},
+				{
+					name: "Good Maths",
+					colour: "teal",
+					has: $mathstrait is 3,
+					text: "You make 75% more from tips and negotiated fees.",
+				},
+				{
+					name: "Excellent Maths",
+					colour: "green",
+					has: $mathstrait is 4,
+					text: "You make 100% more from tips and negotiated fees.",
+				},
+				{
+					name: "Passable English",
+					colour: "blue",
+					has: $englishtrait is 1,
+					text: "Speech actions (plead, moan, demand, apologise, mock, tease, ask to be more rough) are twice as effective.",
+				},
+				{
+					name: "Decent English",
+					colour: "lblue",
+					has: $englishtrait is 2,
+					text: "Speech actions (plead, moan, demand, apologise, mock, tease, ask to be more rough) are three times as effective.",
+				},
+				{
+					name: "Good English",
+					colour: "teal",
+					has: $englishtrait is 3,
+					text: "Speech actions (plead, moan, demand, apologise, mock, tease, ask to be more rough) are four times as effective.",
+				},
+				{
+					name: "Excellent English",
+					colour: "green",
+					has: $englishtrait is 4,
+					text: "Speech actions (plead, moan, demand, apologise, mock, tease, ask to be more rough) are five times as effective.",
+				},
+				{
+					name: "Passable History",
+					colour: "blue",
+					has: $historytrait is 1,
+					text: "You know there are secret paths around town.",
+				},
+				{
+					name: "Decent History",
+					colour: "lblue",
+					has: $historytrait is 2,
+					text: "You know of a few secret paths around town.",
+				},
+				{
+					name: "Good History",
+					colour: "teal",
+					has: $historytrait is 3,
+					text: "You know of several secret paths around town.",
+				},
+				{
+					name: "Excellent History",
+					colour: "green",
+					has: $historytrait is 4,
+					text: "You know of many secret paths around town.",
+				},
+				{
+					name: "Okay at school",
+					colour: "blue",
+					has: $schooltrait is 1,
+					text: "Your performance at school has improved your self-esteem, slightly increasing your daily trauma decay.",
+				},
+				{
+					name: "Decent at school",
+					colour: "lblue",
+					has: $schooltrait is 2,
+					text: "Your performance at school has improved your self-esteem, moderately increasing your daily trauma decay.",
+				},
+				{
+					name: "Good at school",
+					colour: "teal",
+					has: $schooltrait is 3,
+					text: "Your performance at school has improved your self-esteem, increasing your daily trauma decay.",
+				},
+				{
+					name: "Excellent at school",
+					colour: "green",
+					has: $schooltrait is 4,
+					text: "Your performance at school has improved your self-esteem, greatly increasing your daily trauma decay.",
+				},
+				{
+					name: "Science Fair Winner",
+					colour: "green",
+					has: $scienceprojectwon is 1,
+				},
+				{
+					name: "Maths Competition Winner",
+					colour: "green",
+					has: $mathsprojectwon is 1,
+				},
+				{
+					name: "Stage Play Performer",
+					colour: "green",
+					has: $englishPlayWell is 1,
+				},
+			],
+		},
+		{
+			title: "Trauma Traits",
+			traits: [
+				{
+					name: () => V.controlled === 0 ? "Insomnia" : "Controlled Insomnia",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $sleeptrouble gte 1,
+					text: "Sleep less effective.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+				{
+					name: () => V.controlled === 0 ? "Nightmares" : "Controlled Nightmares",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $nightmares gte 1,
+					text: "Sleep is stressful.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+				{
+					name: () => V.controlled === 0 ? "Anxiety Disorder" : "Controlled Anxiety Disorder",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $anxiety gte 1,
+					text: "Stress won't automatically decrease over time.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+				{
+					name: () => V.controlled === 0 ? "Severe Anxiety Disorder" : "Controlled Severe Anxiety Disorder",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $anxiety gte 2,
+					text: "Stress increases over time.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+				{
+					name: () => V.controlled === 0 ? "Flashbacks" : "Controlled Flashbacks",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $flashbacks gte 1,
+					text: "May relive nasty experiences.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+				{
+					name: () => V.controlled === 0 ? "Panic Attacks" : "Controlled Panic Attacks",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $panicattacks gte 1,
+					text: "Chance of paralysis.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+				{
+					name: () => V.controlled === 0 ? "Severe Panic Attacks" : "Controlled Severe Panic Attacks",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $panicattacks gte 2,
+					text: "Chance of uncontrollable violent outbursts.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+				{
+					name: () => V.controlled === 0 ? "Hallucinations" : "Controlled Hallucinations",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $hallucinations gte 1,
+					text: "More dangers during encounters.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+				{
+					name: () => V.controlled === 0 ? "Severe Hallucinations" : "Controlled Severe Hallucinations",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $hallucinations gte 2,
+					text: "More dangerous world.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+				{
+					name: "Visibly Disturbed",
+					colour: "red",
+					has: $dissociation gte 1,
+					text: "There's something wrong with you, and people can tell.",
+					textColour: "red",
+				},
+				{
+					name: () => V.controlled === 0 ? "Dissociation" : "Controlled Dissociation",
+					colour: () => V.controlled === 0 ? "red" : "blue",
+					has: $dissociation gte 2,
+					text: "Nothing feels real.",
+					textColour: () => V.controlled === 0 ? "red" : "black",
+				},
+			],
+		},
+		{
+			title: "NPC Traits",
+			traits: [
+				{
+					name: "Robin's protector",
+					colour: "lblue",
+					has: $robinpaid gte 1,
+					text: "Robin is dependent on you. You need to be strong. Increases daily trauma decay.",
+				},
+				{
+					name: "Stockholm Syndrome: Eden",
+					colour: "white",
+					has: $syndromeeden gte 1,
+					text: "It must be lonely living on your own in the woods.",
+					textColour: "red",
+				},
+				{
+					name: "Stockholm Syndrome: Kylar",
+					colour: "white",
+					has: $syndromekylar gte 1 and ($NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison" or $location is "prison"),
+					text: "Everyone deserves a friend.",
+					textColour: "red",
+				},
+				{
+					name: () => V.bestialitydisable === "f" ? "Stockholm Syndrome: Wolves" : "Stockholm Syndrome: Wolf People",
+					colour: "white",
+					has: $syndromewolves gte 1,
+					text: () => V.bestialitydisable === "f" ? "They're just cute animals." : "They're just cute monsters.",
+					textColour: "red",
+				},
+				{
+					name: () => V.hallucinations >= 2 || V.bestialitydisable === "t" ? "Stockholm Syndrome: Harpy" : "Stockholm Syndrome: Great Hawk",
+					colour: "white",
+					has: $syndromebird gte 1,
+					text: "It only wants a mate.",
+					textColour: "red",
+				},
+			],
+		},
+		{
+			title: "Hypnosis Traits",
+			traits: [
+				{
+					name: "Hypnotic Suggestion",
+					colour: "pink",
+					has: $hypnosis gte 1,
+					text: "Doctor Harper told you to do something, but you can't remember what.",
+				},
+				{
+					name: "Hypnotic Yearning",
+					colour: "lblue",
+					has: $hypnosis_traits.scream is 1,
+					text: "May beg for rougher treatment instead of screaming.",
+				},
+				{
+					name: "Bewitched Yearning",
+					colour: "blue",
+					has: $hypnosis_traits.scream is 2,
+					text: "Will sometimes beg for rougher treatment instead of screaming.",
+				},
+				{
+					name: "Beguiled Yearning",
+					colour: "purple",
+					has: $hypnosis_traits.scream is 3,
+					text: "Will usually beg for rougher treatment instead of screaming.",
+				},
+				{
+					name: "Mesmeric Yearning",
+					colour: "pink",
+					has: $hypnosis_traits.scream is 4,
+					text: "Will often beg for rougher treatment instead of screaming.",
+				},
+				{
+					name: "Sublime Yearning",
+					colour: "red",
+					has: $hypnosis_traits.scream is 5,
+					text: "Will beg for rougher treatment instead of screaming.",
+				},
+				{
+					name: "Hypnotic Flaunting",
+					colour: "lblue",
+					has: $hypnosis_traits.cover is 1,
+					text: "May flaunt your body parts instead of covering them.",
+				},
+				{
+					name: "Bewitched Flaunting",
+					colour: "blue",
+					has: $hypnosis_traits.cover is 2,
+					text: "Will sometimes flaunt your body parts instead of covering them.",
+				},
+				{
+					name: "Beguiled Flaunting",
+					colour: "purple",
+					has: $hypnosis_traits.cover is 3,
+					text: "Will usually flaunt your body parts instead of covering them.",
+				},
+				{
+					name: "Mesmeric Flaunting",
+					colour: "pink",
+					has: $hypnosis_traits.cover is 4,
+					text: "Will often flaunt your body parts instead of covering them.",
+				},
+				{
+					name: "Sublime Flaunting",
+					colour: "red",
+					has: $hypnosis_traits.cover is 5,
+					text: "Will flaunt your body parts instead of covering them.",
+				},
+				{
+					name: "Hypnotic Deviancy",
+					colour: "lblue",
+					has: $hypnosis_traits.deviancy is 1,
+					text: "May provoke beasts at the start of encounters.",
+				},
+				{
+					name: "Bewitched Deviancy",
+					colour: "blue",
+					has: $hypnosis_traits.deviancy is 2,
+					text: "Will sometimes provoke beasts at the start of encounters.",
+				},
+				{
+					name: "Beguiled Deviancy",
+					colour: "purple",
+					has: $hypnosis_traits.deviancy is 3,
+					text: "Will usually provoke beasts at the start of encounters.",
+				},
+				{
+					name: "Mesmeric Deviancy",
+					colour: "pink",
+					has: $hypnosis_traits.deviancy is 4,
+					text: "Will often provoke beasts at the start of encounters.",
+				},
+				{
+					name: "Sublime Deviancy",
+					colour: "red",
+					has: $hypnosis_traits.deviancy is 5,
+					text: "Will provoke beasts at the start of encounters.",
+				},
+			],
+		},
+		{
+			title: "Acceptance Traits",
+			traits: [
+				{
+					name: "Acceptance: Tiny Penis",
+					colour: "green",
+					has: $acceptance_penis_tiny gte 1000 and $player.penissize lte 0,
+					text: "You're proud of your tiny penis.",
+				},
+				{
+					name: "Acceptance: Small Penis",
+					colour: "green",
+					has: $acceptance_penis_small gte 1000 and $player.penissize is 1,
+					text: "You're proud of your small penis.",
+				},
+				{
+					name: "Acceptance: Tomgirl",
+					colour: "green",
+					has: $acceptance_tomgirl gte 100 and $acceptance_penis_tiny gte 1000,
+					text: "You're proud of becoming a tomgirl.",
+				},
+				{
+					name: "Acceptance: Enormous Penis",
+					colour: "green",
+					has: $acceptance_penis_big gte 1000 and $player.penissize gte 4,
+					text: "You're proud of your enormous penis.",
+				},
+				{
+					name: "Acceptance: Flat Chest",
+					colour: "green",
+					has: $acceptance_breasts_tiny gte 1000 and $player.breastsize lte 0 and $player.gender is "f",
+					text: "You're proud of your flat chest.",
+				},
+				{
+					name: "Acceptance: Small Breasts",
+					colour: "green",
+					has: $acceptance_breasts_small gte 1000 and $player.breastsize gte 1 and $player.breastsize lte 5,
+					text: "You're proud of your small breasts.",
+				},
+				{
+					name: "Acceptance: Huge Breasts",
+					colour: "green",
+					has: $acceptance_breasts_big gte 1000 and $player.breastsize gte 8,
+					text: "You're proud of your huge breasts.",
+				},
+				{
+					name: () => playerAwareTheyArePregnant() ? "Acceptance: Pregnant Belly" : "Acceptance: Pregnant Looking Belly",
+					colour: "green",
+					has: $acceptance_pregnancy gte 1000 and playerBellySize() gte 8,
+					text: () => playerAwareTheyArePregnant() ? "You're proud of your lifebearing belly." : "You're proud of your large belly.",
+				},
+			],
+		},
+	]>>
+
+	<div id="traitListsSearch">
+		<<traitListsSearch>>
+	</div>
+	<br>
+	<div id="traitLists">
+		<<traitLists>>
+	</div>
+<</widget>>
+
+<<widget "traitListsSearch">>
+	<<if $options.traitOverlayFormat is undefined>><<set $options.traitOverlayFormat to "table">><</if>>
+	<<set _traitSearch to "">>
+	<details>
+		<summary style="display:list-item;">Filter</summary>
+		<label>Search: <<textbox "_traitSearch" _traitSearch>></label>
+		<br><br>
+		<label>
+			Display Format:
+			<<listbox "$options.traitOverlayFormat" autoselect>>
+				<<option "Table" "table">>
+				<<option "Reduced Table" "reducedTable">>
+				<<option "List" "list">>
+			<</listbox>>
+		</label>
+		<br><br>
+		<<link Update>>
+			<<replace "#traitLists">><<traitLists>><</replace>>
+		<</link>> |
+		<<link Clear>>
+			<<set _traitSearch to "">>
+			<<replace "#traitListsSearch">><<traitListsSearch>><</replace>>
+			<<replace "#traitLists">><<traitLists>><</replace>>
+		<</link>> |
+	</details>
+<</widget>>
+
+<<widget "traitLists">>
+	<<set _traitSearch2 to _traitSearch.toLowerCase()>>
+	<<for $_traitList range _traitLists>>
+		<<if !$_traitList.traits.find(trait => trait.has &&
+			(T.traitSearch2 === "" ||
+			(typeof trait.name === "function" && trait.name().toLowerCase().includes(T.traitSearch2)) ||
+			(typeof trait.name !== "function" && trait.name.toLowerCase().includes(T.traitSearch2)) ||
+			(trait.text && typeof trait.text === "function" && trait.text().toLowerCase().includes(T.traitSearch2)) ||
+			(trait.text && typeof trait.text !== "function" && trait.text.toLowerCase().includes(T.traitSearch2)))
+		)>>
+			<<continue>>
+		<</if>>
+		<<if ["table","reducedTable"].includes($options.traitOverlayFormat)>>
+			<div @class="$options.traitOverlayFormat is 'table' ? 'traitList' : 'traitListReducedText'">
+				<div class="traitHeading">
+					<<print $_traitList.title>>
+				</div>
+				<div class="traits">
+				<<for $_trait range $_traitList.traits.filter(trait => trait.has &&
+					(T.traitSearch2 === "" ||
+					(typeof trait.name === "function" && trait.name().toLowerCase().includes(T.traitSearch2)) ||
+					(typeof trait.name !== "function" && trait.name.toLowerCase().includes(T.traitSearch2)) ||
+					(trait.text && typeof trait.text === "function" && trait.text().toLowerCase().includes(T.traitSearch2)) ||
+					(trait.text && typeof trait.text !== "function" && trait.text.toLowerCase().includes(T.traitSearch2)))
+				)>>
+					<div class="trait">
+						<<set $_name to typeof $_trait.name is "function" ? $_trait.name() : $_trait.name>>
+						<<set $_colour to typeof $_trait.colour is "function" ? $_trait.colour() : $_trait.colour>>
+						<<set $_style to typeof $_trait.style is "function" ? $_trait.style() : $_trait.style>>
+						<<set $_text to typeof $_trait.text is "function" ? $_trait.text() : $_trait.text>>
+						<<set $_textColour to typeof $_trait.textColour is "function" ? $_trait.textColour() : $_trait.textColour>>
+						<span @class="$_colour" @style="$_style">
+							<<print $_name>>
+						</span>
+						<<if !$_text>>
+						<<elseif $options.traitOverlayFormat is "table">>
+							- <small @class="$_textColour"><<print $_text>></small>
+						<<else>>
+							<mouse class="tooltip linkBlue">Info (?)<span @class="$_textColour"><<print $_text>></span></mouse>
+						<</if>>
+					</div>
+				<</for>>
+				</div>
+			</div>
+			<br>
+		<</if>>
+		<<if $options.traitOverlayFormat is "list">>
+			<div>
+				<h4>
+					<<print $_traitList.title>>
+				</h4>
+				<<for $_trait range $_traitList.traits.filter(trait => trait.has &&
+					(T.traitSearch2 === "" ||
+					(typeof trait.name === "function" && trait.name().toLowerCase().includes(T.traitSearch2)) ||
+					(typeof trait.name !== "function" && trait.name.toLowerCase().includes(T.traitSearch2)) ||
+					(trait.text && typeof trait.text === "function" && trait.text().toLowerCase().includes(T.traitSearch2)) ||
+					(trait.text && typeof trait.text !== "function" && trait.text.toLowerCase().includes(T.traitSearch2)))
+				)>>
+					<div class="trait">
+						<<set $_name to typeof $_trait.name is "function" ? $_trait.name() : $_trait.name>>
+						<<set $_colour to typeof $_trait.colour is "function" ? $_trait.colour() : $_trait.colour>>
+						<<set $_style to typeof $_trait.style is "function" ? $_trait.style() : $_trait.style>>
+						<<set $_text to typeof $_trait.text is "function" ? $_trait.text() : $_trait.text>>
+						<<set $_textColour to typeof $_trait.textColour is "function" ? $_trait.textColour() : $_trait.textColour>>
+						<span @class="$_colour" @style="$_style">
+							<<print $_name>>
+						</span>
+						<<if $_text>>
+							- <span @class="$_textColour"><<print $_text>></span>
+						<</if>>
+					</div>
+				<</for>>
+			</div>
+			<br>
+		<</if>>
+	<</for>>
+<</widget>>

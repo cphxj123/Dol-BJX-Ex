@@ -1,0 +1,145 @@
+:: Barb Street
+<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "barb">><<getTarget true>>
+
+You are on Barb Street. Silver blocks of flats tower all around, most separated from the road by an empty canal. You can hear the sea. The police station is located here. There's also a dance studio.
+<<if Time.dayState is "day">>
+	<<if $weather is "rain">>
+		The few braving the rain walk quickly.
+	<<elseif $weather is "snow">>
+		Pedestrians fill the pavements, walking brisk against the cold.
+	<<else>>
+		Pedestrians fill the pavements, but the sound of traffic dominates.
+	<</if>>
+<<elseif Time.dayState is "dawn">>
+	<<if $weather is "rain">>
+		Rain cascades over the buildings, dripping over hurried bodies.
+	<<elseif $weather is "snow">>
+		The night-settled snow has already been trodden away by heavy footfalls.
+	<<else>>
+		The street is already busy, even so early.
+	<</if>>
+<<elseif Time.dayState is "dusk">>
+	<<if $weather is "rain">>
+		People hurry through the rain, eager to be inside.
+	<<elseif $weather is "snow">>
+		People hurry through the cold, eager to be inside.
+	<<else>>
+		The sun has long since disappeared behind the towers, but the street remains busy.
+	<</if>>
+<<elseif Time.dayState is "night">>
+	<<if $weather is "rain">>
+		Lights from high windows pierce the dark rain.
+	<<elseif $weather is "snow">>
+		Lights from high windows illuminate the snow.
+	<<else>>
+		Voices and occasional shouting emerge from nearby buildings despite the hour.
+	<</if>>
+<</if>>
+<<if $police_access_card is 1>>
+	Your <span class="teal">police access card</span> can open a door at the side of the station.
+	<<set $phase to 10>>
+<<elseif currentSkillValue('skulduggery') gte 600 and ((Time.dayState isnot "night" and $rng lte 25) or (Time.dayState is "night" and $rng lte 20))>>
+	<<set $phase to 10>>
+	<br>
+	<span class="teal">With a thief's eye you see what others miss.</span> You notice a couple of police dragging
+	<<print either("a shackled","an unconscious","a struggling","a nubile","a naked","a heavily sedated","a gagged","a flirtatious")>> prisoner
+	from a side door and taking them <<print either("down a secluded alley.","into the back of a police car.","down steps to a secluded underground cell.")>>
+	The side door didn't close properly. It remains slightly open.
+	<br>
+	<<set $eventskip to 1>>
+<</if>>
+<<if $halloween is 1>>
+	Jack-o'-lanterns and other Halloween decorations leer through windows.
+<</if>>
+<<streeteffects>>
+<br><br>
+<<if $exposed gte 1>>
+	<<exhibitionism "street">>
+<</if>>
+<<if $stress gte $stressmax and !$possessed>>
+	<<passoutstreet>>
+<<elseif $town_projects.bridge is 1>>
+	<<set $town_projects.bridge to 2>>
+	You notice the remains of a bridge that once spanned the canal. You saw the same ruin in your hookah dream. It must have been removed after the canal was drained.
+	<br><br>
+	You see a <<generatey1>><<person1>><<person>> you recognise from the orphanage scurry into the canal, and emerge relieved on the other side. <span class="teal">An idea strikes you.</span> If the bridge were restored, those thugs would have a harder time harassing people.
+	<br><br>
+	<i>You could enquire about the bridge at the town hall.</i>
+	<br><br>
+	<<link [[Next|Barb Street]]>><<set $eventskip to 1>><</link>>
+<<elseif $town_projects.bridge is 3>>
+	<<set $town_projects.bridge to 4>>
+	The mayor's office acted fast, and <span class="green">a newly constructed bridge spans the canal.</span> Crossing will be safer. Any orphans finding work here will be safer as well.
+	<br><br>
+	<<earnFeat "Bridging the Past">>
+	<<link [[Next|Barb Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if ($danger gte (9900 - $allure) or $eventforced) and $eventskip is 0>>
+		<<eventsstreet>>
+	<<else>>
+		<<if $options.mapTop is true>>
+			<<map "barb">>
+			<br>
+		<</if>>
+		Places of Interest
+		<br>
+		<<if $openinghours is 1>>
+			<<dancestudioicon>><<link [[Dance studio (0:01)|Dance Studio]]>><<pass 1>><</link>>
+			<br>
+		<<elseif Time.hour is $closinghour>>
+			<span class="blue">People are leaving the dance studio.</span> It must be closing time.
+			<br>
+		<<else>>
+			<<dancestudioicon>><<link [[Dance studio (0:01)|Dance Studio Lock]]>><<pass 1>><</link>>
+			<br>
+		<</if>>
+		<<if $exposed lte 0>>
+			<<policeicon>><<link [[Police station (0:02)|Police Station]]>><<pass 2>><</link>>
+			<br>
+		<</if>>
+		<<if $phase is 10>>
+			<<policeicon>><<link [[Sneak into police station side door (0:05)|Police Back Office]]>><<pass 5>><<set $phase is 0>><</link>>
+			<br>
+		<</if>>
+		<<if $town_projects.bridge gte 4>>
+			<<dorenflaticon>><<link [[Cross the bridge to the flats (0:01)|Flats]]>><<pass 1>><</link>>
+			<br>
+		<</if>>
+		<<if $exposed lte 0>>
+			<<dorenflaticon>><<link [[Cross the canal to the flats (0:01)|Flats Canal]]>><<pass 1>><</link>>
+			<br>
+		<</if>>
+		<<if $dorenintro gte 1 and $exposed lte 0>>
+			<<dorenflaticon>><<link [[Doren's flat (0:02)|Doren Entrance]]>><<pass 2>><</link>>
+			<br>
+		<</if>>
+		<<if $exposed gte 1 and Time.dayState isnot "night">>
+		<<else>>
+			<<add_link "Travel<br>">><<hideDisplay>>
+			<<domus>>
+			<<cliff>>
+			<<connudatus>>
+			<<if $exposed lte 0>>
+				<<buswait>>
+			<</if>>
+			/* 北极星模组 */
+			<<if $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+				<<flywait>>
+			<</if>>
+			/* 北极星 */
+			<<loiter>>
+		<</if>>
+		<<add_link "<br>Alternate Routes<br>">><<hideDisplay>>
+		<<residential>>
+		<<stormdrain>>
+		<br>
+		<<displayLinks>>
+		<<if $options.mapTop isnot true>>
+			<br>
+			<<map "barb">>
+		<</if>>
+	<</if>>
+<</if>>
+<<set $eventskip to 0>>

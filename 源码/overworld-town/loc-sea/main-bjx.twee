@@ -1,0 +1,305 @@
+:: Sea Reef
+
+<<set $location to "sea">><<water>><<effects>>
+你朝着四色的光芒游去。
+<<physique>>
+<br><br>
+<<if $stress gte $stressmax>>
+	<<passoutbeach>>
+<<else>>
+	<<swimmingdifficulty 1 100 true>>
+	<<if $swimmingSuccess>>
+		<span class="green">你成功游到了光芒处，</span>一座奇怪的小岛顿时出现在眼前。
+		<br><br>
+		<<link [[调头回去 (0:10)|Sea]]>><<pass 10>><<tiredness 2>><</link>><<gtiredness>><<swimmingdifficulty 1 300>>
+		<br>
+		<<link [[游向小岛 (0:10)|Seasons Island Landing]]>><<pass 10>><<tiredness 2>><</link>><<gtiredness>>
+		<br>
+	<<else>>
+		还没等你接近，一个大浪打来，<span class="red">你被裹挟在其中，</span>进一步推向大海深处。
+		<br><br>
+		<<link [[继续|Sea]]>><<set $sea += 10>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Sea Dive
+
+<<location "seadive">><<set $bus to "seadive">><<set $outside to 0>><<underwater>><<effects>>
+<<if $stress gte $stressmax>>
+	<<passoutbeach>>
+<<else>>
+	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
+	<<if $danger gte (9900 - $allure) and $eventskip is 0>>
+		<<eventsdeepseadive>>
+	<<else>>
+		<<if $phase is 0>>
+			你潜入水下，光线穿过开阔的水面上，照亮了附近的景象。
+		<<elseif $phase is 1>>
+			从水面之上穿越下来的光在海洋的这个深度也变暗了很多。
+		<<elseif $phase is 2>>
+			你可以看到远处珊瑚礁的模糊轮廓。
+		<<elseif $phase is 3>>
+			你周围的光线已经暗淡，但你还在继续游。
+		<<elseif $phase is 4>>
+			你注意到有小鱼在你的视野里游来游去，它们好奇地注释着你，在你的周围游成一圈。
+		<<elseif $phase is 5>>
+			你开始看到远处奇怪的形状，你游向它们，好奇地想看看它们是什么。原来它们是巨大的悬崖，从海底升起，就像古代被遗忘的哨兵。
+		<<elseif $phase is 6>>
+			光线已经完全照射不到这里，但海水却散发着令人毛骨悚然的蓝色光芒。
+		<<elseif $phase is 7>>
+			你开始看到远处奇怪的、脉动的形状。当你靠近时，它们变得更加清晰。它们是巨大的海洋生物，行动优雅而有力。
+		<<elseif $phase is 8>>
+			你被完全的黑暗包围，唯一的声音是深海微弱的回声。
+		<<elseif $phase is 9>>
+			尽管能见度有限，你仍然可以辨认出在你周围游泳的各种海洋生物的形状。你看到一大群水母漂过，它们的触手在黑暗中闪闪发光，你甚至能瞥见远处游来游去的鲸鱼的影子。
+		<<elseif $phase is 10>>
+			你终于到达了底部，你花了一点时间整理自己，沉浸在水下如此之深的独特孤独感中。
+		<</if>>
+		<br><br>
+
+		<<if $phase is 0>>
+			<<link [[浮上水面|Sea]]>><<wateraction>><</link>>
+			<br>
+		<</if>>
+		<<if $phase is 1>>
+			<<link [[浮上水面|Sea]]>><<wateraction>><</link>>
+			<br>
+		<</if>>
+		<<if $phase gt 1>>
+			<<link [[向上游去|Sea Dive]]>><<wateraction>><<set $phase -= 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+			<br>
+		<</if>>
+		<<if $phase lt 10>>
+			<<link [[向下潜水|Sea Dive]]>><<wateraction>><<set $phase += 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+			<br>
+		<</if>>
+		<<if $phase is 10 and $ship is undefined>>
+			<<link [[探索海底|Deep Sea Ship Find]]>><<wateraction>><</link>><<loxygen>>
+			<br>
+		<<elseif $phase is 10>>
+			<<link [[游向沉船|Deep Sea Ship]]>><<wateraction>><</link>><<loxygen>>
+			<br>
+		<</if>>
+	<</if>>
+<</if>>
+
+:: Deep Sea Ship Find
+
+<<underwater>><<effects>>
+当你沿着海底游动时，你看到了它，一艘沉船，在远处若隐若现。当你靠近它时，你的心跳加速，你可以看到海水对它造成的损害。随着时间的推移，木头和金属已经生锈，坑坑洼洼，整艘船似乎有一种鬼魅的感觉。眼前的景象几乎是另一个世界，就好像是一艘幽灵船。
+<br><br>
+当你靠近沉船时，你开始注意到更多的损坏细节。你看到船舷上有一个大洞，甚至可以看到里面曾经的一些房间。船上已经布满了海洋生物，你可以看到鱼儿在周围游来游去。整个场景阴森恐怖，让人不禁联想到大自然的力量，它可以夺走曾经的人造之物。
+<br><br>
+你开始在船边游来游去，使你可以更好地了解它的大小。它非常巨大，几乎就像是海底的一个小镇，你可以看到螺旋桨曾经所在的位置，并试着想象这艘船还在航行时的样子。
+<br><br>
+<<link [[游向沉船|Deep Sea Ship]]>><<set $ship to 1>><<set $shiproom to 0>><</link>>
+
+:: Deep Sea Ship
+
+<<underwater>><<effects>>
+<<if $stress gte $stressmax>>
+	<<passoutbeach>>
+<<else>>
+	<<if $shiproom is 0>>
+		你进入沉船的厨房。古老的炉灶年久失修，锈迹斑斑，杂草丛生。鱼儿在架子间穿梭，躲在许多缝隙里。一条长长的走廊通向船的深处，大部分门都是密封的，但有一扇门的铰链被炸断，留下一个门形的洞。
+	<<elseif $shiproom is 1>>
+		你现在所在的房间里堆满了各种形状和大小的陶罐，看来沉船可能用这里来存放战利品。很多陶罐都被打碎了，战利品也锈迹斑斑，但还有很多陶罐看起来完好无损。一扇门通向厨房，地板上的一个大洞通向船的更深处。
+	<<elseif $shiproom is 2>>
+		你在一个破烂的房间中，地板大部分已经碎裂，你可以看到下面的海底。一尊巨大的石像矗立在房间中心，散发着令人平静的蓝光。石像上长着发光的苔藓，尽管如此，你还是能看到一个美丽的美人鱼雕像。
+	<</if>>
+	<br><br>
+	<<if $shiproom is 0>>
+		<<link [[离开沉船|Sea Dive]]>><<wateraction>><</link>><<loxygen>>
+		<br>
+	<</if>>
+	<<if $shiproom is 1>>
+		<<link [[搜索陶罐|Deep Sea Ship Pots]]>><<wateraction>><</link>><<loxygen>>
+		<br>
+	<</if>>
+	<<if $shiproom is 2>>
+		<<link [[向雕像祈祷|Deep Sea Ship Statue]]>><<wateraction>><</link>><<loxygen>>
+		<br>
+	<</if>>
+	<<if $shiproom gt 0>>
+		<<link [[游回入口处|Deep Sea Ship]]>><<wateraction>><<set $shiproom -= 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+		<br>
+	<</if>>
+	<<if $shiproom lt 2>>
+		<<link [[游向更深处|Deep Sea Ship]]>><<wateraction>><<set $shiproom += 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Deep Sea Ship Pots
+
+<<underwater>><<effects>>
+<<if $stress gte $stressmax and !$possessed>>
+	<<passoutbeach>>
+<<else>>
+	<<if $rng gte 80>>
+		<<rng>>
+		<<if $rng gte 95>>
+			你找到了一块金条。
+			<<set $antiquemoney += 800>><<museumAntiqueStatus "antiquebullion" "found">>
+			<br><br>
+		<<elseif $rng gte 30>>
+			你会发现一枚原始硬币。
+			<<set $antiquemoney += 40>><<museumAntiqueStatus "antiquereal" "found">>
+			<br><br>
+		<<elseif $rng gte 0>>
+			你找到一小瓶靛蓝染料。
+			<<set $antiquemoney += 60>><<museumAntiqueStatus "antiqueindigo" "found">>
+			<br><br>
+		<</if>>
+		<<link [[搜索陶罐|Deep Sea Ship Pots]]>><<wateraction>><</link>><<loxygen>>
+		<br>
+		<<link [[游回入口处|Deep Sea Ship]]>><<wateraction>><<set $shiproom -= 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+		<br>
+		<<link [[游向更深处|Deep Sea Ship]]>><<wateraction>><<set $shiproom += 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+	<<elseif $rng gte 60 and $swarmdisable is "f">>
+		你把手伸进其中一个陶罐里，成群的小鱼涌了出来，把你团团围住。
+		<br><br>
+		<<link [[继续|Deep Sea Ship Swarm]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<<else>>
+		<<rng>>
+		<<if $rng gte 81>>
+			你把手伸进其中一个陶罐里，里面全是破碎的陶瓷。
+		<<elseif $rng gte 61>>
+			你把手伸进其中一个陶罐里，里面有东西向你咬来。幸好你反应迅速，及时把手抽了出来。
+			<<gstress>><<stress 3>>
+		<<elseif $rng gte 41>>
+			你把手伸进其中一个陶罐里，里面全是泥巴。
+		<<elseif $rng gte 21>>
+			你把手伸进其中一个陶罐里，里面装满了鹅卵石。
+		<<else>>
+			你把手伸进其中一个陶罐里，里面是空的。
+		<</if>>
+		<br><br>
+		<<link [[搜索陶罐|Deep Sea Ship Pots]]>><<wateraction>><</link>><<loxygen>>
+		<br>
+		<<link [[游回入口处|Deep Sea Ship]]>><<wateraction>><<set $shiproom -= 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+		<br>
+		<<link [[游向更深处|Deep Sea Ship]]>><<wateraction>><<set $shiproom += 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+	<</if>>
+<</if>>
+
+:: Deep Sea Ship Swarm
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<molested>>
+	<<controlloss>>
+	<<set $combat to 1>>
+	<<set $enemytype to "swarm">>
+	<<swarminit "fish" "容器" "在摇晃" "破裂着" "稳定" 4 6>>
+	<<set $swimdistance to 8>>
+	<<set $water to 1>>
+<</if>>
+<<if $swimdistance gte 8>>
+	你被困在鱼群中央。
+<<elseif $swimdistance gte 2>>
+	你正在逃离鱼群。
+<<else>>
+	你几乎就要逃脱。
+<</if>>
+<<underwater>><<effects>><<swarmeffects>>
+<<swarm>>
+<<swarmactions>>
+<<if $stress gte $stressmax>>
+	<span id="next"><<link [[继续|Deep Sea Ship Swarm Finish]]>><</link>></span><<nexttext>>
+<<elseif $swimdistance lte 0>>
+	<span id="next"><<link [[继续|Deep Sea Ship Swarm Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Deep Sea Ship Swarm]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Deep Sea Ship Swarm Finish
+
+<<underwater>><<effects>>
+<<if $stress gte $stressmax>>
+	你再也承受不住了，你昏了过去。
+	<br><br>
+	<<if $upperoff isnot 0>>
+		<<upperruined>>
+	<</if>>
+	<<if $loweroff isnot 0>>
+		<<lowerruined>>
+	<</if>>
+	<<if $underloweroff isnot 0>>
+		<<underlowerruined>>
+	<</if>>
+	<<if $underupperoff isnot 0>>
+		<<underupperruined>>
+	<</if>>
+	<<endcombat>>
+	<<link [[继续|Passout Beach]]>><<pass 1 hour>><</link>>
+<<else>>
+	<<tearful>>你从鱼群中游了出来，鱼群们见此分散开来，游去远方不见了。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[搜索陶罐|Deep Sea Ship Pots]]>><<wateraction>><</link>><<loxygen>>
+	<br>
+	<<link [[游回入口处|Deep Sea Ship]]>><<wateraction>><<set $shiproom -= 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+	<br>
+	<<link [[游向更深处|Deep Sea Ship]]>><<wateraction>><<set $shiproom += 1>><<tiredness 2>><</link>><<loxygen>><<gtiredness>>
+<</if>>
+
+:: Deep Sea Ship Statue
+
+<<if $ghost is 1>>
+	你祈求救赎。你的思绪飘向对未来的憧憬，以及事情如何才能变得更好。
+	<br><br>
+	突然一阵刺痛感袭来。
+	<br><br>
+	<<set $skinColor.natural to "water">>
+	<<set $transformationParts.ghost.hitodama to "disabled">>
+	<<set $transformationParts.ghost.mist to "disabled">>
+	<<set $transformationParts.ghost.flame to "disabled">>
+    <<set $transformationParts.ghost.stream to "default">>
+	<<set $haircolour to "blue">>
+	<<set $hairfringecolour to "deepblue">>
+	<<set $options.lightGlow to 1>>
+	<<set $ghost to 4>>
+	<<pass 60>>
+	<<if $purity gte ((1000 / 7) * 7)>>
+		<<awareness -2>><<arousal -120>>
+	<<elseif $purity gte ((1000 / 7) * 6)>>
+		<<awareness -1>><<arousal -100>>
+	<<elseif $purity gte ((1000 / 7) * 5)>>
+		<<awareness -1>><<arousal -80>>
+	<<elseif $purity gte ((1000 / 7) * 4)>>
+		<<awareness -1>><<arousal -60>>
+	<<elseif $purity gte ((1000 / 7) * 3)>>
+		<<awareness -1>><<arousal -50>>
+	<<elseif $purity gte ((1000 / 7) * 2)>>
+		<<awareness -1>><<arousal -40>>
+	<<else>>
+		<<awareness -1>><<arousal -30>>
+	<</if>>
+	<<link [[离开|Deep Sea Ship]]>><</link>>
+<<else>>
+	你祈求救赎。你的思绪飘向对未来的憧憬，以及事情如何才能变得更好。
+	<br><br>
+	你感觉负担减轻了。
+	<br><br>
+	<<pass 60>>
+	<<if $purity gte ((1000 / 7) * 7)>>
+		<<awareness -2>><<arousal -120>>
+	<<elseif $purity gte ((1000 / 7) * 6)>>
+		<<awareness -1>><<arousal -100>>
+	<<elseif $purity gte ((1000 / 7) * 5)>>
+		<<awareness -1>><<arousal -80>>
+	<<elseif $purity gte ((1000 / 7) * 4)>>
+		<<awareness -1>><<arousal -60>>
+	<<elseif $purity gte ((1000 / 7) * 3)>>
+		<<awareness -1>><<arousal -50>>
+	<<elseif $purity gte ((1000 / 7) * 2)>>
+		<<awareness -1>><<arousal -40>>
+	<<else>>
+		<<awareness -1>><<arousal -30>>
+	<</if>>
+	<<link [[离开|Deep Sea Ship]]>><</link>>
+<</if>>

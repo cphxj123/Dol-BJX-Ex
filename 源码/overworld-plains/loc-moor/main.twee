@@ -1,0 +1,858 @@
+:: Moor
+<<set $location to "moor">><<set $outside to 1>><<effects>>
+<<if $moor_hunt gte 1>>
+	A terrible shadow passes. <span class="red">You are being hunted.</span>
+	<br><br>
+<</if>>
+<<switch $moormove>>
+<<case "careful">>
+	You move through the moor, taking detours around hillocks and other higher areas.
+<<case "quick">>
+	You move through the moor by the most direct path.
+<<case "normal">>
+	You move through the moor, avoiding the more conspicuous areas.
+<<case "fly">>
+	<<flight_effects>>
+	You catch the wind with a running jump, and fly low across the moor. Your wings tire quickly, but you cover a lot of ground before needing to land.
+<<case "careful_search">>
+	You keep low, searching the nooks and crannies of the moor.
+<<case "quick_search">>
+	You climb the nearest hillock, and observe the surrounding area. You get a good view of the moor.
+<<case "normal_search">>
+	You search the moor for anything of value.
+<<case "fly_search">>
+	<<flight_effects>>
+	You soar high above the moor, your keen eyes scanning the ground below. Your wings tire quickly, and you land upon a hillock to catch your breath.
+<<case "hobble">>
+	You hobble across the uneven moor, careful not to trip.
+<<default>>
+	You are on the moor.
+<</switch>>
+
+<<if $moor gte 100>>
+	A great castle looms above, despite being ruined and half-sunken into the peat.
+	<<earnFeat "Wet and Ruined">>
+<<elseif $moor gte 51>>
+	Water bubbles up from unseen wells, running between the bushes and rocks. The ground is uneven and treacherous.
+<<elseif $moor gte 21>>
+	The bushes and rock formations make travelling difficult.
+<<elseif $moor gte 1>>
+	Plains of heather stretch in all directions.
+<<else>>
+	A great plain of heather stretches before you. Farms lie in the other direction, and the sea beyond.
+<</if>>
+<<if $moor is 10>>
+	You're stood outside a farm, surrounded by tall fences. A sign beside the entrance reads: "Remy estate."
+<</if>>
+<<if Time.dayState is "night">>
+	<<if $weather is "rain">>
+		Black rain pours from the heavens.
+	<<elseif $weather is "snow">>
+		Dark snow smothers the plains.
+	<<elseif $weather is "clear">>
+		The stars are clear, so far from artificial light.
+	<<else>>
+		Darkness blankets the plains.
+	<</if>>
+<<elseif Time.dayState is "dusk">>
+	<<if $weather is "rain">>
+		Evening sunlight glimmers off pools, agitated by the rain.
+	<<elseif $weather is "snow">>
+		Snow settles for the night.
+	<<elseif $weather is "clear">>
+		The sun dips beneath a hillock.
+	<<else>>
+		Oppressive clouds descend.
+	<</if>>
+<<elseif Time.dayState is "dawn">>
+	<<if $weather is "rain">>
+		The dawn's sun glimmers off pools, agitated by the rain.
+	<<elseif $weather is "snow">>
+		A blanket of snow reflects the dawn's light.
+	<<elseif $weather is "clear">>
+		The sun rises over hillocks.
+	<<else>>
+		Fog hangs in the valleys.
+	<</if>>
+<<else>>
+	<<if $weather is "rain">>
+		There are few places to hide from the rain.
+	<<elseif $weather is "snow">>
+		A sheet of snow covers everything.
+	<<elseif $weather is "clear">>
+		The sun feels weaker, pale and cold.
+	<<else>>
+		The clouds hang low, bathing the hilltops in fog.
+	<</if>>
+<</if>>
+
+<br><br>
+
+<<if $moor is 20>>
+	You see a faded sign. You can make out a little: "D--ger. W--d ani-a-s."
+	<br><br>
+<<elseif $moor is 50>>
+	You see a faded sign. You can make out little: "D----- Q--c-s--d"
+	<br><br>
+<<elseif $moor is 0>>
+	You see a sign beside a trail leading into the heather. It reads: "Danger. Keep out."
+	<br><br>
+<</if>>
+
+<<if $stress gte $stressmax>>
+	You've pushed yourself too much.
+	<br><br>
+	<<passout_moor>>
+<<elseif $moor_hunt gte 10>>
+	<<moor_hunt>>
+<<elseif $eventskip is 0>>
+	<<if $moor gte 51>>
+		<<eventsmoorhigh>>
+	<<elseif $moor gte 21>>
+		<<eventsmoormid>>
+	<<else>>
+		<<eventsmoorlow>>
+	<</if>>
+<<else>>
+	<<if $arousal gte $arousalmax>>
+		<<orgasmLocation "moor">>
+	<</if>>
+	<<if $moor gte 100>>
+		<<mooricon "tower">><<link [[Enter the castle (0:10)|Castle]]>><<pass 10>><</link>>
+		<br><br>
+	<</if>>
+	<<if $moor gte 51>>
+		<<if $pubtask is "moor" and $pubtask2 isnot 1>>
+			<<if $pubtasksetting is "lurkers" and $bestialitydisable is "f" and $lurkerdisable is "f">>
+				<<crimeicon "black box">><<link [[Search for Landry's black box|Moor Box Lurkers]]>><</link>>
+				<br><br>
+			<<elseif $pubtasksetting is "person">>
+				<<crimeicon "black box">><<link [[Search for Landry's black box|Moor Box]]>><</link>>
+				<br><br>
+			<<elseif random(1, 2) is 2 and $bestialitydisable is "f" and $lurkerdisable is "f">>
+				<<crimeicon "black box">><<link [[Search for Landry's black box|Moor Box Lurkers]]>><</link>>
+				<br><br>
+			<<else>>
+				<<crimeicon "black box">><<link [[Search for Landry's black box|Moor Box]]>><</link>>
+				<br><br>
+			<</if>>
+		<</if>>
+	<</if>>
+	<<if $moor is 10>>
+		<<mooricon "remy">><<link [[Approach the estate|Estate Approach]]>><</link>>
+		<br><br>
+	<</if>>
+	<<if $moor is undefined>>
+		<<set $moor to 0>>
+	<</if>>
+	/* 北极星模组 */
+	<<if !$options.bjx_animal and ($harpy gte 6 and $birdFly gte 1) or $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+	/* 北极星 */
+		<<flight_time_check 4>>
+		<br>
+	<</if>>
+	<<if $moor lt 100>>
+		Go deeper into the moor
+		<br>
+		/* 北极星模组 */
+		<<if $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+			<<glideicon>><<print '<<link [[飞行 ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Moor]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<set $moor += 5>><<set $forestmod to 0>><<set $moormove to "fly">><</link>>'>><<flight_text>><<gtiredness>>
+		<<elseif !$options.bjx_animal and ($harpy gte 6 and $birdFly gte 1)>>
+		/* 北极星 */
+		    <<glideicon>><<print '<<link [[Fly ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Moor]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<set $moor += 5>><<set $forestmod to 1>><<set $moormove to "fly">><</link>>'>><<flight_text>><<gtiredness>>
+			<br>
+		<</if>>
+		<<if $worn.feet.type.includes("heels") and !$possessed>>
+			<<heelsicon "hobble">><<link [[Hobble in heels (0:30)|Moor]]>><<bird_pass 30>><<set $moor += 5>><<set $forestmod to 3>><<set $moormove to "hobble">><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<gharass>>
+		<<else>>
+			<<if !$worn.feet.type.includes("shackle")>>
+				<<runicon>><<link [[Quickly (0:05)|Moor]]>><<bird_pass 5>><<set $moor += 5>><<set $forestmod to 3>><<set $moormove to "quick">><<if $moor_hunt gte 1>><<set $moor_hunt += 0.5>><</if>><</link>><<gharass>>
+				<br>
+			<</if>>
+			<<walkicon>><<link [[Normally (0:10)|Moor]]>><<bird_pass 10>><<set $moor += 5>><<set $forestmod to 1>><<set $moormove to "normal">><<if $moor_hunt gte 1>><<set $moor_hunt += 1>><</if>><</link>>
+			<br>
+			<<sneakicon>><<link [[Carefully (0:30)|Moor]]>><<bird_pass 30>><<set $moor += 5>><<set $moormove to "careful">><<set $forestmod to 0.5>><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<lharass>>
+		<</if>>
+		<br><br>
+	<</if>>
+		Search nearby <<gtreasure>>
+		<br>
+		/* 北极星模组 */
+		<<if $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+			<<glideicon>><<print '<<link [[飞行 ('+_hoursPassedSearch+':'+ (_minutesPassedSearch lt 10 ? "0" : "") + _minutesPassedSearch + ')|Moor]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTimeSearch>><<bird_pass _flightTimeSearch>><<set $forestmod to 0>><<set $moormove to "fly_search">><</link>>'>><<flight_text>><<gtiredness>><<lharass>>
+		<<elseif !$options.bjx_animal and ($harpy gte 6 and $birdFly gte 1)>>
+		/* 北极星 */
+			<<glideicon>><<print '<<link [[Fly ('+_hoursPassedSearch+':'+ (_minutesPassedSearch lt 10 ? "0" : "") + _minutesPassedSearch + ')|Moor]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTimeSearch>><<bird_pass _flightTimeSearch>><<set $forestmod to 0.5>><<set $moormove to "fly_search">><</link>>'>><<flight_text>><<gtiredness>><<lharass>>
+			<br>
+		<</if>>
+		<<if !$worn.feet.type.includes("shackle")>>
+			<<runicon>><<link [[Quickly (0:05)|Moor]]>><<bird_pass 5>><<set $forestmod to 3>><<set $moormove to "quick_search">><<if $moor_hunt gte 1>><<set $moor_hunt += 0.5>><</if>><</link>><<gharass>>
+			<br>
+		<</if>>
+		<<walkicon>><<link [[Normally (0:10)|Moor]]>><<bird_pass 10>><<set $forestmod to 1>><<set $moormove to "normal_search">><<if $moor_hunt gte 1>><<set $moor_hunt += 1>><</if>><</link>>
+		<br>
+		<<sneakicon>><<link [[Carefully (0:30)|Moor]]>><<bird_pass 30>><<set $forestmod to 0.5>><<set $moormove to "careful_search">><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<lharass>>
+		<br><br>
+	<<if $moor gt 0>>
+		Go towards the coast
+		<br>
+		/* 北极星模组 */
+		<<if $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled")>>
+			<<glideicon>><<print '<<link [[飞行 ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Moor]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<set $moor -= 5>><<set $forestmod to 0>><<set $moormove to "fly">><</link>>'>><<flight_text>><<gtiredness>>
+		<<elseif !$options.bjx_animal and ($harpy gte 6 and $birdFly gte 1)>>
+		/* 北极星 */
+			<<glideicon>><<print '<<link [[Fly ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Moor]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<set $moor -= 5>><<set $forestmod to 1>><<set $moormove to "fly">><</link>>'>><<flight_text>><<gtiredness>>
+			<br>
+		<</if>>
+		<<if $worn.feet.type.includes("heels") and !$possessed>>
+			<<heelsicon "hobble">><<link [[Hobble in heels (0:30)|Moor]]>><<bird_pass 30>><<set $moor -= 5>><<set $forestmod to 3>><<set $moormove to "hobble">><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<gharass>>
+		<<else>>
+			<<if !$worn.feet.type.includes("shackle")>>
+				<<runicon>><<link [[Quickly (0:05)|Moor]]>><<bird_pass 5>><<set $moor -= 5>><<set $forestmod to 3>><<set $moormove to "quick">><<if $moor_hunt gte 1>><<set $moor_hunt += 0.5>><</if>><</link>><<gharass>>
+				<br>
+			<</if>>
+			<<walkicon>><<link [[Normally (0:10)|Moor]]>><<bird_pass 10>><<set $moor -= 5>><<set $forestmod to 1>><<set $moormove to "normal">><<if $moor_hunt gte 1>><<set $moor_hunt += 1>><</if>><</link>>
+			<br>
+			<<sneakicon>><<link [[Carefully (0:30)|Moor]]>><<bird_pass 30>><<set $moor -= 5>><<set $forestmod to 0.5>><<set $moormove to "careful">><<if $moor_hunt gte 1>><<set $moor_hunt += 2>><</if>><</link>><<lharass>>
+		<</if>>
+		<br><br>
+	<<else>>
+		<<farmicon>><<link [[Enter the farmlands (0:05)|Farmland]]>><<bird_pass 5>><<set $moor to 0>><<unset $moor_hunt>><<set $forestmod to 1>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+<<set $eventskip to 0>>
+<<unset $moormove>>
+
+:: Castle
+<<set $location to "castle">><<effects>>
+
+You are in the courtyard of a ruined castle. Even derelict and half-sunk, the ruin towers all around you.
+<<if $weather is "rain">>
+	Water runs in rivulets down rainworn gutters.
+<<elseif $weather is "snow">>
+	Snow dusts the battlements.
+<</if>>
+<br><br>
+
+
+<<if $treasure_map is 1>>
+	<span class="gold">The treasure map you found directed you here.</span>
+	<br><br>
+	<<getouticon "dig">><<link [[Dig for treasure (2:00)|Castle Treasure]]>><<pass 120>><<unset $treasure_map>><<tiredness 6>><</link>><<gtiredness>>
+	<br>
+<</if>>
+/* 北极星模组 */
+<<if !$options.bjx_animal and ($harpy gte 6 and $syndromebird is 1 and $birdFly gte 1) or $options.bjx_animal and ($transformationParts.bird.wings isnot "disabled" and $syndromebird is 1 and $birdFly gte 1 or $transformationParts.dragon.wings isnot "disabled" and $syndromebird is 1)>>
+/* 北极星 */
+	<<glideicon>><<link [[Fly to the tallest tower (0:02)|Castle Fly]]>><</link>><<flight_text>>
+	<br>
+<<elseif $syndromebird is 1>>
+	<<npc "Great Hawk">>
+	Your <<beasttype>> should be able to carry you home.
+	<<endevent>>
+	<br><br>
+	<<glideicon>><<link [[Call|Castle Call]]>><</link>>
+	<br>
+<</if>>
+/* 北极星模组 */
+<<link [[奇怪的书|Castle Demon Book]]>><</link>>
+<br>
+<<if $options.bjx_eventTF and $slime gt 0 and $slime isnot 3>>
+    <<link [[隐秘水沟 (0:05)|Pure Pool]]>><<pass 5>><</link>>
+    <br>
+<</if>>
+/* 北极星 */
+<<getouticon>><<link [[Leave|Moor]]>><<set $moor to 100>><</link>>
+<br>
+
+:: Castle Fly
+<<set $location to "tower">><<effects>>
+
+<<npc "Great Hawk">>
+You fly to the top of the tower, and land beside the nest.
+<<if $bird.state is "home">>
+	<<if $monster is 1>>
+		The <<beasttype>> stands, and wraps <<bhis>> arms and wings around you. "Welcome home, <<wife>>."
+	<<else>>
+		The <<beasttype>> flaps to <<bhis>> feet, and gives you an affectionate peck in greeting.
+	<</if>>
+<<else>>
+	The <<beasttype>> isn't home.
+<</if>>
+<br><br>
+
+
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Castle Call
+<<effects>>
+
+<<npc "Great Hawk">>
+You call up to the tower.
+
+<<if $bird.state isnot "home" and $bird.timer gte 0>>
+	There's no response. <<bHe>> must be out.
+	<br><br>
+
+	<<link [[Wait|Castle Call Wait]]>><<bird_pass $bird.timer>><</link>>
+	<br>
+	<<link [[Stop|Castle]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<set $location to "tower">>
+	At once, the <<beasttype>> swoops from your nest. <<bHe>> grasps your shoulders in <<bhis>> talons, and carries you home.
+	<br><br>
+	<<if ($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
+		<<bHe>> looks at your bindings curiously, before sharply kicking <<bhis>> talons towards you. <span class="green">Your bindings fall to tatters at your feet.</span>
+		<<unbind>>
+		<br><br>
+	<</if>>
+	<<if $monster is 1>>
+		<<bHe>> wraps <<bhis>> arms and wings around you. "Welcome home, <<wife>>," <<bhe>> says before returning to the nest.
+	<<else>>
+		<<bHe>> gives you an affectionate peck, and returns to the nest.
+	<</if>>
+	<br><br>
+	<<set $bird.timer to 20>>
+	<<set $bird.state to "home">>
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Castle Call Wait
+<<set $location to "tower">><<effects>>
+
+You wait, watching the skies, until you see the <<beasttype>> soaring over the moor. You call out as <<bhe>> passes overhead. <<bHe>> swoops towards you, grasps your shoulders, and carries you home.
+<br><br>
+
+<<if ($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
+	<<bHe>> looks at your bindings curiously, before sharply kicking <<bhis>> talons towards you. <span class="green">Your bindings fall to tatters at your feet.</span>
+	<<unbind>>
+	<br><br>
+<</if>>
+
+<<if $monster is 1>>
+	<<bHe>> wraps <<bhis>> arms and wings around you. "Welcome home, <<wife>>," <<bhe>> says before returning to the nest.
+<<else>>
+	<<bHe>> gives you an affectionate peck, and returns to the nest.
+<</if>>
+<br><br>
+<<set $bird.timer to 20>>
+<<set $bird.state to "home">>
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Castle Treasure
+<<effects>>
+
+You get to work digging through the peat. The middle seems as good a place to start as any.
+<br><br>
+You soon find yourself wishing the map had been more specific. There's no guarantee there's anything here, after all.
+<br><br>
+
+<<link [[Next|Castle Treasure 2]]>><</link>>
+<br>
+
+:: Castle Treasure 2
+<<effects>>
+
+You leave a trail of holes behind you, but barely a fifth of the courtyard has been searched.
+<br><br>
+You're considering giving up when your fingers brush against something hard. You dig with renewed vigour, tearing up the peat, and pull out the object. It's just a log.
+<br><br>
+
+<<link [[Next|Castle Treasure 3]]>><</link>>
+<br>
+
+:: Castle Treasure 3
+<<effects>>
+
+There's something beneath. You chuck the log aside, and reach back into the hole. You lift a wooden chest from the soil. It's not locked.
+<br><br>
+
+Inside is a black iron bell. The exterior is marked with symbols common at the temple. Was it stolen? It's even heavier than it looks. You ring it. At first there's no sound, and you wonder if it still works. Then a deep, sonorous toll rings out. Dread washes over you. You shiver.<<gstress>><<stress 6>>
+<br><br>
+
+You find yourself wanting to leave it buried, but it could be worth a lot to a collector.
+<br><br>
+
+<<earnFeat "Buried Treasure">>
+<<set $antiquemoney += 10000>><<museumAntiqueStatus "antiquebell" "found">>
+
+<<link [[Next|Castle]]>><</link>>
+<br>
+
+
+:: Moor Box Lurkers
+<<effects>>
+
+<<if $pubtasksetting is "lurkers">>
+	You find the black box, still sitting on an island, surrounded by dark water.
+	<br><br>
+<<else>>
+	<<set $pubtasksetting to "lurkers">>
+	You climb a hillock, and peer at the surrounding terrain, searching for the black box.
+	<br><br>
+
+	You spot it close by, sitting on an island in the middle of a dark pool. You see trails along the surface. Things swim beneath.
+	<br><br>
+<</if>>
+<<link [[Wade across|Moor Box Lurkers 2]]>><</link>>
+<br>
+<<link [[Leave|Moor]]>><<set $eventskip to 1>><</link>>
+<br>
+
+
+:: Moor Box Lurkers 2
+<<water waist>><<effects>>
+
+You drop into the water, and wade through. The creatures dart towards you as your ripples touch them.
+<br><br>
+
+<<link [[Next|Moor Box Struggle]]>><<set $struggle_start to 1>><</link>>
+<br>
+
+:: Moor Box Struggle
+<<water waist>><<effects>>
+
+
+<<if $struggle_start is 1>>
+	<<struggle_init>>
+	<<set $struggle.creature to "lurker">>/*Creature species*/
+	<<struggle_creatures 2 1>>/*How many creatures will be involved, and their health.*/
+	<<set $combat to 1>>
+	<<controlloss>>
+	<<violence 1>>
+	<<molested>>
+
+	<<unset $struggle_start>>
+	<<set $timer to 3>>
+<</if>>
+
+<<if $timer is 2>>
+	<<struggle_add 1 1>>
+	<span class="pink">A third creature Swims towards you!</span>
+	<br><br>
+<<elseif $timer is 1>>
+	<<struggle_add 1 1>>
+	<span class="pink">A fourth creature swims towards you!</span>
+	<br><br>
+<</if>>
+
+<<struggle>>
+
+
+
+<<if $struggle.done gte $struggle.number>>
+	<span id="next"><<link [[Next|Moor Box Struggle End]]>><</link>></span>
+	<br>
+<<else>>
+	<span id="next"><<link [[Next|Moor Box Struggle]]>><</link>></span>
+	<br>
+<</if>>
+
+
+:: Moor Box Struggle End
+<<water waist>><<effects>>
+
+The creatures disppear beneath the surface.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+You make it to the island. The black box lies atop a torn satchel. You pick it up.
+<<set $pubtask2 to 1>>
+<br><br>
+
+The journey back to shore proves safer.
+<br><br>
+
+<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
+<br>
+
+
+:: Moor Box
+<<effects>>
+
+<<if $pubtasksetting is "person">>
+	<<loadNPC 0 moor>><<person1>>
+	You climb the hillock, and find the <<person>> sitting atop the rocks. <<covered>> <<Hes>> holding the black box. "Changed your mind?" <<he>> asks.
+	<br><br>
+
+	<<link [[Next|Moor Box 2]]>><</link>>
+	<br>
+<<else>>
+	<<set $pubtasksetting to "person">>
+	You climb atop a hillock, one crowned by a pile of rocks, and peer at the surrounding terrain, searching for Landry's black box.
+	<br><br>
+
+	<<generate1>><<person1>>
+	<<saveNPC 0 moor>>
+	"What brings a cute <<girl>> all the way out here?" says a voice from behind. Startled, you almost trip in your haste to turn. A <<person>> sits atop the rocks, watching you. <<covered>>
+	<br>
+
+	<<if $speech_attitude is "meek">>
+		"I-I'm looking for something," you say. "A black box."
+	<<elseif $speech_attitude is "bratty">>
+		"I'm looking for missing property," you say. "A black box."
+	<<else>>
+		"I'm looking for a black box," you say.
+	<</if>>
+	<br>
+	"Really?" the <<person>> replies. <<He>> bends over. "Would this be it?" <<He>> pulls a black box out from behind a rock.
+	<br><br>
+
+	You nod. The <<person>> smiles.
+	<br><br>
+
+	<<link [[Next|Moor Box 2]]>><</link>>
+	<br>
+<</if>>
+
+:: Moor Box 2
+<<effects>>
+
+<<if $exposed gte 2>>
+	"I'm happy to part with it," the <<person>> says. "But I'd like something in return.
+
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		Spied you running over the moor. Face me properly. I want to see your <<if $player.gender_appearance is "m">>cock<<else>>pussy<</if>>."
+		<br><br>
+	<<else>>
+		Move your arms. I want to see your <<if $player.gender_appearance is "m">>cock<<else>>pussy<</if>>."
+		<br><br>
+	<</if>>
+
+	<<if $exhibitionism gte 55>>
+		<<link [[Comply|Moor Box Naked]]>><</link>><<exhibitionist4>>
+		<br>
+	<<else>>
+		<span class="blue">You're not exhibitionistic enough to do such a thing.</span> <i>Perhaps if you dressed <<his>> request would be more reasonable.</i>
+		<br><br>
+	<</if>>
+	<<link [[Leave|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+
+<<else>>
+	"I'm happy to part with it," the <<person>> says. "But I'd like something in return. Your underwear."
+	<br>
+
+	<<if $speech_attitude is "meek">>
+		"M-my underwear?" you ask.
+		<br>
+		The <<person>> nods. "You heard me."
+		<br><br>
+	<<elseif $speech_attitude is "bratty">>
+		"Tell me where you found the box first," you say. "How do I know you haven't taken the contents."
+		<br>
+		"I found it. Can't open it. Believe me, I've tried."
+		<br><br>
+	<<else>>
+		"You want my underwear?" you ask.
+		<br>
+		The <<person>> nods. "You heard me."
+		<br><br>
+	<</if>>
+
+	<<if $worn.under_lower.name is "naked">>
+		<<link [[Say you aren't wearing any|Moor Box No Undies]]>><</link>>
+		<br>
+	<<elseif $worn.lower.type.includes("naked")>>
+		<<if $exhibitionism gte 75>>
+			<<link [[Take them off|Moor Box Undies]]>><</link>><<exhibitionist5>>
+			<br>
+		<<else>>
+			Giving <<him>> your <<underbottoms>> will leave you with nothing to cover with. <span class="blue">You're not exhibitionistic enough for that.</span>
+		<</if>>
+	<<elseif $worn.upper.type.includes("naked") and ($player.gender_appearance is "f" or $player.gender is "f")>>
+		<<if $exhibitionism gte 55>>
+			<<link [[Take them off|Moor Box Undies]]>><</link>><<exhibitionist4>>
+			<br>
+		<<else>>
+			Giving <<him>> your $worn.under_upper.name will leave you topless. <span class="blue">You're not exhibitionistic enough for that.</span>
+			<br><br>
+		<</if>>
+	<<else>>
+		<<link [[Take them off|Moor Box Undies]]>><</link>><<exhibitionist1>>
+		<br>
+	<</if>>
+	<<link [[Leave|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+
+<</if>>
+
+:: Moor Box Naked
+<<effects>>
+
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	<<flaunting>> you move your arms. The <<person>> ogles your <<genitals>>.
+<<else>>
+	<<flaunting>> you face the <<person>>. <<He>> ogles your <<genitals>>.
+<</if>>
+<<exhibitionism4>>
+<<if $player.penisExist and $player.vaginaExist>>
+	"Both?" <<he>> asks. "It's my lucky day. Shame I don't have a camera."
+<<elseif $player.penisExist>>
+	<<if $player.gender_appearance is "f">>
+		"Now there's a surprise," <<he>> says.
+		<<if $player.penissize gte 4>>
+			"And it's so big. Shame I don't have a camera."
+		<<elseif $player.penissize lte 1>>
+			"Though I can barely see it from here."
+		<<else>>
+
+		<</if>>
+	<<else>>
+		"Nice cock," <<he>> says.
+		<<if $player.penissize gte 4>>
+			"It's so big. Shame I don't have a camera."
+		<<elseif $player.penissize lte 1>>
+			"Though I can barely make it out from here." <<He>> laughs.
+		<<else>>
+
+		<</if>>
+	<</if>>
+<<else>>
+	<<if $player.gender_appearance is "m">>
+		"Now there's a surprise," <<he>> says.
+	<<else>>
+		"Nice pussy," <<he>> says.
+	<</if>>
+<</if>>
+<br>
+
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	You cover yourself, and hold out your hand.
+<</if>>
+<<if $speech_attitude is "meek">>
+	"Can I have the box now?" you ask.
+<<elseif $speech_attitude is "bratty">>
+	"The box," you say. "Give it to me."
+<<else>>
+	"I did as you asked," you say.
+<</if>>
+<br>
+The <<person>> sighs. "Fine." <<He>> chucks it onto the earth beside you. You crouch to retrieve it. By the time you rise, the <<person>> is gone.
+<br><br>
+<<set $pubtask2 to 1>>
+
+<<endevent>>
+<<clearNPC moor>>
+<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
+<br>
+
+
+:: Moor Box No Undies
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"B-but I'm not wearing any," you say.
+<<elseif $speech_attitude is "bratty">>
+	"I'm not wearing any," you say.
+<<else>>
+	"I'm not wearing any," you say.
+<</if>>
+<br><br>
+
+"Great," the <<person>> says. "Prove it. Show me your <<if $player.gender_appearance is "m">>cock<<else>>pussy<</if>>."
+<br><br>
+
+<<if $exhibitionism gte 55>>
+	<<link [[Show|Moor Box Show]]>><</link>><<exhibitionist4>>
+	<br>
+<<else>>
+	<span class="blue">You're not enough of an exhibitionist to expose yourself to a stranger.</span>
+	<br><br>
+<</if>>
+
+<<link [[Leave|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+
+:: Moor Box Show
+<<effects>>
+
+<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+	<<flaunting>> you lift your skirt.
+<<elseif $worn.upper.set is $worn.lower.set>>
+	<<flaunting>> you tug your $worn.upper.name down your chest, over you waist, and then your thighs.
+<<else>>
+	<<flaunting>> you tug your $worn.lower.name down your thighs.
+<</if>>
+The <<person>> ogles your <<genitals>>.
+<<exhibitionism4>>
+
+<<if $player.penisExist and $player.vaginaExist>>
+	"Both?" <<he>> asks. "It's my lucky day. Shame I don't have a camera."
+<<elseif $player.penisExist>>
+	<<if $player.gender_appearance is "f">>
+		"Now there's a surprise," <<he>> says.
+		<<if $player.penissize gte 4>>
+			"And it's so big. Shame I don't have a camera."
+		<<elseif $player.penissize lte 1>>
+			"Though I can barely see it from here."
+		<<else>>
+
+		<</if>>
+	<<else>>
+		"Nice cock," <<he>> says.
+		<<if $player.penissize gte 4>>
+			"It's so big. Shame I don't have a camera."
+		<<elseif $player.penissize lte 1>>
+			"Though I can barely make it out from here." <<He>> laughs.
+		<<else>>
+
+		<</if>>
+	<</if>>
+<<else>>
+	<<if $player.gender_appearance is "m">>
+		"Now there's a surprise," <<he>> says.
+	<<else>>
+		"Nice pussy," <<he>> says.
+	<</if>>
+<</if>>
+<br>
+
+<<if $leftarm is "bound" and $rightarm is "bound">>
+<<else>>
+	You cover yourself, and hold out your hand.
+<</if>>
+<<if $speech_attitude is "meek">>
+	"Can I have the box now?" you ask.
+<<elseif $speech_attitude is "bratty">>
+	"The box," you say. "Give it to me."
+<<else>>
+	"I did as you asked," you say.
+<</if>>
+<br>
+The <<person>> sighs. "Fine." <<He>> chucks it onto the earth beside you. You crouch to retrieve it. By the time you rise, the <<person>> is gone.
+<br><br>
+<<set $pubtask2 to 1>>
+
+<<endevent>>
+<<clearNPC moor>>
+<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Moor Box Undies
+<<effects>>
+
+<<if $worn.lower.type.includes("naked")>>
+
+	You'll be left
+	<<if $worn.upper.type.includes("naked")>>
+		naked.
+	<<else>>
+		bottomless.
+	<</if>>
+	"Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
+	<br><br>
+	<<if $worn.under_upper.set is $worn.under_lower.set>>
+		You tug your $worn.under_upper.name down your chest, until it bunches at your waist. You tug it further, down your thighs, over your knees, and then your ankles. You step out of the fabric, lift it, and hold it towards the <<person>>.
+		<<exhibitionism5>>
+		Eager, <<he>> clambers down the rocks, and snatches your $worn.under_upper.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
+		<br><br>
+		<<underupperruined>><<underlowerruined>>
+	<<else>>
+		You pull your $worn.under_lower.name down your thighs, over your knees, and then your ankles. You step out of the fabric, lift it, and hold it towards the <<person>>.
+		<<exhibitionism5>>
+		Eager, <<he>> clambers down the rocks, and snatches your $worn.under_lower.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
+		<br><br>
+		<<underlowerruined>>
+	<</if>>
+<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+	<<if $worn.under_upper.set is $worn.under_lower.set>>
+		<<if $worn.upper.type.includes("naked")>>
+			You'll be left topless. "Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
+			<br><br>
+			You tug your $worn.under_upper.name down your chest, until it bunches at your waist. You hitch up your skirt, and begin pulling it the rest of the way, down your thighs, over your knees, and then your ankles. You step out of the fabric before holding it towards the <<person>>
+			<<if $player.gender is "f" or $player.gender_appearance is "f">>
+				<<exhibitionism4>>
+			<<else>>
+				<<exhibitionism1>>
+			<</if>>
+			Eager, <<he>> clambers down the rocks, and snatches your $worn.under_upper.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
+			<br><br>
+			<<underupperruined>><<underlowerruined>>
+		<<else>>
+			You tug your $worn.under_upper.name down your chest, until it bunches at your waist. You hitch up your skirt, and begin pulling it the rest of the way, down your thighs, over your knees, and then your ankles. You step out of the fabric before holding it towards the <<person>>
+			<<exhibitionism1>>
+
+			Eager, <<he>> clambers down the rocks, and snatches your $worn.under_upper.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
+			<br><br>
+			<<underupperruined>><<underlowerruined>>
+		<</if>>
+	<<else>>
+		You hitch up the sides of your skirt, and pull your $worn.under_lower.name down your thighs, over your knees, and down to your ankles. The <<person>> watches intently.
+		<<exhibitionism1>>
+
+		You step out of them, lift them from the ground, and hold them towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_lower.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
+		<br><br>
+		<<underlowerruined>>
+	<</if>>
+<<else>>
+	<<if $worn.under_upper.set is $worn.under_lower.set>>
+		<<if $worn.upper.set is $worn.lower.set>>
+			You'll need to remove your $worn.upper.name first. "Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
+			<br><br>
+
+			You shuffle out of your top and bottoms, then tug your $worn.under_upper.name down your chest, until it bunches at your waist. You continue pulling it down your thighs, over your knees, and then your ankles. You step out of the fabric, and put your $worn.upper.name back on.
+			<<exhibitionism1>>
+
+			You hold the fabric towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_upper.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
+			<br><br>
+			<<underupperruined>><<underlowerruined>>
+		<<else>>
+			You'll need to remove your $worn.lower.name first. "Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
+			<br><br>
+
+			You pull down your bottoms, then tug your $worn.under_upper.name down your chest, until it bunches at your waist. You continue pulling it down your thighs, over your knees, and then your ankles. You step out of the fabric, and pull your $worn.lower.name back on.
+			<<exhibitionism1>>
+
+			You hold the fabric towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_upper.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
+			<br><br>
+			<<underupperruined>><<underlowerruined>>
+
+		<</if>>
+	<<else>>
+		<<if $worn.upper.set is $worn.lower.set>>
+			You'll need to remove your $worn.upper.name first. "Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
+			<br><br>
+
+			You shuffle out of your top and bottoms, then tug your $worn.under_lower.name down your thighs, over your knees, and then your ankles. You step out of the fabric, and pull your $worn.upper.name back on.
+			<<exhibitionism1>>
+
+			You hold the fabric towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_lower.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
+			<br><br>
+			<<underlowerruined>>
+		<<else>>
+			You'll need to remove your $worn.lower.name first. "Turn around," you say. The <<person>> obliges, facing away and resting <<his>> hands on <<his>> hips.
+			<br><br>
+
+			You shuffle out of your bottoms, then tug your $worn.under_lower.name down your thighs, over your knees, and then your ankles. You step out of the fabric, and pull your $worn.lower.name back on.
+			<<exhibitionism1>>
+
+			You hold the fabric towards the <<person>>. Eager, <<he>> clambers down the rocks, and snatches your $worn.under_lower.name from your hand. <<He>> drops the black box to the ground as <<he>> climbs back up, as if forgetting about it.
+			<br><br>
+			<<underlowerruined>>
+		<</if>>
+	<</if>>
+<</if>>
+
+You crouch to retrieve the box. The <<person>> is gone by the time you rise. <<covered>>
+<br><br>
+
+<<set $pubtask2 to 1>>
+
+<<endevent>>
+<<clearNPC moor>>
+
+<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
+<br>
+
+

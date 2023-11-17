@@ -1,0 +1,112 @@
+:: Widgets Dance Studio [widget]
+<<widget "dancingclothes">>
+	<<wearoutfit>>
+	<<set _store_location to "dance_studio">>
+	<<storeon _store_location "check">>
+	<<set _clothes to clothingInStorage(_store_location)>>
+	<<if $wearoutfittext isnot undefined>>
+	    /* 北极星模组 */
+		<<set _slots to _clothes.filter(item => setup.clothingLayer.torso.includes(item.slot))>>
+        <<if $wearoutfittext and _slots and _slots.length>>
+		/* 北极星 */
+			<<set _arrayClothes to _slots.map(slot => slot.name)>>
+			<<set _them to ((_arrayClothes.length gt 1 or _slots[0].word is "n") ? "them" : "it")>>
+			<<set _hooks to (_arrayClothes.length gt 1 ? "the hooks" : "a hook")>>
+			<<set _clothing to formatList(_arrayClothes)>>
+
+			<span class="purple">
+				You remove your _clothing, and hang _them on _hooks.
+			</span>
+		<<else>>
+			<span class="purple">
+				You put your clothes on.
+			</span>
+		<</if>>
+		<<unset $wearoutfittext>>
+	<</if>>
+	<<if _store_check is 1>>
+
+		<<if _clothes.length gt 0>>
+			<<if _clothes.length gt 2>>
+				Your clothes are hanging on the hooks on the wall.
+				<br>
+			<<elseif _clothes.length is 2>>
+				Your _clothes[0].name and _clothes[1].name are hanging on the hooks on the wall.
+				<br>
+			<<else>>
+				Your _clothes[0].name is hanging on one of the hooks.
+				<br>
+			<</if>>
+			<<dressasyouwereicon>><<link [[Change to your clothes|$passage]]>><<set $eventskip to 1>><<set $wearoutfittext to 2>><<storeload _store_location>><</link>>
+		<</if>>
+	<<else>>
+		You could equip a leotard or similar dance clothes here.
+	<</if>>
+	<br>
+	<br>
+	<<if $worn.under_upper.type.includes("dance") and $worn.under_lower.type.includes("dance")
+		and setup.clothingLayer.torso_outer.some(slot => $worn[slot].name isnot "naked" and ($worn[slot].one_piece isnot 1 or $worn[slot].outfitSecondary is undefined))
+		and clothingInStorage(_store_location).length is 0
+	>>
+		<<link [[Strip down to your dance clothes|$passage]]>>
+			<<if clothingInStorage(_store_location).length is 0>>
+					<<storesave _store_location>>
+					<<for _slot range setup.clothingLayer.all.except(setup.clothingLayer.torso_outer)>>
+						<<storeload _store_location _slot>>
+					<</for>>
+			<<else>>
+				<<for _slot range setup.clothingLayer.torso_outer>>
+					<<generalUndress _store_location _slot>>
+				<</for>>
+			<</if>>
+		<</link>>
+		<br>
+		<br>
+	<</if>>
+	<<if !$worn.under_upper.type.includes("dance") gt 0 or clothingInStorage(_store_location).length is 0>>
+		<<if $wardrobe.under_upper.filter(a => a.type.includes("dance")) lte 0>>
+			//You currently have no dancing clothes.//
+		<<else>>
+			//Dancing clothes://
+			<br>
+			<<listdancingclothes _store_location>>
+			<<temperature>>
+		<</if>>
+		<br>
+	<</if>>
+	<br>
+<</widget>>
+
+<<widget "danceStudioIntro">>
+	/* Requires the name of the exit passage as an argument */
+	<<set $danceStudioIntroExit to _args[0]>>
+
+	<<set $dancestudiointro to 1>>
+	<<npc Charlie>><<person1>>
+	You pay the receptionist who ushers you through the door to the left. You enter into a large room with wood panel floors and mirrors lining the walls. A dozen people are already inside. It's easy to pick out the instructor. Hands on hips, <<he>> stands addressing the class, explaining the importance of a proper posture.
+	<br><br>
+	The door closes behind you, alerting <<him>> to your presence. <<He>> turns <<his>> emerald eyes to you and smiles. "We have a new student! Welcome." Short ginger hair crowns <<his>> freckled face. <<His>> skintight outfit shows off <<his>> toned and athletic body.
+	<<if $pronoun is "m">>
+		You can't help but notice the bulge of <<his>> penis pressing against <<his>> bottoms.
+	<<elseif $pronoun is "f">>
+		<<if $NPCList[0].breastsize gte 5>>
+			<<His>> generous breasts are held close to <<his>> torso, giving <<him>> a slim outline.
+		<<elseif $NPCList[0].breastsize gte 3>>
+			<<His>> breasts are held close to <<his>> torso, giving <<him>> a slim outline.
+		<<elseif $NPCList[0].breastsize gte 1>>
+			<<His>> small breasts are pressed flat against <<his>> torso, giving <<him>> a slim outline.
+		<<else>>
+			<<His>> flat chest gives <<him>> a slim outline.
+		<</if>>
+	<</if>>
+	<br><br>
+	If <<he>> noticed your lewd gaze, <<he>> gives no sign. You should introduce yourself, but how?
+	<br><br>
+
+	<<link [[Timidly|Dance Studio Introduction]]>><<npcincr Charlie love 20>><<set $phase to 1>><</link>><<ggglove>>
+	<br>
+	<<link [[Confidently|Dance Studio Introduction]]>><<set $phase to 2>><</link>>
+	<br>
+	<<link [[Flirtatiously|Dance Studio Introduction]]>><<npcincr Charlie love -10>><<stress -12>><<trauma -6>><<set $phase to 3>><</link>><<promiscuous1>><<lllove>><<lstress>><<ltrauma>>
+	<br>
+<</widget>>

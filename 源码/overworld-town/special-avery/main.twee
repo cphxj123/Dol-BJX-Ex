@@ -1,0 +1,4201 @@
+:: Widgets Avery [widget]
+<<widget "streetavery">>
+	<<if $NPCName[$NPCNameList.indexOf("Avery")].init isnot 1>>
+		<<npc Avery>><<initnpc Avery>><<generate2>><<generate3>>A <<person2>><<person>> blocks your path. You try to walk around <<him>>, but <<he>> steps in your way. "What's a <<girl>> like you doing walking alone?" <<he>> asks. "You're gonna get hurt." <<He>> grasps your arm and tries to pull you with <<him>>, until a <<nnpc_gender "Avery">> taps <<him>> on the shoulder.
+		<br><br>
+
+		"Walk away," the newcomer says. "Now."
+		<br><br>
+
+		The <<person>> glares back for a moment, but then looks down, releases your arm, and walks away.
+		<br><br>
+
+		<<endevent>><<npc Avery>><<person1>>
+		The newcomer turns to you. "You okay?" <<he>> asks. "I'm Avery." <<He>> hesitates. "This is a little out of nowhere, but would you like to get a drink? I know this cute little place."
+		<br><br>
+
+		<<link [[Accept (0:30)|Park Lichen Accept]]>><<pass 30>><</link>>
+		<br>
+		<<link [[Refuse|Park Lichen Refuse]]>><</link>>
+		<br>
+	<<elseif $NPCName[$NPCNameList.indexOf("Avery")].rage gte 96 and $averyragerevealed is 1>>
+		<<npc Avery>><<person1>>
+		You're walking along the street, casting a wary glance at it so often. Sure enough, you soon see a familiar car coming up to you. It's Avery.
+		<br><br>
+		<<link [[Hide in an alleyway|Avery Dismissal Intro]]>><<set $phase to 1>><</link>>
+		<br>
+		<<link [[Stay where you are|Avery Dismissal Intro]]>><<set $phase to 2>><</link>>
+		<br>
+	<<elseif $averydatemissed is 1>><<set $averydatemissed to 0>>
+		<<if $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100)>><<set $averyragerevealed to 1>>
+
+			<<npc Avery>><<person1>>A car pulls up beside you. A <<nnpc_gender "Avery">> steps out. It's Avery. "You stood me up," <<he>> says. <<He>> opens a passenger door and glares at you. "Made me look like a fool. Get in."
+			<<gggarage>><<npcincr Avery rage 15>>
+			<br><br>
+
+			<<getinicon>><<link [[Get in|Street Avery Rape Drive]]>><<npcincr Avery rage -5>><</link>><<larage>>
+			<br>
+			<<ind>><<link [[Apologise|Street Avery Car Apologise]]>><</link>>
+			<br>
+			<<refuseicon>><<link [[Refuse|Street Avery Refuse]]>><</link>><<gggarage>><<lllove>>
+			<br>
+
+		<<else>>
+			<<if $avery_location is 2>>
+				<<npc Avery>><<person1>>A car pulls up beside you. A <<nnpc_gender "Avery">> leans out. It's Avery. "I haven't forgiven you for standing me up. That room wasn't cheap," <<he>> says. "Maybe you could make it up to me. I can book another room. How about it?"
+				<<ggarage>><<npcincr Avery rage 10>>
+
+			<<elseif $avery_location is 1>>
+				<<npc Avery>><<person1>>A car pulls up beside you. A <<nnpc_gender "Avery">> leans out. It's Avery. "I haven't forgiven you for standing me up," <<he>> says. "Maybe you could make it up to me. There's another party tonight. How about it?"
+				<<ggarage>><<npcincr Avery rage 10>>
+
+			<<else>>
+				<<npc Avery>><<person1>>A car pulls up beside you. A <<nnpc_gender "Avery">> leans out. It's Avery. "I haven't forgiven you for standing me up," <<he>> says. "Maybe you could make it up to me. I've booked another table. How about it?"
+				<<ggarage>><<npcincr Avery rage 10>>
+			<</if>>
+			<br><br>
+
+			<<link [[Yes|Street Avery Yes]]>><<npcincr Avery love 1>><</link>><<glove>>
+			<br>
+			<<link [[Apologise|Street Avery Apologise]]>><</link>>
+			<br>
+			<<link [[No|Street Avery No]]>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<llove>><<garage>>
+			<br>
+		<</if>>
+	<<else>>
+
+		<<if $avery_location is 2>>
+			<<npc Avery>><<person1>>A car pulls up beside you. A <<nnpc_gender "Avery">> leans out. It's Avery. "I was hoping to spot you," <<he>> smiles. "I'm going to book a hotel room tonight for... business. A room for two. Would you care to keep me company?"
+		<<elseif $avery_location is 1>>
+			<<npc Avery>><<person1>>A car pulls up beside you. A <<nnpc_gender "Avery">> leans out. It's Avery. "I was hoping to spot you," <<he>> smiles. "I've been invited to a party tonight. I can bring a partner. How about it?"
+		<<else>>
+			<<npc Avery>><<person1>>A car pulls up beside you. A <<nnpc_gender "Avery">> leans out. It's Avery. "I was hoping to spot you," <<he>> smiles. "Would you let me take you out to dinner tonight? I've booked a table."
+		<</if>>
+		<br><br>
+
+		<<link [[Yes|Street Avery Yes]]>><<npcincr Avery love 1>><</link>><<glove>>
+		<br>
+		<<link [[No|Street Avery No]]>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<llove>><<garage>>
+		<br>
+
+	<</if>>
+<</widget>>
+
+<<widget "averyscore">>
+	<<set $NPCName[$NPCNameList.indexOf("Avery")].love = Math.clamp($NPCName[$NPCNameList.indexOf("Avery")].love, 0, 100)>>
+	<<set $NPCName[$NPCNameList.indexOf("Avery")].rage = Math.clamp($NPCName[$NPCNameList.indexOf("Avery")].rage, 0, 100)>>
+
+	<<set $endear = Math.clamp($endear, 0, 100)>>
+
+	<span class="gold">Avery's impression</span>
+	<br>
+
+	Love:
+
+	<<if $NPCName[$NPCNameList.indexOf("Avery")].love gte 100>>
+		<span class="green">S</span>
+	<<elseif $NPCName[$NPCNameList.indexOf("Avery")].love gte 80>>
+		<span class="teal">A</span>
+	<<elseif $NPCName[$NPCNameList.indexOf("Avery")].love gte 60>>
+		<span class="lblue">B</span>
+	<<elseif $NPCName[$NPCNameList.indexOf("Avery")].love gte 40>>
+		<span class="blue">C</span>
+	<<elseif $NPCName[$NPCNameList.indexOf("Avery")].love gte 20>>
+		<span class="purple">D</span>
+	<<else>>
+		<span class="pink">F</span>
+	<</if>>
+	<br>
+	Endearment:
+
+	<<if $endear gte 80>>
+		<span class="green">S</span>
+	<<elseif $endear gte 50>>
+		<span class="teal">A</span>
+	<<elseif $endear gte 40>>
+		<span class="lblue">B</span>
+	<<elseif $endear gte 30>>
+		<span class="blue">C</span>
+	<<elseif $endear gte 10>>
+		<span class="purple">D</span>
+	<<else>>
+		<span class="pink">F</span>
+	<</if>>
+	<br>
+	<hr>
+	<br>
+	<<if $dateCount.Avery is 3>>
+		<<if $loveInterest.primary is "None">>
+			<<set $loveInterest.primary to "Avery">>
+			<span class = "gold">Avery is now your love interest! You feel yourself moving up in the world.</span>
+			<br><br>
+		<<else>>
+			<span class = "gold">Avery can now be claimed as your love interest! You feel yourself moving up in the world. <br>You can change your love interest in the "Attitudes" menu.</span>
+			<br><br>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<!-- Dismisses Avery, cleans up anything unneeded and gives the dismissal message. -->
+<<widget "dismissAvery">>
+	<<npcset Avery state "dismissed">>
+	<<unset $averyPub>>
+	<<unset $avery_location>>
+	<<unset $averyCrimeTracker>>
+	<<unset $averydate>>
+	<<unset $averydateattended>>
+	<<unset $averydatedone>>
+	<<unset $averyschoolpickup>>
+	<<set $averyDismissalSceneWait to 1>>
+	<<if $loveInterest.primary is "Avery">>
+		<<if $loveInterest.secondary isnot "None">>
+			<<set $loveInterest.primary to $loveInterest.secondary>>
+			<<set $loveInterest.secondary to "None">>
+		<<else>>
+			<<set $loveInterest.primary to "None">>
+		<</if>>
+		<span class = "red">Avery is no longer your love interest.</span>
+	<<elseif $loveInterest.secondary is "Avery">>
+		<<set $loveInterest.secondary to "None">>
+		<span class = "red">Avery is no longer your love interest.</span>
+	<<elseif $dateCount.Avery gte 3>>
+		<span class = "red">Avery can no longer be claimed as your love interest.</span>
+	<<else>>
+		<span class = "red">Avery has moved on.</span>
+	<</if>>
+	<br><br>
+<</widget>>
+
+:: Street Avery Car Apologise
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Please don't be mad at me," you say. "I would have made it if I could."
+<<elseif $speech_attitude is "bratty">>
+	"I'm busy sometimes," you say. "But I'm sorry if it inconvenienced you."
+<<else>>
+	"Sorry," you say. "I didn't mean to."
+<</if>>
+<br><br>
+
+"If you're sorry," Avery says through gritted teeth. "Then you'll get in the damn car."
+<br><br>
+
+<<getinicon>><<link [[Get in|Street Avery Rape Drive]]>><<npcincr Avery rage -5>><</link>><<larage>>
+<br>
+<<refuseicon>><<link [[Refuse|Street Avery Refuse]]>><</link>><<gggarage>><<lllove>>
+<br>
+
+:: Street Avery Apologise
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Please don't be mad at me," you say. "I would have made it if I could."
+<<elseif $speech_attitude is "bratty">>
+	"I'm busy sometimes," you say. "But I'm sorry if it inconvenienced you."
+<<else>>
+	"Sorry," you say. "I didn't mean to."
+<</if>>
+<br><br>
+
+"Don't worry," Avery says. "You can make it up to me tonight. Okay?"
+<br><br>
+
+<<link [[Yes|Street Avery Yes]]>><<npcincr Avery love 1>><</link>><<glove>>
+<br>
+<<link [[No|Street Avery No]]>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<llove>><<garage>>
+<br>
+
+:: Street Avery Yes
+<<effects>>
+<<set $averydate to 1>>
+<<He>> smiles. "Good. I'll pick you up from <span class="green">Domus Street at eight</span>. Oh, and <span class="green">be sure to wear something formal</span>. There are dress codes to observe." <<He>> drives away.
+<br><br>
+
+<<endevent>>
+<<destinationeventend>>
+
+:: Street Avery No
+<<effects>>
+
+<<if $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100)>><<set $averyragerevealed to 1>>
+
+<<He>> stares at you a moment while squeezing the steering wheel. <<He>> steps onto the pavement and opens one of the passenger doors. "Get in," <<he>> says.
+<<gggarage>><<npcincr Avery rage 15>>
+<br><br>
+
+<<getinicon>><<link [[Get in|Street Avery Rape Drive]]>><<npcincr Avery rage -5>><</link>><<larage>>
+<br>
+<<refuseicon>><<link [[Refuse|Street Avery Refuse]]>><<npcincr Avery rage 15>><<pain 5>><</link>><<gggarage>><<lllove>><<gpain>>
+<br>
+
+<<else>>
+"Suit yourself," <<he>> says. <<He>> drives away.
+<br><br>
+
+<<endevent>>
+<<destinationeventend>>
+
+<</if>>
+
+:: Street Avery Refuse
+<<effects>>
+
+"I said," <<he>> snarls. "Get in the fucking car." <<He>> grasps your hair and tries to pull you into the vehicle.
+<br><br>
+
+<<getinicon>><<link [[Get in|Street Avery Rape Drive]]>><<npcincr Avery rage -5>><</link>><<larage>>
+<br>
+<<ind>><<link [[Fight|Street Avery Fight]]>><<set $fightstart to 1>><<npcincr Avery rage 15>><</link>><<gggarage>><<lllove>>
+<br>
+:: Street Avery Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>><<set $NPCList[0].lefthand to "hair">>
+	<<enable_rescue>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Street Avery Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Street Avery Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Street Avery Fight Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation "short">>
+
+	<<He>> gasps and leans back against the car.
+	<br><br>
+
+	<<tearful>> you seize your chance and escape to a busier part of the street.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<<elseif $enemyhealth lte 0>>
+	<<He>> recoils and falls back against <<his>> car.
+	<br><br>
+
+	<<tearful>> you seize your chance and escape to a busier part of the street.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<<elseif $rescue is 1 and $alarm is 1>>
+	<<He>> glances around at the heads turning in response to your cry, and backs away from you. "I'll see you later," <<he>> sneers as <<he>> climbs into <<his>> car.
+	<br><br>
+
+	<<tearful>> you watch <<him>> drive away.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<<else>>
+	<<tearful>> you stagger, too hurt to continue fighting. Avery drags you into the back seat of the car.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Street Avery Rape Drive]]>><<npcincr Avery rage -5>><</link>><<larage>>
+	<br>
+<</if>>
+
+:: Street Avery Rape Drive
+<<effects>>
+<<endevent>><<npc Avery>><<person1>>
+Avery slams the door after you, then gets in the front. The doors lock as you drive away.
+<br><br>
+
+"I can't believe you," <<he>> says. "Showing me up like that. In public." <<He>> glares at you over <<his>> shoulder. "You don't appreciate me? Fine. We'll skip to the end."
+<br><br>
+
+<<He>> pulls into an alley and stops the car. <<He>> unbuckles <<his>> seat and climbs into the back with you.
+<br><br>
+
+<<link [[Next|Street Avery Rape]]>><<set $molestationstart to 1>><</link>>
+<br>
+:: Street Avery Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>><<set $enemytrust -= 40>><<set $enemyanger += $NPCName[$NPCNameList.indexOf("Avery")].rage>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Street Avery Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Street Avery Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Street Avery Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	Avery opens the door and shoves you onto the pavement. The engine growls into life a moment later, and <<he>> drives away.
+	<<larage>><<npcincr Avery rage -5>>
+	<br><br>
+
+	<<tearful>> you climb to your feet.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<<else>>
+	Avery recoils in pain. "Fuck," <<he>> says. "Fucking <<bitch>>. Be like that then." <<He>> climbs onto the front seat and unlocks the doors. "Get out."
+	<<ggarage>><<npcincr Avery rage 5>>
+	<br><br>
+
+	<<tearful>> you climb from the car. The engine growls into life and <<he>> drives away.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<</if>>
+
+:: Avery Date
+<<effects>>
+<<set $averydateattended to 1>><<set $endear to 0>>
+<<npc Avery>><<person1>>Avery looks up as you approach. <<if $pronoun is "m">><<He>> wears a smart suit.<<else>><<He>> wears a fancy gown.<</if>> "There you are, <<pcpetname "Avery">>," <<he>>
+
+<<if $worn.over_upper.name isnot "naked" or $worn.over_lower.name isnot "naked">>
+	<<outfitChecks>>
+	says, "let me have a look at you under that coat. You can leave it in the back seat while we're together."
+	<br><br>
+	You place your
+	<<if _overOutfit>>
+		$worn.over_upper.name
+	<<else>>
+		<<if $worn.over_upper.name isnot "naked" and $worn.over_lower.name isnot "naked">>
+			$worn.over_upper.name and $worn.over_lower.name
+		<<elseif $worn.over_upper.name isnot "naked">>
+			$worn.over_upper.name
+		<<else>>
+			$worn.over_lower.name
+		<</if>>
+	<</if>>
+	on the back seat.
+	<<undressOverClothes "averyCar">>
+<<else>>
+	says.
+<</if>>
+<<set $averyLastApp to $player.gender_appearance>>
+<<if $exposed gt 0>>
+	<br><br>
+	Avery raises <<his>> eyebrows at your scandalous appearance. "You certainly know how to set expectations. Let's skip dinner and get right to it."
+	<br><br>
+	<<link [[Go with Avery|Avery Date 5]]>><<set $averydatedone to 1>><<npcincr Avery love 5>><<set $endear += 30>><</link>><<gendear>><<glove>>
+	<br>
+	<<link [[Change mind and go home|Avery Date Refuse]]>><<set $averydatedone to 1>><</link>>
+	<br>
+<<elseif $worn.upper.type.includes("formal") or $worn.lower.type.includes("formal")>>
+	"You look <<if $player.gender_appearance is "m">>handsome<<else>>beautiful<</if>>."
+	<br><br>
+	<<link [[Compliment|Avery Date Compliment]]>><<npcincr Avery love 1>><<set $averydatedone to 1>><</link>><<glove>>
+	<br>
+	<<link [[Smile|Avery Date Smile]]>><<set $endear += 10>><<set $averydatedone to 1>><</link>><<gendear>>
+	<br>
+<<else>>
+	<<if $avery_misdressed gte 3>>
+		Avery eyes your state of dress and smiles. It doesn't touch <<his>> eyes. "I don't think dinner's even on your mind. Let's get to it, shall we?"
+		<<npcincr Avery rage -5>><<set $endear -= 5>><<npcincr Avery love -3>><<larage>><<lendear>><<llove>>
+		<br><br>
+		<<set $avery_misdressed += 1>>
+		<<link [[Go with Avery|Avery Date 5]]>><<set $averydatedone to 1>><<npcincr Avery love 1>><</link>><<glove>>
+		<br>
+		<<link [[Change mind and go home|Avery Date Refuse]]>><<set $averydatedone to 1>><</link>>
+		<br>
+	<<elseif $avery_misdressed gte 2>>
+		Avery eyes your clothes. Anger flashes across <<his>> face. "Since you can't follow directions, let's skip dinner. You can entertain me in other ways."
+		<<npcincr Avery rage 5>><<set $endear -= 5>><<npcincr Avery love -3>><<garage>><<lendear>><<llove>>
+		<br><br>
+		<<link [[Go with Avery|Avery Date 5]]>><<set $averydatedone to 1>><<set $avery_misdressed += 1>><</link>>
+		<br>
+		<<link [[Change mind and go home|Avery Date Refuse]]>><<set $averydatedone to 1>><</link>>
+		<br>
+	<<elseif $avery_misdressed gte 1>>
+		Avery eyes your clothes and frowns. "We've talked about this before. That's no way to dress. Go put something <span class="green">formal</span> on."
+		<<npcincr Avery rage 5>><<set $endear -= 5>><<garage>><<lendear>>
+		<br><br>
+		<<set $avery_misdressed += 1>>
+		<<link [[Go get changed|Domus Street]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		Avery eyes your clothes and smirks. "Those clothes won't do. Nip to the shop and get something more <span class="green">formal</span>. Here's <span class="gold">£150</span>."
+		<br><br>
+		<<set $money += 15000>>
+		<<set $avery_misdressed to 1>>
+		<<link [[Go get changed|Domus Street]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Avery Date Compliment
+<<effects>><<set $outside to 0>>
+<<pass 20>>
+<<if $speech_attitude is "meek">>
+	"You look much better than me," you say.
+<<elseif $speech_attitude is "bratty">>
+	"That makes two of us," you say.
+<<else>>
+	"You look wonderful too," you say.
+<</if>>
+<br><br>
+
+<<He>> laughs and opens the door beside <<him>>. "Get in. It's not far."
+<br><br>
+
+
+<<if $avery_location is 2>><<set $avery_location to 0>>
+	<<He>> drives you to High Street, pulling up to an extravagant hotel. <<He>> hands you a key with a room number scribbled on it. "Here. Take this and I'll meet you up there. I'm going to park the car." You climb out of the car and head inside.
+	<br><br>
+
+	<<link [[Next|Avery Hotel]]>><</link>>
+	<br>
+<<elseif $avery_location is 1>><<set $avery_location to 2>>
+
+	<<generate2>>
+	<<He>> drives you to Danube Street, up to the front gates of a mansion. <<He>> flashes an invitation at a <<person2>><<person>> in servant's garb, who waves you through just as another car pulls up behind you.
+	<br><br>
+	<<endevent>><<npc Avery>><<person1>>
+
+	<<link [[Next|Avery Party]]>><</link>>
+	<br>
+<<else>><<set $avery_location to 1>>
+	<<He>> drives you to Connudatus Street and parks outside a restaurant. <<He>> offers <<his>> hand as <<he>> leads you into the building.
+	<br><br>
+
+	<<link [[Take it|Avery Date 2]]>><<set $phase to 1>><</link>><<handholdingvirginitywarning>>
+	<br>
+	<<link [[Refuse|Avery Date 2]]>><<set $phase to 2>><<npcincr Avery love -1>><<set $endear -= 10>><</link>><<lendear>><<llove>>
+	<br>
+<</if>>
+
+:: Avery Date Smile
+<<effects>><<set $outside to 0>>
+<<pass 20>>
+You smile at <<him>>. <<He>> smiles back. "You're so sweet," <<he>> says as <<he>> opens the door beside <<him>>. "Get in. It's not far."
+<br><br>
+
+<<if $avery_location is 2>><<set $avery_location to 0>>
+	<<He>> drives you to High Street, pulling up to an extravagant hotel. <<He>> hands you a key with a room number scribbled on it. "Here. Take this and I'll meet you up there. I'm going to park the car." You climb out of the car and head inside.
+	<br><br>
+
+	<<link [[Next|Avery Hotel]]>><</link>>
+	<br>
+<<elseif $avery_location is 1>><<set $avery_location to 2>>
+
+	<<generate2>>
+	<<He>> drives you to Danube Street, up to the front gates of a mansion. <<He>> flashes an invitation at a <<person2>><<person>> in servant's garb, who waves you through just as another car pulls up behind you.
+	<br><br>
+	<<endevent>><<npc Avery>><<person1>>
+
+	<<link [[Next|Avery Party]]>><</link>>
+	<br>
+<<else>><<set $avery_location to 1>>
+	<<He>> drives you to Connudatus Street and parks outside a restaurant. <<He>> offers <<his>> hand as <<he>> leads you into the building.
+	<br><br>
+
+	<<link [[Take it|Avery Date 2]]>><<set $phase to 1>><</link>><<handholdingvirginitywarning>>
+	<br>
+	<<link [[Refuse|Avery Date 2]]>><<set $phase to 2>><<npcincr Avery love -1>><<set $endear -= 10>><</link>><<lendear>><<llove>>
+	<br>
+<</if>>
+<br>
+
+:: Avery Hotel
+<<effects>><<set $outside to 0>>
+<<pass 5>><<famesocial 5>><<set $dateCount.Total++>><<set $dateCount.Avery++>>
+
+The hotel interior is extravagant. You're taken aback by the many chandeliers lighting the lobby and the large, flashy fountain in the middle of the floor.
+<br><br>
+
+<<if $worn.upper.type.includes("costume") or $worn.lower.type.includes("costume")>>
+	A few of the well-dressed occupants look you over, many sneering as you make your way to the elevator.
+<<else>>
+	A few of the well-dressed occupants look you over. They pay you little mind as you make your way to the elevator.
+<</if>>
+A sign details which rooms are on each floor. Yours seems to be at the very top. You step inside, and regard the set of gold buttons. You press the highest.
+<br><br>
+
+The ride takes longer than expected. The doors open, and you make your way to the room. You hesitate before sliding the key into the lock. There's a click, and you turn the handle.
+<br><br>
+The interior is spacious, just as fancy as the rest of the hotel. It's less a room, and more a suite, complete with a balcony and what looks like a hot tub. There's also a very large bed. You sit on it. It's so soft compared to those at the orphanage. You bounce on your <<bottom>>.
+<br><br>
+
+<<link [[Wait for Avery|Avery Hotel 2]]>><</link>>
+<br>
+<<if $exhibitionism gte 55>>
+	<<link [[Surprise Avery by stripping naked|Avery Hotel Strip]]>><<npcincr Avery love 1>><<npcincr Avery rage -5>><</link>><<exhibitionist4>><<glove>><<larage>>
+<</if>>
+<br><br>
+
+:: Avery Hotel Strip
+<<effects>><<pass 5>>
+<<strip>>
+<<if !playerChastity("hidden")>>
+	<<set $genderknown.pushUnique("Avery")>>
+<</if>>
+
+You stand and remove your clothing, making sure to hang it up neat in the suite's wardrobe. There's a set of lingerie folded there already. It looks like your size. <<stress 6>><<gstress>>
+<br><br>
+
+You lie back on the bed. The soft fabric against your bare skin puts you at ease. Your eyes trail to the balcony, and to the town below.
+<<exhibitionism4>>
+A click at the door snaps you from your reverie. Your heart races as it opens. Avery walks in, stopping a moment to regard you. <<He>> smiles and heads over.
+<br><br>
+<<if $averyragerevealed is 1>>
+	"I hope this is your way of saying you'll be on your best behaviour, <<pcpetname "Avery">>." <<His>> expression softens.
+<<else>>
+	"You certainly know how to start the night, <<pcpetname "Avery">>."
+<</if>>
+<br><br>
+
+<<He>> slides <<his>> jacket off. "I was going to tell you to get comfortable while we order dinner, but I can see you've already done that..." <<He>> puts a hand under your chin. "...and it looks like dinner is here early."
+<br><br>
+
+<<link [[Next|Avery Hotel Strip 2]]>><</link>>
+<br>
+
+:: Avery Hotel Strip 2
+<<effects>>
+<<He>> steals a kiss, pushing <<his>> tongue between your lips and tracing <<his>> hand down your tummy. You involuntarily squirm as <<he>> reaches your <<genitals>>. <<takeKissVirginity "Avery" `($dateCount.Avery gte 3?"loveInterest":"romantic")`>>
+<<if playerChastity("hidden")>>
+	It does little to stop the sensation.
+<</if>>
+<<He>> keeps direct eye contact with you, as <<his>> assault becomes more intense. <<ggarousal>>
+<br><br>
+<<arousal 4000 "genitals">>
+<<if $arousal gte $arousalmax>>
+	<<orgasm>>
+	You moan as Avery separates from you, leaving your tongue to loll out of your mouth. <<He>> looks proud of <<himself>>. <<set $endear += 20>><<ggendear>>
+<<else>>
+	After some time, Avery pulls away from you, giving you another smile.
+<</if>>
+<br><br>
+"We can have more fun after dinner, <<pcpetname "Avery">>," <<he>> says, setting the menu on the bed before entering the suite's restroom to wash <<his>> hands. Looks like the hotel has a full restaurant, if the size of the menu is anything to go by.
+<br><br>
+
+<<link [[Let Avery order for you|Avery Hotel Order]]>><<set $phase to 0>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+<br>
+<<link [[Choose something cheap|Avery Hotel Order]]>><<set $phase to 1>><<stress -6>><<set $endear -= 5>><<npcincr Avery rage 5>><</link>><<garage>><<lendear>><<lstress>>
+<br>
+<<link [[Choose something expensive|Avery Hotel Order]]>><<set $phase to 2>><<set $endear -= 10>><<npcincr Avery rage 5>><<npcincr Avery love -1>><<stress -18>><</link>><<llove>><<garage>><<llendear>><<llstress>>
+<br>
+
+:: Avery Hotel 2
+<<effects>><<pass 5>>
+A click at the door grabs your attention. Avery walks in, glancing around the room before smiling and walking over. "Glad to see you found your way, <<pcpetname "Avery">>. I have a delightful evening planned. Just the two of us."
+<br><br>
+<<He>> slides <<his>> jacket off, folding it neat and placing it on the nearest chair. "Let's order some dinner. They'll bring it right to us." <<He>> hands you a menu for room service. Looks like the hotel has a full restaurant, if the size of the menu is anything to go by.
+<br><br>
+
+<<link [[Let Avery order for you|Avery Hotel Order]]>><<set $phase to 0>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+<br>
+<<link [[Choose something cheap|Avery Hotel Order]]>><<set $phase to 1>><<stress -6>><<set $endear -= 5>><<npcincr Avery rage 5>><</link>><<garage>><<lendear>><<lstress>>
+<br>
+<<link [[Choose something expensive|Avery Hotel Order]]>><<set $phase to 2>><<set $endear -= 10>><<npcincr Avery rage 5>><<npcincr Avery love -1>><<stress -18>><</link>><<llove>><<garage>><<llendear>><<llstress>>
+<br>
+
+:: Avery Hotel Order
+<<effects>><<pass 10>>
+<<if $phase is 0>>
+	<<He>> smiles and raises an eyebrow at you before agreeing on the choice. "Let's go sit down."
+<<elseif $phase is 1>>
+	<<He>> smiles at you and motions towards the balcony. "Make yourself comfortable."
+<<elseif $phase is 2>>
+	<<He>> frowns but says nothing about your selection. "Let's go sit down."
+<</if>>
+<br><br>
+
+<<if $exposed gte 2>>
+	<<He>> pauses a moment, then turns to face you again. "You may want to put your clothes back on. Unless you really want to eat dinner naked."
+	<br><br>
+
+	<<if $exhibitionism gte 75>>
+		<<link [[Eat dinner naked|Avery Hotel 3]]>><<set $endear += 20>><</link>><<exhibitionist5>><<ggendear>>
+		<br>
+	<<else>>
+		You are not lewd enough to go out naked.
+		<br>
+	<</if>>
+	<<link [[Get dressed|Avery Hotel 3]]>><<clotheson>><</link>>
+	<br>
+<<else>>
+<<link [[Next|Avery Hotel 3]]>><</link>>
+<br>
+<</if>>
+
+:: Avery Hotel 3
+<<effects>><<pass 10>>
+<<generateRole 1 0 "waiter/waitress">>
+<<if $exposed gte 2>><<exposure>><</if>>
+You step outside and take your seat at the ornate table. The balcony is covered, and the steam from the nearby hot tub keeps the area temperate<<if $exposed gte 2>> despite your nudity. <<exhibitionism5>><<else>>.<</if>>
+It's not too long before there's a knock at the door. Avery opens it and motions towards the table. A <<person2>><<person>> in servant's garb enters. Avery sits down as the <<person2>><<personsimple>> wheels in a tray with two plates on it.
+<<if $exposed gte 2>>
+	<<person2>><<He>> pauses upon seeing you, and <<person2>><<his>> professional demeanor falters for a moment and <<person2>><<his>> face turns red. Avery holds out a bundle of cash and gives <<person2>><<him>> a wink.
+<</if>>
+<br><br>
+<<if $phase is 0>>
+	The <<person2>><<personsimple>> sets down a plate of pasta in front of Avery, and a plate of the same pasta in front of you. Avery smiles at you.
+<<elseif $phase is 1>>
+	The <<person2>><<personsimple>> sets down a plate of pasta in front of Avery, and a fancy looking sandwich in front of you.
+<<elseif $phase is 2>>
+	The <<person2>><<personsimple>> sets down a plate of steak in front of Avery, and the same dish in front of you.
+<</if>>
+<br><br>
+
+After delivering your meals, the <<person2>><<personsimple>> sets down a bottle and two glasses in front of you. <<person2>><<He>> turns around and leaves with the tray<<if $exposed gte 2>> and a generous tip<</if>>. Avery chatters idly as the two of you eat.
+When you finish, <<person1>><<he>> raises the bottle with a smile. "Champagne?"
+<br><br>
+
+<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+	<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
+<<else>>
+	<<link [[Accept|Avery Hotel Drink]]>><<endevent>><<set $phase to 0>><<alcohol 160>><<drugs 220>><<npcincr Avery love 1>><</link>><<glove>><<garousal>>
+<</if>>
+<br>
+<<link [[Decline|Avery Hotel Drink]]>><<endevent>><<set $phase to 1>><</link>>
+<br>
+
+:: Avery Hotel Drink
+<<effects>><<pass 30>>
+<<npc Avery>><<person1>>
+<<if $phase is 0>>
+	<<if $speech_attitude is "meek">>
+		"It looks expensive. Is it really okay?"
+	<<elseif $speech_attitude is "bratty">>
+		"Hell yes."
+	<<else>>
+		"Yes, please."
+	<</if>>
+	<<He>> smiles, pouring you a drink before <<his>> own, and raises the glass in a cheer. You do the same. The drink makes you feel very warm.
+	<br><br>
+<<else>>
+	<<if $speech_attitude is "meek">>
+		"N...no thank you."
+	<<elseif $speech_attitude is "bratty">>
+		"You aren't swaying me that easily."
+	<<else>>
+		"No thanks."
+	<</if>>
+	<<He>> frowns, pouring some for <<himself>> before taking a long sip of it and setting the newly emptied glass back down.
+	<br><br>
+<</if>>
+
+<<His>> eyes wander down your <<if $exposed gte 2>>naked <</if>>body before <<he>> motions to the hot tub next to you. "It's a bit chilly out tonight. Shall we?"
+You glance at the visibly steaming water.
+<br><br>
+
+<<if $exposed gte 2>>
+	<<link [[Accept|Avery Hotel Bath Naked]]>><<set $endear += 10>><<npcincr Avery love 3>><</link>><<gendear>><<gglove>>
+	<br>
+	<<link [[Refuse|Avery Hotel Refuse]]>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<llove>><<garage>>
+	<br>
+<<elseif $player.gender_appearance is "m" and $worn.under_lower.type.includes("swim")>>
+	Luckily, you brought appropriate swimwear.
+	<br><br>
+	<<if $exhibitionism gte 35>>
+		<<link [[Strip naked|Avery Hotel Bath Naked]]>><<set $endear += 10>><<npcincr Avery love 3>><</link>><<exhibitionist3>><<gendear>><<gglove>>
+		<br>
+	<<else>>
+		You are not lewd enough to fully expose yourself here.
+		<br>
+	<</if>>
+	<<link [[Accept|Avery Hotel Bath Swimwear]]>><<npcincr Avery love 1>><</link>><<glove>>
+	<br>
+	<<link [[Refuse|Avery Hotel Refuse]]>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<llove>><<garage>>
+	<br>
+<<elseif $player.gender_appearance isnot "m" and $worn.under_lower.type.includes("swim") and $worn.under_upper.type.includes("swim")>>
+	Luckily, you brought appropriate swimwear.
+	<br><br>
+
+	<<if $exhibitionism gte 35>>
+		<<link [[Strip naked|Avery Hotel Bath Naked]]>><<set $endear += 10>><<npcincr Avery love 3>><</link>><<exhibitionist3>><<gendear>><<gglove>>
+		<br>
+	<<else>>
+		You are not lewd enough to fully expose yourself here.
+		<br>
+	<</if>>
+	<<link [[Accept|Avery Hotel Bath Swimwear]]>><<npcincr Avery love 1>><</link>><<glove>>
+	<br>
+	<<link [[Refuse|Avery Hotel Refuse]]>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<llove>><<garage>>
+	<br>
+
+<<else>>
+	<<if $speech_attitude is "meek">>
+		You stare over at the water, avoiding eye-contact with Avery. "I'm sorry. I didn't bring a swimsuit,"
+	<<elseif $speech_attitude is "bratty">>
+		"With what swimsuit? I didn't bring one,"
+	<<else>>
+		"But I didn't bring a swimsuit,"
+	<</if>>
+	you say.
+	<br><br>
+	"Neither did I." There's a glint in <<his>> eye.
+	<br><br>
+
+	<<if $exhibitionism gte 55>>
+		Being naked in the suite would be one thing, but you're out in the open...
+		<br>
+	<</if>>
+	<<if $worn.under_lower.type.includes("naked")>>
+		You aren't even wearing any underwear!
+		<br>
+	<<elseif $player.gender_appearance isnot "m" and $worn.under_upper.type.includes("naked")>>
+			You aren't wearing an under top! Your <<breasts>> would be exposed!
+			<br>
+		<<if $exhibitionism gte 15>>
+			<<link [[Go in topless|Avery Hotel Bath Topless]]>><<set $endear += 10>><<npcincr Avery love 1>><</link>><<exhibitionist2>><<gendear>><<glove>>
+			<br>
+		<<else>>
+			You aren't lewd enough to go in topless.
+			<br>
+		<</if>>
+	<<else>>
+		<<link [[Strip to your underwear|Avery Hotel Bath Underwear]]>><<set $endear += 10>><</link>><<exhibitionist1>><<gendear>>
+		<br>
+	<</if>>
+	<<if $exhibitionism gte 35>>
+		<<link [[Strip naked|Avery Hotel Bath Naked]]>><<set $endear += 10>><<npcincr Avery love 3>><</link>><<exhibitionist3>><<gendear>><<gglove>>
+		<br>
+	<<else>>
+		You are not lewd enough to fully expose yourself here.
+		<br>
+	<</if>>
+	<<link [[Refuse|Avery Hotel Refuse]]>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<llove>><<garage>>
+	<br><br>
+<</if>>
+<br>
+
+:: Avery Hotel Refuse
+<<effects>>
+<<if $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100)>><<set $averyragerevealed to 1>>
+	Avery stares at you a moment, <span class="red">then slams the table.</span> "I can't have anything with you, can I?" <<he>> says, tossing <<his>> utensils aside. "Get out. Now." <<He>> grabs you by the wrist and drags you back into the suite.
+	<br><br>
+	<<if $exposed gte 2>>
+		You're just barely able to grab your clothes on the way. <<clotheson>>
+	<</if>>
+	<<averyscore>>
+	<<endevent>>
+
+	You're thrust out into the hallway, and you hear the door click shut behind you. You hear something break on the other side. You'd best not linger.
+	<br><br>
+
+	It's easy enough to find your way back to the elevators, and down to the lobby. You leave the hotel alone, exiting out into the cold night air on High Street.
+	<br><br>
+	<<endevent>>
+
+	<<link [[Next|High Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	Avery stares at you a moment, then shrugs. "We can call it an early night, then. We can always find other ways to warm up, <<pcpetname "Avery">>." <<He>> stands up, walking back towards the suite.
+	<br><br>
+	<<endevent>>
+
+	<<link [[Next|Avery Hotel 5]]>><<set $phase to 0>><</link>>
+<</if>>
+<br>
+
+:: Avery Hotel Bath Swimwear
+<<effects>>
+<<if $worn.upper.set is $worn.lower.set>>
+	You remove your $worn.upper.name and set it on your chair.
+<<else>>
+	You remove your $worn.upper.name and $worn.lower.name, setting them on your chair.
+<</if>>
+<<overupperstrip>><<upperstrip>><<overlowerstrip>><<lowerstrip>><<legsstrip>><<feetstrip>>
+<<water>>
+<br><br>
+Avery takes a good look at you before stripping totally nude. <<He>> smiles. "Unfortunately I didn't bring my own swimwear."
+<br><br>
+<<link [[Next|Avery Hotel 4]]>><</link>>
+<br>
+
+:: Avery Hotel Bath Underwear
+<<effects>>
+<<if $worn.upper.set is $worn.lower.set>>
+	You remove your $worn.upper.name and set it on your chair.
+<<else>>
+	You remove your $worn.upper.name and $worn.lower.name, setting them on your chair.
+<</if>>
+<<overupperstrip>><<upperstrip>><<overlowerstrip>><<lowerstrip>><<legsstrip>><<feetstrip>>
+<<exhibitionism1>><<water>>
+Avery takes a good look at you before stripping nude. <<He>> smiles, but it's clear <<he>> wanted to see more.
+<br><br>
+<<link [[Next|Avery Hotel 4]]>><</link>>
+<br>
+
+:: Avery Hotel Bath Topless
+<<effects>>
+<<if $worn.upper.set is $worn.lower.set>>
+	You remove your $worn.upper.name and set it on your chair.
+<<else>>
+	You remove your $worn.upper.name and $worn.lower.name, setting them on your chair.
+<</if>>
+<<if $exhibitionism lte 34>>
+	You cover your <<breasts>> as best you can and hurry over to the hot tub.
+<<else>>
+	You let your <<breasts>> stay completely exposed.
+<</if>>
+<<overupperstrip>><<upperstrip>><<overlowerstrip>><<lowerstrip>><<legsstrip>><<feetstrip>>
+<<exhibitionism2>><<water>>
+Avery takes a good look at you before stripping nude. You can already see <<his>> excitement.
+<br><br>
+<<link [[Next|Avery Hotel 4]]>><</link>>
+<br>
+
+:: Avery Hotel Bath Naked
+<<effects>>
+<<if $exposed gte 2>>
+	Already naked, and eager to ward off the evening air's chill, you get up from your chair and hurry over to the hot tub.
+	<br><br>
+	Avery takes a good look at you before stripping nude <<himself>>. You can already see <<his>> excitement, and <<he>> seems pleased with your enthusiasm.
+<<else>>
+	<<strip>><<water>>
+	<<if !playerChastity("hidden")>>
+		<<set $genderknown.pushUnique("Avery")>>
+	<</if>>
+
+	You remove all of your clothing, and you shiver feeling the evening air's chill. <<exhibitionism3>>
+	Avery takes a good look at you before stripping nude <<himself>>. You can already see <<his>> excitement.
+<</if>>
+<br><br>
+<<link [[Next|Avery Hotel 4]]>><</link>>
+<br>
+
+:: Avery Hotel 4
+<<effects>>
+You slide into the hot tub, soaking in the relaxing water. <<stress -6>><<lstress>><<wash>>
+<br><br>
+There's idle chatter, mostly Avery talking about <<his>> week. For a long while, you're both content to enjoy the warmth in silence. After some time, <<he>> asks you about how your classes are going.
+<br><br>
+<<if $flashbackschoolready is 1 and $controlled is 0>>
+	<<set $flashbackschoolready to 0>>
+	<<flashbackschool>>
+	You're snapped out of it by Avery shaking you. "Hey! What's wrong, <<pcpetname "Avery">>? What happened to you?"
+	<br><br>
+	You tell <<him>> about it, without really meaning to, but the words simply won't stop coming forward. <<His>> expression turns dark as <<he>> holds you close.
+	<<npcincr Avery love 1>><<set $endear -=10>><<npcincr Avery rage -20>><<glove>><<lendear>><<lllarage>>
+	<br><br>
+	"Maybe we should call it an early night. I've got just the thing to keep your mind off of your troubles." <<He>> gets out of the hot tub, offering you a hand.
+	<br><br>
+	<<link [[Next|Avery Hotel Trauma]]>><<clotheson>><</link>>
+
+<<else>>
+	<<link [[Tell|Avery Hotel Chat]]>><<stress 6>><</link>><<gstress>><<note "+ Love?" "green">>
+	<br>
+	<<link [[Do not answer|Avery Hotel No Chat]]>><<npcincr Avery love -1>><</link>><<llove>>
+	<br>
+	<<if $trauma gte ($traumamax / 7) * 1 or $stress gte ($stressmax / 7) * 1>>
+		<<link [[Complain|Avery Hotel Stress Chat]]>><<stress -12>><<trauma -12>><<set $endear -=10>><<npcincr Avery rage -5>><</link>><<llstress>><<lltrauma>><<lendear>><<larage>>
+	<</if>>
+<</if>>
+<br><br>
+
+:: Avery Hotel Chat
+<<effects>>
+You go into detail, telling Avery that your school performance is
+<<if $school gte 4000>>
+	<span class="green">exemplary.</span> <<He>> beams at you with pride. "That's great to hear."<<npcincr Avery love 3>><<gglove>>
+<<elseif $school gte 2800>>
+	<span class="teal">excellent.</span> <<He>> seems to be proud of you. <<npcincr Avery love 1>><<glove>>
+<<elseif $school gte 1600>>
+	<span class="lblue">good.</span> <<He>> seems to be paying attention.
+<<elseif $school gte 800>>
+	<span class="blue">okay.</span> <<He>> seems to not be paying attention.
+<<elseif $school gte 400>>
+	<span class="purple">bad.</span> <<He>> looks uninterested. <<npcincr Avery love -1>><<llove>>
+<<elseif $school gte 1>>
+	<span class="pink">awful.</span> <<He>> looks disappointed. <<npcincr Avery love -3>><<lllove>>
+<<else>>
+	<span class="red">appalling.</span> <<He>> laughs. "You know, I heard studying in the nude can help you retain information. No idea why, but maybe you should try it."
+<</if>>
+<br><br>
+
+You feel <<him>> slide a hand onto your lap. "What do you say we call it an early night, <<pcpetname "Avery">>?"
+<br><br>
+
+<<link [[Take hand|Avery Hotel 5]]>><<clotheson>><<endevent>><<set $phase to 1>><</link>>
+<br>
+<<link [[Slap away|Avery Hotel Slap]]>><<stress -6>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<lstress>><<llove>><<garage>>
+<br>
+<<if $promiscuity gte 35>>
+	<<link [[Straddle|Avery Hotel Bath Sex]]>><<set $sexstart to 1>><<npcincr Avery love 1>><<set $endear +=10>><</link>><<promiscuous3>><<glove>><<gendear>>
+<</if>>
+<br>
+
+:: Avery Hotel No Chat
+<<effects>>
+You look to the side and mumble something about things going well. <<He>> notices your refusal and frowns at you.
+<br><br>
+You feel <<him>> slide a hand into your lap. "What do you say we call it an early night, <<pcpetname "Avery">>?"
+<br><br>
+
+<<link [[Take hand|Avery Hotel 5]]>><<clotheson>><<endevent>><<set $phase to 1>><</link>>
+<br>
+<<link [[Slap away|Avery Hotel Slap]]>><<stress -6>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<lstress>><<llove>><<garage>>
+<br>
+<<if $promiscuity gte 35>>
+	<<link [[Straddle|Avery Hotel Bath Sex]]>><<set $sexstart to 1>><<npcincr Avery love 1>><<set $endear +=10>><</link>><<promiscuous3>><<glove>><<gendear>>
+<</if>>
+<br>
+
+:: Avery Hotel Stress Chat
+<<effects>>
+You sigh, and tell <<him>> about some of the things bothering you. <<He>> frowns at first, but gives you an understanding nod and some advice, and at the end of it, you feel just a little better.
+<br><br>
+<<His>> face lights up for a moment. "I've got just the thing to keep your mind off of your troubles, <<pcpetname "Avery">>." <<He>> stands, and holds out <<his>> hand.
+<br><br>
+
+<<link [[Take hand|Avery Hotel Trauma]]>><<clotheson>><</link>>
+<br>
+<<link [[Slap away|Avery Hotel Slap]]>><<stress -6>><<npcincr Avery love -1>><<npcincr Avery rage 5>><</link>><<lstress>><<llove>><<garage>>
+<br>
+<<if $promiscuity gte 35>>
+	<<link [[Straddle|Avery Hotel Bath Sex]]>><<set $sexstart to 1>><<npcincr Avery love 1>><<set $endear +=10>><</link>><<promiscuous3>><<glove>><<gendear>>
+<</if>>
+<br>
+
+:: Avery Hotel Slap
+<<effects>>
+You scornfully slap away Avery's hand.
+<<if $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100)>><<set $averyragerevealed to 1>>
+	Avery stares at you a moment, <span class="red">then plunges a fist into the water, barely missing your thigh and splashing you.</span> "It was just a simple question, you fucking brat!" <<he>> yells. <<He>> begins to stand, but suddenly <span class="red">grabs you by the throat.</span>
+	<br><br>
+	<<link [[Next|Avery Hotel Bath Rape]]>><<set $molestationstart to 1>><</link>>
+<<else>>
+	<<He>> quickly backs off, frowning. "No need to be so grumpy, it was just a simple question." <<He>> stands from the hot tub, and gestures towards the suite.
+	<br><br>
+	You both dry off and get dressed. Avery walks into the suite, opening the door perhaps just a bit too hard. You both recoil as it slams.
+	<br><br>
+	<<link [[Next|Avery Hotel 5]]>><<clotheson>><<endevent>><<set $phase to 0>><</link>>
+<</if>>
+<br>
+
+:: Avery Hotel Bath Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<npcexpose>>
+	<<set $enemyanger += 30>><<set $NPCList[0].lefthand to "throat">><<set $NPCList[0].righthand to "throat">><<set $neckuse to "hand">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Avery Hotel Bath Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery Hotel Bath Rape]]>><</link>></span><<nexttext>>
+<</if>>
+<br>
+
+:: Avery Hotel Bath Rape Finish
+<<effects>>
+<<averyscore>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	<<He>> gasps in satisfaction, and you take the opportunity to scramble out of the tub and rush towards the door, grabbing your clothes on the way. You can hear Avery's footsteps as you wrench the door open and run towards the stairs. Your footsteps thunder as you stomp down all the steps and burst through the back exit.
+
+	<<larage>><<npcincr Avery rage -5>>
+	<br><br>
+
+	<<tearful>> you find yourself in the commercial alleyways.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<endevent>>
+
+	<<link [[Next|Commercial alleyways]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	You manage to push <<him>> away, and <<he>> slips and falls, dunking <<himself>> underwater. <<tearful>> you take the opportunity to scramble out of the tub and rush towards the door, grabbing your clothes on the way. You can hear Avery's footsteps as you wrench the door open and run towards the stairs. Your footsteps thunder as you stomp down all the steps and burst through the back exit.
+	<br><br>
+
+	You find yourself in the commercial alleyways.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<endevent>>
+
+	<<link [[Next|Commercial alleyways]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery Hotel Bath Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<npcexpose>>
+	<<set $enemytrust += 100>>
+	You grab Avery by the hand, and swiftly put a leg over <<him>> to straddle <<him>>. <<His>> hands begin to explore your body.
+	<<promiscuity3>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Avery Hotel Bath Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery Hotel Bath Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Avery Hotel Bath Sex Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	"Good <<girl>>," <<he>> pants, before planting another kiss on your lips. <<takeKissVirginity "Avery" `($dateCount.Avery gte 3?"loveInterest":"romantic")`>>
+	<<larage>><<npcincr Avery rage -5>><<glove>><<npcincr Avery love 3>>
+	<br><br>
+
+	<<tearful>> you take <<his>> hand again, and the two of you climb from the hot tub and dry off.
+	<br><br>
+
+	<<endcombat>>
+	<<endevent>>
+
+	<<link [[Next|Avery Hotel 5]]>><<clotheson>><<endevent>><<set $phase to 2>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	<<averyscore>>
+
+	You manage to push <<him>> away, and <<he>> slips and falls, dunking <<himself>> underwater. <<tearful>> you take the opportunity to scramble out of the tub and rush towards the door, grabbing your clothes on the way. You can hear Avery's footsteps as you wrench the door open and run towards the stairs. Your footsteps thunder as you stomp down all the steps and burst through the back exit.
+	<br><br>
+
+	You find yourself in the commercial alleyways.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<endevent>>
+
+	<<link [[Next|Commercial alleyways]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	"As you wish," <<he>> says, pulling away and standing from the hot tub. <<set $endear -= 10>><<lendear>>
+	<br><br>
+
+	<<tearful>> you take <<his>> hand again, and the two of you climb from the hot tub and dry off.
+	<br><br>
+
+	<<endcombat>>
+
+	<<link [[Next|Avery Hotel 5]]>><<clotheson>><<endevent>><<set $phase to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery Hotel Trauma
+<<effects>><<set $underlowerwet to 0>><<set $underupperwet to 0>>
+
+You take Avery by the hand, and <<he>> pulls you from the hot tub. <<He>> helps you dry off and get dressed, before leading you back into the suite.
+<br><br>
+<<He>> begins rummaging around in <<his>> suitcase, before producing a brown paper bag. "If there's ever anything I want to forget, this does the trick." <<He>> pulls an exquisite looking bottle from the bag. It looks much more expensive than the champagne from earlier.
+<<He>> uncorks the bottle, taking a brief sip of it, before handing it to you. "It'll help, <<pcpetname "Avery">>. I promise."
+<br><br>
+
+<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+	<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
+<<else>>
+	<<link [[Accept|Avery Hotel Trauma Drink]]>><<alcohol 260>><<trauma -24>><<stress -24>><<awareness -5>><</link>><<lllstress>><<llltrauma>><<llawareness>>
+<</if>>
+<br>
+<<link [[Decline|Avery Hotel 5]]>><<endevent>><<set $phase to 3>><</link>>
+<br>
+
+:: Avery Hotel Trauma Drink
+<<effects>>
+You take a sip of the drink. It's immediately apparent that this is no ordinary alcohol.
+<<if $phase is 0>>
+	At some point, Avery started talking again, but you can't understand <<him>>. The room begins spinning. You may have drank too much.
+	<br><br>
+	Your vision becomes a mess of colours, and the gentleness of Avery's voice slowly lulls you away into sleep.
+	<br><br>
+
+	<<link [[Next (3:00)|Avery Hotel Trauma Drink 2]]>><<set $endear += 20>><<set $sleephour to 3>><</link>><<ltiredness>><<ggendear>>
+	<br>
+
+<<else>>
+	"Easy there. That's powerful stuff, so don't drink too much." <<He>> takes the bottle back from you. You already forgot what exactly had you so upset earlier.
+	<br><br>
+
+	<<link [[Next|Avery Hotel 5]]>><<endevent>><<set $phase to 3>><</link>>
+	<br>
+<</if>>
+
+:: Avery Hotel 5
+<<effects>><<set $underlowerwet to 0>><<set $underupperwet to 0>>
+<<npc Avery>><<person1>>
+<<if $phase is 0>>
+	<<He>> pauses for a moment. "On second thought, perhaps it would be best if you went home early. Unless you could stand to spend the night with me," <<he>> says, throwing <<his>> arms up in the air.
+<<elseif $phase is 1>>
+	You take Avery's hand as <<he>> pulls you from the hot tub. The two of you dry off and get dressed before walking back into the suite. <<He>> winces as <<he>> sees the time. "It's been a lovely night, <<pcpetname "Avery">>. Would you care to spend the rest of it with me? Or would you prefer I take you home?"
+<<elseif $phase is 2>>
+	<<He>> leads you back into the suite after you both get dressed, with an arm around your waist. "That was wonderful, <<pcpetname "Avery">>." <<His>> look of satisfaction fades to disappointment as <<he>> notices the time. <<He>> yawns. "I could take you home early, if you want."
+<<elseif $phase is 3>>
+	<<He>> seals the bottle, glancing over to a clock on the wall. "It's getting quite late, and I think you could use some rest. Would you care to spend the night with me?"
+<</if>>
+<br><br>
+<<link [[Say you'll stay for the night (9:00)|Avery Hotel Stay]]>><<set $endear += 20>><<npcincr Avery love 1>><</link>><<ggendear>><<glove>>
+<br>
+<<link [[Say you want to go home|Avery Hotel Early End]]>><<clotheson>><<set $endear -= 10>><</link>><<lendear>>
+<br>
+
+:: Avery Hotel Stay
+<<effects>><<pass 60>>
+Avery smiles at you. "That's what I like to hear." <<He>> walks over to the suite's wardrobe, opening it and revealing a set of babydoll lingerie as well as a set of normal pyjamas. "Go ahead and get changed." <<He>> lies back on the bed.
+<br><br>
+<<link [[Wear the lingerie|Avery Hotel Lingerie]]>><</link>>
+<br>
+<<link [[Wear the pyjamas|Avery Hotel Pajamas]]>><</link>>
+<br>
+
+
+:: Avery Hotel Lingerie
+<<effects>>
+<<undressclothes "averyhotel">>
+<<set $uppertemp to "init">><<upperwear 18>><<set $worn.upper.colour to either("black", "blue", "brown", "green", "pink", "purple", "red", "tangerine")>>
+You put on the babydoll lingerie.
+<<if $player.gender_appearance is "m" and $background isnot "crossdresser">>
+	You feel intense embarrassment. Avery giggles. "It'll look cute on you!"
+<</if>>
+<br><br>
+<<if $phase is 2>>
+	Avery seems to have enjoyed watching you. <<He>> pats the bed next to <<him>>. As you lie down, <<he>> pulls you close to <<his>> chest, and flicks off the lights. "Goodnight, <<pcpetname "Avery">>, and thank you for such a pleasant evening."
+	<br><br>
+	<<link [[Sleep|Avery Hotel Morning]]>><<set $sleephour to 8>><</link>>
+<<else>>
+	You can't help but feel <<his>> eyes on you even as you get dressed. You turn back to face <<him>>, surprised to see <<him>> sitting on the bed in only <<his>> underwear. You can't help but wonder how <<he>> undressed so quickly and quietly.
+	There's a glint in <<his>> eye as <<he>> pats the bed to motion you over.
+	<br><br>
+	You sit down and <<he>> turns towards you, eyes glancing down your body before <<he>> pins you down against the sheets. "Is it cocky to admit that I wanted that on you just to take it off?"
+	<br><br>
+	<<link [[Kiss|Avery Hotel Sex]]>><<set $phase to 0>><<set $sexstart to 1>><<set $endear += 10>><</link>><<promiscuous1>><<gendear>>
+	<br>
+	<<link [[Roll over|Avery Hotel No No No No Sex]]>><<npcincr Avery love -1>><<npcincr Avery rage 3>><</link>><<llove>><<garage>>
+	<br>
+	<<if $submissive lte 500>>
+		<<link [[Get on top|Avery Hotel Sex]]>><<def 1>><<set $phase to 1>><<set $sexstart to 1>><<set $endear += 10>><</link>><<promiscuous1>><<defianttext>><<gendear>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Avery Hotel Pajamas
+<<effects>>
+<<undressclothes "averyhotel">>
+<<set $uppertemp to "init">><<upperwear 2>><<set $worn.upper.colour to either("black", "blue", "brown", "green", "pink", "purple", "red", "tangerine")>>
+<<set $lowertemp to "init">><<lowerwear 2>><<set $worn.lower.colour to either("black", "blue", "brown", "green", "pink", "purple", "red", "tangerine")>>
+You put on the pyjamas.
+<br><br>
+<<if $phase is 2>>
+	Avery seems to have enjoyed watching you. <<He>> pats the bed next to <<him>>. As you lie down, <<he>> pulls you close to <<his>> chest, and flicks off the lights. "Goodnight, <<pcpetname "Avery">>, and thank you for such a pleasant evening."
+	<br><br>
+	You drift off to sleep under the covers in Avery's arms.
+	<br><br>
+	<<link [[Sleep|Avery Hotel Morning]]>><<set $sleephour to 8>><<set $bedGuest to "Avery">><</link>><<ltiredness>>
+	<br>
+<<else>>
+	You can't help but feel <<his>> eyes on you even as you get dressed. You turn back to face <<him>>, surprised to see <<him>> sitting on the bed in only <<his>> underwear. You can't help but wonder how <<he>> undressed so quickly and quietly.
+	There's a glint in <<his>> eye as <<he>> pats the bed to motion you over.
+	<br><br>
+	You sit down and <<he>> turns towards you, eyes glancing down your body before <<he>> pins you down against the sheets. "Is it cocky to admit that I wanted that on you just to take it off?"
+	<br><br>
+	<<link [[Kiss|Avery Hotel Sex]]>><<set $phase to 0>><<set $sexstart to 1>><<set $endear += 10>><</link>><<promiscuous1>><<gendear>>
+	<br>
+	<<link [[Roll over|Avery Hotel No No No No Sex]]>><<npcincr Avery love -1>><<npcincr Avery rage 3>><</link>><<llove>><<garage>>
+	<br>
+	<<if $submissive lte 500>>
+		<<link [[Get on top|Avery Hotel Sex]]>><<def 1>><<set $phase to 1>><<set $sexstart to 1>><<set $endear += 10>><</link>><<promiscuous1>><<defianttext>><<gendear>>
+		<br>
+	<</if>>
+<</if>>
+<br>
+
+:: Avery Hotel Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<npcClothesType $NPCList[0] "undies">>
+	<<set $enemytrust += 100>>
+	<<if $phase is 0>>
+		You kiss <<him>>, and you start exploring each other. <<takeKissVirginity "Avery" `($dateCount.Avery gte 3?"loveInterest":"romantic")`>>
+	<<else>>
+		You lock your legs around <<him>> and force <<him>> to flip over, ending up on top.
+	<</if>>
+	<<promiscuity1>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Avery Hotel Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery Hotel Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Avery Hotel Sex Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+<<ejaculation>>
+
+"Good <<girl>>," <<he>> pants, before planting another kiss on your lips. <<takeKissVirginity "Avery" `($dateCount.Avery gte 3?"loveInterest":"romantic")`>>
+<<larage>><<npcincr Avery rage -5>><<glove>><<npcincr Avery love 3>>
+<br><br>
+
+<<tearful>> you drift off to sleep under the blankets in Avery's arms.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Avery Hotel Morning]]>><<set $sleephour to 8>><<set $bedGuest to "Avery">><</link>><<ltiredness>>
+<br>
+
+<<elseif $enemyhealth lte 0>>
+<<averyscore>>
+
+You manage to push <<him>> off the bed. <<He>> hits <<his>> head on a bedside table. <<tearful>> you take the opportunity to scramble out of bed in the dark and rush towards the door, grabbing your clothes on the way. You can hear Avery's footsteps as you wrench the door open and run towards the stairs. Your footsteps thunder as you stomp down all the steps and burst through the back exit.
+<br><br>
+
+You find yourself in the commercial alleyways.
+<br><br>
+
+<<storeon "averyCar" "check">>
+<<if _store_check is 1>>
+	<<storeon "averyCar" "delete">>
+<</if>>
+
+<<clotheson>>
+<<endcombat>>
+<<endevent>>
+
+<<link [[Next|Commercial alleyways]]>><<storeon "averyhotel">><<set $eventskip to 1>><</link>>
+<br>
+
+<<else>>
+
+"As you wish," <<he>> says, rolling over. <<set $endear -=10>><<lendear>>
+<br><br>
+
+<<tearful>> you drift off to sleep under the blankets in Avery's arms.
+<br><br>
+
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Avery Hotel Morning]]>><<set $sleephour to 8>><<set $bedGuest to "Avery">><</link>><<ltiredness>>
+<br>
+<</if>>
+
+:: Avery Hotel No No No No Sex
+<<effects>>
+You roll over, forcing Avery off of you.
+<<if $speech_attitude is "meek">>
+	"I'm really tired, I'm sorry." You curl up and tug the blankets over yourself.
+<<elseif $speech_attitude is "bratty">>
+	"Get off of me." You angrily turn over and pull the blanket up.
+<<else>>
+	"I don't want to." Your back faces <<him>> as you pull the cover over yourself.
+<</if>>
+<br><br>
+You hear <<him>> mumble something, but <<he>> quickly rolls over and goes quiet.
+<br><br>
+<<link [[Next|Avery Hotel Morning]]>><<set $sleephour to 8>><<set $bedGuest to "Avery">><</link>><<ltiredness>>
+<br>
+
+:: Avery Hotel Morning
+<<set _autosavehere to true>>
+<<sleep true>><<effects>>
+<<sleepeffects>>
+<<averyscore>>
+<<storeon "averyhotel">>
+<<wakingEffects true>>
+<<if _wakingEffect is "dryheaving">>
+	You slept soundly, but now feel a little rough.
+	<br><br>
+	"I'm guessing last night was too much for you. 'Least you made it to the bin," Avery says.
+<<else>>
+	<<if _wakingEffect isnot undefined>>
+		Looking to Avery who is
+	<<else>>
+		You wake up to Avery
+	<</if>>
+	already dressed and your <<if $worn.upper.set is $worn.lower.set>>$worn.upper.name<<else>>$worn.upper.name and $worn.lower.name<</if>> lying on the end of the bed, neatly folded. "Good morning, <<pcpetname "Avery">>."
+	<br><br>
+	<<if $speech_attitude is "meek">>
+		"M... morning,"
+	<<elseif $speech_attitude is "bratty">>
+		"Morning, hot stuff,"
+	<<else>>
+		"Good morning,"
+	<</if>>
+	you say.
+<</if>>
+<<endevent>><<npc Avery>><<person1>>
+You reach for your clothes. <<He>> quickly lifts them up away from you, before playfully throwing them at you.
+<br><br>
+
+<<if $endear gte 60>>
+"Last night was wonderful. Thank you for indulging me," <<he>> says.
+<<elseif $endear gte 30>>
+"Thank you for the pleasant evening," <<he>> says.
+<<else>>
+"Hurry up and get dressed," <<he>> says. "And try not to embarrass me on the way out."
+<</if>>
+<br><br>
+
+<<He>> gathers <<his>> things and takes the room key from you. <<He>> leads you to the lobby and back to <<his>> car, which is waiting in front. You glance back at the hotel as <<he>> drives you home.
+<br><br>
+<<storeon "averyCar" "check">>
+<<if _store_check is 1>>
+	<<storeon "averyCar">>
+	You put on your coat which was lying on the back seat.
+	<br><br>
+<</if>>
+/* 北极星模组 */
+回到孤儿院后<<he>>打开<<his>>鼓鼓的<<wallet>>从里面拿出了一叠现金。<<He>>拿着<span class="gold">£<<print (($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1))>></span>。"买点好东西，我请客。"
+/* 北极星 */
+<br><br>
+
+You reach for the money, but <<he>> lifts it away from you. "First," <<he>> taps <<his>> lips with a smile.
+<br><br>
+
+<<link [[Kiss|Avery Hotel Kiss]]>><<npcincr Avery love 1>><</link>><<glove>>
+<br>
+<<link [[Refuse|Avery Hotel Kiss Refuse]]>><</link>>
+<br>
+
+:: Avery Hotel Kiss
+<<effects>>
+/* 北极星模组 */
+<<set $money += ((($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1)) * 100)>>
+/* 北极星 */
+
+You lean in and kiss Avery. <<He>> smiles and hands you the money. You climb from the car. <<He>> watches you for a moment before driving away. <<takeKissVirginity "Avery" `($dateCount.Avery gte 3?"loveInterest":"romantic")`>>
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery Hotel Kiss Refuse
+<<effects>>
+/* 北极星模组 */
+<<set $money += ((($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1)) * 100)>>
+/* 北极星 */
+
+You push Avery's head to the side. <<Hes>> about to say something, but notices someone watching from the window of the orphanage. <<He>> hands you the money. You climb from the car, and <<he>> watches you for a moment before driving away.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery Hotel Trauma Drink 2
+<<sleep>>
+<<if _dreaming>>
+	/* <<earSlimeFocusChoice>> or similar widgets are running */
+<<else>>
+	<<effects>>
+	<<sleepeffects>>
+	You wake up some time later to the sound of a television. You're snuggled right up to Avery on the bed, fully clothed.
+	<br><br>
+	<<He>> looks down to you and smiles. "Good evening, <<pcpetname "Avery">>. I didn't expect the drink to have that much of an effect on you. You went right off to sleep after drinking it. For a little while, I debated on calling an ambulance, but then I heard you snoring." You feel too weak to move.
+	<br><br>
+	"You'll be out of it for a while. But you should find your head a lot more clear now." <<His>> words ring true. You hardly remember what had you so upset before. You suddenly feel yourself being lifted from the bed. "I had better take you home. You need rest more than anything now." Your consciousness begins to slip again.
+	<br><br>
+	When your eyes open again, you're being lifted out of Avery's car. Your vision is blurry, but you think you can see the orphanage getting closer each time you blink.
+	<br><br>
+	<<link [[Next|Avery Hotel Trauma End]]>><</link>>
+	<br>
+<</if>>
+
+:: Avery Hotel Trauma End
+<<set $location to "home">><<set $outside to 0>><<effects>>
+<<endevent>><<npc Avery>><<person1>><<generate2>><<person2>>
+<<averyscore>>
+/* 北极星模组 */
+<<set $money += ((($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1)) * 100)>>
+/* 北极星 */
+<br><br>
+As the door to the orphanage opens, Avery comes face to face with an orphan. <<person2>><<He>> opens <<his>> mouth to speak, but is silenced when Avery holds out a bundle of money. "I was never here. Understand?" <<He>> looks ecstatic, <<his>> hands trembling with the money. "Of course! Th-thank you so much <<person1>><<sir>>!" <<person2>><<He>> begins thumbing through the money as <<he>> quietly trots away.
+<br><br>
+/* 北极星模组 */
+艾弗里把你抱回房间，让你躺在床上。"谢谢你让我度过了愉快的夜晚，我希望你明天早上会感觉好些。"<<person1>><<his>>离开时，<<he>>为你留下了<span class="gold">£<<print (($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1))>></span>。
+/* 北极星 */
+<br><br>
+<<storeon "averyCar" "check">>
+<<if _store_check is 1>>
+	<<storeon "averyCar" "wardrobe">>
+	<<He>> leaves your coat at the end of your bed.
+	<br><br>
+<</if>>
+<<link [[Next|Bedroom]]>><<endevent>><</link>>
+<br>
+
+:: Avery Hotel Early End
+<<effects>>
+<<endevent>><<npc Avery>><<person1>>
+<<averyscore>>
+<<if $endear gte 60 or $phase is 2>>
+    /* 北极星模组 */
+	<<set $money += ((($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1)) * 100)>>
+	<<He>>微笑着点点头，递给你一叠现金<span class="gold">£<<print (($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1))>></span>。"你应该给自己买点好东西，我请客。"
+	/* 北极星 */
+	<br><br>
+	<<He>> takes you by the hand again, leading you out of the suite and to the lobby. It takes <<him>> a few minutes to get you checked out, but soon enough the two of you are on your way to the orphanage. <<He>> seems happy enough with your behaviour.
+	<br><br>
+	<<storeon "averyCar" "check">>
+	<<if _store_check is 1>>
+		<<storeon "averyCar">>
+		You put on your coat which was lying on the back seat.
+		<br><br>
+	<</if>>
+	<<He>> drops you off on Domus Street, thanking you again and lingering for a moment before driving away.
+	<br><br>
+	<<link [[Next|Domus Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $endear gte 30>>
+    /* 北极星模组 */
+	<<set $money += ((($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1)) * 100)>>
+	<<He>>点点头，拿出了一叠钱<span class="gold">£<<print (($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1))>></span>。
+	/* 北极星 */
+	<br><br>
+	<<He>> takes you by the hand again, leading you out of the suite and to the lobby. It takes <<him>> a few minutes to get you checked out, but soon enough the two of you are on your way to the orphanage. "I hope you can spend the night next time."
+	<br><br>
+	<<storeon "averyCar" "check">>
+	<<if _store_check is 1>>
+		<<storeon "averyCar">>
+		You put on your coat which was lying on the back seat.
+		<br><br>
+	<</if>>
+	<<He>> drops you off on Domus Street, lingering for a moment before driving away.
+	<br><br>
+	<<link [[Next|Domus Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $endear gte 0>>
+	<<set $money += (($NPCName[$NPCNameList.indexOf("Avery")].love * 1 + $endear * 1 + 10) * 100)>>
+	<<He>> frowns. "You're lucky you didn't behave this way in public." <<He>> begins thumbing through some money, holding out <span class="red">£<<print ($NPCName[$NPCNameList.indexOf("Avery")].love * 1 + $endear * 1 + 10)>></span>.
+	<br><br>
+	<<He>> grabs you by the hand and starts to pull you out of the suite, causing you to stumble a bit. It takes <<him>> a few minutes to get you checked out, but soon enough the two of you are on your way to the orphanage. "I'll think twice about suggesting something so intimate next time."
+	<br><br>
+	<<storeon "averyCar" "check">>
+	<<if _store_check is 1>>
+		<<storeon "averyCar">>
+		You put on your coat which was lying on the back seat.
+		<br><br>
+	<</if>>
+	<<He>> drops you off on Domus Street, lingering for a moment before driving away.
+	<br><br>
+	<<link [[Next|Domus Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	<<set $money += (($NPCName[$NPCNameList.indexOf("Avery")].love * 1 + $endear * 1 + 10) * 100)>>
+	"Unbelievable."<<He>> quickly thrusts some money into your hands. Before you can count it, you're pushed out into the hallway, and you hear the door click shut behind you.
+	<br><br>
+	It's easy enough to find your way back to the elevators, and down to the lobby. You leave the hotel alone, exiting out into the cold night air on High Street. You count the money, and the total comes up to <span class="red">£<<print ($NPCName[$NPCNameList.indexOf("Avery")].love * 1 + $endear * 1 + 10)>></span>.
+	<br><br>
+	<<storeon "averyCar" "check">>
+	<<if _store_check is 1>>
+		<<storeon "averyCar" "delete">>
+	<</if>>
+	<<link [[Next|High Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+<br><br>
+
+
+:: Avery Party
+<<set $outside to 0>><<effects>>
+
+Avery pulls up outside the mansion proper, an opulent building even by the standards of this part of town. Another servant opens the door. Avery throws them the keys as <<he>> loops around the front of the vehicle.
+<br><br>
+
+<<if $pronoun is "m">>
+	<<He>> holds out <<his>> arm.
+	<br><br>
+
+	<<link [[Take it|Avery Party Arm]]>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+	<br>
+	<<link [[Refuse|Avery Party Arm Refuse]]>><<def 1>><<npcincr Avery rage 5>><<npcincr Avery love -1>><<set $endear -= 5>><</link>><<garage>><<llove>><<lendear>>
+	<br>
+<<else>>
+	<<He>> hooks <<his>> arm around yours, and tries to lead you toward the door.
+	<br><br>
+
+	<<link [[Allow|Avery Party Arm]]>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+	<br>
+	<<link [[Push away|Avery Party Arm Refuse]]>><<def 1>><<npcincr Avery rage 5>><<npcincr Avery love -1>><<set $endear -= 5>><</link>><<garage>><<llove>><<lendear>>
+	<br>
+<</if>>
+<br><br>
+
+:: Avery Party Arm
+<<effects>>
+
+<<if $pronoun is "m">>
+	You hook your arm around Avery's, and <<he>> leads you to the door.
+<<else>>
+	Avery holds your arm tight as <<he>> leads you to the door.
+<</if>>
+<br><br>
+<<link [[Next|Avery Party 2]]>><</link>>
+<br>
+
+:: Avery Party Arm Refuse
+<<effects>>
+
+<<if $pronoun is "m">>
+	You spurn Avery's gesture. <<He>> takes the hint, but <<his>> fist clenches as it returns to <<his>> side.
+<<else>>
+	You shake Avery's arm free. <<He>> takes the hint, but <<his>> fist clenches as it returns to <<his>> side.
+<</if>>
+Together, but separate, you walk up to the door.
+<br><br>
+
+<<link [[Next|Avery Party 2]]>><</link>>
+<br>
+
+:: Avery Party 2
+<<effects>>
+<<pass 5>><<set $dateCount.Total++>><<set $dateCount.Avery++>>
+<<famesocial 10>><<generate2>>
+You enter the mansion. Two staircases lead away from the entrance, leaving a circular space in the middle. Servants stand at the room's edge, hands at their sides and heads held high, waiting to see to any need that might arise. You hear the clatter of glasses and sophisticated music from further within.
+<br><br>
+
+A <<person2>><<person>> approaches Avery, and grasps <<person1>><<his>> hand.
+<br><br>
+<<person2>>
+<<if $rng gte 81>>
+	"Ah, Avery," <<he>> says. "So glad you could make it."
+<<elseif $rng gte 61>>
+	"My friend," <<he>> says. "Back to your devilry I see."
+<<elseif $rng gte 41>>
+	"Pleased you could make it," <<he>> says.
+<<elseif $rng gte 21>>
+	"It's a pleasure to meet you at last," <<he>> says.
+	<<set _averyPartyUnrecognised to true>>
+<<else>>
+	"Glad to see you," <<he>> says. "Though I hope you don't cause a scene this time."
+<</if>>
+<br><br>
+<<He>> turns to you.
+<<if $worn.face.type.includes("mask")>>
+	"Such a mysterious companion. This isn't a masquerade, but I'll let it slide. We all have our secrets."
+<<elseif $fame.social gte 1000>>
+	<<if _averyPartyUnrecognised>>
+		"You certainly know how to make an impression, gracing us with one such as <<phim>>."
+	<<else>>
+		"Avery must be moving up in the world, to be accompanied by one such as you."
+	<</if>>
+	<<He>> gives you a small bow.
+<<elseif $fame.social gte 600>>
+	"I'm honoured that you would grace us this evening." <<He>> gives you a small bow.
+<<elseif $fame.social gte 400>>
+	"Thank you for gracing us with your presence this evening."
+<<elseif $fame.social gte 200>>
+	<<if _averyPartyUnrecognised>>
+		"I recognise your companion. I admit <<pshes>> more dignified than our guests' usual fare."
+	<<else>>
+		"I recognise your companion, Avery. I admit I expected you to bring a cheap whore again."
+	<</if>>
+	<<He>> laughs.
+<<elseif $fame.social gte 100>>
+	"A pleasure."
+<<elseif $fame.social gte 30>>
+	<<if _averyPartyUnrecognised>>
+		"And likewise to you.
+	<<else>>
+		"I don't believe we've met.
+	<</if>>
+	Welcome."
+<<else>>
+	"This is your companion<<if !_averyPartyUnregonised>>, Avery<</if>>? You'll have to tell me where you find such cute <<girls>>."
+<</if>>
+<br><br>
+Another couple enter behind you, stealing <<his>> attention. "More guests," <<he>> says as <<he>> passes. "Sorry we didn't have long. Have a nice evening."
+<br><br>
+
+<<link [[Next|Avery Party 3]]>><</link>>
+<br>
+
+:: Avery Party 3
+<<effects>>
+
+<<person1>>You and Avery enter a great hall. A band plays in the corner. Well-dressed guests chat in groups as servants weave through them, holding trays of drinks. A few nod at Avery.
+
+<<if $fame.social gte 1000>>
+	More nod at you.
+<<elseif $fame.social gte 600>>
+	As many nod at you.
+<<elseif $fame.social gte 400>>
+	Some even nod at you.
+<<else>>
+<</if>>
+<br><br>
+
+You accompany Avery as <<he>> schmoozes. How do you want to behave?
+<br><br>
+
+<<link [[Cute|Avery Party Cute]]>><<sub 1>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+<br>
+<<link [[Polite|Avery Party Polite]]>><<npcincr Avery love 3>><<set $endear += 10>><</link>><<gglove>>
+<br>
+<<link [[Aloof|Avery Party Aloof]]>><<def 1>><<npcincr Avery love 5>><<set $endear -= 5>><</link>><<ggglove>><<lendear>>
+<br>
+
+:: Avery Party Cute
+<<effects>>
+<<pass 15>>
+You practically hang off Avery's arm. You laugh at <<his>> jokes, and the jokes of those <<he>> talks to. When someone addresses you directly, you look to Avery as if unsure, and let <<him>> speak for you. You think <<he>> likes it this way.
+<br><br>
+
+A servant offers you a drink. Avery nods at you.
+<br><br>
+
+<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+	<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
+<<else>>
+	<<link [[Drink|Avery Party Drink]]>><<alcohol 120>><<set $endear += 10>><</link>><<gendear>>
+<</if>>
+<br>
+<<link [[Refuse|Avery Party Drink Refuse]]>><</link>><<set $endear -= 5>><<lendear>>
+<br>
+
+:: Avery Party Polite
+<<effects>>
+<<pass 15>>
+You do your best to be polite. You speak when addressed directly. Your responses are concise. Avery seems impressed.
+<br><br>
+
+A servant offers you a drink. Avery nods at you.
+<br><br>
+
+<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+	<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
+<<else>>
+	<<link [[Drink|Avery Party Drink]]>><<alcohol 120>><<set $endear += 10>><</link>><<gendear>>
+<</if>>
+<br>
+<<link [[Refuse|Avery Party Drink Refuse]]>><</link>><<set $endear -= 5>><<lendear>>
+<br>
+
+:: Avery Party Aloof
+<<effects>>
+<<pass 15>>
+You ignore their conversations, as if beneath you. You give only curt responses when addressed directly. Avery doesn't look amused, yet there's a thirst that wasn't present before.
+<br><br>
+
+A servant offers you a drink. Avery nods at you.
+<br><br>
+
+<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+	<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
+<<else>>
+	<<link [[Drink|Avery Party Drink]]>><<alcohol 120>><<set $endear += 10>><</link>><<gendear>>
+<</if>>
+<br>
+<<link [[Refuse|Avery Party Drink Refuse]]>><</link>><<set $endear -= 5>><<lendear>>
+<br>
+
+:: Avery Party Drink
+<<effects>>
+
+You take a drink from the tray, and sip. You assume it's expensive, but it's a little bitter. Avery takes a glass for <<himself>>.
+<br><br>
+
+<<link [[Next|Avery Party 4]]>><</link>>
+<br>
+
+:: Avery Party Drink Refuse
+<<effects>>
+
+You refuse the drink. Avery takes two when offered the tray, and turns to you.
+<br><br>
+
+"It's impolite to refuse to drink at a function." <<He>> whispers, offering one of the glasses. "At least take one to hold."
+<br><br>
+
+<<link [[Take|Avery Party Drink Take]]>><<npcincr Avery love 1>><</link>><<glove>>
+<br>
+<<link [[Refuse|Avery Party Drink Refuse 2]]>><<npcincr Avery love -1>><</link>><<llove>>
+<br>
+
+:: Avery Party Drink Take
+<<effects>>
+
+You take the offered glass. Avery eases up. "Good."
+<br><br>
+
+<<link [[Next|Avery Party 4]]>><</link>>
+<br>
+
+:: Avery Party Drink Refuse 2
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"I-I'm sorry," you say. "I don't want to."
+<<elseif $speech_attitude is "bratty">>
+	"I said no," you say. "That's the end of it."
+<<else>>
+	"I'm sorry," you say. "I just don't want to."
+<</if>>
+<br><br>
+
+"Suit yourself," Avery says, anger tinging <<his>> voice. "Try not to show me up."
+<br><br>
+
+<<link [[Next|Avery Party 4]]>><</link>>
+<br><br>
+
+:: Avery Party 4
+<<effects>>
+
+<<rng 2 2>>
+<<if $rng is 1>>
+	You hear a clink of metal on glass. The <<person2>><<person>> stands at the end of the room, beside a set of open doors. Everyone turns to listen.
+	<br><br>
+
+	"Thank you for joining me this evening," the <<person>> says, smiling over the audience. "If you'd like to follow me outside, I have something to show you."
+	<br><br>
+
+	The excited guests shuffle through the open doors, you and Avery with them. A tall pavilion has been set up beside a fountain, with one side open to the garden, facing a set of stands. You and Avery take a seat.
+	<br><br>
+
+<<elseif $rng is 2>>
+	The band playing in the corner conclude their tune. They wait for the applause to die down before starting the next. This one is more upbeat. Avery holds out <<person1>><<his>> hand. "Can I have this dance?"
+	<br><br>
+
+	<<link [[Take Avery's hand|Avery Party Dance]]>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+	<br>
+	<<link [[Refuse|Avery Party Dance Refuse]]>><<npcincr Avery love -1>><<set $endear -= 50>><</link>><<garage>><<llove>><<lendear>>
+	<br>
+
+<<else>>
+	"Welcome everyone," <<he>> says. "I see some new faces among the old tonight."
+
+<</if>>
+
+:: Avery Party Dance
+<<effects>>
+
+You take <<his>> hand, and <<he>> pulls you into a dance. Other couples are doing likewise, up and down the hall. <<takeHandholdingVirginity "Avery" `($dateCount.Avery gte 3 ?'romantic':'')`>>
+<br><br>
+
+<<link [[Follow Avery's lead|Avery Party Dance Follow]]>><<sub 1>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+<br>
+<<link [[Take the lead|Avery Party Dance Lead]]>><<def 1>><</link>><<dancedifficulty 1 600>>
+<br>
+
+:: Avery Party Dance Refuse
+<<effects>>
+
+You refuse to take Avery's hand. <<He>> glances around the room. Other couples are beginning to dance.
+<br><br>
+
+Avery steps closer, and grasps your arm. "Don't show me up," <<he>> whispers. "Don't you dare."
+<br><br>
+
+<<link [[Go along with it|Avery Party Dance Follow]]>><<sub 1>><<npcincr Avery love 1>><</link>><<glove>>
+<br>
+<<link [[Shove Avery|Avery Party Dance Shove]]>><<npcincr Avery rage 3>><<npcincr Avery love -1>><<set $endear -= 5>><</link>><<ggarage>><<llove>><<lendear>>
+<br>
+
+:: Avery Party Dance Follow
+<<effects>>
+
+You follow Avery's lead. <<Hes>> a good dancer, and you soon attract a small audience. You're out of breath when the music concludes. Your audience applauds. Avery holds you close as <<he>> bows, <<his>> hand resting on your thigh. <<danceskilluse>>
+<br><br>
+
+You and Avery continue to dance until the party winds down. Avery bids <<his>> acquaintances farewell, and together you leave the mansion.
+<br><br>
+
+<<link [[Next|Avery Party End]]>><</link>>
+
+:: Avery Party Dance Lead
+<<effects>>
+
+Avery tries to pull you in one direction, but you pull <<him>> in another.
+
+<<if $danceSuccess>>
+	<<He>> resists for a moment, <span class="green">but then goes along with it.</span>
+
+	<<if currentSkillValue('danceskill') gte 600>>
+		You're good at this, after all.
+	<<elseif currentSkillValue('danceskill') gte 400>>
+		You're a confident dancer, but you're careful not to show <<him>> up.
+	<<elseif currentSkillValue('danceskill') gte 100>>
+		It's not your first dance, but you worry you'll show <<him>> up. However, you manage to follow the music without problem.
+	<<else>>
+		You worry you'll show <<him>> up, until you notice the other dancers are novices themselves.
+	<</if>>
+
+	Avery dances well. You've soon attracted quite an audience.
+	<<danceskilluse>><<gglove>><<ggendear>><<npcincr Avery love 3>><<set $endear += 20>>
+	<br><br>
+
+	You continue dancing. The other couples stop, more interested in watching you and Avery. All except one other couple, who have attracted an audience of their own.
+	<br><br>
+
+	<<link [[Next|Avery Party Dance Competition]]>><</link>>
+	<br>
+
+<<else>>
+	<span class="red">Your feet get tangled,</span> and you're both left sprawled on the floor. Several people laugh. Avery tries to laugh it off <<himself>>, but you're sure <<hes>> angry.
+	<<danceskilluse>><<garage>><<llove>><<lendear>><<npcincr Avery rage 5>><<npcincr Avery love -1>><<set $endear -= 5>><<gstress>><<stress 6>><<gpain>><<pain 6>>
+	<br><br>
+
+	You sit out the rest of the dance, and watch the other couples. Avery doesn't say much, even when the party wraps up and several guests approach to bid <<him>> goodbye. It doesn't help that a few make jabs at the mishap on the dance floor.
+	<br><br>
+
+	<<link [[Next|Avery Party End]]>><</link>>
+	<br>
+
+<</if>>
+
+:: Avery Party Dance Competition
+<<effects>>
+<<generate3>><<person3>>
+"Such a fine pair of couples. I think it's time for an impromptu dance competition," the <<person2>><<person>> announces. "One couple dances. Then the other. Everyone gets a vote on the winner. How about it?"
+<br><br>
+
+The guests like the idea. So does Avery, and the other couple. Particularly one of them, a <<person3>><<person>>, who gives you a sly smile.
+<br><br>
+
+<<link [[Dance|Avery Party Dance Accept]]>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+<br>
+<<link [[Refuse|Avery Party Dance Competition Refuse]]>><<set $endear -= 5>><</link>><<lendear>>
+<br>
+
+:: Avery Party Dance Accept
+<<effects>>
+
+The other couple are up first. The musicians begin a new piece, faster still than anything they've played yet. The couple manage to keep up.
+
+<<if currentSkillValue('danceskill') gte 800>>
+	They're good. Really good. But you think you're better.
+<<elseif currentSkillValue('danceskill') gte 400>>
+	They're good. Really good. Winning would be a challenge.
+<<else>>
+	They're good. Really good. You don't like your chances.
+<</if>>
+<br><br>
+
+<<person3>><<if $pronoun is "m">>
+	The <<person>> looks smart in <<his>> suit, but you notice they avoid any moves that would put any strain on it. Even when the dance calls for it.
+<<else>>
+	The <<persons>> skirt flares as <<he>> moves, but you notice they avoid any moves that might flare it too high. Even when the dance calls for it.
+<</if>>
+<br><br>
+
+<<link [[Compete fairly|Avery Party Dance Fair]]>><</link>><<dancedifficulty 1 1000>>
+<br>
+<<if $promiscuity gte 15>>
+	<<link [[Cheat|Avery Party Dance Cheat]]>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<promiscuous2>><<glove>><<gendear>>
+	<br>
+<</if>>
+
+:: Avery Party Dance Fair
+<<effects>>
+
+The couple finish to uproarious applause. It's your turn. You and Avery take each other's arms, and begin.
+<br><br>
+
+<<if $danceSuccess>>
+
+	<span class="green">You dance well,</span> elegant and sophisticated. Avery is happy to follow your lead. You catch a glimpse of the <<person3>><<person>> frowning as <<he>> watches. <<if $speech_attitude is "bratty">>You stick out your tongue.<</if>>
+	<<danceskilluse>>
+	<br><br>
+
+	<<if $rng gte 51>>
+		You twirl away from Avery, close to the audience. When you try to reunite however, you meet resistance. The <<person3>><<person>> reaches from the crowd, <span class="pink">and clutches your $worn.lower.name.</span> <<He>> tugs.
+		<<set $worn.lower.integrity -= 50>>
+		<br><br>
+		<<if $worn.lower.integrity lte 0>>
+			<<integritycheck>><<exposure>>
+			With a sickening tearing sound, your clothes rip free from your body, remaining in the <<persons>> grasp.
+				<<if $worn.under_lower.type.includes("naked")>>
+					<<if !playerChastity("hidden")>>
+						<<set $genderknown.pushUnique("Avery")>>
+					<</if>>
+					You're left naked from the waist down, in the middle of the room, your <<genitals>> and <<bottom>> the centre of attention. <<covered>>
+					<br><br>
+					<<fameexhibitionism 30>>
+					<<if $exhibitionism gte 75>>
+						<<link [[Keep dancing|Avery Party Dance Naked]]>><</link>><<exhibitionist5>>
+						<br>
+					<</if>>
+					<<link [[Run|Avery Party Dance Run]]>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>>
+				<<else>>
+					You're left with just your $worn.under_lower.name covering you from the waist down, in the middle of the room, the centre of attention. <<covered>>
+					<br><br>
+					<<fameexhibitionism 10>>
+					<<if $exhibitionism gte 35>>
+						<<link [[Keep dancing|Avery Party Dance Undies]]>><</link>><<exhibitionist3>>
+						<br>
+					<</if>>
+					<<link [[Run|Avery Party Dance Run]]>><<trauma 6>><<stress 6>><</link>><<gtrauma>><<gstress>>
+					<br>
+
+				<</if>>
+		<<else>>
+			You tear your clothes free from <<his>> grip. They're worse for wear, but should hold up. You return and finish the dance.
+			<br><br>
+
+			The music comes to a stop, and the guests applaud. You and Avery are the clear winners. You bow.
+			<<gglove>><<ggendear>><<npcincr Avery love 3>><<set $endear += 20>><<famesocial 10>>
+			<br><br>
+			<<earnFeat "Ballroom Show-off">>
+			You and Avery are surrounded by admirers until the party winds down. Together you leave the mansion.
+			<br><br>
+
+			<<link [[Next|Avery Party End]]>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		The music comes to a stop, and the guests applaud. You and Avery are the clear winners. You bow.
+		<<gglove>><<ggendear>><<npcincr Avery love 3>><<set $endear += 20>><<famesocial 10>>
+		<br><br>
+		<<earnFeat "Ballroom Show-off">>
+		You and Avery are surrounded by admirers until the party winds down. Together you leave the mansion.
+		<br><br>
+
+		<<link [[Next|Avery Party End]]>><</link>>
+		<br>
+	<</if>>
+
+<<else>>
+	<span class="red">Unfortunately,</span> Avery isn't happy to take your lead with so many watching, and you keep stepping on each other's feet. You catch a glimpse of the <<person3>><<person>>, a smug smile on <<his>> face.
+	<<danceskilluse>><<lendear>><<set $endear -= 10>>
+	<br><br>
+	By the time the music stops, it's clear you've lost. The audience applaud anyway, though it's muted compared to what your competition received.
+	<br><br>
+
+	Avery bids <<his>> acquaintances farewell as the party winds down, and together you leave the mansion.
+	<br><br>
+
+	<<link [[Next|Avery Party End]]>><</link>>
+
+<</if>>
+
+:: Avery Party Dance Run
+<<effects>>
+
+Heart racing and face reddening you flee the room, finding refuge in a pantry. Avery arrives soon after, carrying a towel.
+<br><br>
+
+"Believe me," <<he>> says as you reach for it. "I'm going to cause a fuss over this. It was uncalled for." Despite <<his>> words, <<he>> doesn't look upset. As your fingers brush the fabric, <<he>> pulls it away from you.
+<br><br>
+
+"Let's have a little peek first, <<pcpetname "Avery">>," <<he>> says. "Or you can walk home like that." You can't tell if <<hes>> joking.
+<br><br>
+
+<<if !$worn.under_lower.type.includes("naked")>>
+	<<if $exhibitionism gte 15>>
+		<<link [[Flaunt|Avery Party Dance Undies Flaunt]]>><<set $endear += 20>><</link>><<exhibitionist2>><<ggendear>>
+		<br>
+	<</if>>
+	<<link [[Show|Avery Party Dance Show]]>><<sub 1>><<trauma 6>><<stress 6>><<set $endear += 20>><</link>><<gtrauma>><<gstress>><<ggendear>>
+	<br>
+	<<link [[Refuse|Avery Party Dance Naked Refuse]]>><<def 1>><<set $endear -= 10>><<npcincr Avery rage 5>><</link>><<garage>><<llendear>>
+	<br>
+<<else>>
+	<<if $exhibitionism gte 55>>
+		<<link [[Flaunt|Avery Party Dance Naked Flaunt]]>><<set $endear += 30>><</link>><<exhibitionist4>><<gggendear>>
+		<br>
+	<</if>>
+	<<link [[Show|Avery Party Dance Show]]>><<sub 1>><<trauma 6>><<stress 6>><<set $endear += 30>><</link>><<gtrauma>><<gstress>><<gggendear>>
+	<br>
+	<<link [[Refuse|Avery Party Dance Naked Refuse]]>><<def 1>><<set $endear -= 5>><<npcincr Avery rage 5>><</link>><<garage>><<lendear>>
+	<br>
+<</if>>
+<br><br>
+
+:: Avery Party Dance Undies Flaunt
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Y-you want to see more of me?" you ask, acting coy.
+<<elseif $speech_attitude is "bratty">>
+	"I bet you're loving this," you say.
+<<else>>
+	"Of course you want to see more," you say. "Everyone does."
+<</if>>
+
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	You turn to face Avery, letting <<him>> get a clear view of your $worn.under_lower.name.
+<<else>>
+	You move your hand, letting <<him>> glimpse the outline of your <<genitals>> through your $worn.under_lower.name.
+<</if>>
+<<exhibitionism4>>
+
+Avery stares for a moment, then kneels in front of you. "Allow me." <<He>> wraps on towel around your waist. <<Hes>> in no hurry.
+<br><br>
+<<towelup>>
+
+<<link [[Next|Avery Party Dance Return]]>><</link>>
+<br>
+
+:: Avery Party Dance Naked Flaunt
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Y-you want to see more of me?" you ask, acting coy.
+<<elseif $speech_attitude is "bratty">>
+	"I bet you're loving this," you say.
+<<else>>
+	"Of course you want to see more," you say. "Everyone does."
+<</if>>
+
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	You turn to face Avery, letting <<him>> get a clear view of your <<genitals>>.
+<<else>>
+	You move your hand, letting <<him>> glimpse your <<genitals>> before covering again. You hold your hand apart from your body and try to look embarrassed, aware that you're not concealing anything.
+<</if>>
+<<exhibitionism4>>
+
+Avery stares for a moment, then kneels in front of you. "Allow me." <<He>> wraps the towel around your waist. <<Hes>> in no hurry.
+<br><br>
+<<towelup>>
+
+<<link [[Next|Avery Party Dance Return]]>><</link>>
+<br>
+
+:: Avery Party Dance Show
+<<effects>>
+
+You close your eyes first. Maybe it'll make things easier.
+
+<<if $leftarm is "bound" and $rightarm is "bound">>
+	You turn to face Avery, giving <<him>> a clear view of your <<undies>>. You resist the urge to run and hide.
+<<else>>
+	You move your hand behind your back, exposing your <<undies>> to Avery. You resist the urge to cover back up, or run and hide.
+<</if>>
+<br><br>
+
+Avery stares for a moment, then knees in front of you. "Allow me." <<He>> wraps the towel around your waist. <<Hes>> in no hurry.
+<br><br>
+<<towelup>>
+
+<<link [[Next|Avery Party Dance Return]]>><</link>>
+<br>
+
+:: Avery Party Dance Naked Refuse
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"P-please no," you say. "It's too embarrassing."
+<<elseif $speech_attitude is "bratty">>
+	"Fuck off," you say. "I don't need your help."
+<<else>>
+	"I can't," you say. "It's too embarrassing."
+<</if>>
+<br><br>
+
+<<if $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100)>><<set $averyragerevealed to 1>>
+	Avery stares at you a moment, <span class="red">then bunches the towel in <<his>> fist.</span> "I made a fair request," <<he>> says, <<his>> voice cracking with anger. "You can see yourself home." <<He>> leaves the pantry.
+	<br><br>
+
+	<<averyscore>>
+
+	You peek out after <<him>>. Maybe you should call for help.
+	<br><br>
+	<<endevent>>
+	<<link [[Call for help|Avery Party Dance Call]]>><</link>>
+	<br>
+	<<link [[Search for something to cover with|Avery Party Dance Search]]>><</link>>
+	<br>
+<<else>>
+	Avery stares at you a moment, then throws you the towel. "Fine," <<he>> says, a twinge of irritation in <<his>> voice. You cover yourself.
+	<<towelup>>
+	<br><br>
+
+	<<link [[Next|Avery Party Dance Return]]>><</link>>
+	<br>
+<</if>>
+
+:: Avery Party Dance Search
+<<effects>>
+<<generate1>><<person1>>
+You sneak from the pantry. <<covered>> You're searching a cupboard when a <<person>> dressed in servant's garb rounds a corner. Your heart skips a beat, and you dash back to the pantry.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"P-please help," you say. "I'm indecent from the waist down."
+<<elseif $speech_attitude is "bratty">>
+	"You got a towel or anything?" you ask.
+<<else>>
+	"Could you give me a towel or something please?" you ask.
+<</if>>
+<br><br>
+
+<<if $rng gte 51>>
+	<<Hes>> blushing. <<He>> leaves the way <<he>> came, and a moment later returns carrying a towel. <<He>> hands it to you, and leaves without a word.
+	<br><br>
+	<<towelup>>
+	<<endevent>>
+	<<link [[Next|Avery Party End Alone]]>><</link>>
+	<br>
+<<else>>
+	<<He>> smiles at you. "Sure thing," <<he>> says, walking closer and pulling a towel from <<his>> pocket. "I've got a towel right here." <<He>> darts forward as <<he>> reaches the pantry door, <span class="red">shoving you in.</span> <<He>> closes the door behind <<him>>.
+	<br><br>
+
+	"Fucking <<bitch>>," <<he>> snarls. "Wearing those nice clothes. You think you're better than us. Well, no one can hear you now. I'm gonna put you in your place."
+	<br><br>
+
+	<<link [[Next|Avery Party Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery Party Dance Call
+<<effects>>
+
+You call out from your hiding place. No one responds at first. You hear music playing through the walls, but it's faint, and you're not sure how well your voice carries here.
+<br><br>
+
+<<generate1>><<person1>>
+You're about to give up when a <<person>> dressed in servant's garb rounds the corner. <<He>> stops when <<he>> sees you peeking from the pantry.
+<br><br>
+
+<<if $speech_attitude is "meek">>
+	"P-please help," you say. "I'm indecent from the waist down."
+<<elseif $speech_attitude is "bratty">>
+	"You got a towel or anything?" you ask.
+<<else>>
+	"Could you give me a towel or something please?" you ask.
+<</if>>
+<br><br>
+
+<<if $rng gte 51>>
+	<<He>> looks confused for a moment, then blushes as realisation dawns. <<He>> leaves the way <<he>> came, and a moment later returns carrying a towel. <<He>> hands it to you, and leaves without a word.
+	<br><br>
+	<<towelup>>
+	<<endevent>>
+	<<link [[Next|Avery Party End Alone]]>><</link>>
+	<br>
+<<else>>
+	<<He>> smiles at you. "Sure thing," <<he>> says, walking closer and pulling a towel from <<his>> pocket. "I've got a towel right here." <<He>> darts forward as <<he>> reaches the pantry door, <span class="red">shoving you in.</span> <<He>> closes the door behind <<him>>.
+	<br><br>
+
+	"Fucking <<bitch>>," <<he>> snarls. "Wearing those nice clothes. You think you're better than us. Well, no one can hear you now. I'm gonna put you in your place."
+	<br><br>
+
+	<<link [[Next|Avery Party Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery Party Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+	<<set $enemyanger += 100>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Avery Party Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery Party Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Avery Party Rape Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	The <<person1>><<person>> looks through the pantry door before leaving.
+	<br><br>
+	<<tearful>> you wear the towel <<he>> discarded.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	<<link [[Next|Avery Party End Alone]]>><</link>>
+
+<<else>>
+	<<He>> falls backwards, crashing into a shelf and dropping to the floor in a cloud of flour.
+	<br><br>
+	<<tearful>> you run from the room. You tie the towel <<he>> dropped around your waist.
+	<br><br>
+	<<clothesontowel>>
+	<<endcombat>>
+	<<link [[Next|Avery Party End Alone]]>><</link>>
+
+<</if>>
+
+:: Avery Party Dance Return
+<<effects>>
+
+You and Avery return to the main hall. No one mentions the incident, but more than a few guests leer in your direction.
+<br><br>
+The party winds down, and you and Avery leave the mansion.
+<br><br>
+
+<<link [[Next|Avery Party End]]>><</link>>
+<br>
+
+:: Avery Party Dance Undies
+<<effects>>
+<<famesocial 10>>
+<<person1>>
+You ignore your predicament, the gasps and leering eyes all around, and continue to dance with just your $worn.under_lower.name to cover you. Avery manages to keep steady despite your state of dress.
+<<exhibitionism3>>
+<<earnFeat "Ballroom Show-off">>
+The music stops, and you and Avery bow. The applause shakes the building. There's no question about who won. A servant dashes up and covers you with a towel.
+<<towelup>>
+<br><br>
+
+The two of you spend the rest of the party surrounded by a group of admirers. Everyone wants to make your acquaintance. Many cast leering eyes in your direction when they think you're not looking.
+<br><br>
+
+The party winds down, and Avery bats away the last of the schmoozers. Together you leave the mansion.
+<br><br>
+
+<<link [[Next|Avery Party End]]>><</link>>
+<br>
+
+:: Avery Party Dance Naked
+<<effects>>
+<<famesocial 10>>
+Your heart thunders in your chest and your whole body tingles, yet you ignore your predicament. You ignore the gasps and leering eyes all around, and continue to dance with your <<genitals>> exposed for everyone to see. Avery manages to keep steady despite your state of dress.
+<<exhibitionism5>>
+<<earnFeat "Ballroom Show-off">>
+The music stops, and you and Avery bow. The applause shakes the building. There's no question about who won. A servant dashes up and covers you with a towel.
+<<towelup>>
+<br><br>
+
+The two of you spend the rest of the party surrounded by a group of admirers. Everyone wants to make your acquaintance. Many cast leering eyes in your direction when they think you're not looking.
+<br><br>
+
+The party winds down, and Avery bats away the last of the schmoozers. Together you leave the mansion.
+<br><br>
+
+<<link [[Next|Avery Party End]]>><</link>>
+<br>
+
+:: Avery Party Dance Cheat
+<<effects>>
+<<famesocial 10>>
+As the <<person3>><<person>> twirls in front of you, you reach out, and give <<his>> <<if $pronoun is "f">>skirt<<else>>trousers<</if>> a firm tug. It comes loose, and rips free from <<his>> body as <<he>> spins away from you, leaving it in your grasp.
+<br><br>
+
+<span class="lewd"><<Hes>> not wearing anything underneath.</span> It takes a moment for <<him>> to realise <<hes>> stood naked from the waist down, the centre of attention in a crowded room, <<his>> <<if $NPCList[2].penis isnot "none" and !npcHasStrapon(2)>>penis<<else>>pussy<</if>> and ass on display for everyone.
+<br><br>
+
+Some of the audience avert their eyes, but others gape openly. <<He>> shrieks and crouches to cover <<himself>> when <<he>> notices, <<his>> face reddening before your eyes. <<His>> partner holds a napkin in front of <<his>> groin, and together they flee the room.
+<<promiscuity2>>
+
+<br><br>
+
+<<link [[Next|Avery Party Dance Cheat 2]]>><</link>>
+<br>
+
+:: Avery Party Dance Cheat 2
+<<effects>>
+<<person1>>
+"We could have taken them," Avery says as you return to the dance floor, now the winners by default. "But this is better."
+<br><br>
+<<earnFeat "Ballroom Show-off">>
+You and Avery continue to dance until the party winds down. Avery bids <<his>> acquaintances farewell, and together you leave the mansion.
+<br><br>
+
+<<link [[Next|Avery Party End]]>><</link>>
+
+:: Avery Party Dance Competition Refuse
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"I-I'm sorry," you say. "But I'd only let Avery down."
+<<elseif $speech_attitude is "bratty">>
+	"No," you say. "I'm not a performing monkey."
+<<else>>
+	"I'm just dancing for fun," you say. "A competition is too stressful."
+<</if>>
+<br><br>
+
+The guests sigh their disappointment. "That's a shame," the <<person2>><<person>> says. "You're quite good at this." Avery looks annoyed, but doesn't say anything. You and <<person1>><<he>> continue to dance until the party winds down. Avery bids <<his>> acquaintances farewell, and together you leave the mansion.
+<br><br>
+
+<<link [[Next|Avery Party End]]>><</link>>
+
+:: Avery Party Dance Shove
+<<effects>>
+
+<<famesocial 10>>
+You shove Avery away from you as you wrench your arm from <<his>> grasp. Everyone turns to watch. Avery tries to laugh it off, but <<he>> sounds bitter.
+<br><br>
+
+You sit out the rest of the dance, and watch the other couples. Avery doesn't say much, even when the party wraps up and several guests approach to bid <<him>> goodbye. It doesn't help that a few make jabs at the mishap on the dance floor.
+<br><br>
+
+<<link [[Next|Avery Party End]]>><</link>>
+
+:: Avery Party End Alone
+<<effects>>
+
+You leave the mansion alone. Another servant opens the gate for you and you exit onto Danube street.
+<br><br>
+<<storeon "averyCar" "check">>
+<<if _store_check is 1>>
+	<<storeon "averyCar" "delete">>
+<</if>>
+
+<<link [[Next|Danube Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery Party End
+<<effects>>
+<<pass 60>>
+<<if $endear gte 30>>
+	"I'm glad I brought you, <<pcpetname "Avery">>," Avery says on your way to the car, already retrieved by a servant. "You left a good impression." You climb in.
+<<elseif $endear gte 0>>
+	"I'll forgive you this time," Avery says on your way to the car, already retrieved by a servant. "But you need to pretend you aren't trash. Your behaviour reflects on me, <<pcpetname "Avery">>."
+<<else>>
+	Avery is silent on the way back to the car, already retrieved by a servant. You climb in. Avery grips the wheel as you drive away.
+<</if>>
+<br><br>
+
+<<link [[Next|Avery Date 4]]>><</link>>
+<br>
+
+:: Avery Date 2
+<<effects>><<set $outside to 0>>
+<<pass 20>><<famesocial 10>><<set $dateCount.Total++>><<set $dateCount.Avery++>>
+<<if $phase is 1>>
+	You let Avery take your hand. <<He>> smiles.<<takeHandholdingVirginity "Avery" "romantic">>
+	<br><br>
+<<else>>
+	You lightly clench your hand. <<He>> frowns at you, but doesn't say anything.
+	<br><br>
+<</if>>
+<<set $phase to 0>>
+<<generate2>><<person2>>A <<person>> greets Avery and you. "Aha," <<he>> says. "It's nice to see you again, <<person1>><<sir>>. And your friend." <<person2>><<He>> smiles at you. "Right this way."
+<br><br>
+
+<<He>> leads you to a small table on the second floor, beside the window. "I'll be back with the menu," <<he>> says.
+<br><br>
+
+When <<he>> returns <<he>> isn't carrying a menu, though, but a bottle of wine. <<He>> waits for your prompt before pouring. Avery smiles at you. "It's good. Trust me."
+<br><br>
+
+<<person1>>
+<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+	<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
+	<br>
+<<else>>
+	<<link [[Drink Avery's preferred wine|Avery Date Wine]]>><<alcohol 120>><<drugs 180>><<set $endear += 10>><<npcincr Avery love 1>><</link>><<glove>><<gendear>><<garousal>>
+<</if>>
+<br>
+<<link [[Let them pour, but don't drink it|Avery Date No Wine]]>><</link>>
+<br>
+<<link [[Ask for a different drink|Avery Date Drink]]>><<def 1>><<npcincr Avery rage 5>><<set $endear -= 5>><</link>><<garage>><<lendear>>
+<br>
+
+:: Avery Date Wine
+<<effects>>
+You take a sip as Avery's drink is poured. It makes you feel light-headed. And warm.
+<br><br>
+
+The <<person2>><<person>> returns once more, this time with the main menu. Just the one. <<He>> hands it to Avery. <<person1>>"I know what you'll like, <<pcpetname "Avery">>," Avery says. <<if $averyragerevealed is 1>>"Something that preserves your figure."<</if>>
+<br><br>
+
+<<link [[Let Avery order for you|Avery Date Order]]>><<set $phase to 0>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+<br>
+<<link [[Choose something cheap|Avery Date Cheap]]>><<set $phase to 1>><<stress -6>><<set $endear -= 5>><<npcincr Avery rage 5>><</link>><<garage>><<lendear>><<lstress>>
+<br>
+<<link [[Choose something expensive|Avery Date Expensive]]>><<set $phase to 2>><<set $endear -= 10>><<npcincr Avery rage 5>><<npcincr Avery love -1>><<stress -18>><</link>><<llove>><<garage>><<llendear>><<llstress>>
+<br>
+
+:: Avery Date No Wine
+<<effects>>
+You sniff the drink, but put it back down. Avery takes a sip of <<his>> own. <<He>> looks at your glass, but if <<hes>> bothered by your hesitance <<he>> doesn't mention it.
+<br><br>
+
+The <<person2>><<person>> returns once more, this time with the main menu. Just the one. <<He>> hands it to Avery. <<person1>>"I know what you'll like, <<pcpetname "Avery">>," Avery says. <<if $averyragerevealed is 1>>"Something that preserves your figure."<</if>>
+<br><br>
+
+<<link [[Let Avery order for you|Avery Date Order]]>><<set $phase to 0>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+<br>
+<<link [[Choose something cheap|Avery Date Cheap]]>><<set $phase to 1>><<stress -6>><<set $endear -= 5>><<npcincr Avery rage 5>><</link>><<garage>><<lendear>><<lstress>>
+<br>
+<<link [[Choose something expensive|Avery Date Expensive]]>><<set $phase to 2>><<set $endear -= 10>><<npcincr Avery rage 5>><<npcincr Avery love -1>><<stress -18>><</link>><<llove>><<garage>><<llendear>><<llstress>>
+<br>
+
+:: Avery Date Drink
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"N-no," you say. "I'd like something else."
+<<elseif $speech_attitude is "bratty">>
+	"I didn't ask for that," you say. "Get me a drinks menu."
+<<else>>
+	"No thank you," you say. "I'd like something else to drink."
+<</if>>
+<br><br>
+
+The <<person2>><<person>> looks to Avery for confirmation. Avery frowns, but nods. <<He>> fetches a drinks menu and you choose a sweet soft drink.
+<br><br>
+<<person1>>
+
+The <<person2>><<person>> returns once more, this time with the main menu. Just the one. <<He>> hands it to Avery. <<person1>>"I know what you'll like, <<pcpetname "Avery">>," Avery says. <<if $averyragerevealed is 1>>"Something that preserves your figure."<</if>>
+<br><br>
+
+<<link [[Let Avery order for you|Avery Date Order]]>><<set $phase to 0>><<npcincr Avery love 1>><<set $endear += 10>><</link>><<glove>><<gendear>>
+<br>
+<<link [[Choose something cheap|Avery Date Cheap]]>><<set $phase to 1>><<stress -6>><<set $endear -= 5>><<npcincr Avery rage 5>><</link>><<garage>><<lendear>><<lstress>>
+<br>
+<<link [[Choose something expensive|Avery Date Expensive]]>><<set $phase to 2>><<set $endear -= 10>><<npcincr Avery rage 5>><<npcincr Avery love -1>><<stress -18>><</link>><<llove>><<garage>><<llendear>><<llstress>>
+<br>
+
+:: Avery Date Order
+<<effects>>
+
+Avery orders a salad for you, and a fish soup for <<himself>>.
+<br><br>
+
+<<He>> leans back and regards the restaurant.
+
+<<if $rng gte 51 and $NPCName[$NPCNameList.indexOf("Avery")].love gte 20 and $footdisable is "f">>
+	Something prods your groin. Then again. It rubs up and down. You glance under the table. Avery has removed <<his>> shoe and is molesting you with <<his>> foot. <<His>> face gives no clue of what <<hes>> up to.
+	<br><br>
+
+	<<link [[Enjoy it|Avery Date Enjoy]]>><<set $endear += 10>><</link>><<promiscuous1>><<gendear>>
+	<br>
+		<<if $promiscuity gte 15>>
+			<<link [[Return the favour|Avery Date Return]]>><<npcincr Avery love 1>><</link>><<promiscuous2>><<glove>>
+			<br>
+		<</if>>
+	<<link [[Kick away|Avery Date Kick]]>><<def 1>><<npcincr Avery love -1>><<set $endear -= 5>><<npcincr Avery rage 5>><</link>><<garage>><<llove>><<lendear>>
+	<br>
+<<else>>
+	<<He>> starts talking about all the paperwork <<he>> has to do for work. It's not very interesting.
+	<br><br>
+
+	<<link [[Change the subject|Avery Date Change]]>><<npcincr Avery love -1>><</link>><<llove>>
+	<br>
+	<<link [[Smile and nod|Avery Date Nod]]>><<npcincr Avery love 1>><<set $endear += 10>><<tiredness 1>><</link>><<gtiredness>><<glove>><<gendear>>
+	<br>
+	<<link [[Fidget|Avery Date Fidget]]>><<stress -6>><<set $endear -= 5>><<npcincr Avery rage 1>><</link>><<garage>><<lendear>><<lstress>>
+<</if>>
+
+:: Avery Date Cheap
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"B-but," you say. "I want to choose my own food. Please."
+<<elseif $speech_attitude is "bratty">>
+	"I can choose my own food," you say. "Thank you very much." You hold out your hand for the menu.
+<<else>>
+	"I want to choose my own food," you say.
+<</if>>
+<br><br>
+
+You order a sandwich. Avery seems irritated, but doesn't say anything. <<He>> orders a fish soup for <<himself>>.
+<br><br>
+
+<<He>> leans back and regards the restaurant.
+
+<<if $rng gte 51 and $NPCName[$NPCNameList.indexOf("Avery")].love gte 20 and $footdisable is "f">>
+	Something prods your groin. Then again. It rubs up and down. You glance under the table. Avery has removed <<his>> shoe and is molesting you with <<his>> foot. <<His>> face gives no clue of what <<hes>> up to.
+	<br><br>
+
+	<<link [[Enjoy it|Avery Date Enjoy]]>><<set $endear += 10>><</link>><<promiscuous1>><<gendear>>
+	<br>
+		<<if $promiscuity gte 15>>
+			<<link [[Return the favour|Avery Date Return]]>><<npcincr Avery love 1>><</link>><<promiscuous2>><<glove>>
+			<br>
+		<</if>>
+	<<link [[Kick away|Avery Date Kick]]>><<def 1>><<npcincr Avery love -1>><<set $endear -= 5>><<npcincr Avery rage 5>><</link>><<garage>><<llove>><<lendear>>
+	<br>
+<<else>>
+	<<He>> starts talking about all the paperwork <<he>> has to do for work. It's not very interesting.
+	<br><br>
+
+	<<link [[Change the subject|Avery Date Change]]>><<npcincr Avery love -1>><</link>><<llove>>
+	<br>
+	<<link [[Smile and nod|Avery Date Nod]]>><<npcincr Avery love 1>><<set $endear += 10>><<tiredness 1>><</link>><<gtiredness>><<glove>><<gendear>>
+	<br>
+	<<link [[Fidget|Avery Date Fidget]]>><<stress -6>><<set $endear -= 5>><<npcincr Avery rage 1>><</link>><<garage>><<lendear>><<lstress>>
+<</if>>
+
+:: Avery Date Expensive
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"B-but," you say. "I want to choose my own food. Please."
+<<elseif $speech_attitude is "bratty">>
+	"I can choose my own food," you say. "Thank you very much." You hold out your hand for the menu.
+<<else>>
+	"I want to choose my own food," you say.
+<</if>>
+<br><br>
+
+You order the most expensive thing on the menu. Which turns out to be a fish soup. Avery bristles, but orders <<himself>> the same.
+<br><br>
+
+<<He>> leans back and regards the restaurant.
+
+<<if $rng gte 51 and $NPCName[$NPCNameList.indexOf("Avery")].love gte 20 and $footdisable is "f">>
+
+Something prods your groin. Then again. It rubs up and down. You glance under the table. Avery has removed <<his>> shoe and is molesting you with <<his>> foot. <<His>> face gives no clue of what <<hes>> up to.
+<br><br>
+
+<<link [[Enjoy it|Avery Date Enjoy]]>><<set $endear += 10>><</link>><<promiscuous1>><<garousal>><<gendear>>
+<br>
+	<<if $promiscuity gte 15>>
+	<<link [[Return the favour|Avery Date Return]]>><<npcincr Avery love 1>><</link>><<promiscuous2>><<garousal>><<glove>>
+	<br>
+	<</if>>
+<<link [[Kick away|Avery Date Kick]]>><<def 1>><<npcincr Avery love -1>><<set $endear -= 5>><<npcincr Avery rage 5>><</link>><<garage>><<llove>><<lendear>>
+<br>
+
+<<else>>
+
+<<He>> starts talking about all the paperwork <<he>> has to do for work. It's not very interesting.
+<br><br>
+
+<<link [[Change the subject|Avery Date Change]]>><<npcincr Avery love -1>><</link>><<llove>>
+<br>
+<<link [[Smile and nod|Avery Date Nod]]>><<npcincr Avery love 1>><<set $endear += 10>><<tiredness 1>><</link>><<gtiredness>><<glove>><<gendear>>
+<br>
+<<link [[Fidget|Avery Date Fidget]]>><<stress -6>><<set $endear -= 5>><<npcincr Avery rage 1>><</link>><<garage>><<lendear>><<lstress>>
+
+<</if>>
+
+:: Avery Date Enjoy
+<<effects>>
+<<pass 20>>
+You lean back and let Avery continue. <<He>> looks out the window with a blank expression as your arousal builds.
+<<promiscuity1>>
+
+<<arousal 3000>>
+<<if $arousal gte $arousalmax>>
+	<<orgasm>>
+
+	Your moans turn a few heads. Avery withdraws <<his>> foot and winks just as the food arrives.
+	<<gggendear>><<set $endear += 30>>
+	<br><br>
+<<else>>
+	<<He>> withdraws <<his>> foot and leans forward just as the food arrives.
+	<br><br>
+<</if>>
+
+<<link [[Next|Avery Date 3]]>><</link>>
+<br>
+
+:: Avery Date Return
+<<effects>>
+<<pass 20>>
+You raise your leg above <<his>> and follow <<his>> example. <<He>> frowns in surprise, but then smiles.
+<<promiscuity2>>
+
+<<arousal 3000 "genitals">>
+<<if $arousal gte $arousalmax>>
+	<<orgasm>>
+
+	Your moans turn a few heads. Avery withdraws <<his>> foot and winks just as the food arrives.
+	<<gggendear>><<set $endear += 30>>
+	<br><br>
+<<else>>
+	<<He>> withdraws <<his>> foot and leans forward just as the food arrives.
+	<br><br>
+<</if>>
+
+<<link [[Next|Avery Date 3]]>><</link>>
+<br>
+
+:: Avery Date Kick
+<<effects>>
+<<pass 20>>
+You kick <<his>> leg away, freeing your <<genitals>> from <<his>> molestation. <<He>> frowns out the window.
+<br><br>
+
+The food soon arrives.
+<br><br>
+
+<<link [[Next|Avery Date 3]]>><</link>>
+<br>
+
+:: Avery Date Change
+<<effects>>
+<<pass 20>>
+
+You succeed in steering the topic away from something so dull, but have trouble finding anything else <<hes>> interested in. It seems <<he>> spends most of <<his>> waking life working.
+<br><br>
+
+The food soon arrives.
+<br><br>
+
+<<link [[Next|Avery Date 3]]>><</link>>
+<br>
+
+:: Avery Date Nod
+<<effects>>
+<<pass 20>>
+
+You tune out the noise, but smile and nod. Avery seems satisfied.
+<br><br>
+
+The food soon arrives.
+<br><br>
+
+<<link [[Next|Avery Date 3]]>><</link>>
+<br>
+
+:: Avery Date Fidget
+<<effects>>
+<<pass 20>>
+
+You play with your cutlery, your napkin, and whatever else your hands find on the table. "Don't fidget," Avery says. "You'll make us both look bad."
+<br><br>
+
+The food soon arrives.
+<br><br>
+
+<<link [[Next|Avery Date 3]]>><</link>>
+<br>
+
+:: Avery Date 3
+<<effects>>
+<<pass 20>>
+<<if $phase is 0>>
+	The salad is nice, but the smell of Avery's fish soup wafts over and makes you wish you had something heartier.
+<<elseif $phase is 1>>
+	The sandwich is nice, and bigger than you expected given the price. Avery seems to be enjoying <<his>> fish soup.
+<<elseif $phase is 2>>
+	The soup is delicious. Avery seems to enjoy <<his>> too.
+<</if>>
+
+<<He>> chats between spoonfuls, stopping now and then to wave at patrons <<he>> recognises. They're all well-dressed.
+<br><br>
+
+<<if $endear gte 30>>
+	"Thank you for the pleasant evening, <<pcpetname "Avery">>," <<he>> says after dropping <<his>> spoon into the empty bowl. <<He>> takes your arm and leads you from the restaurant. <<He>> opens the door of <<his>> car for you.
+<<elseif $endear gte 0>>
+	"You don't have to be so difficult," <<he>> says after dropping <<his>> spoon into the empty bowl. "Try not to embarrass me on the way out, <<pcpetname "Avery">>." You leave the restaurant together, and climb into <<his>> car.
+<<else>>
+	<<He>> drops <<his>> spoon into the empty bowl and stands without a word. <<He>> grasps your arm and pulls you from the restaurant. <<He>> shoves you into <<his>> car.
+<</if>>
+<br><br>
+
+<<link [[Next|Avery Date 4]]>><<endevent>><</link>>
+<br>
+
+:: Avery Date 4
+<<effects>>
+<<endevent>><<npc Avery>><<person1>>
+<<averyscore>>
+
+/* 北极星模组 */
+艾弗里开车送你回家。一回到孤儿院，<<he>>就打开鼓鼓的<<wallet>>拿出现金。<<He>>拿着<span class="gold">£<<print (($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1))>></span>。"你应该买点好东西，我请客。"
+/* 北极星 */
+<br><br>
+
+<<if $rng gte 51>>
+	You reach for the money, but <<he>> lifts it away from you. "First," <<he>> says. "I want to see more of you. Take off your clothes."
+	<br><br>
+
+	<<link [[Strip|Avery Date Strip]]>><</link>>
+	<br>
+	<<link [[Refuse|Avery Date Refuse]]>><</link>>
+	<br>
+<<else>>
+	You reach for the money, but <<he>> lifts it away from you. "First," <<he>> says. <<He>> strokes your cheek, then leans forward for a kiss.
+	<br><br>
+
+	<<link [[Kiss|Avery Date Sex]]>><<set $sexstart to 1>><</link>><<promiscuous1>>
+	<br>
+	<<link [[Refuse|Avery Date Refuse]]>><<npcincr Avery rage 5>><<npcincr Avery love -1>><</link>><<garage>><<llove>>
+	<br>
+<</if>>
+
+:: Avery Date 5
+
+<<effects>>
+<<endevent>><<npc Avery>><<person1>>
+<<averyscore>>
+<<He>> opens the car door beside <<him>>. "Hop in."
+<br><br>
+/* 北极星模组 */
+<<He>>打开<<his>>鼓鼓的<<wallet>>取出了一叠现金。<<He>>拿着<span class="gold">£<<print (($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1))>></span>。"这是买下你时间的报酬。"
+/* 北极星 */
+<br><br>
+You reach for the money, but <<he>> lifts it away from you. "First things first, <<pcpetname "Avery">>," <<he>> says. <<He>> pulls your body close, moving in for a kiss.
+<br><br>
+<<link [[Kiss|Avery Date Sex]]>><<set $sexstart to 1>><</link>>
+<br>
+<<link [[Refuse|Avery Date Refuse 2]]>><<npcincr Avery rage 5>><<npcincr Avery love -1>><</link>><<garage>><<llove>>
+<br>
+
+:: Avery Date Refuse
+
+<<effects>>
+You climb out the car and walk up the path to the orphanage. Avery watches a moment before driving away.
+<br><br>
+<<storeon "averyCar" "check">>
+<<if _store_check is 1>>
+	<<storeon "averyCar">>
+<</if>>
+<<clotheson>>
+<<endcombat>>
+<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery Date Refuse 2
+
+<<effects>>
+You push <<him>> away and try to leave the car. <<He>> pulls you back in and locks the door. "You don't show up nude to a date and not put out, you little tease. <span class="pink">This is happening.</span> Let's go somewhere a little more private where we can have some fun."
+<br><br>
+Holding you down to the seat by the hair, <<he>> drives to a secluded spot near the school. <span class="pink"><<He>> leaps on top of you.</span>
+<br><br>
+<<link [[Next|Avery Walk Rape]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Avery Date Strip
+
+<<effects>>
+/* 北极星模组 */
+<<set $money += ((($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1)) * 100)>>
+/* 北极星 */
+<<strip>>
+<<if !playerChastity("hidden")>>
+	<<set $genderknown.pushUnique("Avery")>>
+<</if>>
+
+It's awkward in the confines of the car, but you remove your clothing until you're sat naked beside Avery. <<covered>> <<He>> stares at you for a long moment, then hands you the cash. "I'll be in touch, <<pcpetname "Avery">>," <<he>> says.
+<br><br>
+<<He>> watches you dress and exit the car. <<He>> lingers a moment longer before driving away.
+<br><br>
+
+<<endevent>>
+<<link [[Next|Domus Street]]>>
+	<<clotheson>>
+	<<set $eventskip to 1>>
+	<<storeon "averyCar" "check">>
+	<<if _store_check is 1>>
+		<<storeon "averyCar">>
+	<</if>>
+<</link>>
+<br>
+
+:: Avery Date Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 100>>
+	You kiss back. <<His>> hands explore your body. <<takeKissVirginity "Avery" `($dateCount.Avery gte 3?"loveInterest":"romantic")`>>
+	<<promiscuity1>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Avery Date Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery Date Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Avery Date Sex Finish
+<<set $outside to 0>><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+    /* 北极星模组 */
+	<<ejaculation>><<set $money += ((($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1)) * 100)>>
+    /* 北极星 */
+
+	"Good <<girl>>," <<he>> pants. <<He>> hands you the cash.
+	<<larage>><<npcincr Avery rage -5>><<glove>><<npcincr Avery love 3>>
+	<br><br>
+
+	<<tearful>> you climb from the car. <<He>> watches you a moment before driving away.
+	<br><br>
+	<<storeon "averyCar" "check">>
+	<<if _store_check is 1>>
+		<<storeon "averyCar">>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	<<He>> falls back against the steering wheel, giving you the chance you need.
+	/* 北极星模组 */
+	<<ggarage>><<npcincr Avery rage 10>><<set $money += ((($NPCName[$NPCNameList.indexOf("Avery")].love * 10 + $endear * 10 + 10) * ($options.bjx_averymoney ? 2 : 1)) * 100)>>
+	/* 北极星 */
+	<br><br>
+
+	<<tearful>> you snatch the cash and run for the orphanage. <<He>> shouts something after you, but <<he>> doesn't follow. You hear <<him>> drive away.
+	<<ggarage>><<npcincr Avery rage 10>>
+	<br><br>
+	<<storeon "averyCar" "check">>
+	<<if _store_check is 1>>
+		<<storeon "averyCar">>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	"As you wish," <<he>> says, putting the cash back in <<his>> <<wallet>>.
+	<br><br>
+
+	<<tearful>> you climb from the car. <<He>> watches you a moment before driving away.
+	<br><br>
+	<<storeon "averyCar" "check">>
+	<<if _store_check is 1>>
+		<<storeon "averyCar">>
+	<</if>>
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery Walk School
+<<set $outside to 0>><<effects>>
+
+"It's okay," you whisper to Robin. "I recognise them. It'll be safer than the streets."
+<br><br>
+
+Robin nods, but seems unconvinced. You both climb into the back of Avery's car.
+<br><br>
+
+The journey is short, though you're held up by traffic. Avery chats and glances at you through the rear-view mirror. "It makes sense I drop you off," <<he>> says at one point. "It's on my normal route. I should be able to pick you up too, every Monday, as well as any other day I get off early."
+<<glove>><<npcincr Avery love 1>>
+<br><br>
+
+<<He>> ignores Robin, <<endevent>><<npc Robin>><<person1>>who stares at <<his>> hands the whole time.
+<br><br>
+
+Robin seems relieved when it's over.
+<br><br>
+
+<<link [[Next|School Front Courtyard]]>><<endevent>><</link>>
+<br>
+
+:: Avery Walk Refuse
+<<set $outside to 0>><<effects>>
+
+<<if $speech_attitude is "meek">>
+	"Thank you," you say. "But we can walk the rest of the way."
+<<elseif $speech_attitude is "bratty">>
+	"No," you say. "We're almost there anyway."
+<<else>>
+	"It's okay," you say. "We can walk the rest of the way."
+<</if>>
+<br><br>
+
+<<if $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100)>><<set $averyragerevealed to 1>>
+
+	Avery flashes Robin a dark look. <<He>> stares forward and taps <<his>> steering wheel then, having made up <<his>> mind, opens the door and steps out. "I gave you a polite offer," <<he>> snarls as <<he>> steps toward you. "Get in the fucking car." <<He>> grasps your arm and tries to pull you with <<him>>. <<He>> ignores Robin, who stands beside you clutching <<endevent>><<npc Robin>><<person1>><<his>> school bag.
+	<br><br>
+
+	<<endevent>>
+	<<npc Avery>><<person1>>
+
+	<<if $NPCName[$NPCNameList.indexOf("Robin")].dom gte 91>>
+		<<set $robinaverybeat to 1>>
+
+		Avery looks over your shoulder. <<His>> rage falters a moment, and a school bag hurtles into <<his>> face. With a cry, <<he>> releases your arm and falls back against <<his>> car. Robin steps forward, retrieves <<endevent>><<npc Robin>><<person1>><<his>> bag, and brings it down on Avery's head. The weighty books inside make a solid impact. "Leave <<phim>> alone!" Robin shouts. "<<pShes>> mine!"
+		<br><br>
+
+		<<endevent>><<npc Avery>><<person1>>
+
+		Avery holds <<his>> arms up for protection and scrambles into <<his>> vehicle. <<He>> glares at Robin. "You'll regret that. I promise." <<His>> car screeches away.
+		<br><br>
+
+		<<endevent>><<npc Robin>><<person1>>
+
+		Robin wraps <<his>> arms around you and squeezes. <<Hes>> trembling. <<He>> doesn't stop squeezing until Avery is out of sight.
+		<br><br>
+
+		<<link [[Thank Robin|Avery Walk Thank]]>><<npcincr Robin love 3>><</link>><<gglove>>
+		<br>
+		<<link [[Tease Robin|Avery Walk Tease]]>><<npcincr Robin love 1>><<npcincr Robin lust 1>><</link>><<glove>><<glust>>
+		<br>
+	<<else>>
+		<<link [[Comply|Avery Walk Comply]]>><<npcincr Avery rage -5>><</link>><<larage>>
+		<br>
+		<<link [[Refuse|Avery Walk Refuse 2]]>><<npcincr Avery rage 5>><</link>><<garage>>
+		<br>
+	<</if>>
+<<else>>
+	Avery flashes Robin a dark look, but smiles. It doesn't reach <<his>> eyes. "Suit yourself." <<He>> drives away.
+	<<llove>><<npcincr Avery love -1>>
+	<br><br>
+
+	"Sorry," Robin sounds relieved. "I hope you didn't refuse for my sake. <<He>> does scare me a little."
+	<<glove>><<npcincr Robin love 1>>
+	<br><br>
+
+	Robin's mood brightens as you walk the rest of the way to school.
+	<br><br>
+
+	<<link [[Next|School Front Courtyard]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Avery Walk Comply
+
+<<set $outside to 0>><<effects>>
+
+<<endevent>><<npc Robin>><<person1>>
+You bow your head and climb into the back of Avery's car. Robin watches you from the pavement, the worry on <<his>> face clear even at a distance.<<endevent>><<npc Avery>><<person1>>
+<br><br>
+
+Avery drives past the school, and into a nearby alleyway. <<He>> unbuckles <<his>> seatbelt and climbs into the back with you. <<He>> pushes you down. "Don't be difficult, <<pcpetname "Avery">>," <<he>> says. "Or I'll be late for work."
+<br><br>
+
+<<link [[Next|Avery Walk Rape]]>><<set $molestationstart to 1>><</link>>
+<br>
+
+:: Avery Walk Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Avery Walk Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery Walk Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Avery Walk Rape Finish
+
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	<<He>> gasps in satisfaction. Without a word, <<he>> unlocks the doors and shoves you out.
+	<<larage>><<npcincr Avery rage -5>>
+	<br><br>
+
+	<<tearful>> you gather yourself. Avery drives away.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Oxford Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	You shove <<him>> away from you, giving you the chance you need. <<tearful>> you unlock the doors and escape the car. You run down the alley and into the open street.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Oxford Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery Walk Refuse 2
+<<set $outside to 0>><<effects>>
+
+You try to pull away from Avery's grip, but <<he>> drags you closer to <<his>> car. You feel a tug on your other arm. It's Robin.<<endevent>><<npc Robin>><<person1>> "L-Let <<phim>> go," <<he>> says. "St-stop!"
+<br><br>
+
+<<endevent>>
+<<npc Avery>><<person1>>
+
+Together, you and Robin are able to keep Avery from pulling you any further. The struggle attracts attention from passers-by. Avery notices, and lets go. "I swear," <<he>> snarls. "You'll learn to respect your betters." <<He>> throws open <<his>> car door, climbs in, and drives away.
+<<llove>><<garage>><<gstress>><<stress 6>><<gtrauma>><<trauma 6>><<npcincr Avery love -1>><<npcincr Avery rage 5>>
+<br><br>
+
+<<endevent>>
+<<npc Robin>><<person1>>
+
+You almost fall when Avery releases your arm, but Robin holds you upright. <<Hes>> trembling, but clings to you until Avery's car disappears around a bend, as if the wind could blow you away. "That was horrible," <<he>> says into your shoulder.
+<br><br>
+
+The rest of the journey is uneventful, but Robin insists <<he>> walk closer to the road.
+<<gdom>><<glove>><<npcincr Robin dom 1>><<npcincr Robin love 1>>
+<br><br>
+
+<<link [[Next|School Front Courtyard]]>><<endevent>><</link>>
+<br>
+
+:: Avery Walk Thank
+
+<<set $outside to 0>><<effects>>
+"Thank you," you say. "You saved me."
+<br><br>
+<<Hes>> on the verge of tears. "I was afraid you'd be hurt," <<he>> says. "I didn't know what to do."
+<br><br>
+<<link [[Hug|Avery Walk Hug]]>><</link>>
+<br>
+<<if $robinromance is 1>>
+	<<link [[Kiss|Avery Walk Kiss]]>><</link>>
+	<br>
+<</if>>
+
+:: Avery Walk Tease
+
+<<set $outside to 0>><<effects>>
+"What was that you said?" you say. "'<<pShes>> mine'?"
+<br><br>
+Robin is already flushed, but <<his>> face turns a deeper red. "I-I," <<he>> manages. "Sorry I was rude. I was afraid you'd be hurt."
+<br><br>
+<<link [[Hug|Avery Walk Hug]]>><</link>>
+<br>
+<<if $robinromance is 1>>
+	<<link [[Kiss|Avery Walk Kiss]]>><</link>>
+	<br>
+<</if>>
+
+:: Avery Walk Hug
+
+<<set $outside to 0>><<effects>>
+You squeeze <<him>> back, and hold <<him>> in your arms for a few moments. <<He>> buries <<his>> face in your shoulder.
+<br><br>
+The rest of the journey is uneventful. Robin stays close to you the whole way.
+<br><br>
+<<link [[Next|School Front Courtyard]]>><<endevent>><</link>>
+<br>
+
+:: Avery Walk Kiss
+
+<<set $outside to 0>><<effects>>
+You lean forward and kiss <<him>>. <<His>> eyes close, and <<he>> kisses back. <<His>> cheeks are wet when you pull away. Yours are too.<<takeKissVirginity "Robin" `($robinromance is 1?"loveInterest":"romantic")`>>
+<br><br>
+The rest of the journey is uneventful. Robin stays close to you the whole way.
+<br><br>
+<<link [[Next|School Front Courtyard]]>><<endevent>><</link>>
+<br>
+
+:: Avery School Pickup Accept
+
+<<set $outside to 0>><<effects>>
+You climb into Avery's car, and <<he>> drives you to the orphanage.
+<<if $averyCrimeTracker eq null>>
+	<<set _crimeEvent to true>>
+<<elseif $averyCrimeTracker gte 1000>>
+	<<set _crimeEvent to true>>
+<</if>>
+<<if crimeSumCurrent() gte 2000 and _crimeEvent is true and $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100) and $averyragerevealed is 1>>
+	You follow the road as expected, until you take a turn onto Barb Street.
+	<br><br>
+
+	Avery parks across from the police station. You feel uneasy. You've a criminal history, after all.
+	<br><br>
+
+	"What's wrong, <<pcpetname "Avery">>?" Avery says in a serious tone. "Nervous?" A couple of patrolling officers walk around the corner. They're coming this way. Will they recognise you?
+	<<if $averyCrimeTracker eq null>>
+		"I know what you've been up to."
+	<<else>>
+		"You're back on the wrong side of the law."
+	<</if>>
+	<<He>> continues. "Don't deny it." The officers stop a <<girl>> who looks like you. They're questioning <<phim>>.
+	"It's every citizen's duty to report any crimes they witness." <<He>> looks at you. "The last thing I want is to be witnessed with a criminal." <<He>> smiles.
+	<br><br>
+	<<set $averyCrimeTracker to 0>>
+
+	<<if $submissive gte 1500>>
+		<<link [[Plead|Avery School Pickup Plead]]>><<sub 1>><<npcincr Avery rage -5>><</link>><<larage>><<submissivetext>>
+		<br>
+	<</if>>
+	<<if $submissive lte 500>>
+		<<link [[Threaten|Avery School Pickup Threaten]]>><<def 1>><<npcincr Avery rage 5>><</link>><<garage>><<defianttext>>
+		<br>
+	<</if>>
+	<<link [[Try to escape|Avery School Pickup Escape]]>><<npcincr Avery rage 5>><</link>><<athleticsdifficulty 1 1200>><<garage>>
+	<br>
+	<<link [[Offer yourself|Avery School Pickup Seduction]]>><</link>><<promiscuous1>>
+	<br>
+<<else>>
+	It seems to be the same path the bus takes. Soon enough, the two of you make it to the orphanage.
+
+	Before you can take off your seat belt, you hear Avery clear <<his>> throat, and <<he>> rests a hand on your shoulder. "Don't I get a reward for bringing you home safe and sound, <<pcpetname "Avery">>?" <<He>> taps a finger to <<his>> lips.
+	<br><br>
+
+	<<link [[Kiss|Avery School Pickup Kiss]]>><<npcincr Avery love 1>><</link>><<glove>>
+	<br>
+	<<link [[Just leave|Avery School Pickup Leave]]>><</link>>
+	<br>
+<</if>>
+
+:: Avery School Pickup Refuse
+<<effects>>
+<<if $speech_attitude is "meek">>
+	"Thanks for the offer, but I have other things to do. Sorry,"
+<<elseif $speech_attitude is "bratty">>
+	"I'm busy,"
+<<else>>
+	"No need, I have other things to do,"
+<</if>>
+you say.
+<br><br>
+<<if crimeSumCurrent() gte 1000 and $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100)>><<set $averyragerevealed to 1>>
+	<<His>> eyes flash with anger, and <<his>> tone changes. "I said, get in the..." You notice a small circle of students has gathered around you. Among the whispers, a <<generatey2>><<person2>><<person>> calls out "Who is that creep anyway?" Avery comes to <<person1>><<his>> senses and relents. "Goodbye," <<he>> says in a dry and serious tone, before quickly making <<his>> way out.
+	<br><br>
+
+	The students begin to disperse, with a few concerned glances crossing your way.
+	<br><br>
+
+	<<link [[Next|Oxford Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	<<He>> frowns. "Are you sure?" <<He>> wears a painted smile. "Alright, have it your way." Avery drives away without saying anything else.
+	<br><br>
+
+	<<link [[Next|Oxford Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery School Pickup Kiss
+<<effects>>
+You lean in and plant a kiss on Avery's lips. <<He>> smiles, and you climb from the car. <<He>> watches you for a moment before driving away.<<takeKissVirginity "Avery" `($dateCount.Avery gte 3?"loveInterest":"romantic")`>>
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery School Pickup Leave
+<<effects>>
+You quickly open the door and step out from the car. Avery frowns, and you
+<<if $speech_attitude is "meek">>
+	give <<him>> an innocent smile.
+<<elseif $speech_attitude is "bratty">>
+	look away, doubling your pace.
+<<else>>
+	stick your tongue out at <<him>>.
+<</if>>
+<<He>> watches you for a moment before driving away.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery School Pickup Plead
+<<effects>><<pain 5>>
+You can barely contain the panic. "Please, no!" you say. "You wouldn't make me go through that, would you?"
+You lean over and hold onto <<him>>, looking into <<his>> eyes. "I had no choice. Please believe me. I'll be on my best behaviour from now on." <<His>> expression softens.
+<br><br>
+
+<<He>> places a hand on your head, and smiles again. "You have to understand," <<he>> says. "If someone like me was seen with a known criminal?"
+<br><br>
+
+You lean closer. "Please?"
+<br><br>
+
+<<He>> sighs. "As if I could bear to watch you get taken away. Come on, <<pcpetname "Avery">>, let's get you home." You smile and plant a kiss on <<his>> cheek, before sitting back in your seat.
+<br><br>
+
+Soon enough, the two of you make it to the orphanage.
+
+Before you can take off your seat belt, you hear Avery clear <<his>> throat, and <<he>> rests a hand on your shoulder. "Don't I get a reward for bringing you home safe and sound?" <<He>> taps a finger to <<his>> lips.
+<br><br>
+
+<<link [[Kiss|Avery School Pickup Kiss]]>><<npcincr Avery love 1>><<pain -5>><</link>><<glove>>
+<br>
+<<link [[Just leave|Avery School Pickup Leave]]>><<pain -5>><</link>>
+<br>
+
+:: Avery School Pickup Threaten
+<<effects>>
+You look at Avery and scoff. "You expect me to believe you'd give me up that easily?" you say."If you're not bluffing, then we have nothing else to discuss." You reach for the door, but <<he>> grabs your hand.
+<br><br>
+
+"You don't realise the stakes," <<he>> snarls. "If you step out of this car, I'll-"
+<br><br>
+
+"You'll what?" you interrupt. "Hand me to the police? I'll tell them every sordid detail about what we've done together. You're not committing social suicide. You're bluffing."
+<br><br>
+
+There's a long pause. Avery looks incensed, but then <<he>> laughs. "You're a smart little shit." <<He>> starts up the engine. The ride to the orphanage is dead silent.
+<br><br>
+
+Once there, you step out of the car without a word. <<He>> watches you for a moment before driving away.
+<br><br>
+
+<<endevent>>
+
+<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery School Pickup Escape
+<<effects>>
+
+<<if $athleticsSuccess>>
+	You unlock the car door, and break into a run. "Wait, where are you-" Avery calls after you. The police officers notice you running, and sprint after you. You hear <<his>> tires screech as Avery speeds away.
+	<br><br>
+
+	<span class="green">You manage to outrun the police and slip into an alleyway.</span> Avery is long gone, and after a few minutes, the coast seems clear.
+	<br><br>
+
+	<<endevent>>
+
+	<<link [[Next|Commercial alleyways]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	You unlock and open the car door, and spring from your seat. <span class="red">However, Avery grabs you by the arm and pulls you back.</span>
+	<br><br>
+
+	"Are you out of your mind?!" <<he>> shouts, thrusting you back into your chair. <<He>> starts the engine with the passenger door still open. "I wasn't going to have you arrested. I was trying to scare some sense into you!"
+	<br><br>
+
+	You close the door and put your seatbelt back on. The ride home passes in silence, until Avery parks across from the orphanage and laughs. "You really are something else, <<pcpetname "Avery">>. You can't always run from your misdeeds. You'll learn that the hard way." <<He>> points at the door.
+	<br><br>
+
+	<<if $NPCName[$NPCNameList.indexOf("Avery")].rage gte random(20, 100)>><<set $averyragerevealed to 1>>
+		As you step out of the car, <span class="red"><<he>> slams the wheel with a fist.</span> "I'll teach you that lesson myself if I have to." You decide not to wait around to find out what <<he>> means.
+		<br><br>
+	<</if>>
+	<<He>> watches you walk away for a moment before driving away.
+	<br><br>
+
+	<<endevent>>
+
+	<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery School Pickup Seduction
+<<effects>>
+<<endevent>><<npc Avery>><<person1>>
+<<set $seductiondifficulty to 2000>>
+<<seductioncheck>>
+<br><br>
+<<if $seductionskill lt 1000>>
+	<span class="gold">You feel more confident in your powers of seduction.</span>
+	<br><br>
+<</if>>
+<<seductionskilluse>>
+You lean into Avery, placing a hand on <<his>> lap.
+<<if $speech_attitude is "meek">>
+	"Please... I'll let you do whatever you want to me."
+<<elseif $speech_attitude is "bratty">>
+	"Blackmail is a weakness of mine. It gets me all hot and bothered."
+<<else>>
+	"I know what you want. I'll give it to you, if you forget about my behaviour."
+<</if>>
+<<promiscuity1>>
+
+<<if $seductionrating gte $seductionrequired>>
+	<<He>> looks surprised, as if <<he>> wasn't expecting this. <<He>> quickly sits up, and resumes <<his>> smug demeanor. "How can I say no to a request like that?"
+	<br><br>
+
+	<<link [[Next|Avery School Pickup Sex]]>><<set $sexstart to 1>><</link>>
+	<br>
+<<else>>
+	Avery is silent for a moment, but begins snickering under <<his>> breath. It soon breaks out into full blown laughter. After a few more moments, <<he>> speaks. "You're lucky I wasn't seriously considering turning you in, because that wouldn't have worked if I was." <<He>> begins driving, and you can't help but feel embarrassed.
+	<br><br>
+	The ride home passes in silence, until Avery parks across from the orphanage and laughs again. "You really are something else." <<He>> motions for you to exit.
+	<br><br>
+
+	<<He>> watches you walk away for a moment before driving away.
+	<br><br>
+
+	<<endevent>>
+
+	<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery School Pickup Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 100>>
+	<<He>> kisses you, and <<his>> hands explore your body. <<takeKissVirginity "Avery" `($dateCount.Avery gte 3?"loveInterest":"romantic")`>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Avery School Pickup Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery School Pickup Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Avery School Pickup Sex Finish
+<<set $outside to 0>><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	"Good <<girl>>," <<he>> pants. <<He>> gently guides you back into your seat, and begins driving again.
+	<<larage>><<npcincr Avery rage -5>><<glove>><<npcincr Avery love 3>>
+	<br><br>
+
+	The ride home passes in silence, and Avery parks across from the orphanage.
+	<br><br>
+
+	<<tearful>> you climb from the car. <<He>> watches you a moment before driving away.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<endevent>>
+
+	<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	<<He>> falls back against the steering wheel, giving you the chance you need.
+	<<ggarage>><<npcincr Avery rage 10>>
+	<br><br>
+
+
+<<He>> falls back against the steering wheel, giving you the chance you need.
+<<ggarage>><<npcincr Avery rage 10>>
+<br><br>
+
+<<tearful>> you make a run for it. <<He>> shouts something after you, but <<he>> doesn't follow. You hear <<him>> drive away.
+
+	<<tearful>> you make a run for it. <<He>> shouts something after you, but <<he>> doesn't follow. You hear <<him>> drive away.
+
+
+	<<clotheson>>
+	<<endcombat>>
+	<<endevent>>
+
+	<<link [[Next|Commercial alleyways]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	"Such a tease. You're lucky I wasn't actually serious about having you arrested, <<pcpetname "Avery">>," <<he>> says. <<He>> guides you back into your seat, and begins driving.
+	<br><br>
+
+	The ride home passes in silence, and Avery parks across from the orphanage.
+	<br><br>
+
+
+	<<tearful>> you climb from the car. <<He>> watches you a moment before driving away.
+	<br><br>
+
+
+	<<clotheson>>
+	<<endcombat>>
+	<<endevent>>
+
+	<<link [[Next|Domus Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery Dismissal Intro
+<<effects>>
+<<if $phase is 1>>
+	You duck into the nearby alleyway and wait, but Avery does not stop driving. Running out, you find that there's a
+<<else>>
+	The car passes you by without stopping. You see a
+<</if>>
+<<if $averyLastApp>>
+	<<generateNPC 2 t $averyLastApp>>
+<<else>>
+	<<generateNPC 2 t $player.gender_appearance>>
+<</if>>
+<<person2>><<person>> sitting in the front seat.
+<<if $phase is 2>>
+	Avery was talking to <<him>> while keeping <<person1>><<his>> eyes on the road. If <<he>> saw you, <<he>> had not given away any indication.
+<</if>>
+<<saveNPC 1 avery_sidepiece>>
+<<set $averyPub to 1>>
+<<if $bus is "harvest">>
+	They slow to a stop some way down, <span class="blue">across the street from the pub.</span>
+	<br><br>
+
+	<<endevent>>
+	<<destinationeventend>>
+<<else>>
+	Judging by the direction, they're headed towards <span class="blue">Harvest Street.</span>
+	<br><br>
+
+	<<endevent>>
+	<<destinationeventend>>
+<</if>>
+
+:: Avery Dismissal Restroom
+<<effects>>
+<<person2>>
+You keep away from the bar and enter the restroom, finding the <<person>> <<if $pronoun is "m">>adjusting <<his>> clothes<<else>>primping <<himself>><</if>> anxiously by the sinks.
+<<if $player.gender_appearance isnot $pronoun>>
+	<<He>> seems taken back from seeing you in the wrong gender's bathroom, but relaxes after recognising you. <<He>> goes back to fixing <<his>> appearance in the mirror.
+<<else>>
+	<<He>> glances at you as you enter and recognises you, waving a friendly greeting.
+<</if>>
+<br><br>
+<<link [[Encourage date|Avery Dismissal Encourage]]>><<trauma 6>><<stress 6>><<hope 2>><</link>><<gtrauma>><<gstress>><<ghope>>
+<br>
+<<link [[Warn about Avery|Avery Dismissal Warn]]>><<trauma -20>><<stress -20>><<hope -1>><</link>><<lltrauma>><<llstress>><<lhope>>
+<br>
+<<link [[Threaten|Avery Dismissal Threaten]]>><<stress 6>><<reb -1>><</link>><<gstress>><<lreb>>
+<br>
+
+:: Avery Dismissal Encourage
+<<effects>>
+<<if $speech_attitude is "meek">>
+	"Are you nervous about your date outside?" you ask. "Don't be. I think you two will look good together."
+<<elseif $speech_attitude is "bratty">>
+	"You're behind on Bailey's payments, right?" you ask. "I bet that <<nnpc_gender "Avery">> pays well. Really well."
+<<else>>
+	"Who's the cutie with you?" you lie, "Seems like quite the catch! I'm jealous."
+<</if>>
+<br><br>
+You keep talking up Avery without giving away too much. Though you're worried that you may have come across as too eager, the <<person>> seems to be mollified by your words.
+<<He>> thanks you for the encouragement and leaves the restroom with a new spring in <<his>> step. <<ghope>>
+<br><br>
+
+You wait a few minutes, and leave the restroom after <<him>>. You see <<him>> leaning into Avery at the bar, and they both look happy.
+<br><br>
+
+You can only hope that Avery will treat <<him>> better than <<nnpc_he "Avery">> had treated you.
+<br><br>
+<<set $averyDismissalScene to 1>>
+<<dismissAvery>>
+
+<<link [[Leave the pub|Harvest Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery Dismissal Warn
+<<effects>>
+<<person1>>
+<<if $speech_attitude is "meek">>
+	"Avery is dangerous," you plead. "Please don't continue this. <<He>> will hurt you."
+<<elseif $speech_attitude is "bratty">>
+	"There are easier targets out there than Avery," you say. "That rich sleaze? Not worth it."
+<<else>>
+	"Be careful," you say, "Avery's not as charming as <<he>> looks."
+<</if>>
+<br><br>
+"How did you know <<his>> name?" The <<person2>><<person>> asks. You spend the next few minutes describing the dates you had with Avery. You then show <<him>> some of the bruises you earned from your previous fights, and briefly share your experiences when you refused Avery's advances.
+The <<person>> nods, shocked at the events you described.
+<<if $loft_kylar>>
+	<<He>> then <<npcUndressText $NPCList[0] "upper" "self">>, revealing a can of pepper spray. "I'd like to see <<nnpc_him "Avery">> try that with me... but you're right,"
+<<elseif $orphan_hope lte 0>>
+	"I really needed the money from this... but you're right, it isn't worth it,"
+<<else>>
+	"Thank you for warning me,"
+<</if>>
+<<he>> says, "What should we do now?" <<lhope>>
+<br><br>
+You suggest that <<he>> leaves the bar while you distract Avery. <<He>> squeezes your forearm in solidarity as the two of you go your separate ways.
+<br><br>
+<<set $averyDismissalScene to 2>>
+
+<<link [[Next|Avery Dismissal Confront]]>><</link>>
+<br>
+
+:: Avery Dismissal Threaten
+<<effects>>
+<<if $speech_attitude is "meek">>
+	"You should stop talking to the <<nnpc_gender "Avery">> outside," you say with determination. "I insist."
+<<elseif $speech_attitude is "bratty">>
+	You walk up to the <<person>> and order, "Avery is mine. Stay away from <<nnpc_him "Avery">>!"
+<<else>>
+	"I wouldn't continue this date of yours," you say. "if you know what's best for you."
+<</if>>
+
+The <<person>> sees your menacing gaze, decides that it's not a good idea to further provoke you, and flees the bathroom. After a few moments of fixing your appearance in the mirror, you leave to find your lover. <<lreb>>
+<br><br>
+
+<<link [[Next|Avery Dismissal Bar]]>><</link>>
+<br>
+
+:: Avery Dismissal Bar
+<<effects>>
+You slide into the seat the <<person2>><<person>> abandoned. <span class="green"><<He>> left <<his>> drink behind as well.</span> Avery notices you and frowns, but doesn't do anything else, looking straight ahead.
+You wonder how different this would go if you weren't in public.
+<br><br>
+<<person1>>
+<<if $speech_attitude is "meek">>
+	The two of you sit in silence for a while. You have no idea how to proceed, now that <<hes>> right next to you.
+<<elseif $speech_attitude is "bratty">>
+	"How could you?" you spit in anger. "How dare you see another <<person2>><<personsimple>><<person1>> behind my back?"
+<<else>>
+	"I know we aren't exactly exclusive," you try for a joke, "But surely I'm enough of a handful for you?"
+<</if>>
+<br><br>
+"I thought this was what you wanted," Avery finally says, "For me to leave you alone. Perhaps you could extend the same civility towards me."
+<<He>> sips <<his>> wine casually, but you can see that <<he>> has a tight grip on <<his>> glass.
+<br><br>
+
+<<link [[Apologise|Avery Dismissal Apologise]]>><</link>>
+<br>
+<<link [[Break-up with Avery|Avery Dismissal Break]]>><</link>>
+<br>
+<<link [[Throw the drink in Avery's face|Avery Dismissal Throw]]>><<trauma -20>><<stress -20>><</link>><<lltrauma>><<llstress>>
+<br>
+
+:: Avery Dismissal Confront
+<<effects>>
+<<person1>>
+You walk right up to the bar where Avery is. <<He>> notices your approach, but doesn't move from <<his>> seat.
+<<person2>>
+<<if $speech_attitude is "meek">>
+	"I warned <<him>> about you," you say. "You won't hurt any more people."
+<<elseif $speech_attitude is "bratty">>
+	"<<Hes>> not coming back," you proudly announce. "I hate being a snitch, but your ugly face deserves it."
+<<else>>
+	"<<Hes>> not coming back," you announce. "I warned <<him>> about your little rage issues."
+<</if>>
+<<endevent>>
+<<npc Avery>><<person1>>
+<br><br>
+You step backwards, about to run after making your proclamation, but Avery is faster. <<He>> grabs your arm, drags you to a secluded area of the pub, and throws you onto the ground. <<trauma 20>><<pain 3>><<ggtrauma>><<gpain>>
+<br><br>
+
+<<link [[Next|Avery Dismissal Fight]]>><<set $fightstart to 1>><</link>>
+<br>
+
+:: Avery Dismissal Break
+<<effects>>
+<<if $NPCName[$NPCNameList.indexOf("Avery")].love lt 50>>
+	<<if $speech_attitude is "meek">>
+		"Okay," you say. "It's for the best. I hope you treat <<person2>><<him>> better than you treated me. Goodbye."
+	<<elseif $speech_attitude is "bratty">>
+		"Finally!" you reply. "You're someone else's problem now. See you never!"
+	<<else>>
+		"Good," you reply. "I'm glad that you can take the hint."
+	<</if>>
+<<else>>
+	<<if $speech_attitude is "meek">>
+		You feel like you're about to cry. "Thank you for taking care of me," you say in place of a goodbye.
+	<<elseif $speech_attitude is "bratty">>
+		"Fine. Just know that you're not breaking up with me, I'm the one who's breaking up with you!" you exclaim in a show of bravado. Your outburst is ignored.
+	<<else>>
+		"Sure. I know when I'm not wanted too," you reply. "See you around, I guess. Or maybe not. Whatever."
+	<</if>>
+<</if>>
+<br><br>
+You raise up from your seat and walk away, feeling a strange sense of calm now that you'll likely never see Avery again. <<trauma -50>><<stress -100>><<llltrauma>><<lllstress>>
+<br><br>
+<<set $averyDismissalScene to 1>>
+<<dismissAvery>>
+
+<<link [[Leave the pub|Harvest Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery Dismissal Apologise
+<<effects>>
+<<person1>>
+<<if $speech_attitude is "meek">>
+	"I'm sorry for being bad," you apologise, looking down at the floor shamefully. "Really, I... I didn't mean for this to happen..."
+<<elseif $speech_attitude is "bratty">>
+	"Come on, give me a second chance?" you say.
+<<else>>
+	"Maybe we can try and talk it out. I still want to fix this," you say.
+<</if>>
+<br><br>
+Avery turns and faces you. "I had given you plenty of chances to fix your behaviour, and yet you never did. Why should I stay with an insolent <<girl>> like you?"
+<<He>> stops paying attention to you and returns to <<his>> glass of wine. The conversation is clearly over.
+<br><br>
+
+<<link [[Get on your knees and beg|Avery Dismissal Beg]]>><<trauma 3>><<stress 3>><<npcincr Avery love 5>><<npcincr Avery rage -70>><</link>><<gtrauma>><<gstress>><<gglove>><<lllarage>>
+<br>
+<<link [[Break-up with Avery|Avery Dismissal Break]]>><</link>>
+<br>
+<<link [[Throw the drink in Avery's face|Avery Dismissal Throw]]>><<trauma -20>><<stress -20>><</link>><<lltrauma>><<llstress>>
+<br>
+
+:: Avery Dismissal Beg
+<<effects>>
+<<person1>>
+You get down on your knees in front of Avery. The few other people currently in the pub look towards the bar in interest, waiting to see how this will play out.
+They're whispering amongst themselves, but the distance makes it hard to hear exactly what they're saying. You keep your eyes on the floor and stay in place, wondering how <<he>> will respond.
+
+<br><br>
+<<if $NPCName[$NPCNameList.indexOf("Avery")].love lt 25>>
+	Moments later, you hear Avery standing up from <<his>> chair. You then hear the <<if $pronoun is "m">>steps of <<his>> shoes<<else>>clicking of <<his>> heels<</if>> as <<he>> leaves the pub. <<stress 20>><<ggstress>>
+	<br><br>
+
+	You stay kneeling, hoping that <<he>> will return, hoping that you haven't seen the last of <<him>>. The bartender eventually comes over and asks you to leave.
+	<br><br>
+	<<set $averyDismissalScene to 1>>
+	<<dismissAvery>>
+
+	<<link [[Leave the pub|Harvest Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	A few quiet moments pass. You feel a pair of hands grasping under your shoulders, and bringing you off the floor. You look up and see that it's Avery.
+	<<He>> places a hand on your cheek and gazes at you tenderly.
+	<br><br>
+	"How can I refuse such a devoted gesture?" <<he>> says, "But you're embarrassing yourself. There are better ways to show how sorry you are. Come with me."
+	<<He>> takes your hand and leads you outside. <<takeHandholdingVirginity "Avery" "romantic">>
+	<br><br>
+
+	<<endevent>><<npc Avery>><<person1>>
+	<br><br>
+	<<link [[Next|Avery Dismissal Sex]]>><<set $sexstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery Dismissal Throw
+<<effects>>
+<<endevent>>
+<<npc Avery>><<person1>>
+Angered by <<his>> words, <span class="red">you pick up the abandoned drink and throw it onto Avery's face.</span>
+You know you'll regret your actions immediately afterwards, but seeing Avery's face and clothes drenched in wine brings you a thrilling satisfaction.
+<br><br>
+
+Sure enough, Avery responds by grabbing your arm. <<He>> drags you to a secluded area of the pub, and throws you onto the ground. <<trauma 20>><<pain 3>><<ggtrauma>><<gpain>>
+<<set $averyDismissalScene to 1>>
+<br><br>
+
+<<link [[Next|Avery Dismissal Fight]]>><<set $fightstart to 1>><</link>>
+<br>
+
+:: Avery Dismissal Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<enable_rescue>>
+	<<npcidlegenitals>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Avery Dismissal Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery Dismissal Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Avery Dismissal Fight Finish
+<<effects>>
+<<if $enemyarousal gte $enemyarousalmax>>
+	You take the moment to push Avery off you. "It's over!" you declare to <<him>>. <<tearful>> you back off.
+	<br><br>
+	The other patrons of the bar stare after you, but you ignore them as you walk out.
+<<elseif $enemyhealth lte 0>>
+	Avery recoils and drops to the floor. "Never touch me, or anyone else from the orphanage, ever again!" you shout at <<him>>.
+	<<tearful>> you flee the scene.
+	<br><br>
+	You see a few of the patrons staring at you with concern, but you ignore their gazes as you rush outside.
+<<elseif $rescue is 1 and $alarm is 1>><<set $rescued += 1>>
+	Your calls attract the attention of the bartender, a <<generate2>><<person2>><<person>>. <<He>> grabs Avery and pulls <<him>> off of you. You call out your thanks to <<him>> as you run out of the bar.
+	You hear <<him>> yelling something about calling the police, but you're outside before hearing the rest.
+<<else>>
+	You withdraw yourself into a ball, too overwhelmed to continue to fight back Avery's assault.
+	<<He>> spits on your face and stares at your defeated form as <<he>> smooths <<his>> disheveled clothes back down.
+	<br><br>
+	"Goodbye." <<He>> kicks you one last time. You watch as <<he>> strides out of the pub.
+	You lie still and try your best not to think of the pain. The bartender, a <<generate2>><<person2>><<person>>, comes over and helps you up to a nearby seat.
+	<<Hes>> concerned, but you brush off <<his>> offer of calling the cops. <<He>> leaves you be after bringing you a glass of water.
+<</if>>
+<<clotheson>>
+<<endcombat>>
+You doubt you will ever see Avery again.
+<br><br>
+<<dismissAvery>>
+<<link [[Leave the pub|Harvest Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery Dismissal Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 200>>
+	Avery takes you to <<his>> car and opens the back door. <<He>> pushes you gently onto the back seat as <<he>> touches you all over.
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Avery Dismissal Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery Dismissal Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Avery Dismissal Sex Finish
+<<set $outside to 0>><<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	Avery holds you close. You rest your head on <<his>> chest and catch your breath.
+
+	<<if $speech_attitude is "meek">>
+		"I will never make you angry again," you promise.
+	<<elseif $speech_attitude is "bratty">>
+		"I missed this. I really did," you grudgingly admit.
+	<<else>>
+		"I wish we had never fought," you finally say.
+	<</if>>
+	<br><br>
+	<<He>> doesn't reply, but <<he>> keeps stroking your back. The two of you stay pressed together for a long while. <<lllarage>>
+	<<clotheson>>
+	<<endcombat>>
+	<<link [[Next|Avery Dismissal Home]]>><</link>>
+<<else>>
+	Avery's face slams into the steering wheel, causing a loud honk. <<He>> manages to push you out of the car onto the hard pavement.
+	"After all I did for you!" <<he>> shouts at you. <<He>> speeds away, leaving you coughing in a cloud of dust and exhaust.
+	<<clotheson>>
+	<<endcombat>>
+	You doubt you will ever see Avery again.
+	<br><br>
+	<<set $averyDismissalScene to 1>>
+	<<dismissAvery>>
+	<<link [[Next|Harvest Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Avery Dismissal Home
+<<effects>>
+<<npc Avery>><<person1>>
+You are driven home by Avery. The two of you didn't talk at all on the way, but the quiet is a peaceful one.
+<br><br>
+You step back outside and wave goodbye as Avery's car speeds away. You expect that <<he>> will find you to settle on a date next week, as always.
+<br><br>
+<span class="green"><i><<Hes>> forgiven you, for now. It'd be best to not make <<him>> angry again.</i></span>
+<br><br>
+<<unset $averyPub>>
+<<unset $averyDismissalScene>>
+<<link [[Next|Domus Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Avery Helicopter
+<<effects>><<set $phase to 0>>
+
+You climb inside and sit down next to Avery. <<He>> reaches over you and shuts the door. You're alone with <<him>>, though you can see the pilot's head through a pane of glass up-front. You feel a bit giddy as the helicopter takes off. Avery dons a sly smile.
+<br><br>
+
+"I'm on my way to meet an important client near Danube Street, so I got permission to use the company heli. The meeting is very important, but I thought I'd make some time for you. I hope you know to appreciate the gesture."
+<br><br>
+
+You look out of the window and watch the town growing smaller and smaller beneath you. Above stretches the infinite sky.<br><br>
+
+<<if !playerBellyVisible()>>
+	Avery pours something out of a bottle and offers you a glass that looks equal parts fragile and expensive.
+	<br><br>
+
+	"Champagne?"
+	<br><br>
+
+	<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
+		<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
+		<br>
+	<<else>>
+		<<link [[Drink|Avery Helicopter Drink]]>><<alcohol 120>><<drugs 180>><<npcincr Avery rage -2>><<npcincr Avery love 1>><</link>><<galcohol>><<glove>><<larage>>
+		<br>
+	<</if>>
+
+	<<link [[Refuse|Avery Helicopter Refuse]]>><<npcincr Avery rage 5>><</link>><<garage>>
+
+<<else>>
+
+	<<link [[Next|Avery Helicopter 2]]>><</link>>
+
+<</if>>
+
+:: Avery Helicopter Drink
+<<effects>>
+
+You touch glasses. Avery smiles and waits for you to take a sip. The champagne is like nothing you've ever tasted before. You try to hide your surprise, to no avail. Avery smiles smugly.
+<br><br>
+
+"Still not used to living the good life, are we? Well, maybe we can fix that one day down the road."
+<br><br>
+
+<<link [[Next|Avery Helicopter 2]]>><</link>>
+
+:: Avery Helicopter Refuse
+<<effects>>
+
+<<if $NPCName[$NPCNameList.indexOf("Avery")].rage gte 60 and !playerIsPregnant() and !playerAwareTheyArePregnant() and $averyragerevealed is 1>>
+
+	Avery frowns.
+	<br><br>
+
+	"You ungrateful little <<bitch>>, do you know how much this stuff costs? This bottle alone is worth more than you! I sure as hell won't let it go to waste, so you better drink it here and now!"
+	<br><br>
+
+	<<He>> puts the glass to your face.
+	<br><br>
+
+	<<link [[Slap aside|Avery Helicopter Slap]]>><<npcincr Avery rage 5>><</link>><<garage>>
+
+<<else>>
+
+	Avery frowns, but accepts your decision.
+	<br><br>
+
+	"So you're not in the mood? Suit yourself, then. You don't know what you're missing out on."
+	<br><br>
+
+	<<He>> puts your glass aside and starts sipping on <<his>> own, far more hastily than would be considered appropriate in most circles.
+	<br><br>
+
+	<<link [[Next|Avery Helicopter 2]]>><</link>>
+
+<</if>>
+
+:: Avery Helicopter 2
+<<effects>>
+
+Meanwhile, the helicopter has set for a northern course.
+<br><br>
+
+As you look outside the window, you see the endless waves of the sea spreading beneath, glittering in the light of day.
+<br><br>
+
+Avery signals the pilot to hover just above the surf, and you can see all manner of sea life teeming beneath. In the distance a pod of dolphins darts through the waters.<<lstress>><<stress -6>>
+<br><br>
+
+<<if C.npc.Avery.rage gte 60>>
+
+	Avery notices your rapture. "It must be nice being so impressionable. It's a useful trait. Especially since I was going to show you something." Avery points outside.
+	<br><br>
+
+	"Do you see that small islet in the middle of nowhere? It's a prison. That's where the bad people end up. People who don't do as they're told, who don't behave properly and who think they can play hard working, respectable citizens for fools. Those people tend to come to a bad end. You're not one of those persons though, right? I know you know your place."<<gtrauma>><<trauma 1>>
+	<br><br>
+
+	<<link [[Nod|Avery Helicopter Nod]]>><<npcincr Avery rage -2>><</link>><<larage>>
+	<br>
+	<<link [[Roll your eyes|Avery Helicopter Roll]]>><<npcincr Avery rage 5>><</link>><<garage>>
+
+<<else>>
+
+	"Beautiful, isn't it?" Avery says. "I specifically made a point of starting early so I could show you this. Of course I've seen it so many times, it has kind of lost its luster. Speaking of beauty..."
+	<br><br>
+
+	You feel Avery's hand on your shoulder. "Seeing how I'm treating you, I deserve a little treat myself, don't you agree?"
+	<br><br>
+
+	<<link [[Kiss|Avery Helicopter Sex]]>><<set $phase to 1>><<npcincr Avery love 1>><<set $sexstart to 1>><</link>><<glove>>
+	<br>
+	<<link [[Brush off|Avery Helicopter Brush]]>><<npcincr Avery rage 5>><<npcincr Avery love -1>><</link>><<llove>><<garage>>
+
+<</if>>
+
+:: Avery Helicopter Nod
+<<effects>>
+
+Avery smiles. "Fine. Prove it."
+<br><br>
+
+<<He>> leans forward and puckers <<his>> lips.
+<br><br>
+
+<<link [[Kiss|Avery Helicopter Sex]]>><<set $molestationstart to 1>><</link>>
+<br>
+<<link [[Push away|Avery Helicopter Push]]>><<npcincr Avery rage 5>><</link>><<garage>>
+
+:: Avery Helicopter Brush
+<<effects>>
+
+Avery's eyes narrow. "Acting aloof, are we? You won't get far in this world with this kind of attitude. You'll find out soon. Just a friendly warning, from you to me."
+<br><br>
+
+The rest of the trip passes in silence. Finally, the helicopter descends near an estate on Danube Street. The security jump out, and Avery follows them without so much as throwing a glance back at you.
+<br><br>
+
+<<link [[Next|Danube Street]]>><<endevent>><<pass 30>><<set $eventskip to 1>><</link>>
+
+:: Avery Helicopter Push
+<<effects>>
+
+Avery's face darkens.
+<br><br>
+
+"Maybe I haven't made myself clear enough. Or maybe you're just obtuse. Either way, I think a demonstrative lesson will drive it home."
+<br><br>
+
+<<link [[Next|Avery Helicopter Sex]]>><<set $phase to 1>><<set $molestationstart to 1>><</link>>
+
+:: Avery Helicopter Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust += 100>><<promiscuity2>>
+
+<<elseif $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Avery Helicopter Sex End]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Avery Helicopter Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Avery Helicopter Sex End
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<if $phase is 0>>
+		Avery moves back and fixes <<his>> clothing.
+		<br><br>
+
+		"Well, that certainly was a nice trip, don't you agree? As it happens to be, we're already there."
+		<br><br>
+
+		The helicopter touches down on an impressive estate at Danube Street, greeted by staff. The security jump out, and a mighty hubbub ensues. Avery climbs out of the helicopter.
+		<br><br>
+
+		"I trust you can walk the rest of the way yourself? It's not far. I'll see you again."
+		<br><br>
+
+		Avery nods your way, and with that, <<he>> vanishes into a cloud of people.
+		<br><br>
+
+		<<endcombat>><<clotheson>>
+
+		<<link [[Next|Danube Street]]>><<pass 30>><<set $eventskip to 1>><</link>>
+	<<elseif $phase is 1>>
+		Avery moves back and fixes <<his>> clothing.
+		<br><br>
+
+		"Well, it's good to know we understand each other so well. I trust we don't need to have this conversation again in the future. Now if you'd excuse me, I have important business to conduct. You can walk the rest of the way from here."
+		<br><br>
+
+		The helicopter touches down on an impressive estate at Danube Street, greeted by staff. The security jump out, and a mighty hubbub ensues. Avery climbs out of the helicopter without looking back, and <<his>> aides escort you to the exit.
+		<br><br>
+
+		<<endcombat>><<clotheson>>
+
+		<<link [[Next|Danube Street]]>><<pass 30>><<set $eventskip to 1>><</link>>
+	<<else>>
+		Avery moves back and fixes <<his>> clothing.
+		<br><br>
+
+		"I hope you understand now, you uppity brat. Don't get any ideas. You may have some business acumen, but you're still only a dirt stain under my shoe. You can either play along if you know what's good for you, or go out with the trash. Consider this carefully."
+		<br><br>
+
+		The helicopter touches down on an impressive estate at Danube Street. Avery opens the door and leaves without looking back, and the security drag you out and deposit you next to the rubbish dump.
+		<br><br>
+
+		<<endcombat>><<clotheson>>
+
+		<<link [[Next|Residential alleyways]]>><<pass 30>><<set $eventskip to 1>><</link>>
+	<</if>>
+<<elseif $enemyhealth lte 0>>
+	<<if $phase is 0>>
+		Recoiling, Avery releases you from <<his>> grip. <<He>> quickly adjusts <<his>> clothes back to normal.
+		<br><br>
+
+		"That was a nice exercise. I like my prey struggling from time to time. Just don't make it a habit. Now look outside. We've already arrived."
+		<br><br>
+
+		The helicopter touches down on an impressive estate at Danube Street, greeted by staff. The security jump out, and a mighty hubbub ensues. Avery climbs out of the helicopter.
+		<br><br>
+
+		"Well, that concludes our little adventure. I'll be in touch. The security will show you out." You're unceremoniously escorted out to the street.
+		<br><br>
+
+		<<endcombat>><<clotheson>>
+
+		<<link [[Next|Danube Street]]>><<pass 30>><<set $eventskip to 1>><</link>>
+	<<elseif $phase is 1>>
+		Recoiling, Avery releases you from <<his>> grip.
+		<br><br>
+		"You really are an obstinate brat, aren't you? I've had it with your antics. I can't possibly bring street filth like you with me when I join the upper class. Since you don't know how to behave, I'll return you to a place you seem better suited to."
+		<br><br>
+
+		Avery gives a command to the pilot, and the helicopter makes for the park. It touches down in a wide open area. Avery opens the door.
+		<br><br>
+
+		"Now get off before I have the security drag you out. And better behave next time. I hope we got this straight."
+		<br><br>
+
+		Avery slams the door shut behind you, and the helicopter ascends once more.
+		<br><br>
+
+		<<endcombat>><<clotheson>>
+
+		<<link [[Next|Park]]>><<pass 30>><<set $eventskip to 1>><</link>>
+	<<else>>
+		Recoiling, Avery releases you from <<his>> grip.
+		<br><br>
+
+		"That's it, you worthless <<bitch>>! I've had it with you! Maybe this will teach you where you belong!"
+		<br><br>
+
+		Avery opens the helicopter's door and kicks you out. You land in the water with a splash.<<ggstress>><<stress 12>>
+		<br><br>
+
+		You are left flailing in the middle of the ocean, watching Avery's helicopter disappearing on the horizon.
+		<br><br>
+
+		<<endcombat>>
+
+		<<link [[Next|Sea]]>><<set $sea to 50>><<endevent>><<pass 30>><<set $eventskip to 1>><</link>>
+	<</if>>
+<<elseif $finish is 1>>
+	Avery moves back and fixes <<his>> clothing.
+	<br><br>
+
+	"Fine, we got this sorted out. Now begone and behave properly if you know what's good for you. I'll keep an eye on you."
+	<br><br>
+
+	The helicopter descends on an impressive estate near Danube Street. Avery jumps out, and the security drag you all the way to the exit.
+	<br><br>
+
+	<<endcombat>><<clotheson>>
+
+	<<link [[Next|Danube Street]]>><<pass 30>><<set $eventskip to 1>><</link>>
+<</if>>
+
+:: Avery Helicopter Roll
+<<effects>>
+
+Avery frowns. "I must be imagining things! You ungrateful little whore, you owe it all to me! You're nothing without me! Nothing! You're my property, do you understand? I'll take what is rightfully mine!"
+<br><br>
+
+<<link [[Next|Avery Helicopter Sex]]>><<set $phase to 2>><<set $molestationstart to 1>><</link>>
+
+:: Avery Helicopter Slap
+<<effects>>
+
+You slap the glass aside with force. Its contents are splattered gratuitously over the seats and Avery's suit. <<His>> face turns a deep shade of red.
+<br><br>
+
+"You little minx! Look what you've done! Are you lacking even the most basic forms of upbringing? Gah, it can't be helped! I need to get changed! But first to get rid of you! Be glad I don't have time to deal with you properly!"
+<br><br>
+
+Avery calls the pilot to head back. The helicopter descends in the park, just shy of touching the ground, and Avery unceremoniously pushes you out.<<gpain>><<violence 3>>
+<br><br>
+
+Face buried in the dirt, you watch Avery's helicopter head back to the office.
+<br><br>
+
+<<link [[Next|Park]]>><<endevent>><<pass 30>><<set $eventskip to 1>><</link>>
+
+:: Avery Helicopter Walk
+<<effects>>
+
+You ignore Avery and walk the other way. Avery's face turns red as <<he>> gestures the pilot to take off. The security hurry to climb back inside in panic.
+<br><br>
+
+<<link [[Next|Oxford Street]]>><<endevent>><<set $eventskip to 1>><</link>>

@@ -1,0 +1,456 @@
+:: Anthill
+
+<<if $sandmound is 1>>
+    <<set $outdoors to 1>><<effects>>
+    你看到沙地上有一个深洞的洞口，它一直延伸到黑暗中，看不到尽头。
+<<elseif $sandmound is 2>>
+    <<set $outdoors to 0>><<effects>>
+    你在蚁穴的入口处，响亮的嘎吱声从蚁穴深处回荡。
+<<elseif $sandmound is 3>>
+    <<set $outdoors to 0>><<effects>>
+    你在蚁穴的入口处，你感觉自己已经走了一半路程。隧道四通八达，看不到尽头。
+<<elseif $sandmound is 4>>
+    <<set $outdoors to 0>><<effects>>
+    你在蚁穴的深处，蠕动和嘎吱的声音环绕着你。隧道的数量进一步增加。
+<<elseif $sandmound is 5>>
+    <<set $outdoors to 0>><<effects>>
+    你到达蚁穴底部，在一个巨大的简陋大门后面，你感觉到了某种令人难以抗拒的东西。
+<</if>>
+<br><br>
+
+<<if $sandmound is 2 and $guard1 is 0>>
+    在你爬往更深的地方时，一名卫兵捕捉到了你的气味，并靠近准备战斗。
+    <br><br>
+    <<link [[做好战斗准备|Ant Guard 1]]>><<beastNEWinit 1 ant>><<set $molestationstart to 1>><</link>>
+    <br>
+<<elseif $sandmound is 3 and $guard2 is 0>>
+	在你爬往更深的地方时，又一队卫兵捕捉到了你的气味，并靠近准备战斗。
+    <br><br>
+    <<link [[做好战斗准备|Ant Guard 2]]>><<beastNEWinit 3 ant>><<set $molestationstart to 1>><</link>>
+    <br>
+<<elseif $sandmound is 4 and $guard3 is 0>>
+    在你爬往更深的地方时，一个高大的卫兵捕捉到了你的气味，并靠近准备战斗。
+    <br><br>
+    <<link [[做好战斗准备|Ant Guard 3]]>><<beastNEWinit 1 ant>><<set $molestationstart to 1>><</link>>
+    <br>
+<<else>>
+    <<if $sandmound is 1>>
+        <<link [[离开 (0:05)|Seasons Island]]>><<pass 5>><<set $guard1 to 0>><<set $guard2 to 0>><<set $guard3 to 0>><<set $islanddistance to 10>><</link>>
+        <br>
+    <</if>>
+    <<if $sandmound is 5>>
+        <<link [[进入 (0:05)|Ant Colony Shrine]]>><<pass 5>><</link>>
+        <br>
+    <</if>>
+    <<if $sandmound gt 1>>
+        <<link [[往上攀爬 (0:10)|Anthill]]>><<pass 10>><<set $sandmound -= 1>><</link>>
+        <br>
+    <</if>>
+    <<if $sandmound lt 5>>
+        <<link [[深入探索 (0:05)|Anthill]]>><<pass 5>><<set $sandmound += 1>><</link>>
+        <br>
+    <</if>>
+<</if>>
+
+:: Ant Colony Shrine
+
+你来到一座巨大的蜡像前，它高耸入云，一直延伸到天花板。它似乎在发出一种超凡脱俗的嗡嗡声。
+<br><br>
+<<link [[祈祷|Ant Shrine Pray]]>><<set $phase to 1>><</link>>
+<br>
+<<link [[离开|Anthill]]>><</link>>
+
+:: Ant Shrine Pray
+
+<<if $phase is 1>>
+	你坐在崎岖不平的土地上，低下头。
+	<br><br>
+<<elseif $phase is 2 and $ghost is 1>>
+	你祈求救赎。你的思绪飘向对未来的憧憬，以及事情如何才能变得更好。
+	<br><br>
+	一个小时过去了，你身上突然传来一种灼烧感。
+	<br><br>
+	<<set $skinColor.natural to "flame">>
+	<<set $transformationParts.ghost.hitodama to "disabled">>
+	<<set $transformationParts.ghost.mist to "disabled">>
+    <<set $transformationParts.ghost.stream to "disabled">>
+    <<set $transformationParts.ghost.flame to "default">>
+	<<set $haircolour to "jetblack">>
+	<<set $hairfringecolour to "jetblack">>
+	<<set $options.lightGlow to 1>>
+	<<set $ghost to 3>>
+<<elseif $phase is 2>>
+	你祈求救赎。你的思绪飘向对未来的憧憬，以及事情如何才能变得更好。
+	<br><br>
+	一个小时过去了，你感觉负担减轻了。
+	<br><br>
+<</if>>
+<<link [[祈求救赎 (1:00)|Ant Shrine Pray]]>>
+	<<pass 60>><<set $phase to 2>>
+	<<if $purity gte ((1000 / 7) * 7)>>
+		<<stress -6>><<awareness -2>><<arousal -1200>>
+	<<elseif $purity gte ((1000 / 7) * 6)>>
+		<<stress -6>><<awareness -1>><<arousal -1000>>
+	<<elseif $purity gte ((1000 / 7) * 5)>>
+		<<stress -5>><<awareness -1>><<arousal -800>>
+	<<elseif $purity gte ((1000 / 7) * 4)>>
+		<<stress -4>><<awareness -1>><<arousal -600>>
+	<<elseif $purity gte ((1000 / 7) * 3)>>
+		<<stress -3>><<awareness -1>><<arousal -500>>
+	<<elseif $purity gte ((1000 / 7) * 2)>>
+		<<stress -2>><<awareness -1>><<arousal -400>>
+	<<else>>
+		<<stress -1>><<awareness -1>><<arousal -300>>
+	<</if>>
+<</link>>
+<br>
+<<link [[离开|Anthill]]>><</link>>
+
+:: Ant Guard 1
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+    <<set $enemyhealth to 400>>
+    <<set $enemyhealthmax to 400>>
+    <<set $enemyanger += 50>>
+    <<set $enemytrust to -200>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[继续|Ant Guard 1 Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Ant Guard 1]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Ant Guard 2
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+    <<beastTrainGenerate>>
+    <<set $enemyhealth to 400>>
+    <<set $enemyhealthmax to 400>>
+    <<set $enemyanger += 50>>
+    <<set $enemytrust to -200>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[继续|Ant Guard 2 Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Ant Guard 2]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Ant Guard 3
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+    <<set $enemyhealth to 800>>
+    <<set $enemyhealthmax to 800>>
+    <<set $enemyanger += 50>>
+    <<set $enemytrust to -200>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[继续|Ant Guard 3 Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Ant Guard 3]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Ant Guard 1 Finish
+
+<<if $enemyhealth lte 0>>
+    卫兵筋疲力尽地倒在地上。
+    <br><br>
+	<<tearful>>你收拾了下自己。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+    <<link [[继续|Anthill]]>><<set $guard1 to 1>><</link>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+    <<beastejaculation>>
+    卫兵最后咬了你一口，然后从你身上移开，随之到来的毒素让你全身麻痹，动弹不得。守卫抬起你，带着你向蚁穴深处走去。
+    <br><br>
+    <<clotheson>>
+	<<endcombat>>
+    <<link [[继续|Ant Kidnapped]]>><<pass 60>><</link>>
+<</if>>
+
+:: Ant Guard 2 Finish
+
+<<if $enemyhealth lte 0>>
+    <<if $combatTrain.length gt 0>>
+        这只<<beasttype>>在痛苦和恐惧中后退，但另一只<<beasttype>>却跃跃欲试。
+		<<combatTrainAdvance>>
+		<br><br>
+		<<link [[继续|Ant Guard 2]]>><</link>>
+    <<else>>
+        卫兵筋疲力尽地倒在地上。
+        <br><br>
+        <<tearful>>你收拾了下自己。
+        <br><br>
+        <<clotheson>>
+        <<endcombat>>
+        <<link [[继续|Anthill]]>><<set $guard2 to 1>><</link>>
+    <</if>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+    <<beastejaculation>>
+    卫兵最后咬了你一口，然后从你身上移开，随之到来的毒素让你全身麻痹，动弹不得。守卫抬起你，带着你向蚁穴深处走去。
+    <br><br>
+    <<clotheson>>
+	<<endcombat>>
+    <<link [[继续|Ant Kidnapped]]>><<pass 60>><</link>>
+<</if>>
+
+:: Ant Guard 3 Finish
+
+<<if $enemyhealth lte 0>>
+    卫兵筋疲力尽地倒在地上。
+    <br><br>
+	<<tearful>>你收拾了下自己。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+    <<link [[继续|Anthill]]>><<set $guard3 to 1>><</link>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+    <<beastejaculation>>
+    巨大的卫兵最后咬了你一口，然后从你身上移开，随之到来的毒素让你全身麻痹，动弹不得。守卫抬起你，带着你向蚁穴深处走去。
+    <br><br>
+    <<clotheson>>
+	<<endcombat>>
+    <<link [[继续|Ant Kidnapped]]>><<pass 60>><</link>>
+<</if>>
+
+:: Ant Kidnapped
+
+数以千计的脚步声在你周围来回穿梭，你被惊醒了。空气中弥漫着化学品和腐烂的刺鼻气味，周围一片漆黑，只有一条小隧道散发出柔和的光芒，通向蚁群外。
+<br><br>
+你低头一看，你发现自己躺在一堆腐烂的木头和霉菌上，身上爬满了几十只蚂蚁。突然间，你意识到自己被困在了蚁穴里，而你现在成了蚂蚁的奴隶！
+<br><br>
+<<link [[继续|Ant Slavery]]>><<set $antdig to 0>><</link>>
+
+:: Ant Slavery
+
+<<set $rng to random(1,3)>>
+<<if $stress gte $stressmax>>
+    你再也承受不住了，你昏了过去。
+    <br><br>
+    <<link [[继续|Ant Passout]]>><<passout>><</link>>
+<<elseif $exposed gte 1>>
+    <<covered>>隔壁房间里有一堆碎布，有些大的可以穿。
+    <br><br>
+    <<ragup>>
+    <<link [[继续|Ant Slavery]]>><<endevent>><<set $eventskip to 1>><</link>>
+<<elseif $rng is 3 and $eventskip isnot 1>>
+    <<beastNEWinit 1 ant>>
+    一只<<beasttype>>试图骑在你身上。
+    <br><br>
+    <<link [[保持沉默|Colony Ant]]>><<set $sexstart to 1>><<stress 6>><</link>><<gstress>>
+    <br>
+    <<link [[拉开距离|Colony Ant Rape]]>><<set $molestationstart to 1>><</link>>
+<<else>>
+    <<link [[打扫卫生 (1:00)|Ant Colony Clean]]>><<pass 60>><</link>>
+    <br>
+    <<link [[寻找逃生之路 (1:00)|Ant Colony Dig]]>><<pass 60>><</link>>
+<</if>>
+
+:: Colony Ant
+
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+	<<set $NPCList[0].stance to "top">>
+	<<set $enemytrust -= 20>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[继续|Colony Ant Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Colony Ant]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Colony Ant Finish
+
+<<beastejaculation>>
+这只<<beasttype>>发出满意的叫声，留你躺在沙地上。
+<br><br>
+<<tearful>>你站了起来。
+<br><br>
+<<clotheson>>
+<<endcombat>>
+<<set $eventskip to 1>>
+<<link [[继续|Ant Slavery]]>><</link>>
+<br>
+
+:: Colony Ant Rape
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+	<<set $enemytrust -= 40>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[继续|Colony Ant Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[继续|Colony Ant Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Colony Ant Rape Finish
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<beastejaculation>>
+	这只<<beasttype>>发出满意的叫声，留你躺在沙地上。
+	<br><br>
+	<<tearful>>你站了起来。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+    <<set $eventskip to 1>>
+	<<link [[继续|Ant Slavery]]>><</link>>
+	<br>
+<<elseif $enemyhealth lte 0>>
+	这只<<beasttype>>尖叫着飞快地逃走了。
+	<br><br>
+	<<tearful>>你收拾了下自己。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+    <<set $eventskip to 1>>
+	<<link [[继续|Ant Slavery]]>><</link>>
+	<br>
+<<else>>
+	这只<<beasttype>>尖叫着飞快地逃走了。
+	<br><br>
+	<<tearful>>你收拾了下自己。
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
+    <<set $eventskip to 1>>
+	<<link [[继续|Ant Slavery]]>><</link>>
+	<br>	
+<</if>>
+
+:: Ant Colony Clean
+
+<<effects>>
+你专注地打扫着蚁穴里的卫生，希望能够融入背景。
+<<set $rng to random(1, 3)>>
+<<if $rng gte 3>>
+    它们的口水滴落在地上。你在它们离开之后清扫。
+<<elseif $rng gte 2>>
+    你花了点时间清理发霉的木板。
+<<else>>
+    你清扫了地上的碎屑。
+<</if>>
+<br><br>
+<<link [[继续|Ant Slavery]]>><</link>>
+<br>
+
+:: Ant Colony Dig
+
+<<if $antdig gte 10>>
+    你回到柔软的隧道，继续挖掘。突然，你听到了沙子在石缝中滴落的声音。你后退了一步，因为你意识到屋顶即将坍塌。
+	<br><br>
+	你赶紧往上爬，希望能躲过迎面而来的石头和沙子。当你到达地面时，你深吸一口气，庆幸自己离开了隧道。你知道你必须尽快到达一个更安全的地方。
+    <br><br>
+    <<link [[继续|Seasons Island]]>><<set $islanddistance to 10>><</link>>
+<<elseif $antdig gte 8>>
+    你回到柔软的隧道，继续挖掘。你开始听到沙子在石缝中移动的声音，声音来自前面的某个地方。你不太确定这意味着什么，但你知道你快要找到什么了。
+	<br><br>
+	你给自己加油打气，下定决心继续挖掘，直到找到出路。你必须相信自己的直觉，希望自己走对了路。
+    <br><br>
+    <<link [[继续|Ant Slavery]]>><<set $antdig += 1>><</link>>
+<<elseif $antdig gte 6>>
+    你回到松软的隧道，重新开始挖掘。这里的墙壁比较松软，很容易就能在砂岩中取得良好的进展。你尽可能快地工作，你意识到被抓的风险，你必须保持低调，小心不要发出太大的声音。
+    <br><br>
+    <<link [[继续|Ant Slavery]]>><<set $antdig += 1>><</link>>
+<<elseif $antdig gte 3>>
+    你回到柔软的隧道，尽可能挖得更长。隧道比你刚发现时长了一些，但你不知道还能走多远。你担心被发现的危险，但又急于找到出路。
+    <<link [[继续|Ant Slavery]]>><<set $antdig += 1>><</link>>
+<<elseif $antdig gte 1>>
+    你回了到柔软的隧道，开始挖掘墙壁。你的进度很慢，不知道还能坚持多久。你担心如果挖得太久，守卫会发现这条隧道。
+    <br><br>
+	虽然它们可能暂时无暇顾及，但如果进行专门搜索，很快就会发现你的挖掘之处。你必须快速行动，小心谨慎。
+	<br><br>
+    <<link [[继续|Ant Slavery]]>><<set $antdig += 1>><</link>>
+<<elseif $antdig is 0>>
+    探寻这些迷宫般的隧道是一项艰巨的任务，你不知道自己能否找到出路。隧道延伸到岩石深处，有的宽度不过几英尺，有的则似乎延伸了很久，然后又扭转回来。
+	<br><br>
+	当你走过一条隧道时，这里的沙子吸引了你的注意，它似乎比其他的地方更加柔软，好像受到了干扰。这会不会是一条向上离开这里的路？
+    <br><br>
+    <<link [[继续|Ant Slavery]]>><<set $antdig += 1>><</link>>
+<</if>>
+
+:: Ant Passout
+
+在你的颠簸中，世界似乎变得模糊不清。突然，你猛地站了起来，感觉胃里有强烈的灼烧感。你忍不住吐了出来，吐出了奇形怪状的肉块和绿色液体。
+<br><br>
+蚂蚁们围着你，好奇地打量着眼前的新形象，你与它们进行了眼神交流。看到你醒了，它们很快回到了自己的工作岗位上，留下你一个人，感觉有点不舒服。你深吸一口气，试图振作起来，理清发生了什么。
+<br><br>
+<<link [[继续|Ant Slavery]]>><</link>>

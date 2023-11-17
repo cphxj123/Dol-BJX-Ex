@@ -1,0 +1,850 @@
+:: Widgets variablesStatic [widget]
+<<widget "variablesStatic">>
+	/*This is for static variables that will not change during gameplay*/
+	/*These will not be saved to saves and are best when they are required in multiple location
+	and are required for processing for loops, default objects, etc.*/
+	/*Can be found at 'SugarCube.setup'*/
+
+	<<run try { new Function("const foo = {}; foo?.bar;"); } catch (e) {
+		window.Utils.Defer(() => {
+			Errors.report('This browser does not meet the minimum requirements for DoL (ES2020). Please alert Vrelnir + the dev team and update your web browser.');
+			Errors.Reporter.show();
+		});
+	}>>
+
+	<<set setup.test to "testing">>
+	<<set setup.baseNPC = {
+		"chastity": { penis: "", vagina: "", anus: "" },
+		"location": {},
+		"skills": {},
+		"pronouns": {},
+		"traits": []
+	}>>
+
+	<<clothing_data>>
+	<<hair_data>>
+	<<init_bodywriting_objects>>
+	<<init_plant_objects>>
+	<<init_locations>>
+	<<init_tips>>
+
+	<<set setup.baseNNPC = {penis : 0, vagina: 0, gender: "none", description: 0, title: 0, insecurity: 0, pronoun: "none", penissize: 0, penisdesc: "none", bottomsize: 0, ballssize: 0, breastsize: 0, breastdesc: 0, breastsdesc: 0, skincolour: 0, teen: 0, adult: 0, init: 0, intro: 0, type: "human", trust: 0, love: 0, dom: 0, lust: 0, rage: 0, state: "", trauma: 0, eyeColour: 0, hairColour: 0, chastity: {penis: "", vagina: "", anus: ""}}>>
+	<<set setup.NPCNameList = ["Avery","Bailey","Briar","Charlie","Darryl","Doren","Eden","Gwylan","Harper","Jordan","Kylar","Landry","Leighton","Mason","Morgan","River","Robin","Sam","Sirris","Whitney","Winter","Black Wolf","Niki","Quinn","Remy","Alex","Great Hawk","Wren","Sydney","Ivory Wraith","Zephyr"]>>
+	/* 北极星模组 */
+	<<set setup.NPCNameList = setup.NPCNameList.concat(["泰勒","凯西","塞伦","帕鲁提"])>>
+	/* 北极星 */
+
+	/* this initialises the C.npc object */
+	<<run initCNPC()>>
+
+	<<set setup.crimeNames to {
+		assault: "assault",
+		coercion: "coercion",
+		destruction: "destruction of property",
+		exposure: "indecent exposure",
+		obstruction: "obstruction of justice",
+		prostitution: "prostitution",
+		resisting: "resisting arrest",
+		thievery: "thievery",
+		petty: "petty thievery",
+		trespassing: "trespassing",
+	}>>
+
+	<<set setup.crimeDescs to {
+		default: "general",
+		legacy: "a string of crimes that slipped through the cracks",
+		escape: "escaping prison",
+		cake: "a high-profile theft involving a noble's wedding cake",
+		kylarPrison: "assisting in a prison escape",
+	}>>
+
+	/* this initialises the C.crime object */
+	<<run initCCrime()>>
+
+	<<set setup.skinColor to {
+		tanLoc: ["body", "breasts", "penis", "swimshorts", "swimsuitTop", "swimsuitBottom", "bikiniTop", "bikiniBottom", "tshirt"],
+		light: { hStart: 30, hEnd: 47, sStart: 0.15, sEnd: 0.30,bStart: 4.3, bEnd: 3.4 },
+		medium: { hStart: 47, hEnd: 50, sStart: 0.30, sEnd: 0.32,bStart: 3.4, bEnd: 1.55 },
+		dark: { hStart: 50, hEnd: 50, sStart: 0.32, sEnd: 0.4,bStart: 1.55, bEnd: 0.6 },
+		gyaru: [
+			{ hStart: 30, hEnd: 47, sStart: 0.15, sEnd: 0.30, bStart: 4.3, bEnd: 3.4 },
+			{ hStart: 47, hEnd: 50, sStart: 0.30, sEnd: 0.32, bStart: 3.4, bEnd: 1.55 },
+			{ hStart: 50, hEnd: 50, sStart: 0.32, sEnd: 0.4, bStart: 1.55, bEnd: 0.6 },
+		],
+		ylight: { hStart: 50, hEnd: 55, sStart: 0.20, sEnd: 0.20,bStart: 4.4, bEnd: 3.6 },
+		ymedium: { hStart: 60, hEnd: 60, sStart: 0.25, sEnd: 0.25,bStart: 3.6, bEnd: 2.0 },
+		ydark: { hStart: 60, hEnd: 60, sStart: 0.25, sEnd: 0.25,bStart: 2.0, bEnd: 1.0 },
+		ygyaru: [
+			{ hStart: 60, hEnd: 60, sStart: 0.25, sEnd: 0.25, bStart: 4.4, bEnd: 3.6 },
+			{ hStart: 60, hEnd: 60, sStart: 0.25, sEnd: 0.25, bStart: 3.6, bEnd: 2.0 },
+			{ hStart: 60, hEnd: 60, sStart: 0.25, sEnd: 0.25, bStart: 2.0, bEnd: 1.0 },
+		],
+		slime: { hStart: 200, hEnd: 200, sStart: 0.3, sEnd: 0.5,bStart: 3.6, bEnd: 3.1 },
+	}>>
+
+	<<set setup.tanImg to {
+		"sidebar":{
+			"t":{
+				"basehead":"img/bodyRed/basehead.png",
+				"basenoarms":"img/bodyRed/basenoarms.png",
+				"blush1":"img/bodyRed/blush1.png",
+				"blush2":"img/bodyRed/blush2.png",
+				"blush3":"img/bodyRed/blush3.png",
+				"blush4":"img/bodyRed/blush4.png",
+				"blush5":"img/bodyRed/blush5.png",
+				"leftarm":"img/bodyRed/leftarm.png",
+				"leftarmidle":"img/bodyRed/leftarmidle.png",
+				"mouthcry":"img/bodyRed/mouthcry.png",
+				"mouthfrown":"img/bodyRed/mouthfrown.png",
+				"mouthneutral":"img/bodyRed/mouthneutral.png",
+				"mouthsmile":"img/bodyRed/mouthsmile.png",
+				"rightarm":"img/bodyRed/rightarm.png",
+				"rightarmidle":"img/bodyRed/rightarmidle.png",
+				"breasts1":"img/bodyRed/breasts/breasts1.png",
+				"breasts1_clothed":"img/bodyRed/breasts/breasts1.png",
+				"breasts2":"img/bodyRed/breasts/breasts2.png",
+				"breasts2_clothed":"img/bodyRed/breasts/breasts2.png",
+				"breasts3":"img/bodyRed/breasts/breasts3.png",
+				"breasts3_clothed":"img/bodyRed/breasts/breasts3_clothed.png",
+				"breasts4":"img/bodyRed/breasts/breasts4.png",
+				"breasts4_clothed":"img/bodyRed/breasts/breasts4_clothed.png",
+				"breasts5":"img/bodyRed/breasts/breasts5.png",
+				"breasts5_clothed":"img/bodyRed/breasts/breasts6_clothed.png",
+				"breasts6":"img/bodyRed/breasts/breasts6.png",
+				"breasts6_clothed":"img/bodyRed/breasts/breasts6_clothed.png",
+				"penis-2":"img/bodyRed/penis/penis-2.png",
+				"penis-1":"img/bodyRed/penis/penis-1.png",
+				"penis0":"img/bodyRed/penis/penis0.png",
+				"penis1":"img/bodyRed/penis/penis1.png",
+				"penis2":"img/bodyRed/penis/penis2.png",
+				"penis3":"img/bodyRed/penis/penis3.png",
+				"penis4":"img/bodyRed/penis/penis4.png",
+				"penis5":"img/bodyRed/penis/penis5.png",
+				"penisnoballs-2":"img/bodyRed/penisnoballs/penis-2.png",
+				"penisnoballs-1":"img/bodyRed/penisnoballs/penis-1.png",
+				"penisnoballs0":"img/bodyRed/penisnoballs/penis0.png",
+				"penisnoballs1":"img/bodyRed/penisnoballs/penis1.png",
+				"penisnoballs2":"img/bodyRed/penisnoballs/penis2.png",
+				"penisnoballs3":"img/bodyRed/penisnoballs/penis3.png",
+				"penisnoballs4":"img/bodyRed/penisnoballs/penis4.png",
+				"penisnoballs5":"img/bodyRed/penisnoballs/penis5.png",
+				"penis_chastity":"img/bodyRed/penis/penis_chastity.png",
+				"penis_virgin-2":"img/bodyRed/penis/penis_virgin-2.png",
+				"penis_virgin-1":"img/bodyRed/penis/penis_virgin-1.png",
+				"penis_virgin0":"img/bodyRed/penis/penis_virgin0.png",
+				"penis_virgin1":"img/bodyRed/penis/penis_virgin1.png",
+				"penis_virgin2":"img/bodyRed/penis/penis_virgin2.png",
+				"penis_virgin3":"img/bodyRed/penis/penis_virgin3.png",
+				"penis_virgin4":"img/bodyRed/penis/penis_virgin4.png",
+				"penis_virgin5":"img/bodyRed/penis/penis_virgin5.png",
+				"penis_virginnoballs-2":"img/bodyRed/penis/penis_virgin-2.png",
+				"penis_virginnoballs-1":"img/bodyRed/penis/penis_virgin-1.png",
+				"penis_virginnoballs0":"img/bodyRed/penis/penis_virgin0.png",
+				"penis_virginnoballs1":"img/bodyRed/penis/penis_virgin1.png",
+				"penis_virginnoballs2":"img/bodyRed/penisnoballs/penis_virgin2.png",
+				"penis_virginnoballs3":"img/bodyRed/penisnoballs/penis_virgin3.png",
+				"penis_virginnoballs4":"img/bodyRed/penisnoballs/penis_virgin4.png",
+				"penis_virginnoballs5":"img/bodyRed/penisnoballs/penis_virgin5.png",
+				"baseTanSwimsuit_UUpper":"img/bodyRed/tan/under_upper/swimsuit/swimsuit.png",
+				"baseTanSwimsuit_ULower":"img/bodyRed/tan/under_lower/swimsuit.png",
+				"baseTanBikini_UUpper":"img/bodyRed/tan/under_upper/bikini/",
+				"baseTanBikini_ULower":"img/bodyRed/tan/under_lower/bikini.png",
+				"baseTanSwimshorts":"img/bodyRed/tan/under_lower/swimshorts.png",
+				"preggyBelly":"img/bodyRed/preggyBelly/pregnancy_belly_"
+			},
+			"f":{
+				"basehead":"img/body/basehead.png",
+				"basenoarms":"img/body/basenoarms.png",
+				"blush1":"img/body/blush1.png",
+				"blush2":"img/body/blush2.png",
+				"blush3":"img/body/blush3.png",
+				"blush4":"img/body/blush4.png",
+				"blush5":"img/body/blush5.png",
+				"leftarm":"img/body/leftarm.png",
+				"leftarmidle":"img/body/leftarmidle.png",
+				"mouthcry":"img/body/mouthcry.png",
+				"mouthfrown":"img/body/mouthfrown.png",
+				"mouthneutral":"img/body/mouthneutral.png",
+				"mouthsmile":"img/body/mouthsmile.png",
+				"rightarm":"img/body/rightarm.png",
+				"rightarmidle":"img/body/rightarmidle.png",
+				"breasts1":"img/body/breasts/breasts1.png",
+				"breasts1_clothed":"img/body/breasts/breasts1.png",
+				"breasts2":"img/body/breasts/breasts2.png",
+				"breasts2_clothed":"img/body/breasts/breasts2.png",
+				"breasts3":"img/body/breasts/breasts3.png",
+				"breasts3_clothed":"img/body/breasts/breasts3_clothed.png",
+				"breasts4":"img/body/breasts/breasts4.png",
+				"breasts4_clothed":"img/body/breasts/breasts4_clothed.png",
+				"breasts5":"img/body/breasts/breasts5.png",
+				"breasts5_clothed":"img/body/breasts/breasts6_clothed.png",
+				"breasts6":"img/body/breasts/breasts6.png",
+				"breasts6_clothed":"img/body/breasts/breasts6_clothed.png",
+				"penis-2":"img/body/penis/penis-2.png",
+				"penis-1":"img/body/penis/penis-1.png",
+				"penis0":"img/body/penis/penis0.png",
+				"penis1":"img/body/penis/penis1.png",
+				"penis2":"img/body/penis/penis2.png",
+				"penis3":"img/body/penis/penis3.png",
+				"penis4":"img/body/penis/penis4.png",
+				"penis5":"img/body/penis/penis5.png",
+				"penisnoballs-2":"img/body/penisnoballs/penis-2.png",
+				"penisnoballs-1":"img/body/penisnoballs/penis-1.png",
+				"penisnoballs0":"img/body/penisnoballs/penis0.png",
+				"penisnoballs1":"img/body/penisnoballs/penis1.png",
+				"penisnoballs2":"img/body/penisnoballs/penis2.png",
+				"penisnoballs3":"img/body/penisnoballs/penis3.png",
+				"penisnoballs4":"img/body/penisnoballs/penis4.png",
+				"penisnoballs5":"img/body/penisnoballs/penis5.png",
+				"penis_chastity":"img/body/penis/penis_chastity.png",
+				"penis_virgin-2":"img/body/penis/penis_virgin-2.png",
+				"penis_virgin-1":"img/body/penis/penis_virgin-1.png",
+				"penis_virgin0":"img/body/penis/penis_virgin0.png",
+				"penis_virgin1":"img/body/penis/penis_virgin1.png",
+				"penis_virgin2":"img/body/penis/penis_virgin2.png",
+				"penis_virgin3":"img/body/penis/penis_virgin3.png",
+				"penis_virgin4":"img/body/penis/penis_virgin4.png",
+				"penis_virgin5":"img/body/penis/penis_virgin5.png",
+				"penis_virginnoballs-2":"img/body/penisnoballs/penis_virgin-2.png",
+				"penis_virginnoballs-1":"img/body/penisnoballs/penis_virgin-1.png",
+				"penis_virginnoballs0":"img/body/penisnoballs/penis_virgin0.png",
+				"penis_virginnoballs1":"img/body/penisnoballs/penis_virgin1.png",
+				"penis_virginnoballs2":"img/body/penisnoballs/penis_virgin2.png",
+				"penis_virginnoballs3":"img/body/penisnoballs/penis_virgin3.png",
+				"penis_virginnoballs4":"img/body/penisnoballs/penis_virgin4.png",
+				"penis_virginnoballs5":"img/body/penisnoballs/penis_virgin5.png",
+				"preggyBelly":"img/body/preggyBelly/pregnancy_belly_"
+			}
+		},
+		"doggy":{
+			"t":{
+				"doggyactivebase":"img/sex/doggyRed/active/body/doggyactivebase.png",
+				"doggyactivebaseleftarm":"img/sex/doggyRed/active/body/doggyactivebaseleftarm.png",
+				"doggyactivebaselegs":"img/sex/doggyRed/active/body/doggyactivebaselegs.png",
+				"doggyactivebaserightarm":"img/sex/doggyRed/active/body/doggyactivebaserightarm.png",
+				"doggyactiveblush1":"img/sex/doggyRed/active/body/doggyactiveblush1.png",
+				"doggyactiveblush2":"img/sex/doggyRed/active/body/doggyactiveblush2.png",
+				"doggyactiveblush3":"img/sex/doggyRed/active/body/doggyactiveblush3.png",
+				"doggyactiveblush4":"img/sex/doggyRed/active/body/doggyactiveblush4.png",
+				"doggyactiveblush5":"img/sex/doggyRed/active/body/doggyactiveblush5.png",
+				"doggyactivemouth":"img/sex/doggyRed/active/body/doggyactivemouth.png",
+				"freckles":"img/sex/doggyRed/active/body/freckles.png",
+				"breastsTiny":"img/sex/doggyRed/active/body/doggyactivebreaststiny.png",
+				"breastsSmall":"img/sex/doggyRed/active/body/doggyactivebreastssmall.png",
+				"breastsLarge":"img/sex/doggyRed/active/body/doggyactivebreastslarge.png",
+				"breastsHuge":"img/sex/doggyRed/active/body/doggyactivebreastshuge.png",
+				"doggyactivefeetjob":"img/sex/doggyRed/active/body/doggyactivefeetjob.png",
+				"doggyactivefeetjobpenis":"img/sex/doggyRed/active/body/doggyactivefeetjobpenis.png",
+				"doggyactiveleftarmbound":"img/sex/doggyRed/active/body/doggyactiveleftarmbound.png",
+				"doggyactivelefthandjob":"img/sex/doggyRed/active/body/doggyactivelefthandjob.png",
+				"doggyactivelefthandjobpenis":"img/sex/doggyRed/active/body/doggyactivelefthandjobpenis.png",
+				"doggyactivepenis":"img/sex/doggyRed/active/body/doggyactivepenis.png",
+				"doggyactivepenisvirgin":"img/sex/doggyRed/active/body/doggyactivepenisvirgin.png",
+				"doggyactivepush":"img/sex/doggyRed/active/body/doggyactivepush.png",
+				"doggyactivepushlight":"img/sex/doggyRed/active/body/doggyactivepushlight.png",
+				"doggyactiverighthandjob":"img/sex/doggyRed/active/body/doggyactiverighthandjob.png",
+				"doggyactiverighthandjobpenis":"img/sex/doggyRed/active/body/doggyactiverighthandjobpenis.png",
+				"doggyactiveeyelids":"img/sex/doggyRed/active/doggyactiveeyelids.png",
+				"doggyactiveclosedmouth":"img/sex/doggyRed/active/body/doggyactiveclosedmouth.png",
+				"activebeastlefthand":"img/sex/doggyRed/frontbeast/activebeastlefthand.png",
+				"activebeastlefthandpenis":"img/sex/doggyRed/frontbeast/activebeastlefthandpenis.png",
+				"activebeastrighthand":"img/sex/doggyRed/frontbeast/activebeastrighthand.png",
+				"activebeastrighthandpenis":"img/sex/doggyRed/frontbeast/activebeastrighthandpenis.png",
+				"activebearlefthand":"img/sex/doggyRed/frontbeast/bear/activebearlefthand.png",
+				"activebearlefthandpenis":"img/sex/doggyRed/frontbeast/bear/activebearlefthandpenis.png",
+				"activebearrighthand":"img/sex/doggyRed/frontbeast/bear/activebearrighthand.png",
+				"activebearrighthandpenis":"img/sex/doggyRed/frontbeast/bear/activebearrighthandpenis.png",
+				"activecatlefthand":"img/sex/doggyRed/frontbeast/cat/activecatlefthand.png",
+				"activecatlefthandpenis":"img/sex/doggyRed/frontbeast/cat/activecatlefthandpenis.png",
+				"activecatrighthand":"img/sex/doggyRed/frontbeast/cat/activecatrighthand.png",
+				"activecatrighthandpenis":"img/sex/doggyRed/frontbeast/cat/activecatrighthandpenis.png",
+				"activedolphinlefthand":"img/sex/doggyRed/frontbeast/dolphin/activedolphinlefthand.png",
+				"activedolphinlefthandpenis":"img/sex/doggyRed/frontbeast/dolphin/activedolphinlefthandpenis.png",
+				"activedolphinrighthand":"img/sex/doggyRed/frontbeast/dolphin/activedolphinrighthand.png",
+				"activedolphinrighthandpenis":"img/sex/doggyRed/frontbeast/dolphin/activedolphinrighthandpenis.png",
+				"doggyactiveshadow":"img/sex/doggyRed/active/body/doggyactiveshadow.png",
+				"doggyactivechastitycagepenis":"img/sex/doggyRed/active/body/doggyactivechastitycagepenis.png",
+				"doggyactivechastitycagepenissmall":"img/sex/doggyRed/active/body/doggyactivechastitycagepenissmall.png",
+				"doggyactivestrapon":"img/sex/doggyRed/active/body/doggyactivepenisvirgin.png",
+				"doggyanalentrance":"img/sex/doggyRed/doggyanalentrance.png",
+				"doggyanalimminent":"img/sex/doggyRed/doggyanalimminent.png",
+				"doggyoralentrance":"img/sex/doggyRed/doggyoralentrance.png",
+				"doggyoralimminent":"img/sex/doggyRed/doggyoralimminent.png",
+				"doggyvaginalentrance":"img/sex/doggyRed/doggyvaginalentrance.png",
+				"doggyvaginalimminent":"img/sex/doggyRed/doggyvaginalimminent.png",
+				"doggyactiveanal":"img/sex/doggyRed/active/body/doggyactiveanal.png",
+				"doggyactiveanaldap":"img/sex/doggyRed/active/body/doggyactiveanaldap.png",
+				"doggyactiveanaldpp":"img/sex/doggyRed/active/body/doggyactiveanaldpp.png",
+				"doggyactivecheeks":"img/sex/doggyRed/active/body/doggyactivecheeks.png",
+				"doggyactivechest":"img/sex/doggyRed/active/body/doggyactivechest.png",
+				"doggyactivefeetjobpenis":"img/sex/doggyRed/active/body/doggyactivefeetjobpenis.png",
+				"doggyactivefencing":"img/sex/doggyRed/active/body/doggyactivefencing.png",
+				"doggyactivelefthandjobpenis":"img/sex/doggyRed/active/body/doggyactivelefthandjobpenis.png",
+				"doggyactiverighthandjobpenis":"img/sex/doggyRed/active/body/doggyactiverighthandjobpenis.png",
+				"doggyactiveoral":"img/sex/doggyRed/active/body/doggyactiveoral.png",
+				"doggyactivethighs":"img/sex/doggyRed/active/body/doggyactivethighs.png",
+				"doggyactivevaginal":"img/sex/doggyRed/active/body/doggyactivevaginal.png",
+				"doggyactivevaginaldp":"img/sex/doggyRed/active/body/doggyactivevaginaldp.png",
+				"doggyactivepreggybelly":"img/sex/doggyRed/active/body/preggyBelly/pregnancy_belly_"
+			},
+			"f":{
+				"doggyactivebase":"img/sex/doggy/active/body/doggyactivebase.png",
+				"doggyactivebaseleftarm":"img/sex/doggy/active/body/doggyactivebaseleftarm.png",
+				"doggyactivebaselegs":"img/sex/doggy/active/body/doggyactivebaselegs.png",
+				"doggyactivebaserightarm":"img/sex/doggy/active/body/doggyactivebaserightarm.png",
+				"breastsTiny":"img/sex/doggy/active/body/doggyactivebreaststiny.png",
+				"doggyactiveblush1":"img/sex/doggy/active/body/doggyactiveblush1.png",
+				"doggyactiveblush2":"img/sex/doggy/active/body/doggyactiveblush2.png",
+				"doggyactiveblush3":"img/sex/doggy/active/body/doggyactiveblush3.png",
+				"doggyactiveblush4":"img/sex/doggy/active/body/doggyactiveblush4.png",
+				"doggyactiveblush5":"img/sex/doggy/active/body/doggyactiveblush5.png",
+				"doggyactivemouth":"img/sex/doggy/active/body/doggyactivemouth.png",
+				"freckles":"img/sex/doggy/active/body/freckles.png",
+				"breastsSmall":"img/sex/doggy/active/body/doggyactivebreastssmall.png",
+				"breastsLarge":"img/sex/doggy/active/body/doggyactivebreastslarge.png",
+				"breastsHuge":"img/sex/doggy/active/body/doggyactivebreastshuge.png",
+				"doggyactivefeetjob":"img/sex/doggy/active/body/doggyactivefeetjob.png",
+				"doggyactivefeetjobpenis":"img/sex/doggy/active/body/doggyactivefeetjobpenis.png",
+				"doggyactiveleftarmbound":"img/sex/doggy/active/body/doggyactiveleftarmbound.png",
+				"doggyactivelefthandjob":"img/sex/doggy/active/body/doggyactivelefthandjob.png",
+				"doggyactivelefthandjobpenis":"img/sex/doggy/active/body/doggyactivelefthandjobpenis.png",
+				"doggyactivepenis":"img/sex/doggy/active/body/doggyactivepenis.png",
+				"doggyactivepenisvirgin":"img/sex/doggy/active/body/doggyactivepenisvirgin.png",
+				"doggyactivepush":"img/sex/doggy/active/body/doggyactivepush.png",
+				"doggyactivepushlight":"img/sex/doggy/active/body/doggyactivepushlight.png",
+				"doggyactiverighthandjob":"img/sex/doggy/active/body/doggyactiverighthandjob.png",
+				"doggyactiverighthandjobpenis":"img/sex/doggy/active/body/doggyactiverighthandjobpenis.png",
+				"doggyactiveeyelids":"img/sex/doggy/active/doggyactiveeyelids.png",
+				"doggyactiveclosedmouth":"img/sex/doggy/active/body/doggyactiveclosedmouth.png",
+				"activebeastlefthand":"img/sex/doggy/frontbeast/activebeastlefthand.png",
+				"activebeastlefthandpenis":"img/sex/doggy/frontbeast/activebeastlefthandpenis.png",
+				"activebeastrighthand":"img/sex/doggy/frontbeast/activebeastrighthand.png",
+				"activebeastrighthandpenis":"img/sex/doggy/frontbeast/activebeastrighthandpenis.png",
+				"activebearlefthand":"img/sex/doggy/frontbeast/bear/activebearlefthand.png",
+				"activebearlefthandpenis":"img/sex/doggy/frontbeast/bear/activebearlefthandpenis.png",
+				"activebearrighthand":"img/sex/doggy/frontbeast/bear/activebearrighthand.png",
+				"activebearrighthandpenis":"img/sex/doggy/frontbeast/bear/activebearrighthandpenis.png",
+				"activecatlefthand":"img/sex/doggy/frontbeast/cat/activecatlefthand.png",
+				"activecatlefthandpenis":"img/sex/doggy/frontbeast/cat/activecatlefthandpenis.png",
+				"activecatrighthand":"img/sex/doggy/frontbeast/cat/activecatrighthand.png",
+				"activecatrighthandpenis":"img/sex/doggy/frontbeast/cat/activecatrighthandpenis.png",
+				"activedolphinlefthand":"img/sex/doggy/frontbeast/dolphin/activedolphinlefthand.png",
+				"activedolphinlefthandpenis":"img/sex/doggy/frontbeast/dolphin/activedolphinlefthandpenis.png",
+				"activedolphinrighthand":"img/sex/doggy/frontbeast/dolphin/activedolphinrighthand.png",
+				"activedolphinrighthandpenis":"img/sex/doggy/frontbeast/dolphin/activedolphinrighthandpenis.png",
+				"doggyactiveshadow":"img/sex/doggy/active/body/doggyactiveshadow.png",
+				"doggyactivechastitycagepenis":"img/sex/doggy/active/body/doggyactivechastitycagepenis.png",
+				"doggyactivechastitycagepenissmall":"img/sex/doggy/active/body/doggyactivechastitycagepenissmall.png",
+				"doggyactivestrapon":"img/sex/doggy/active/body/doggyactivepenisvirgin.png",
+				"doggyanalentrance":"img/sex/doggy/doggyanalentrance.png",
+				"doggyanalimminent":"img/sex/doggy/doggyanalimminent.png",
+				"doggyoralentrance":"img/sex/doggy/doggyoralentrance.png",
+				"doggyoralimminent":"img/sex/doggy/doggyoralimminent.png",
+				"doggyvaginalentrance":"img/sex/doggy/doggyvaginalentrance.png",
+				"doggyvaginalimminent":"img/sex/doggy/doggyvaginalimminent.png",
+				"doggyactiveanal":"img/sex/doggy/active/body/doggyactiveanal.png",
+				"doggyactiveanaldap":"img/sex/doggy/active/body/doggyactiveanaldap.png",
+				"doggyactiveanaldpp":"img/sex/doggy/active/body/doggyactiveanaldpp.png",
+				"doggyactivecheeks":"img/sex/doggy/active/body/doggyactivecheeks.png",
+				"doggyactivechest":"img/sex/doggy/active/body/doggyactivechest.png",
+				"doggyactivefeetjobpenis":"img/sex/doggy/active/body/doggyactivefeetjobpenis.png",
+				"doggyactivefencing":"img/sex/doggy/active/body/doggyactivefencing.png",
+				"doggyactivelefthandjobpenis":"img/sex/doggy/active/body/doggyactivelefthandjobpenis.png",
+				"doggyactiverighthandjobpenis":"img/sex/doggy/active/body/doggyactiverighthandjobpenis.png",
+				"doggyactiveoral":"img/sex/doggy/active/body/doggyactiveoral.png",
+				"doggyactivethighs":"img/sex/doggy/active/body/doggyactivethighs.png",
+				"doggyactivevaginal":"img/sex/doggy/active/body/doggyactivevaginal.png",
+				"doggyactivevaginaldp":"img/sex/doggy/active/body/doggyactivevaginaldp.png",
+				"doggyactivepreggybelly":"img/sex/doggy/active/body/preggyBelly/pregnancy_belly_"
+			}
+		},
+		"missionary":{
+			"t":{
+				"activearmsbound":"img/sex/missionaryRed/active/body/activearmsbound.png",
+				"activebase":"img/sex/missionaryRed/active/body/activebase.png",
+				"activebaseleftarm":"img/sex/missionaryRed/active/body/activebaseleftarm.png",
+				"activebaselegl":"img/sex/missionaryRed/active/body/activebaselegl.png",
+				"activebaselegldown":"img/sex/missionaryRed/active/body/activebaselegldown.png",
+				"activebaselegr":"img/sex/missionaryRed/active/body/activebaselegr.png",
+				"activebaselegrdown":"img/sex/missionaryRed/active/body/activebaselegrdown.png",
+				"activebaserightarm":"img/sex/missionaryRed/active/body/activebaserightarm.png",
+				"activebaserightarmstroke":"img/sex/missionaryRed/active/body/activebaserightarmstroke.png",
+				"activeblush1":"img/sex/missionaryRed/active/body/activeblush1.png",
+				"activeblush2":"img/sex/missionaryRed/active/body/activeblush2.png",
+				"activeblush3":"img/sex/missionaryRed/active/body/activeblush3.png",
+				"activeblush4":"img/sex/missionaryRed/active/body/activeblush4.png",
+				"activeblush5":"img/sex/missionaryRed/active/body/activeblush5.png",
+				"activemouth":"img/sex/missionaryRed/active/body/activemouth.png",
+				"freckles":"img/sex/missionaryRed/active/body/freckles.png",
+				"breastsTiny":"img/sex/missionaryRed/active/body/activebreaststiny.png",
+				"breastsSmall":"img/sex/missionaryRed/active/body/activebreastssmall.png",
+				"breastsLarge":"img/sex/missionaryRed/active/body/activebreastslarge.png",
+				"breastsHuge":"img/sex/missionaryRed/active/body/activebreastshuge.png",
+				"activefeetjob":"img/sex/missionaryRed/active/body/activefeetjob.png",
+				"activefeetjobpenis":"img/sex/missionaryRed/active/body/activefeetjobpenis.png",
+				"activeleftarmbound":"img/sex/missionaryRed/active/body/activeleftarmbound.png",
+				"activelefthandjob":"img/sex/missionaryRed/active/body/activelefthandjob.png",
+				"activelefthandjobpenis":"img/sex/missionaryRed/active/body/activelefthandjobpenis.png",
+				"activepenis":"img/sex/missionaryRed/active/body/activepenis.png",
+				"activepenisdown":"img/sex/missionaryRed/active/body/activepenisdown.png",
+				"activepenisvirgin":"img/sex/missionaryRed/active/body/activepenisvirgin.png",
+				"activepenisvirgindown":"img/sex/missionaryRed/active/body/activepenisvirgindown.png",
+				"activepush":"img/sex/missionaryRed/active/body/activepush.png",
+				"activepushlight":"img/sex/missionaryRed/active/body/activepushlight.png",
+				"activerighthandjob":"img/sex/missionaryRed/active/body/activerighthandjob.png",
+				"activerighthandjobpenis":"img/sex/missionaryRed/active/body/activerighthandjobpenis.png",
+				"activeeyelids":"img/sex/missionaryRed/active/activeeyelids.png",
+				"activeshadow":"img/sex/missionaryRed/active/body/activeshadow.png",
+				"activechastitycagepenis":"img/sex/missionaryRed/active/body/activechastitycagepenis.png",
+				"activechastitycagedownpenis":"img/sex/missionaryRed/active/body/activechastitycagedownpenis.png",
+				"activechastitycagedownpenissmall":"img/sex/missionaryRed/active/body/activechastitycagedownpenissmall.png",
+				"activechastitycagedownpenisflat":"img/sex/missionaryRed/active/body/activechastitycagedownpenisflat.png",
+				"activeclosedmouth":"img/sex/missionaryRed/active/body/activeclosedmouth.png",
+				"activestrapon":"img/sex/missionaryRed/active/body/activepenisvirgin.png",
+				"activestrapondown":"img/sex/missionaryRed/active/body/activepenisvirgindown.png",
+				"analentrance":"img/sex/missionaryRed/analentrance.png",
+				"vaginalentrance":"img/sex/missionaryRed/vaginalentrance.png",
+				"activeanal":"img/sex/missionaryRed/active/body/activeanal.png",
+				"activeanaldoublemissionary":"img/sex/missionaryRed/active/body/activeanaldoublemissionary.png",
+				"activechest":"img/sex/missionaryRed/active/body/activechest.png",
+				"activefeetjobpenis":"img/sex/missionaryRed/active/body/activefeetjobpenis.png",
+				"activeanal":"img/sex/missionaryRed/active/body/activeanal.png",
+				"activefencing":"img/sex/missionaryRed/active/body/activefencing.png",
+				"activelefthandjobpenis":"img/sex/missionaryRed/active/body/activelefthandjobpenis.png",
+				"activerighthandjobpenis":"img/sex/missionaryRed/active/body/activerighthandjobpenis.png",
+				"activeoral":"img/sex/missionaryRed/active/body/activeoral.png",
+				"activethighs":"img/sex/missionaryRed/active/body/activethighs.png",
+				"activevaginal":"img/sex/missionaryRed/active/body/activevaginal.png",
+				"activevaginaldouble":"img/sex/missionaryRed/active/body/activevaginaldouble.png",
+				"activepreggybelly":"img/sex/missionaryRed/active/body/preggyBelly/pregnancy_belly_"
+			},
+			"f":{
+				"activearmsbound":"img/sex/missionary/active/body/activearmsbound.png",
+				"activebase":"img/sex/missionary/active/body/activebase.png",
+				"activebaseleftarm":"img/sex/missionary/active/body/activebaseleftarm.png",
+				"activebaselegl":"img/sex/missionary/active/body/activebaselegl.png",
+				"activebaselegldown":"img/sex/missionary/active/body/activebaselegldown.png",
+				"activebaselegr":"img/sex/missionary/active/body/activebaselegr.png",
+				"activebaselegrdown":"img/sex/missionary/active/body/activebaselegrdown.png",
+				"activebaserightarm":"img/sex/missionary/active/body/activebaserightarm.png",
+				"activebaserightarmstroke":"img/sex/missionary/active/body/activebaserightarmstroke.png",
+				"activeblush1":"img/sex/missionary/active/body/activeblush1.png",
+				"activeblush2":"img/sex/missionary/active/body/activeblush2.png",
+				"activeblush3":"img/sex/missionary/active/body/activeblush3.png",
+				"activeblush4":"img/sex/missionary/active/body/activeblush4.png",
+				"activeblush5":"img/sex/missionary/active/body/activeblush5.png",
+				"activemouth":"img/sex/missionary/active/body/activemouth.png",
+				"freckles":"img/sex/missionary/active/body/freckles.png",
+				"breastsTiny":"img/sex/missionary/active/body/activebreaststiny.png",
+				"breastsSmall":"img/sex/missionary/active/body/activebreastssmall.png",
+				"breastsLarge":"img/sex/missionary/active/body/activebreastslarge.png",
+				"breastsHuge":"img/sex/missionary/active/body/activebreastshuge.png",
+				"activefeetjob":"img/sex/missionary/active/body/activefeetjob.png",
+				"activefeetjobpenis":"img/sex/missionary/active/body/activefeetjobpenis.png",
+				"activeleftarmbound":"img/sex/missionary/active/body/activeleftarmbound.png",
+				"activelefthandjob":"img/sex/missionary/active/body/activelefthandjob.png",
+				"activelefthandjobpenis":"img/sex/missionary/active/body/activelefthandjobpenis.png",
+				"activepenis":"img/sex/missionary/active/body/activepenis.png",
+				"activepenisdown":"img/sex/missionary/active/body/activepenisdown.png",
+				"activepenisvirgin":"img/sex/missionary/active/body/activepenisvirgin.png",
+				"activepenisvirgindown":"img/sex/missionary/active/body/activepenisvirgindown.png",
+				"activepush":"img/sex/missionary/active/body/activepush.png",
+				"activepushlight":"img/sex/missionary/active/body/activepushlight.png",
+				"activerighthandjob":"img/sex/missionary/active/body/activerighthandjob.png",
+				"activerighthandjobpenis":"img/sex/missionary/active/body/activerighthandjobpenis.png",
+				"activeeyelids":"img/sex/missionary/active/activeeyelids.png",
+				"activeshadow":"img/sex/missionary/active/body/activeshadow.png",
+				"activechastitycagepenis":"img/sex/missionary/active/body/activechastitycagepenis.png",
+				"activechastitycagedownpenis":"img/sex/missionary/active/body/activechastitycagedownpenis.png",
+				"activechastitycagedownpenissmall":"img/sex/missionary/active/body/activechastitycagedownpenissmall.png",
+				"activechastitycagedownpenisflat":"img/sex/missionary/active/body/activechastitycagedownpenisflat.png",
+				"activeclosedmouth":"img/sex/missionary/active/body/activeclosedmouth.png",
+				"activestrapon":"img/sex/missionary/active/body/activepenisvirgin.png",
+				"activestrapondown":"img/sex/missionary/active/body/activepenisvirgindown.png",
+				"analentrance":"img/sex/missionary/analentrance.png",
+				"vaginalentrance":"img/sex/missionary/vaginalentrance.png",
+				"activeanal":"img/sex/missionary/active/body/activeanal.png",
+				"activeanaldoublemissionary":"img/sex/missionary/active/body/activeanaldoublemissionary.png",
+				"activechest":"img/sex/missionary/active/body/activechest.png",
+				"activefeetjobpenis":"img/sex/missionary/active/body/activefeetjobpenis.png",
+				"activeanal":"img/sex/missionary/active/body/activeanal.png",
+				"activefencing":"img/sex/missionary/active/body/activefencing.png",
+				"activelefthandjobpenis":"img/sex/missionary/active/body/activelefthandjobpenis.png",
+				"activerighthandjobpenis":"img/sex/missionary/active/body/activerighthandjobpenis.png",
+				"activeoral":"img/sex/missionary/active/body/activeoral.png",
+				"activethighs":"img/sex/missionary/active/body/activethighs.png",
+				"activevaginal":"img/sex/missionary/active/body/activevaginal.png",
+				"activevaginaldouble":"img/sex/missionary/active/body/activevaginaldouble.png",
+				"activepreggybelly":"img/sex/missionary/active/body/preggyBelly/pregnancy_belly_"
+			}
+		},
+		"close":{
+			"missionary":{
+				"t":{
+					"anus":"img/sex/closeRed/missionary/anus.png",
+					"anuspenetrate":"img/sex/closeRed/missionary/anuspenetrate.png",
+					"penis":"img/sex/closeRed/missionary/penis.png",
+					"penisentrance":"img/sex/closeRed/missionary/penisentrance.png",
+					"penispenetrated":"img/sex/closeRed/missionary/penispenetrated.png",
+					"chastitypenis":"img/sex/closeRed/missionary/chastitypenis.png",
+					"chastitypenissmall":"img/sex/closeRed/missionary/chastitypenissmall.png",
+					"chastitypenisflat":"img/sex/closeRed/missionary/chastitypenisflat.png",
+					"penisbase":"img/sex/closeRed/missionary/penisbase.png",
+					"futapenisnoballs":"img/sex/closeRed/missionary/futapenisnoballs.png",
+					"futapenisbase":"img/sex/closeRed/missionary/futapenisbase.png",
+					"vagina":"img/sex/closeRed/missionary/vagina.png",
+					"vaginaaroused":"img/sex/closeRed/missionary/vaginaaroused.png",
+					"futavagina":"img/sex/closeRed/missionary/futavagina.png",
+					"futavaginanoballs":"img/sex/closeRed/missionary/futavaginanoballs.png",
+					"vaginaChastityBase":"img/sex/closeRed/missionary/chastityBelt/vaginaBase.png",
+					"vaginaChastityMan":"img/sex/closeRed/missionary/chastityBelt/man.png",
+					"vaginapenetrate":"img/sex/closeRed/missionary/vaginapenetrate.png",
+					"vaginapenetratebig":"img/sex/closeRed/missionary/vaginapenetratebig.png",
+					"penis1":"img/sex/closeRed/missionary/beast/penis1.png",
+					"penisentrance1":"img/sex/closeRed/missionary/beast/penisentrance1.png",
+					"penisimminent1":"img/sex/closeRed/missionary/beast/penisimminent1.png",
+					"penisnoballs":"img/sex/closeRed/missionary/beast/penisnoballs.png",
+					"penisentrancenoballs":"img/sex/closeRed/missionary/beast/penisentrancenoballs.png",
+					"penisimminentnoballs":"img/sex/closeRed/missionary/beast/penisimminentnoballs.png",
+					"chest":"img/sex/closeRed/chest/"
+				},
+				"f":{
+					"anus":"img/sex/close/missionary/anus.png",
+					"anuspenetrate":"img/sex/close/missionary/anuspenetrate.png",
+					"penis":"img/sex/close/missionary/penis.png",
+					"penisentrance":"img/sex/close/missionary/penisentrance.png",
+					"penispenetrated":"img/sex/close/missionary/penispenetrated.png",
+					"chastitypenis":"img/sex/close/missionary/chastitypenis.png",
+					"chastitypenissmall":"img/sex/close/missionary/chastitypenissmall.png",
+					"chastitypenisflat":"img/sex/close/missionary/chastitypenisflat.png",
+					"penisbase":"img/sex/close/missionary/penisbase.png",
+					"futapenisnoballs":"img/sex/close/missionary/futapenisnoballs.png",
+					"futapenisbase":"img/sex/close/missionary/futapenisbase.png",
+					"vagina":"img/sex/close/missionary/vagina.png",
+					"vaginaaroused":"img/sex/close/missionary/vaginaaroused.png",
+					"futavagina":"img/sex/close/missionary/futavagina.png",
+					"futavaginanoballs":"img/sex/close/missionary/futavaginanoballs.png",
+					"vaginaChastityBase":"img/sex/close/missionary/chastityBelt/vaginaBase.png",
+					"vaginaChastityMan":"img/sex/close/missionary/chastityBelt/man.png",
+					"vaginapenetrate":"img/sex/close/missionary/vaginapenetrate.png",
+					"vaginapenetratebig":"img/sex/close/missionary/vaginapenetratebig.png",
+					"penis1":"img/sex/close/missionary/beast/penis1.png",
+					"penisentrance1":"img/sex/close/missionary/beast/penisentrance1.png",
+					"penisimminent1":"img/sex/close/missionary/beast/penisimminent1.png",
+					"penisnoballs":"img/sex/close/missionary/beast/penisnoballs.png",
+					"penisentrancenoballs":"img/sex/close/missionary/beast/penisentrancenoballs.png",
+					"penisimminentnoballs":"img/sex/close/missionary/beast/penisimminentnoballs.png",
+					"chest":"img/sex/close/chest/"
+				}
+
+			},
+			"doggy":{
+				"t":{
+					"anus":"img/sex/closeRed/doggy/anus.png",
+					"anuspenetrate":"img/sex/closeRed/doggy/anuspenetrate.png",
+					"penis":"img/sex/closeRed/doggy/penis.png",
+					"penisentrance":"img/sex/closeRed/doggy/penisentrance.png",
+					"penispenetrated":"img/sex/closeRed/doggy/penispenetrated.png",
+					"chastitypenis":"img/sex/closeRed/doggy/chastitypenis.png",
+					"chastitypenissmall":"img/sex/closeRed/doggy/chastitypenissmall.png",
+					"chastitypenisflat":"img/sex/closeRed/doggy/chastitypenisflat.png",
+					"penisbase":"img/sex/closeRed/doggy/penisbase.png",
+					"futapenisnoballs":"img/sex/closeRed/doggy/futapenisnoballs.png",
+					"futapenisbase":"img/sex/closeRed/doggy/futapenisbase.png",
+					"vagina":"img/sex/closeRed/doggy/vagina.png",
+					"vaginaaroused":"img/sex/closeRed/doggy/vaginaaroused.png",
+					"futavagina":"img/sex/closeRed/doggy/futavagina.png",
+					"futavaginanoballs":"img/sex/closeRed/doggy/futavaginanoballs.png",
+					"vaginaChastityBase":"img/sex/closeRed/doggy/chastityBelt/vaginaBase.png",
+					"vaginaChastityMan":"img/sex/closeRed/doggy/chastityBelt/man.png",
+					"vaginapenetrate":"img/sex/closeRed/doggy/vaginapenetrate.png",
+					"vaginapenetratebig":"img/sex/closeRed/doggy/vaginapenetratebig.png",
+					"penis1":"img/sex/closeRed/doggy/beast/penis1.png",
+					"penisentrance1":"img/sex/closeRed/doggy/beast/penisentrance1.png",
+					"penisimminent1":"img/sex/closeRed/doggy/beast/penisimminent1.png",
+					"penisnoballs":"img/sex/closeRed/doggy/beast/penisnoballs.png",
+					"penisentrancenoballs":"img/sex/closeRed/doggy/beast/penisentrancenoballs.png",
+					"penisimminentnoballs":"img/sex/closeRed/doggy/beast/penisimminentnoballs.png",
+					"chest":"img/sex/closeRed/chest/"
+				},
+				"f":{
+					"anus":"img/sex/close/doggy/anus.png",
+					"anuspenetrate":"img/sex/close/doggy/anuspenetrate.png",
+					"penis":"img/sex/close/doggy/penis.png",
+					"penisentrance":"img/sex/close/doggy/penisentrance.png",
+					"penispenetrated":"img/sex/close/doggy/penispenetrated.png",
+					"chastitypenis":"img/sex/close/doggy/chastitypenis.png",
+					"chastitypenissmall":"img/sex/close/doggy/chastitypenissmall.png",
+					"chastitypenisflat":"img/sex/close/doggy/chastitypenisflat.png",
+					"penisbase":"img/sex/close/doggy/penisbase.png",
+					"futapenisnoballs":"img/sex/close/doggy/futapenisnoballs.png",
+					"futapenisbase":"img/sex/close/doggy/futapenisbase.png",
+					"vagina":"img/sex/close/doggy/vagina.png",
+					"vaginaaroused":"img/sex/close/doggy/vaginaaroused.png",
+					"futavagina":"img/sex/close/doggy/futavagina.png",
+					"futavaginanoballs":"img/sex/close/doggy/futavaginanoballs.png",
+					"vaginaChastityBase":"img/sex/close/doggy/chastityBelt/vaginaBase.png",
+					"vaginaChastityMan":"img/sex/close/doggy/chastityBelt/man.png",
+					"vaginapenetrate":"img/sex/close/doggy/vaginapenetrate.png",
+					"vaginapenetratebig":"img/sex/close/doggy/vaginapenetratebig.png",
+					"penis1":"img/sex/close/doggy/beast/penis1.png",
+					"penisentrance1":"img/sex/close/doggy/beast/penisentrance1.png",
+					"penisimminent1":"img/sex/close/doggy/beast/penisimminent1.png",
+					"penisnoballs":"img/sex/close/doggy/beast/penisnoballs.png",
+					"penisentrancenoballs":"img/sex/close/doggy/beast/penisentrancenoballs.png",
+					"penisimminentnoballs":"img/sex/close/doggy/beast/penisimminentnoballs.png",
+					"chest":"img/sex/close/chest/"
+				}
+			}
+		}
+	}>>
+
+	<<set setup.npcSkinDefaults to {
+		"white":"hue-rotate(30deg) saturate(0.20) brightness(4.10)",
+		"black":"hue-rotate(52deg) saturate(0.45) brightness(1.70)",
+		"ghost":"hue-rotate(30deg) saturate(0.10) brightness(4.50) opacity(80%)"
+	}>>
+
+	<<set setup.shadowImage to {
+		"doggy": [
+			"sexbase", "sexlegsdoggy", "sexbasefront", "beastforeground", "shadowman", "shadowmanbackground", "shadowmanforeground"
+		],
+		"missionary": [
+			"sexbase", "sexlower", "sexhair", "sexbasefront", "layer-sexwings", "halo-front", "sexrightleg", "sexarmsbound", "sexaboveclothes", "foreground", "sexbaseoverlay", "beastforeground", "shadowman", "shadowmanbackground", "shadowmanforeground"
+		]
+	}>>
+
+	<<set setup.bodyliquid to {
+		/* edit the bodyparts list to add a new bodypart, or the liquidtypes list to add a new liquid */
+		"bodyparts": [
+			"neck","rightarm","leftarm","thigh","bottom","tummy","chest","face","hair","feet","vaginaoutside","vagina","penis","anus","mouth"
+		],
+		"innerbodyparts": [
+			"vagina","anus","mouth"
+		],
+		"liquidtype": [
+			"goo", "semen", "nectar"
+		],
+		combined(bodypart){
+			return $player.bodyliquid[bodypart].goo + $player.bodyliquid[bodypart].semen + $player.bodyliquid[bodypart].nectar;
+		}
+	}>>
+
+	<<set setup.bodyparts to ["forehead", "left_cheek", "right_cheek", "left_shoulder", "right_shoulder", "breasts", "back", "left_bottom", "right_bottom", "pubic", "left_thigh", "right_thigh"]>>
+
+	<<set setup.clothingLayer to {
+		"all": ["over_upper","over_lower","over_head","upper","lower","under_upper","under_lower","head","face","neck","hands","legs","feet"],
+		"body": ["upper","lower","under_upper","under_lower","head","face","neck","hands","legs","feet"],
+		"torso": ["over_upper","over_lower","upper","lower","under_upper","under_lower"],
+		"torso_inner": ["upper","lower","under_upper","under_lower"],
+		"torso_outer": ["over_upper","over_lower","upper","lower"],
+		"over": ["over_upper","over_lower","over_head"],
+		"upper": ["upper", "under_upper"],
+		"lower": ["lower","under_lower"]
+	}>>
+
+	/*All items that should never be placed in the wardrobe*/
+	<<set setup.wardrobeSkip to ["naked","towel top","large towel","towel skirt","large towel bottom","plant skirt","plant top"]>>
+
+	<<set setup.actionsTypes to {
+		'personTypes': [
+			'Everyone', 'Strangers', 'Acquaintances', 'Alternative', 'Defiant', 'Submissive', 'Animals', 'Tentacles', 'Bailey', 'Robin', 'Whitney', 'Kylar', 'Sydney', 'Eden', 'Avery', 'Leighton', 'Alex', 'Ivory Wraith', 'Black Wolf', 'Great Hawk'
+		],
+		'combatTypes': [
+			'rape', 'consensual'
+		],
+		'actionTypes': [
+			'leftaction', 'rightaction', 'feetaction', 'mouthaction', 'penisaction', 'vaginaaction', 'anusaction', 'askActions', 'regrab'
+		]
+	}>>
+	/* 北极星模组 */
+	<<set setup.actionsTypes['personTypes'] = setup.actionsTypes['personTypes'].concat(['泰勒', '凯西'])>>
+	<<set setup.actionsTypes['actionTypes'] = setup.actionsTypes['actionTypes'].concat(['tailaction'])>>
+	/* 北极星 */
+
+	<<set setup.majorAreas to [
+		"Orphanage", "Bedroom", "Barb Street", "Cliff Street", "Connudatus Street", "Danube Street", "Domus Street", "Elk Street",
+		"Harvest Street", "High Street", "Mer Street", "Nightingale Street", "Oxford Street", "Starfish Street", "Wolf Street",
+		"Residential alleyways", "Commercial alleyways", "Industrial alleyways", "Park", "Hallways", "Brothel", "Strip Club",
+		"Beach", "Ocean Breeze", "Docks Work", "Residential Drain", "Commercial Drain", "Industrial Drain", "Forest", "Farmland",
+		"Livestock Field", "Moor", "Forest Wolf Cave", "Wolf Cave", "Wolf Cave Clearing", "Asylum", "Asylum Cell", "Underground Cell", "Prison Cell", "Island"
+	]>>
+	/* 北极星模组 */
+	<<set setup.majorAreas = setup.majorAreas.concat(["Seasons Island", "Lake Shore", "Farmland", "Farm Work", "Meadow"])>>
+	/* 北极星 */
+
+	<<set setup.clothingStateIndex to {"chest": 6, "midriff": 5, "waist": 4, "thighs": 3, "knees": 2, "ankles": 1}>>
+	<<set setup.clothingStateNextDown to {
+		"chest": "midriff",
+		"midriff": "waist",
+		"waist": "thighs",
+		"thighs": "knees",
+		"knees": "ankles",
+		"ankles": 0,
+	}>>
+	<<set setup.clothingStateNextUp to {
+		"chest": 0,
+		"midriff": "chest",
+		"waist": "midriff",
+		"thighs": "waist",
+		"knees": "thighs",
+		"ankles": "knees",
+	}>>
+
+	<<set setup.npcPenisRemarks to {
+		"big": ["Your body feels weak at the sight.","You shudder at the sight.","You moan involuntarily at its size.","You gasp at its massive girth.","Your thighs feel weak as you look on."],
+		"small": ["You stifle a laugh at the sight.","You smirk at the sight.","You stifle a chuckle at the sight.","You stifle a giggle at the sight.","You try not to laugh."]
+	}>>
+
+	<<set setup.breastsizes to ["", "budding", "tiny", "small", "pert", "modest", "full", "large", "ample", "massive", "huge", "gigantic", "enormous"]>>
+
+	<<set setup.NPCVirginityTypes to {"anal": false, "oral": false, "penile": false, "vaginal": false, "handholding": false, "temple": false, "kiss": false}>>
+	<<set setup.NPCVirginityTypesVirgin to {"anal": true, "oral": true, "penile": true, "vaginal": true, "handholding": true, "temple": false, "kiss": true}>>
+
+	<<set setup.pharmacyItems to {
+		"penis_reduction": {
+			"type": "penis reduction",
+			"name": "penis reduction pills",
+			"price": 15000,
+		},
+		"penis_growth": {
+			"type": "penis growth",
+			"name": "penis growth pills",
+			"price": 15000,
+		},
+		"penis_blocker": {
+			"type": "penis blocker",
+			"name": "penis growth blocker pills",
+			"price": 20000,
+		},
+		"breast_reduction": {
+			"type": "breast reduction",
+			"name": "breast reduction pills",
+			"price": 15000,
+		},
+		"breast_growth": {
+			"type": "breast growth",
+			"name": "breast growth pills",
+			"price": 15000,
+		},
+		"breast_blocker": {
+			"type": "breast blocker",
+			"name": "breast growth blocker pills",
+			"price": 20000,
+		},
+		"bottom_reduction": {
+			"type": "bottom reduction",
+			"name": "bottom reduction pills",
+			"price": 15000,
+		},
+		"bottom_growth": {
+			"type": "bottom growth",
+			"name": "bottom growth pills",
+			"price": 15000,
+		},
+		"bottom_blocker": {
+			"type": "bottom blocker",
+			"name": "bottom growth blocker pills",
+			"price": 20000,
+		},
+		"Anti-Parasite Cream": {
+			"type": "Anti-Parasite Cream",
+			"name": "Anti-parasite Cream",
+			"price": 25000,
+		},
+		"condoms": {
+			"type": "condoms",
+			"name": "condoms",
+			"price": 6000,
+		},
+		"pregnancy_test": {
+			"type": "pregnancy test",
+			"name": "pregnancy test",
+			"price": 2500,
+		},
+		"fertility_pills": {
+			"type": "fertility booster",
+			"name": "fertility booster",
+			"price": 50000,
+		},
+		"contraceptive_pills": {
+			"type": "contraceptive",
+			"name": "contraceptive",
+			"price": 25000,
+		},
+		"Morning_After_pill": {
+			"type": "Morning After pill",
+			"name": "Morning After pill",
+			"price": 200,
+		},
+		"breast_pump": {
+			"type": "Breast Pump",
+			"name": "Breast Pump",
+			"price": 5000,
+		},
+
+	}>>
+
+	<<set setup.estateBlackjack to {
+		/*
+		stats don't go down, so you can consider the money to be a temporary bypass ("I have £452501558102 so I'll be fine if I lose"),
+		while the stat checks give a "I have won 21958125 games, I won't lose" confidence boost
+		*/
+		/* primary requirements given which the player can choose a given ante */
+		"primaryRequirements": [
+			{
+				"message": "Win at least 10 rounds of blackjack, or have £2,500 on you.",
+				"check": "$estatePersistent.totalRoundsWon gte 10"
+			},
+			{
+				"message": "Win at least £500 worth of bets, or have £5,000 on you.",
+				"check": "$estatePersistent.totalBetMoneyMade gte 50000"
+			},
+			{
+				"message": "Win at least £1,000 worth of bets, or have £10,000 on you.",
+				"check": "$estatePersistent.totalBetMoneyMade gte 100000"
+			}
+		],
+		/* alternatively, the minimum amount of money you need to have for PC to be confident enough to risk betting it */
+		"confidenceMoney": [250000, 500000, 1000000],
+		/*
+		low max bet usually is used by casinos to make sure players don't make more than the casino can pay out (or rather, makes it safer for the casino)
+		however, there's also the fact that you can use low bets, or a small ratio between the min and max bet prevents the usage of the martingale strategy
+		*/
+		"betSteps":    [100,   200,   500   ],
+		"baseMaxBets": [2500,  5000,  10000 ],
+		"anteSizes":   [25000, 50000, 100000],
+	}>>
+
+	<<set setup.parasiteTypesPerBodypart to {
+		"nipples": ["none", "urchin", "slime"],
+		"penis": ["none", "urchin", "slime"],
+		"clit": ["none", "urchin", "slime"],
+		"bottom": ["none", "urchin", "slime", "maggot"],
+		"left_thigh": ["none", "maggot"],
+		"right_thigh": ["none", "maggot"],
+		"left_arm": ["none", "maggot"],
+		"right_arm": ["none", "maggot"],
+		"left_ear": ["none", "slime"],
+		"right_ear": ["none", "slime"],
+		"tummy": ["none", "maggot"],
+	}>>
+	/* 北极星模组 */
+	<<set setup.parasiteTypesPerBodypart['nipples'] = setup.parasiteTypesPerBodypart['nipples'].concat(['livingclothes'])>>
+	<<set setup.parasiteTypesPerBodypart['penis'] = setup.parasiteTypesPerBodypart['penis'].concat(['livingclothes'])>>
+	<<set setup.parasiteTypesPerBodypart['clit'] = setup.parasiteTypesPerBodypart['clit'].concat(['livingclothes'])>>
+	<<set setup.parasiteTypesPerBodypart['bottom'] = setup.parasiteTypesPerBodypart['bottom'].concat(['livingclothes'])>>
+	/* 北极星 */
+
+	/*Note: Pregnancy - adjust as require and ensure that <<npcPregnancyUpdater>> is running in backComp*/
+	/*Should match with $NPCNameList*/
+	/*FOR `canBePregnant` DO NOT REMOVE FROM LIST ONCE ENABLED FOR OFFICAL VERSIONS, IT WILL DELETE EXISTING PREGNANCIES FOR NPCS*/
+	<<set setup.pregnancy to {
+		canBePregnant: ["Alex","Black Wolf"],
+		canImpregnatePlayer: ["Alex","Black Wolf"],
+		infertile: ["Bailey", "Leighton"],
+		ignoresIncompeteCheck: ["Ivory Wraith"],
+		typesEnabled: ["human" , "wolf", "wolfboy", "wolfgirl"],
+		randomAlwaysKeep: ["wolf_cave"]
+	}>>
+<</widget>>

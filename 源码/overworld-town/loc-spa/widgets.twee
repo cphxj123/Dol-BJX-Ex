@@ -1,0 +1,376 @@
+:: Widgets Spa [widget]
+<<widget "spa_actions">>
+	How do you want to behave?
+	<br><br>
+
+	<<link [[Cute|Spa Work Cute]]>><<set $spa.behaviour to "cute">><</link>>
+	<br>
+	<<link [[Sophisticated|Spa Work Sophisticated]]>><<set $spa.behaviour to "sophisticated">><</link>>
+	<br>
+	<<link [[Alluring|Spa Work Alluring]]>><<set $spa.behaviour to "alluring">><</link>><<promiscuous1>>
+	<br>
+<</widget>>
+
+
+<<widget "spa_work">>
+	<<spa_init>>
+	<<generate1>><<person1>>
+	A <<person>> enters,
+	<<if $pronoun is "m">>
+		wearing a towel around <<his>> waist.
+	<<else>>
+		wearing a towel around <<his>> body.
+	<</if>>
+	<<rng 5>>
+	<<switch $rng>>
+	<<case 1>>
+		<<set $spa.personality to "hesitant">>
+		"Hello," <<he>> says. "I've not done this before. Do I just lie down?"
+		<br><br>
+	<<case 2>>
+		<<set $spa.personality to "tired">>
+		<<He>> <span class="lewd">pulls off <<his>> towel</span> and lies down with barely a glance in your direction.
+		<<if $awareness lte 100>>
+			<<awareness 1>><<gawareness>>
+		<</if>>
+		<<if $purity gte 990>>
+			<<gstress>><<stress 6>>
+		<</if>>
+		<br><br>
+	<<case 3>>
+		<<set $spa.personality to "rude">>
+		<<He>> eyes you up.
+		<<if $beauty gte 8000>>
+			"Nice," <<he>> says, before lying on the table.
+		<<else>>
+			"Was expecting better," <<he>> says, before lying on the table. "You better be good."<<gstress>><<stress 6>>
+		<</if>>
+		<br><br>
+	<<case 4>>
+		<<set $spa.personality to "lewd">>
+		"You're a treat," <<he>> says, leering at your body. "How about I lose the towel." <<He>> lets it drop to the floor, and puts <<his>> hands on <<his>> hips. "Like what you see?"
+		<<if $awareness lte 100>>
+			<<awareness 1>><<gawareness>>
+		<</if>>
+		<<if $purity gte 990>>
+			<<gstress>><<stress 6>>
+		<</if>>
+		<br><br>
+		<<He>> laughs, and lies on the table.
+		<br><br>
+	<<case 5>>
+		<<set $spa.personality to "polite">>
+		<<He>> nods at you, and lies on the table.
+		<br><br>
+	<</switch>>
+	<<spa_actions>>
+<</widget>>
+
+<<widget "spa_init">>
+	<<set $spa to {}>>
+	<<set $spa.behaviour to "cute">>
+<</widget>>
+
+<<widget "spa_end">>
+	<<unset $spa>>
+	<<set $masseur_stat += 1>>
+	<<famesocial 1>>
+	<<towelup>>
+	<<endevent>>
+	/*<<effects>>*/
+	<<if between(Time.hour, 8, 20)>>
+		<<link [[Next customer (0:50)|Spa Work]]>><</link>>
+		<br>
+		<<link [[Leave|Danube Street]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<<else>>
+		The spa empties as the establishment closes for the night.
+		<br><br>
+
+		<<link [[Next|Danube Street]]>><<set $eventskip to 1>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
+<<widget "body_tip">>/*First arg: body part used. Second arg: $tipmod, or "add", relies on $tipmod being set previously if a string is used.*/
+	<<if typeof _args[1] is "number">>
+		<<set $tipmod to _args[1]>>
+	<</if>>
+	<<print '<<set $tipmod += (Math.trunc($' + _args[0] + 'skill / 100) / 10)>>'>>
+	<<tipset "body">>
+<</widget>>
+
+<<widget "spa_breasts_strip">>
+	"Not sure why I asked," the <<person>> scoffs. <<He>> lunges for you,
+	<<dancedifficulty 1 1100 true>>
+	<<if $danceSuccess>>
+		<span class="green">but you duck and twirl out of the way.</span>
+		<br><br>
+
+		<<link [[Slap|Spa Rude Slap]]>><<def 1>><<trauma -6>><<famescrap 1>><</link>><<ltrauma>>
+		<br>
+		<<link [[Remain polite|Spa Rude Polite]]>><</link>>
+		<br>
+	<<else>>
+		<span class="red">and grasps your $worn.upper.name.</span>
+		<<if $worn.upper.open is 1 or $worn.upper.set isnot $worn.lower.set or $worn.upper.integrity lte 20>>
+
+			<<if $worn.under_upper.type.includes("naked")>>
+				<<fameexhibitionism 1>>
+				<<if $worn.upper.open is 1>>
+					<<He>> tugs it down,
+				<<elseif $worn.upper.integrity gt 20>>
+					<<He>> pulls it up,
+				<<else>>
+					<<He>> tears it off your body,
+					<<set $worn.upper.integrity -= 20>>
+					<<integritycheck>><<exposure>>
+				<</if>>
+				<span class="pink">revealing your <<breasts>>.</span><<ggtrauma>><<gstress>><<stress 6>><<trauma 12>>
+				<br><br>
+
+				"Nice," <<he>> says, releasing you after having a good look. <<covered>> <<He>> turns and leaves the room.
+				<br><br>
+				<<spa_end>>
+			<<else>>
+				<<if $worn.upper.open is 1>>
+					<<He>> tugs it down,
+				<<elseif $worn.upper.integrity gt 20>>
+					<<He>> pulls it up,
+				<<else>>
+					<<He>> tears it off your body,
+					<<set $worn.upper.integrity -= 20>>
+					<<integritycheck>><<exposure>>
+				<</if>>
+				<span class="pink">revealing your <<undertop>>.</span><<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+				<br><br>
+
+				<<link [[Next|Spa Rude Under Top]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<He>> tries to tear it from your body, but only damages the fabric before you manage to twist away.
+			<<set $worn.upper.integrity -= 20>>
+			<br><br>
+
+			<<He>> looks set to try again, but another member of staff bangs on the door. "Everything okay in there?"
+			<br>
+			"Yes," the <<person>> responds. "I'm just leaving." <<He>> shoots you a last look before exiting the room.
+			<br><br>
+
+			<<spa_end>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "spa_genitals_strip">>
+	"Not sure why I asked," the <<person>> scoffs. <<He>> lunges for you,
+	<<dancedifficulty 1 1100 true>>
+	<<if $danceSuccess>>
+		<span class="green">but you duck and twirl out of the way.</span>
+		<br><br>
+
+		<<link [[Slap|Spa Rude Slap]]>><<def 1>><<trauma -6>><<famescrap 1>><</link>><<ltrauma>>
+		<br>
+		<<link [[Remain polite|Spa Rude Polite]]>><</link>>
+		<br>
+	<<else>>
+		<span class="red">and grasps your $worn.lower.name.</span>
+		<<if $worn.lower.outfitSecondary is undefined>>
+			<<set _broken to true>>
+		<<elseif $worn.lower.outfitSecondary[1] is "broken" or $worn.lower.outfitSecondary[1] is "split">>
+			<<set _broken to true>>
+		<</if>>
+		<<if $worn.lower.open is 1 or _broken or $worn.lower.integrity lte 20>>
+
+			<<if $worn.under_lower.type.includes("naked")>>
+				<<fameexhibitionism 1>>
+				<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+					<<He>> flips it up,
+				<<elseif $worn.lower.integrity gt 20>>
+					<<He>> tugs it down,
+				<<else>>
+					<<He>> tears it off your body,
+					<<set $worn.lower.integrity -= 20>>
+					<<integritycheck>>
+				<</if>>
+				<span class="pink">revealing your <<genitals>>.</span><<ggtrauma>><<gstress>><<stress 6>><<trauma 12>>
+				<br><br>
+
+				<<spa_genitals_reaction>>
+				<<covered>> <<He>> turns and leaves the room.
+				<br><br>
+				<<spa_end>>
+			<<else>>
+				<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+					<<He>> flips it up,
+				<<elseif $worn.lower.integrity gt 20>>
+					<<He>> tugs it down,
+				<<else>>
+					<<He>> tears it off your body,
+					<<set $worn.lower.integrity -= 20>>
+					<<integritycheck>>
+				<</if>>
+				<span class="pink">revealing your <<undies>>.</span><<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+				<br><br>
+
+				<<link [[Next|Spa Rude Under]]>><</link>>
+				<br>
+			<</if>>
+		<<else>>
+			<<He>> tries to tear it from your body, but only damages the fabric before you manage to twist away.
+			<<set $worn.lower.integrity -= 20>>
+			<br><br>
+
+			<<He>> looks set to try again, but another member of staff bangs on the door. "Everything okay in there?"
+			<br>
+			"Yes," the <<person>> responds. "I'm just leaving." <<He>> shoots you a last look before exiting the room.
+			<br><br>
+
+			<<spa_end>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "spa_genitals_reaction">>
+	<<if $player.gender_appearance is "m">>
+		<<if $player.penisExist>>
+			<<if $player.penissize gte 3>>
+				"Damn <<girl>>," <<he>> says. "Why are you so bashful with a monster like that?" <<He>> releases you after having a good look.
+			<<elseif $player.penissize lte 1>>
+				"No wonder you're so bashful," <<he>> laughs, releasing you after having a good look.
+			<<else>>
+				"Nice," <<he>> says, releasing you after having a good look.
+			<</if>>
+		<<else>>
+			<<He>> stares for a moment, dumbfounded.
+			<<if random(1, 2) is 2>>
+				"I'm more impressed than angry," <<he>> says, releasing you.
+			<<else>>
+				"That's a surprise," <<he>> says, releasing you.
+			<</if>>
+		<</if>>
+	<<else>>
+		<<if $player.vaginaExist>>
+			"Nice," <<he>> says, releasing you after having a good look.
+		<<else>>
+			<<He>> stares for a moment, dumbfounded.
+			<<if random(1, 2) is 2>>
+				"I'm more impressed than angry," <<he>> says, releasing you.
+			<<else>>
+				"That's a surprise," <<he>> says, releasing you.
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "spa_hand_failed">>
+	<<if $NPCList[0].penis isnot "none">>
+		<<handejacstat>><<ejacstat>><<bodyliquid "leftarm" "semen">><<bodyliquid "rightarm" "semen">>
+		<<His>> <<print $NPCList[0].penisdesc>> erupts over your hands while <<his>> body spasms and jerks.
+	<<else>>
+		<<His>> body spasms and jerks.
+	<</if>>
+	<br><br>
+
+	<<He>> lies on the table for a few moments, gasping and resting an arm over <<his>> eyes. "Thanks," <<he>> manages. "Well earned."<<tipreceive>><<pass 50>>
+	<br><br>
+
+	<<He>> ties <<his>> towel around <<his>> waist, and walks from the room.
+	<br><br>
+
+	<<spa_end>>
+<</widget>>
+
+<<widget "spa_rape_failed">>
+	<<if $NPCList[0].penis isnot "none">>
+		<<if $player.vaginaExist or $analdisable is "f">>
+			<<He>> grasps your <<bottom>>, and tries to force <<his>> cock inside you.
+		<<else>>
+			<<He>> grasps your <<bottom>>
+		<</if>>
+	<<else>>
+		<<if $player.penisExist>>
+			<<He>> grasps your <<bottom>>, and tries to force your <<penis>> inside <<him>>.
+		<<else>>
+			<<He>> grasps your <<bottom>>.
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "spa_rob_options">>
+	You move your hands back up the <<persons>> back. <<He>> occasionally moans, but is otherwise quiet. Then <<he>> starts to snore.
+	<br><br>
+
+	<<if currentSkillValue('skulduggery') gte 100>>
+		<<if $rng gte 51>>
+			<<set $phase to 0>>
+			You spy a gold <<if $pronoun is "f">>necklace<<else>>chain<</if>> around <<his>> neck.
+		<<elseif $rng gte 2>>
+			<<set $phase to 1>>
+			You spy a gold ring on one of <<his>> fingers.
+		<<else>>
+			<<set $phase to 2>>
+			You spy a nice watch around <<his>> wrist. <span class="teal">It looks very valuable</span>
+		<</if>>
+		<br><br>
+	<</if>>
+
+
+	<<link [[Keep working|Spa Tired Keep]]>><<handskill 5>><</link>><<ghandskill>>
+	<br>
+	<<link [[Take a break|Spa Tired Break]]>><<stress -6>><<tiredness -6>><</link>><<ltiredness>><<lstress>>
+	<br>
+	<<if currentSkillValue('skulduggery') gte 100>>
+		<<set $skulduggerydifficulty to 500>>
+		/* 北极星模组 */
+		<<link [[偷窃|Spa Tired Steal]]>><<set $skulduggeryhands to 1>><</link>><<skulduggerydifficulty>><<crime "thievery">>
+		/* 北极星 */
+	<</if>>
+	<br>
+<</widget>>
+
+<<widget "spa_job_init">>
+	<<set $spa_job to 1>>
+	<<spa_event_select>>
+<</widget>>
+
+<<widget "spa_event_select">>
+	<<set _spa_event to random(1, 5)>>
+	<<if _spa_event is 5>>
+		<<set $daily.spaEvent to "party">>
+	<<else>>
+		<<set $daily.spaEvent to "normal">>
+	<</if>>
+<</widget>>
+
+<<widget "spa_tan_events">>
+	<<rngWraith 1>>
+	<<if _wraithEvent and $wraith.state is "haunt">>
+		The lights abruptly shut off, plunging you into total darkness. You try to force the bed open, but it remains fixed in place.
+		<br><br>
+
+		You begin to feel deathly cold. You try to scream, but no noise comes out. You hear <<if $wraith.seen gte 3>>familiar <</if>>laughter in the distance. <<stress 12>><<trauma 4>><<ggstress>><<gtrauma>>
+		<br><br>
+
+		The lights flicker back on, filling you with warmth and relief. You try to relax until the session ends, and the lights fade again.
+		<br><br>
+
+		<<link [[Next|Spa]]>><<clotheson>><</link>>
+		<br>
+	<<else>>
+		<span class="red">You hear the door open.</span> You turn your head, and see a pair of legs rush in. They crouch a moment, then turn and leave the room.
+		<br><br>
+
+		You push open the tanning bed. <span class="pink">Your clothes are gone!</span><<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
+		<br><br>
+
+		<<link [[Chase the culprit|Spa Tan Chase]]>><</link>><<athleticsdifficulty 1 1400>>
+		<br>
+		<<link [[Ask for help|Spa Tan Help]]>><</link>>
+		<br>
+		<<set $skulduggerydifficulty to 500>>
+		<<link [[Look for towels|Spa Tan Sneak]]>><</link>><<skulduggerydifficulty>>
+		<br>
+	<</if>>
+<</widget>>

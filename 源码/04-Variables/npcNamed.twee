@@ -1,0 +1,411 @@
+:: npcNamed [widget]
+<<widget "npcNamed">>
+	<!-- To add new Named NPC, add new npc name to setup.NPCNameList in variables-static.twee, and tag values to end. Rest of code should automatically scope based on size of list. -->
+	<!-- NPC descriptions is set as names, and their titles are being established for compatibility with general NPCs -->
+	<<if $npcNamedVersion is 1>>
+		<<set _tempNPCName to clone($NPCName)>>
+	<</if>>
+
+	<<set $NPCName = []>>
+	<<for _npc range setup.NPCNameList>>
+		<<run $NPCName.push(clone(setup.baseNNPC))>>
+	<</for>>
+
+	<<set $NPCNameList to setup.NPCNameList>> /* temporary compatibility layer before full C.npc conversion */
+
+	<!-- Draft default pronoun list. Random selection is part of initNPCgender widget -->
+	/% <<set _pro to ["m","f","f","m","m","m","m","m","f","f","m","m","f","m","f","m","m","m","f","m","m","m","m","m","f","m","m"]>> %/
+
+	<<set _tit to ["businessperson", "caretaker", "brothel owner", "dance coach", "club owner","English teacher","hunter", "shopkeeper", "doctor", "pious", "loner", "criminal", "headteacher", "swimming teacher", "sewer dweller", "maths teacher", "orphan", "cafe owner", "science teacher", "bully", "history teacher", "alpha", "photographer", "mayor", "farmer", "farmhand", "terror", "smuggler", "faithful", "reflection", "pirate"]>>
+	/* 北极星模组 */
+    <<set _tit = _tit.concat(["探险家", "逃学者", "见习教徒", "巫师"])>>
+    /* 北极星 */
+
+	<<set _ins to ["weak", "weak", "looks", "ethics", "ethics", "ethics", "looks", "weak", "skill", "ethics", "weak", "skill", "skill", "ethics", "weak", "ethics", "ethics", "ethics", "ethics", "looks", "skill", "weak", "skill", "looks", "looks", "weak", "looks", "ethics", "skill", "looks", "skill"]>>
+	/* 北极星模组 */
+    <<set _ins = _ins.concat(["weak", "ethics", "skill", "skill"])>>
+    /* 北极星 */
+
+	<!-- Type needs to conform to beast type: wolf, dog, etc. -->
+	<<set _tpe to ["human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "human", "wolf", "human", "human", "human", "human", "hawk", "human", "human", "human", "human"]>>
+	/* 北极星模组 */
+    <<set _tpe = _tpe.concat(["human", "human", "human", "cat"])>>
+    /* 北极星 */
+
+	<<set _swi to ["a","a","a","a","a","a","a","t","a","a","t","a","a","a","a","a","t","a","a","t","a","a","a","a","a","t","a","a","t","a", "a"]>>
+	/* 北极星模组 */
+    <<set _swi = _swi.concat(["t", "t", "t", "t"])>>
+    /* 北极星 */
+
+	<<for _i to 0; _i lt $NPCName.length; _i++>>
+
+		<<set $NPCName[_i].nam to $NPCNameList[_i]>>
+		<<set $NPCName[_i].description to $NPCNameList[_i]>>
+		<<set $NPCName[_i].title to _tit[_i]>>
+		<<set $NPCName[_i].chastity to {penis:"", vagina:"", anus:""}>>
+		<<set $NPCName[_i].insecurity to _ins[_i]>>
+		<<if _swi[_i] is "t">>
+			<<set $NPCName[_i].adult to 0>>
+			<<set $NPCName[_i].teen to 1>>
+		<<else>>
+			<<set $NPCName[_i].adult to 1>>
+			<<set $NPCName[_i].teen to 0>>
+		<</if>>
+		<<set $NPCName[_i].type to _tpe[_i]>>
+		<<set $NPCName[_i].purity to 0>>
+		<<set $NPCName[_i].corruption to 0>>
+		<<if _tpe[_i] is "wolf">>
+			<<set $NPCName[_i].claws to "claws">> <!-- Adjusted Wolf and Hawk for the changes converting $claws to .claws -->
+		<<elseif _tpe[_i] is "hawk">>
+			<<set $NPCName[_i].claws to "talons">>
+		/* 北极星模组 */
+		<<elseif _tpe[_i] is "cat">>
+			<<set $NPCName[_i].claws to "claws">>
+		/* 北极星 */
+		<</if>>
+	<</for>>
+	<<generateNPCNameHairAndEyeColors true>>
+	<<npcPregnancyUpdater>>
+<</widget>>
+
+<<widget "npcNamedUpdate">>/*Applies new system to old saves, and carries over relevant variables.*/
+	<<if $npcNamedVersion isnot 2>><!-- Needed for compatibility with V2.5 and prior saves -->
+		<<npcNamed>>
+
+		<<for _e to 0; _e lt $NPCNameList.length; _e++>>
+			<<set _lowerCaseName to $NPCNameList[_e].toLowerCase()>>
+			<<set _upperCaseName to $NPCNameList[_e]>>
+
+			<<if $npcNamedVersion is undefined>>
+				/* .init and .pronoun can't be set within an easy loop */
+				<<if V['init' + _lowerCaseName] isnot undefined>>
+					<<set $NPCName[$NPCNameList.indexOf(_upperCaseName)].init to V['init' + _lowerCaseName]>>
+					<<run delete V['init' + _lowerCaseName]>>
+				<</if>>
+				<<if V[_lowerCaseName + 'gender'] isnot undefined>>
+					<<set $NPCName[$NPCNameList.indexOf(_upperCaseName)].pronoun to V[_lowerCaseName + 'gender']>>
+					/* do not unset old gender, it is still needed within a loop */
+				<</if>>
+				/* set new npc attribute vars and remove old ones in a loop */
+				<<for _attribute range ["trust", "love", "dom", "lust", "rage", "state", "trauma", "gender", "penissize", "penisdesc", "penis", "vagina"]>>
+					<<if V[_lowerCaseName + _attribute] isnot undefined>>
+						<<set $NPCName[$NPCNameList.indexOf(_upperCaseName)][_attribute] to V[_lowerCaseName + _attribute]>>
+						<<run delete V[_lowerCaseName + _attribute]>>
+					<</if>>
+				<</for>>
+
+			<<elseif $npcNamedVersion is 1>>
+				<<if V[_lowerCaseName + 'gender'] isnot undefined>>
+					<<set $NPCName[$NPCNameList.indexOf(_upperCaseName)].pronoun to V[_lowerCaseName + 'gender']>>
+					<<run delete V[_lowerCaseName + 'gender']>>
+				<</if>>
+				<<if V[_lowerCaseName + 'penis'] isnot undefined>>
+					<<set $NPCName[$NPCNameList.indexOf(_upperCaseName)].penis to V[_lowerCaseName + 'penis']>>
+					<<run delete V[_lowerCaseName + 'penis']>>
+				<</if>>
+				<<if V[_lowerCaseName + 'vagina'] isnot undefined>>
+					<<set $NPCName[$NPCNameList.indexOf(_upperCaseName)].vagina to V[_lowerCaseName + 'vagina']>>
+					<<run delete V[_lowerCaseName + 'vagina']>>
+				<</if>>
+			<</if>>
+		<</for>>
+
+		<<set $npcNamedVersion to 2>>
+
+		<<updateNewNamedNpcs>>
+	<</if>>
+<</widget>>
+
+<<widget "newNamedNpc">>
+	<<if _args[0]>>
+		<<if !$NPCNameList.includes(_args[0].nam)>>
+			<<set _values to clone(_args[0])>>
+			<<set _valueKeys to Object.keys(_values)>>
+			<<set _nnpc to clone(setup.baseNNPC)>>
+			<<for _i to 0; _i lt _valueKeys.length; _i++>>
+				<<set _nnpc[_valueKeys[_i]] to _values[_valueKeys[_i]]>>
+			<</for>>
+			<<if !_nnpc.description>><<set _nnpc.description to _nnpc.nam>><</if>>
+			<<set $NPCName.push(clone(_nnpc))>>
+			<<set $NPCNameList.push(clone(_nnpc.nam))>>
+			<<initNNPCVirginity $NPCName.length-1>>
+			<<initnpcgendersingle $NPCName.length-1>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "updateNewNamedNpcs">>
+	<<if $npcListVersion gte 1>>
+		<<set _newNNPCs to {
+			"blackwolf": {nam : "Black Wolf", title: "alpha", insecurity: "weak", adult: 1, type: "wolf", claws: "claws"},
+			"niki": {nam : "Niki", title: "photographer", insecurity: "skill", adult: 1},
+			"quinn": {nam : "Quinn", title: "mayor", insecurity: "looks", adult: 1},
+			"remy": {nam : "Remy", title: "farmer", insecurity: "looks", adult: 1},
+			"alex": {nam : "Alex", title: "farmhand", insecurity: "weak", teen: 1},
+			"greathawk": {nam : "Great Hawk", title: "terror", insecurity: "looks", adult: 1, type: "hawk", claws: "talons"},
+			"wren": {nam : "Wren", title: "smuggler", insecurity: "ethics", adult: 1},
+			"sydney": {nam : "Sydney", title: "faithful", insecurity: "skill", teen: 1},
+			"ivorywraith": {nam : "Ivory Wraith", title: "reflection", insecurity: "looks", adult: 1},
+			"zephyr": {nam : "Zephyr", title: "captain", insecurity: "skill", adult: 1}
+		}>>
+		/* 北极星模组 */
+		<<for _key, _value range _newNNPCs>>
+			<<set _newNNPCs[_value.nam] to clone(_value)>>
+		<</for>>
+		<<run $.extend(_newNNPCs, {
+		    "泰勒": {nam : "泰勒", title: "探险家", insecurity: "weak", teen: 1},
+			"凯西": {nam : "凯西", title: "逃学者", insecurity: "weak", teen: 1},
+			"塞伦": {nam : "塞伦", title: "见习信徒", insecurity: "skill", teen: 1},
+			"帕鲁提": {nam : "帕鲁提", title: "巫师", insecurity: "skill", teen: 1, type: "cat", claws: "claws"},
+		})>>
+		<<set _oldNPCs to {}>>
+	    <<for _i to 0; _i lt $NPCName.length; _i++>>
+	        <<set _oldNPCs[$NPCName[_i].nam] to clone($NPCName[_i])>>
+		<</for>>
+		<<set $NPCName = []>>
+		<<set $NPCNameList = []>>
+		<<set _npcsAdded to false>>
+		<<for _i to 0; _i lt setup.NPCNameList.length; _i++>>
+		    <<if _oldNPCs[setup.NPCNameList[_i]] isnot undefined>>
+		        <<set $NPCName.push(clone(_oldNPCs[setup.NPCNameList[_i]]))>>
+		        <<set $NPCNameList.push(clone(setup.NPCNameList[_i]))>>
+		    <<elseif _newNNPCs[setup.NPCNameList[_i]] isnot undefined>>
+		        <<newNamedNpc _newNNPCs[setup.NPCNameList[_i]]>>
+				<<set _npcsAdded to true>>
+			<<else>>
+			    <<newNamedNpc setup.baseNNPC>>
+				<<set _npcsAdded to true>>
+				<<error { message: "npc-" + setup.NPCNameList[_i] + "数据意外丢失" }>>
+		    <</if>>
+		<</for>>
+		/* 北极星 */
+		<<if _npcsAdded is true>>
+			<<generateNPCNameHairAndEyeColors>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "generateNPCNameHairAndEyeColors">>
+	<<for _i to 0; _i lt $NPCName.length; _i++>>
+		<<switch $NPCName[_i].nam>>
+			<<case "Whitney">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "blond">>
+				<</if>>
+			<<case "Jordan">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].eyeColour to "light blue">>
+					<<set $NPCName[_i].hairColour to "blond">>
+				<</if>>
+			<<case "Leighton">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].eyeColour to "green">>
+					<<set $NPCName[_i].hairColour to "black">>
+				<</if>>
+			<<case "Landry">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "black">>
+				<</if>>
+			<<case "Darryl">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "brown">>
+				<</if>>
+			<<case "River">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].eyeColour to "light blue">>
+					<<set $NPCName[_i].hairColour to "brown">>
+				<</if>>
+			<<case "Kylar" "Bailey">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to ["black","brown"].pluck()>>
+				<</if>>
+			<<case "Gwylan">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "mousy">>
+				<</if>>
+			<<case "Doren">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "red">>
+				<</if>>
+			<<case "Charlie" "Morgan">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "ginger">>
+				<</if>>
+			<<case "Black Wolf">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "black">>
+				<</if>>
+			<<case "Remy">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to "green">>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "brown">>
+				<</if>>
+			<<case "Alex">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to "green">>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "red">>
+				<</if>>
+			<<case "Great Hawk">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to "light blue">>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "brown">>
+				<</if>>
+			<<case "Wren">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].eyeColour to "brown">>
+					<<set $NPCName[_i].hairColour to "blond">>
+				<</if>>
+			<<case "Sydney">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to "amber">>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "strawberryblond">>
+				<</if>>
+			<<case "Ivory Wraith">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to "dark blue">>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "white">>
+				<</if>>
+			<<case "Zephyr">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined or _args[0] is "default">>
+					<<set $NPCName[_i].eyeColour to "green">>
+					<<set $NPCName[_i].hairColour to "black">>
+				<</if>>
+			/* 北极星模组 */
+		    <<case "泰勒">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["brown"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or $args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "dark brown">>
+				<</if>>
+			<<case "凯西">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["brown"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or $args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "black">>
+				<</if>>
+			<<case "塞伦">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or $args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "black">>
+				<</if>>
+			<<case "帕鲁提">>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["black"].pluck()>>
+				<</if>>
+				<<if $NPCName[_i].hairColour is 0 or $NPCName[_i].hairColour is undefined or $args[0] is "default">>
+					<<set $NPCName[_i].hairColour to "black">>
+				<</if>>
+			/* 北极星 */
+			<<default>>
+				<<if $NPCName[_i].eyeColour is 0 or $NPCName[_i].eyeColour is undefined>>
+					<<set $NPCName[_i].eyeColour to ["purple","dark blue","light blue","amber","hazel","green","red","pink","grey", "light grey", "lime green"].pluck()>>
+					<<set $NPCName[_i].hairColour to ["red","black","brown","lightbrown","blond","platinumblond","strawberryblond","ginger"].pluck()>>
+				<</if>>
+		<</switch>>
+	<</for>>
+<</widget>>
+
+<<widget "initAllNNPCVirginities">>
+	<<for _i to 0; _i lt $NPCNameList.length; _i++>>
+		<<initNNPCVirginity _i>>
+	<</for>>
+<</widget>>
+
+<<widget "initNNPCVirginity">>
+	<<set $NPCName[_args[0]].purity to 0>>
+	<<set $NPCName[_args[0]].corruption to 0>>
+	<<set $NPCName[_args[0]].virginity to clone(setup.NPCVirginityTypesVirgin)>>
+	<<set $NPCName[_args[0]].chastity to {penis:"", vagina:"", anus:""}>>
+	<<switch $NPCNameList[_args[0]]>>
+		<<case "Sydney">>
+			/* Has all virginities + temple virginity. */
+			<<set $NPCName[_args[0]].virginity to {"anal": true, "oral": true, "penile": true, "vaginal": true, "handholding": true, "temple": true, "kiss": true}>>
+		<<case "Robin" "Kylar" "Great Hawk">>
+			/* Has all virginities. */
+		/* 北极星模组 */
+		<<case "泰勒" "塞伦" "帕鲁提">>
+			/* Has all virginities. */
+		/* 北极星 */
+		<<case "Jordan">>
+			/* Has anal, oral, penile/vaginal, and kiss virginities. Missing handholding. */
+			<<set $NPCName[_args[0]].virginity.handholding to false>>
+		<<case "Black Wolf">>
+			/* Has anal, oral, kiss, and handholding virginities. Missing penile/vaginal. */
+			<<set $NPCName[_args[0]].virginity.penile to false>>
+			<<set $NPCName[_args[0]].virginity.vaginal to false>>
+		<<case "Gwylan" "Zephyr">>
+			/* Missing all virginities. */
+			<<set $NPCName[_args[0]].virginity to clone(setup.NPCVirginityTypes)>>
+		<<case "Charlie">>
+			/* Has oral, anal, and vaginal/penile virginities. Missing kiss and handholding. */
+			<<set $NPCName[_args[0]].virginity.kiss to false>>
+			<<set $NPCName[_args[0]].virginity.handholding to false>>
+		<<case "Eden">>
+			/* Has anal, oral and handholding virginity. Missing penile/vaginal and kiss. */
+			<<set $NPCName[_args[0]].virginity.penile to false>>
+			<<set $NPCName[_args[0]].virginity.vaginal to false>>
+			<<set $NPCName[_args[0]].virginity.kiss to false>>
+		<<case "Sam" "Mason">>
+			/* Has anal and oral virginity. Missing penile/vaginal, kiss, and handholding. */
+			<<set $NPCName[_args[0]].virginity.penile to false>>
+			<<set $NPCName[_args[0]].virginity.vaginal to false>>
+			<<set $NPCName[_args[0]].virginity.kiss to false>>
+			<<set $NPCName[_args[0]].virginity.handholding to false>>
+		/* 北极星模组 */
+		<<case "凯西">>
+			/* Has anal and oral virginity. Missing penile/vaginal, kiss, and handholding. */
+			<<set $NPCName[_args[0]].virginity.penile to false>>
+			<<set $NPCName[_args[0]].virginity.vaginal to false>>
+			<<set $NPCName[_args[0]].virginity.kiss to false>>
+			<<set $NPCName[_args[0]].virginity.handholding to false>>
+		/* 北极星 */
+		<<case "Alex" "Darryl" "Sirris" "Briar" "Wren" "Ivory Wraith">>
+			/* Missing all virginities. */
+			<<set $NPCName[_args[0]].virginity to clone(setup.NPCVirginityTypes)>>
+		<<default>>
+			/* Defaults to only having anal virginity. */
+			<<set $NPCName[_args[0]].virginity.oral to false>>
+			<<set $NPCName[_args[0]].virginity.penile to false>>
+			<<set $NPCName[_args[0]].virginity.vaginal to false>>
+			<<set $NPCName[_args[0]].virginity.kiss to false>>
+			<<set $NPCName[_args[0]].virginity.handholding to false>>
+	<</switch>>
+<</widget>>

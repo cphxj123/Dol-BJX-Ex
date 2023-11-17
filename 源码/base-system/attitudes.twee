@@ -1,0 +1,869 @@
+:: Widgets Attitudes [widget]
+
+<<widget "attitudes">>
+	How do you feel about consensual sex? <i>Provides a bonus after consensual sex based on how assertive you were.</i>
+	<br>
+	<label>
+		<<radiobutton "$assertiveaction" "submissive" autocheck>>
+		<span class="meek">I like making people feel good</span> (increase submissiveness)
+	</label>
+	<br>
+	<label>
+		<<radiobutton "$assertiveaction" "defiant" autocheck>>
+		<span class="brat">I like being in control</span> (increase defiance)
+	</label>
+	<br>
+	<label>
+		<<radiobutton "$assertiveaction" "trauma" autocheck>>
+		<span class="green">It's naughty</span> (decrease trauma)
+	</label>
+	<br>
+	<label>
+		<<radiobutton "$assertiveaction" "stress" autocheck>>
+		<span class="green">It's fun</span> (decrease stress)
+	</label>
+	<br><br>
+
+	With what demeanor do you speak with others?
+	<br>
+	<label><<radiobutton "$speech_attitude" "neutral" autocheck>> Neutral</label>
+	<br>
+	<<if $submissive gt 850>>
+		<label><<radiobutton "$speech_attitude" "meek" autocheck>> <span class="meek">Meek</span></label>
+		<br>
+	<<else>>
+		<span class="black"><i>You're too defiant to adopt a meek demeanor.</i></span>
+		<br>
+	<</if>>
+	<<if $submissive lt 1150>>
+		<label><<radiobutton "$speech_attitude" "bratty" autocheck>> <span class="brat">Bratty</span></label>
+		<br>
+	<<else>>
+		<span class="black"><i>You're too submissive to adopt a bratty demeanor.</i></span>
+		<br>
+	<</if>>
+	<br>
+
+	What makes you feel uncomfortable?
+	<br>
+	/* some events can force the switches to false without actually unlocking them */
+	<<if $attitudesControl.unlockExhibitionismUnderwear or $uncomfortable.underwear is false>>
+		<label><<checkbox "$uncomfortable.underwear" false true autocheck>> You're uncomfortable having your underwear seen by others.</label>
+	<<else>>
+		<span class="black">You're uncomfortable having your underwear seen by others. <i>Requires higher exhibitionism.</i></span>
+	<</if>>
+	<br>
+	<<if $attitudesControl.unlockExhibitionismNude or $uncomfortable.nude is false>>
+		<label><<checkbox "$uncomfortable.nude" false true autocheck>> You're uncomfortable being nude in front of others.</label>
+	<<else>>
+		<span class="black">You're uncomfortable being nude in front of others. <i>Requires higher exhibitionism.</i></span>
+	<</if>>
+	<br><br>
+
+	<<if $attitudesControl.unlockProstitution>>
+		<label><<checkbox "$uncomfortable.prostituting" false true autocheck>> You're uncomfortable prostituting yourself to help avoid Bailey's torments. <i>If unchecked, lets you prostitute yourself without appropriate promiscuity. Doing so will decrease control.</i></label>
+		<br>
+	<<else>>
+		Is it worth prostituting yourself to help avoid Bailey's torments? <i>Lets you prostitute yourself without appropriate promiscuity. Doing so will decrease control.</i>
+		<br>
+		<span class="black"><i>Bailey hasn't scared you enough.</i></span>
+		<br>
+	<</if>>
+	<br>
+	
+	<<if $gamemode isnot "hard">>
+		<<if $attitudesControl.unlockLewd>>
+			<label><<checkbox "$uncomfortable.lewd" false true autocheck>> You're uncomfortable reflecting on all the lewd acts you've performed. <i>If unchecked, exhibitionism, promiscuity, and deviancy will not decay. This can make managing control difficult.</i></label>
+		<<else>>
+			You're uncomfortable reflecting on all the lewd acts you've performed.
+			<br>
+			<span class="black"><i>Unlock level 3 exhibitionist, promiscuous, or deviant acts.</i></span>
+		<</if>>
+		<br><br>
+	<</if>>
+
+	<<if $attitudesControl.unlockHypnosis>>
+		<label><<checkbox "$uncomfortable.hypnosis" false true autocheck>> You're uncomfortable being hypnotised during sex. <i>If unchecked, you will accept hypnosis attempts during combat regardless of willpower.</i></label>
+		<br>
+	<</if>>
+	<br>
+
+	<<set _loveIntStart1 to $loveInterest.primary>>
+	<<set _loveIntStart2 to $loveInterest.secondary>>
+	<div id="loveInterest">
+		<<loveInterest>>
+	</div>
+	<<loveInterestFunction>>
+
+	<br><br>
+
+	<div class="solidBorderContainer">
+		<<setupDefaults>>
+		How do you feel about others? (Sets default combat actions.)
+		<br>
+		<<if $moleststat gt 0 or $debug is 1>>
+			<<set _options to ["Everyone","Strangers","Animals","Tentacles","Acquaintances","Robin","Bailey"]>>
+			<<set _named to ["Whitney","Kylar","Eden","Avery","Leighton","Sydney","Alex","Ivory Wraith","Black Wolf","Great Hawk"]>>
+
+			<<for _i to 0; _i lt _named.length; _i++>>
+				<<set _index to $NPCNameList.indexOf(_named[_i])>>
+				<<if $NPCName[_index].init is 1>>
+					<<run _options.push(_named[_i])>>
+				<</if>>
+			<</for>>
+			<<run _options.push("Alternative")>>
+			<<run _options.push("Defiant")>>
+			<<run _options.push("Submissive")>>
+
+			/*Data for the later loops*/
+			<<set _titles to ["Left Hand","Right Hand","Feet","Mouth","Penis","Vagina","Anus"]>>
+			<<set _dataName to ["leftaction","rightaction","feetaction","mouthaction","penisaction","vaginaaction","anusaction"]>>
+			<<set _data to ["_leftHand","_rightHand","_feet","_mouth","_penis","_vagina","_anus"]>>
+			<<set _defaultActions = DefaultActions.load(DefaultActions.create())>>
+
+			<<listbox "_defaultoption" autoselect>>
+				<<optionsfrom _options>>
+			<</listbox>>
+			<<combatDefaults>>
+			<br><br>
+			<<set _currentActionSet to 0>>
+			<div id="othersFeelings">
+				<<othersFeelings 0>>
+			</div>
+		<<else>>
+			<span class="black"><i>Default Actions will be unlocked after your first encounter.</i></span>
+		<</if>>
+	</div>
+<</widget>>
+
+<<widget "othersFeelings">>
+	<<set _currentOptions to _args[0]>>
+	<<set _stringDefault to "_defaultActions.consensual."+_options[_currentOptions]>>
+
+	<<switch _options[_currentOptions]>>
+		<<case "Everyone">><span class="red">"Everyone" will only apply defaults when the "Override related settings" link is used. This will override defaults for everyone.</span>
+		<br><br>
+		<<set _requireConfirm to true>>
+		<<case "Acquaintances">><span class="red">Will override the other named acquaintances in the list if you use "Override related settings".</span>
+		<br><br>
+		<<set _requireConfirm to true>>
+		<<case "Alternative" "Defiant" "Submissive">>Can be used to replace moves mid-combat. Is not changed by "Override related settings" in any way.
+		<br><br>
+		<<set _requireConfirm to false>>
+		<<default>><<set _requireConfirm to false>>
+	<</switch>>
+	Lower action sets have higher priority. Defaults in higher sets are used if the default action in a lower set is unavailable.
+	<br>
+	Default Action Set: <<print _currentActionSet + 1>> / $maxDefaultActionSets.
+	<br>
+	<<if _currentActionSet gt 0>>
+		<<link "Previous Action Set">>
+			<<set _currentActionSet-->>
+			<<replace #othersFeelings>><<othersFeelings _currentOptions>><</replace>>
+		<</link>> |
+	<<else>>
+		Previous Action Set |
+	<</if>>
+	<<if _currentActionSet lt $maxDefaultActionSets - 1>>
+		<<link "Next Action Set">>
+			<<set _currentActionSet++>>
+			<<replace #othersFeelings>><<othersFeelings _currentOptions>><</replace>>
+		<</link>>
+	<<else>>
+		Next Action Set
+	<</if>>
+	<br><br>
+	__If consensual:__
+	<br>
+	(Some actions require sufficient lewdity.)
+	<br><br>
+	<<if _options[_currentOptions] is "Tentacles">>
+		<<tentacleDefaults false>>
+	<<else>>
+		<<sexDefaults false>>
+	<</if>>
+	<<for _i to 0; _i lt _titles.length; _i++>>
+		<<if (_titles[_i] is "Penis" and !$player.penisExist) or (_titles[_i] is "Vagina" and !$player.vaginaExist)>>
+			<<continue>>
+		<</if>>
+		<!-- This creates the consensual list of items. -->
+		<span class="listMargin">
+			<<print _titles[_i]>>:
+			<<print '<<listbox "'+_stringDefault+'.'+_dataName[_i]+'['+_currentActionSet+']" autoselect>><<optionsfrom '+_data[_i]+'>><</listbox>>'>>
+		</span>
+		<br>
+	<</for>>
+	<<if _options[_currentOptions] is "Tentacles">>
+		<label>Auto Select different tentacle for grab actions when the current tentacle is occupied <<print '<<checkbox "_defaultActions.consensual.Tentacles.regrab[0]" false true ' + (_defaultActions.consensual.Tentacles.regrab[0] is true ? "checked" : "") + '>>'>></label>
+		<br>
+	<</if>>
+	<<if _defaultActions.consensual[_options[_currentOptions]].askActions isnot undefined>>
+		<label>Mouth "Ask them" default option
+		<<print '<<listbox "'+_stringDefault+'.askActions['+_currentActionSet+']" autoselect>><<optionsfrom _askActions>><</listbox>>'>></label>
+		<br>
+	<</if>>
+
+	<<set _stringDefault to "_defaultActions.rape."+_options[_currentOptions]>>
+
+	<<if _options[_currentOptions] isnot "Robin">>
+		<<if _options[_currentOptions] is "Tentacles">>
+			<<tentacleDefaults true>>
+		<<else>>
+			<<sexDefaults true>>
+		<</if>>
+		<br>
+		__If assaulted:__
+		<br><br>
+
+		<<for _i to 0; _i lt _titles.length; _i++>>
+			<<if (_titles[_i] is "Penis" and !$player.penisExist) or (_titles[_i] is "Vagina" and !$player.vaginaExist)>>
+				<<continue>>
+			<</if>>
+			<span class="listMargin">
+				<<print _titles[_i]>>:
+				<<print '<<listbox "'+_stringDefault+"."+_dataName[_i]+'['+_currentActionSet+']" autoselect>><<optionsfrom '+_data[_i]+'>><</listbox>>'>>
+			</span>
+			<br>
+		<</for>>
+		<<if _options[_currentOptions] is "Tentacles">>
+			<label>Auto Select different tentacle for grab actions when the current tentacle is occupied <<print '<<checkbox "_defaultActions.rape.Tentacles.regrab[0]" false true ' + (_defaultActions.rape.Tentacles.regrab[0] is true ? "checked" : "") + '>>'>></label>
+			<br>
+		<</if>>
+		<<if _defaultActions.rape[_options[_currentOptions]].askActions isnot undefined>>
+			<label>Mouth "Ask them" default option
+			<<print '<<listbox "'+_stringDefault+'.askActions['+_currentActionSet+']" autoselect>><<optionsfrom _askActions>><</listbox>>'>></label>
+			<br>
+		<</if>>
+	<</if>>
+	<br>
+
+	<<if _requireConfirm is true>>
+		<<link [[Override related settings|$passage]]>>
+			<<run DefaultActions.save(T.defaultActions)>>
+			<<switch _options[_currentOptions]>>
+				<<case "Everyone">>
+					<<set _options to ["Strangers","Animals","Acquaintances","Robin", "Bailey","Whitney","Kylar","Eden","Avery","Leighton","Sydney","Black Wolf","Great Hawk"]>>
+					<<for _option range _options>>
+						<<if !$actionDefaults.consensual>>
+							<<set $actionDefaults.consensual to {}>>
+						<</if>>
+						<<if !$actionDefaults.rape>>
+							<<set $actionDefaults.rape to {}>>
+						<</if>>
+						<<set _index to $NPCNameList.indexOf(_option)>>
+						<<if $NPCName[_index] && $NPCName[_index].init isnot 1>>
+							<<continue>>
+						<</if>>
+						<<set $actionDefaults.consensual[_option] to clone($actionDefaults.consensual.Everyone)>>
+						<<set $actionDefaults.rape[_option] to clone($actionDefaults.rape.Everyone)>>
+					<</for>>
+				<<case "Acquaintances">>
+					<<set _options to ["Robin","Bailey","Whitney","Kylar","Eden","Avery","Leighton","Sydney","Black Wolf","Great Hawk"]>>
+					<<for _option range _options>>
+						<<if !$actionDefaults.consensual>>
+							<<set $actionDefaults.consensual to {}>>
+						<</if>>
+						<<if !$actionDefaults.rape>>
+							<<set $actionDefaults.rape to {}>>
+						<</if>>
+						<<set _index to $NPCNameList.indexOf(_option)>>
+						<<if $NPCName[_index] && $NPCName[_index].init isnot 1>>
+							<<continue>>
+						<</if>>
+						<<set $actionDefaults.consensual[_option] to clone($actionDefaults.consensual.Everyone)>>
+						<<set $actionDefaults.rape[_option] to clone($actionDefaults.rape.Everyone)>>
+					<</for>>
+			<</switch>>
+		<</link>>
+	<</if>>
+<</widget>>
+
+<<widget "setupDefaults">>
+	<!-- Use default action sets to create array for each default action. -->
+	<<if $maxDefaultActionSets === undefined>>
+		<<set $maxDefaultActionSets = 2>>
+	<</if>>
+	<<set $actionDefaults = DefaultActions.check(DefaultActions.setup())>>
+<</widget>>
+
+<!-- _args[0] As Boolean: false is consensual, true is non-consensual. -->
+<<widget "sexDefaults">>
+	<<set _leftHand to {
+		"Rest": "rest",
+		"Stroke": "leftchest",
+		"Hold behind back": "behind",
+		"Stop holding behind": "stopbehind"
+	}>>
+
+	<<if _args[0] is true>>
+		<<set _leftHand["Punch"] to "lefthit">>
+		<<set _leftHand["Pull their hand off your neck"] to "stopchokenoncon">>
+	<<else>>
+		<<set _leftHand["Press their hand to your neck"] to "keepchoke">>
+		<<set _leftHand["Take their hand off your neck"] to "stopchoke">>
+	<</if>>
+	<<set _leftHand["Cover your face"] to "leftcoverface">>
+	<<set _leftHand["Pose for camera"] to "leftcamerapose">>
+	<<set _leftHand["Whack the writing tool away"] to "penwhack">>
+	<<set _leftHand["Whack the hypnotic instrument away"] to "hypnosiswhack">>
+	<<if currentSkillValue('skulduggery') gte 200>>
+		<<set _leftHand["Steal"] to "steal">>
+	<</if>>
+	<<set _leftHand["Struggle"] to "leftstruggle">>
+
+	<<set _leftHand["Stroke their penis"] to "leftstroke">>
+
+	<<if $promiscuity gt 34 or $deviancy gt 34 or _args[0] is true>>
+		<<set _leftHand["Grab their penis"] to "leftgrab">>
+		<<set _leftHand["Work their shaft"] to "leftwork">>
+
+		<<set _leftHand["Play with their pussy"] to "leftplay">>
+		<<set _leftHand["Rub their clit"] to "leftclit">>
+	<</if>>
+
+	<<if $promiscuity gte 15>>
+		<<if $player.penisExist>>
+			<<set _leftHand["Play with your penis"] to "leftmasturbatepenis">>
+		<</if>>
+		<<if $player.vaginaExist>>
+			<<set _leftHand["Play with your pussy"] to "leftmasturbatepussy">>
+		<</if>>
+	<</if>>
+	<<if $promiscuity gte 35 and $awareness gte 200>>
+		<<set _leftHand["Play with your anus"] to "leftmasturbateanus">>
+	<</if>>
+	<<set _leftHand["Remove your buttplug"] to "removebuttplug">>
+
+	<<set _rightHand to {
+		"Rest":"rest",
+		"Stroke":"rightchest",
+		"Hold behind back": "behind",
+		"Stop holding behind": "stopbehind"
+	}>>
+
+	<<if _args[0] is true>>
+		<<set _rightHand["Punch"] to "righthit">>
+		<<set _rightHand["Pull their hand off your neck"] to "stopchokenoncon">>
+	<<else>>
+		<<set _rightHand["Press their hand to your neck"] to "keepchoke">>
+		<<set _rightHand["Take their hand off your neck"] to "stopchoke">>
+	<</if>>
+	<<set _rightHand["Cover your face"] to "rightcoverface">>
+	<<set _rightHand["Pose for camera"] to "rightcamerapose">>
+	<<set _rightHand["Whack the writing tool away"] to "penwhack">>
+	<<set _rightHand["Whack the hypnotic instrument away"] to "hypnosiswhack">>
+	<<if currentSkillValue('skulduggery') gte 200>>
+		<<set _rightHand["Steal"] to "steal">>
+	<</if>>
+	<<set _rightHand["Struggle"] to "rightstruggle">>
+
+	<<set _rightHand["Stroke their penis"] to "rightstroke">>
+
+	<<if $promiscuity gt 34 or $deviancy gt 34 or _args[0] is true>>
+		<<set _rightHand["Grab their penis"] to "rightgrab">>
+		<<set _rightHand["Work their shaft"] to "rightwork">>
+
+		<<set _rightHand["Play with their pussy"] to "rightplay">>
+		<<set _rightHand["Rub their clit"] to "rightclit">>
+	<</if>>
+
+	<<if $promiscuity gte 15>>
+		<<if $player.vaginaExist>>
+			<<set _rightHand["Play with your pussy"] to "rightmasturbatepussy">>
+		<</if>>
+		<<if $player.penisExist>>
+			<<set _rightHand["Play with your penis"] to "rightmasturbatepenis">>
+		<</if>>
+	<</if>>
+	<<if $promiscuity gte 35 and $awareness gte 200>>
+		<<set _rightHand["Play with your anus"] to "rightmasturbateanus">>
+	<</if>>
+	<<set _rightHand["Remove your buttplug"] to "removebuttplug">>
+
+	<<set _feet to {
+		"Rest":"rest",
+	}>>
+	<<if _args[0] is true>>
+		<<set _feet["Kick"] to "kick">>
+	<</if>>
+	<<if $promiscuity gt 34 or $deviancy gt 34 or _args[0] is true>>
+		<<set _feet["Grab their penis"] to "grab">>
+		<<set _feet["Rub their penis"] to "grabrub">>
+
+		<<set _feet["Press against their pussy"] to "vaginagrab">>
+		<<set _feet["Rub their pussy"] to "vaginagrabrub">>
+	<</if>>
+	<<if (_args[0] is false and ($promiscuity gte 35 or $deviancy gte 35)) or (_args[0] is true and ($promiscuity gte 95 or $deviancy gte 95))>>
+		<<set _feet["Leg lock them"] to "legLock">>
+	<</if>>
+
+	<<set _mouth to {
+		"Rest":"rest",
+		"Kiss":"kiss",
+		"Kiss Back":"kissback",
+	}>>
+
+	<<if _args[0] is true>>
+		<<set _mouth["Scream"] to "scream">>
+		<<set _mouth["Plead"] to "plead">>
+	<</if>>
+
+	/* 北极星模组 */
+	<<if $wolfgirl gte 6 or (!$options.bjx_animal and $wolfgirl gte 2)>>
+		<<set _mouth["咆哮"] to "growl">>
+	<</if>>
+	<<if $options.bjx_animal and $harpy gte 6>>
+		<<set _mouth["唱歌"] to "sing">>
+	<</if>>
+	<<if $options.bjx_animal and $fox gte 6>>
+		<<set _mouth["撒娇"] to "coquetry">>
+	<</if>>
+	/* 北极星 */
+
+	<<if $submissive gte 1150>>
+		<<set _mouth["Moan"] to "moan">>
+	<</if>>
+	<<if $angel gte 6 and $angelforgive isnot 1 and _args[0] is true>>
+		<<set _mouth["Forgive"] to "forgive">>
+	<</if>>
+	/* 北极星模组 */
+	<<if $options.bjx_divine>>
+    	<<if $fallenangel gte 2 and $fallenangelretribution isnot 1 and _args[0] is true>>
+    		<<set _mouth["报应"] to "retribution">>
+    	<</if>>
+    	<<if $demonhunter gte 5 and $demonhunterhypnosis isnot 1>>
+			<<set _mouth["催眠"] to "hypnosis">>
+		<</if>>
+    	<<if $demon gte 6 and $demonseduce isnot 1 and _args[0] is true>>
+    		<<set _mouth["诱惑"] to "seduce">>
+    	<</if>>
+    <</if>>
+    /* 北极星 */
+	<<if $submissive lte 850 and _args[0] is true>>
+		<<set _mouth["Demand"] to "demand">>
+	<</if>>
+
+	<<if $promiscuity gt 54 or $deviancy gt 54 or _args[0] is true>>
+		<<set _mouth["Move your lips to their penis"] to "mouth">>
+	<</if>>
+	<<if $promiscuity gt 34 or $deviancy gt 34 or _args[0] is true>>
+		<<set _mouth["Grab penis between breasts"] to "grasp">>
+	<</if>>
+	<<set _mouth["Pull away"] to "pullaway">>
+	<<set _mouth["Lick their penis"] to "lick">>
+	<<if $promiscuity gt 74 or $deviancy gt 74 or _args[0] is true>>
+		<<set _mouth["Take their penis into your mouth"] to "swallow">>
+	<</if>>
+	<<set _mouth["Suck their penis"] to "suck">>
+	<<if _args[0] is true>>
+		<<set _mouth["Bite their penis"] to "bite">>
+	<</if>>
+	<<if _args[0] is false>>
+		<<set _mouth["Swallow their cum"] to "ejacswallow">>
+		<<set _mouth["Spit out their cum"] to "ejacspit">>
+	<</if>>
+	<<set _mouth["Pull away from their penis"] to "pullaway">>
+
+	<<if $promiscuity gt 54 or $deviancy gt 54 or _args[0] is true>>
+		<<set _mouth["Move your lips to their pussy"] to "othervagina">>
+	<</if>>
+	<<set _mouth["Lick their pussy"] to "vaginalick">>
+
+	<<if _args[0] is true>>
+		<<set _mouth["Bite their pussy"] to "bitepussy">>
+	<</if>>
+	<<set _mouth["Pull away from their vagina"] to "pullawayvagina">>
+
+	<<if $promiscuity gt 34 or _args[0] is true>>
+		<<set _mouth["Move your lips to their chest"] to "movetochest">>
+	<</if>>
+
+	<<set _mouth["Lick their breasts"] to "breastlick">>
+	<<set _mouth["Pull away from their breasts"] to "breastpull">>
+
+	<<set _mouth["Suck their breasts"] to "breastsuck">>
+	<<if _args[0] is true>>
+		<<set _mouth["Bite their breasts"] to "breastbite">>
+	<</if>>
+	<<set _mouth["Keep your mouth closed"] to "breastclosed">>
+	<<if $promiscuity gt 55 or $deviancy gt 55 or _args[0] is true>>
+		<<set _mouth["Edge"] to "oraledge">>
+	<</if>>
+
+	<<set _mouth["Lick ass"] to "anallick">>
+	<<if $submissive gte 1150>>
+		<<set _mouth["Kiss ass"] to "analkiss">>
+	<</if>>
+	<<if _args[0] is false>>
+		<<set _mouth["Pull away from their ass"] to "analpull">>
+	<</if>>
+
+	<<if _args[0] is true>>
+		<<set _mouth["Headbutt"] to "headbutt">>
+	<</if>>
+
+	<<set _mouth["Ask them"] to "ask">>
+
+	<<set _askActions to {"Nothing":"rest"}>>
+	<<if _args[0] is false>>
+		<<set _askActions["to stop"] to "finish">>
+		<<if $player.vaginaExist>>
+			<<set _askActions["to not put anything in your pussy"] to "novaginal">>
+		<</if>>
+		<<if $player.penisExist>>
+			<<set _askActions["to not put your penis in anything"] to "nopenile">>
+		<</if>>
+		<<set _askActions["to not put anything in your anus"] to "noanal">>
+		<<if $asphyxiaLvl gte 1>>
+			<<set _askActions["to not choke you"] to "nochoke">>
+		<</if>>
+	<</if>>
+	<<if (_args[0] is false and ($choketrait or ($chokeorgasm gte 1 and $submissive gt 850))) or ($awarelevel gte 2 and $submissive gte 1150)>>
+		<<set _askActions["to choke you"] to "askchoke">>
+	<</if>>
+	<<if (_args[0] is false and $masochism_level gte 1) or $masochism_level gte 3>>
+		<<set _askActions["to be more rough"] to "askrough">>
+	<</if>>
+	<<if $condomLvl gte 2>>
+		<<set _askActions["to use a condom"] to "condoms">>
+		<<set _askActions["to not use a condom"] to "noCondoms">>
+	<</if>>
+	<<set _askActions["to leave your top on"] to "noupper">>
+
+	<<if $asphyxiaLvl gte 1 and _args[0] is false and
+	($choketrait or ($chokeorgasm gte 1 and $submissive gt 850) or ($awarelevel gte 2 and $submissive gte 1150))>>
+		<<set _askActions["to choke you"] to "askchoke">>
+	<</if>>
+
+	<<if $consensual is 1 and $masochism_level gte 1 or $masochism_level gte 3>>
+		<<set _askActions["to be more rough"] to "askrough">>
+	<</if>>
+
+	<<set _penis to {
+		"Rest":"rest",
+	}>>
+
+	<<if $promiscuity gt 74 or $deviancy gt 74 or _args[0] is true>>
+		<<set _penis["Press against their pussy"] to "penistovagina">>
+
+		<<set _penis["Penetrate their pussy"] to "penisvaginafuck">>
+	<</if>>
+	<<if $promiscuity gt 54 or $deviancy gt 54 or _args[0] is true>>
+		<<set _penis["Frot against their clit"] to "bay">>
+	<</if>>
+	<<set _penis["Tease the pussy"] to "tease">>
+	<<set _penis["Pull away from their pussy"] to "escape">>
+	/* 北极星模组 */
+	<<if $demonhunter gte 2>>
+		<<set _penis["忍耐"] to "endure">>
+	<</if>>
+	/* 北极星 */
+
+	/*After bay*/
+	<<if $promiscuity gt 54 or $deviancy gt 54 or _args[0] is true>>
+		<<set _penis["Rub against their pussy"] to "rub">>
+	<</if>>
+
+	/*After penisvaginafuck*/
+	<<set _penis["Take the pussy"] to "take">>
+	<<set _penis["Cooperate with their pussy"] to "cooperate">>
+	<<if ($promiscuity gt 54 or $deviancy gt 54 or _args[0] is true) and currentSkillValue("penileskill") gte 800>>
+		<<set _penis["Edge their vagina"] to "vaginaEdging">>
+	<</if>>
+	<<if $promiscuity gt 74 or $deviancy gt 74 or _args[0] is true>>
+		<<set _penis["Press against their ass"] to "penistoanus">>
+
+		<<set _penis["Penetrate their ass"] to "penisanusfuck">>
+	<</if>>
+	<<if $promiscuity gt 54 or $deviancy gt 54 or _args[0] is true>>
+		<<set _penis["Frot against their ass"] to "otheranusbay">>
+	<</if>>
+	<<set _penis["Tease the ass"] to "otheranustease">>
+	<<set _penis["Pull away from their ass"] to "otheranusescape">>
+
+	/*After otheranusbay*/
+	<<if $promiscuity gt 54 or $deviancy gt 54 or _args[0] is true>>
+		<<set _penis["Rub against their ass"] to "otheranusrub">>
+	<</if>>
+
+	/*After penisanusfuck*/
+	<<set _penis["Take the ass"] to "otheranustake">>
+	<<set _penis["Cooperate with their ass"] to "otheranuscooperate">>
+	<<if ($promiscuity gt 54 or $deviancy gt 54 or _args[0] is true) and currentSkillValue("penileskill") gte 800>>
+		<<set _penis["Edge their ass"] to "otheranusEdging">>
+	<</if>>
+	<<set _penis["Press your thigh against their mouth"] to "thighbay">>
+	<<set _penis["Rub against their face"] to "othermouthtease">>
+
+	<<set _penis["Rub against their lips"] to "othermouthrub">>
+	<<set _penis["Pull away from their mouth"] to "othermouthescape">>
+
+	<<set _penis["Cooperate with their mouth"] to "othermouthcooperate">>
+
+	<<set _vagina to {
+		"Rest":"rest",
+		"Offer your ass instead":"penisanus",
+	}>>
+
+	<<if $promiscuity gt 74 or $deviancy gt 74 or _args[0] is true>>
+		<<set _vagina["Straddle their penis"] to "vaginatopenis">>
+
+		<<set _vagina["Envelop their penis"] to "vaginapenisfuck">>
+	<</if>>
+	<<if $promiscuity gt 54 or $deviancy gt 54 or _args[0] is true>>
+		<<set _vagina["Try to keep their penis away with your thighs"] to "penisthighs">>
+	<</if>>
+	<<if $promiscuity gte 75 or $deviancy gte 75 or _args[0] is true>>
+		<<set _vagina["Push your pussy against theirs"] to "vaginatovagina">>
+	<</if>>
+	<<set _vagina["Pull away from their penis"] to "escape">>
+	<<set _vagina["Tease the tip"] to "penistease">>
+	/* 北极星模组 */
+	<<if $demonhunter gte 2>>
+		<<set _vagina["忍耐"] to "endure">>
+	<</if>>
+	/* 北极星 */
+
+	/*After penisthighs*/
+	<<if $promiscuity gt 54 or $deviancy gt 54 or _args[0] is true>>
+		<<set _vagina["Rub against their penis"] to "rub">>
+	<</if>>
+
+	/*After vaginapenisfuck*/
+	<<set _vagina["Take it"] to "take">>
+	<<set _vagina["Cooperate"] to "cooperate">>
+	<<if ($promiscuity gt 54 or $deviancy gt 54 or _args[0] is true) and currentSkillValue("vaginalskill") gte 800>>
+		<<set _vagina["Edge their penis with your vagina"] to "penisEdging">>
+	<</if>>
+	<<set _vagina["Press your thigh against their mouth"] to "thighbay">>
+	<<set _vagina["Rub against their face"] to "othermouthtease">>
+
+	<<set _vagina["Rub against their lips"] to "othermouthrub">>
+	<<set _vagina["Pull away from their mouth"] to "othermouthescape">>
+
+	<<set _vagina["Cooperate with their mouth"] to "othermouthcooperate">>
+
+	<<set _anus to {
+		"Rest":"rest",
+	}>>
+	<<if $player.vaginaExist>>
+		<<set _anus["Offer your pussy instead"] to "penispussy">>
+	<</if>>
+
+	<<if $promiscuity gt 74 or $deviancy gt 74 or _args[0] is true>>
+		<<set _anus["Straddle their penis"] to "anustopenis">>
+
+		<<set _anus["Envelop their penis"] to "anuspenisfuck">>
+	<</if>>
+	<<if $promiscuity gt 54 or $deviancy gt 54 or _args[0] is true>>
+		<<set _anus["Keep their penis away with your cheeks"] to "penischeeks">>
+	<</if>>
+	<<set _anus["Tease the tip"] to "penistease">>
+
+	<<set _anus["Pull away from their penis"] to "escape">>
+
+	/*After penischeeks*/
+	<<set _anus["Rub against their penis"] to "rub">>
+
+	/*After anuspenisfuck*/
+	<<set _anus["Take it"] to "take">>
+	<<set _anus["Cooperate"] to "cooperate">>
+	<<if ($promiscuity gt 54 or $deviancy gt 54 or _args[0] is true) and currentSkillValue("analskill") gte 800>>
+		<<set _anus["Edge their penis with your ass"] to "penisEdging">>
+	<</if>>
+	<<set _anus["Press your butt against their mouth"] to "bottombay">>
+	<<set _anus["Rub against their face"] to "othermouthtease">>
+
+	<<set _anus["Rub against their lips"] to "othermouthrub">>
+	<<set _anus["Pull away from their mouth"] to "othermouthescape">>
+
+	<<set _anus["Cooperate with their mouth"] to "othermouthcooperate">>
+
+	<<set _anus["Rub their hand with your cheeks"] to "bottomhandbay">>
+	<<set _anus["Rub your anus against their hand"] to "handtease">>
+
+	<<set _anus["Rub against their fingers"] to "handrub">>
+	<<set _anus["Pull away from their hand"] to "handescape">>
+
+	<<set _anus["Cooperate with their fingers"] to "handcooperate">>
+<</widget>>
+
+<<widget "tentacleDefaults">>
+	<<set _leftHand to {
+		"Rest":"rest",
+		"Grab the":"leftgrab"
+	}>>
+	<<if $deviancy gte 75>>
+		<<set _leftHand["Guide to your penis"] to "showpenis">>
+		<<set _leftHand["Guide to your pussy"] to "showvagina">>
+		<<set _leftHand["Guide to your ass"] to "showbottom">>
+	<</if>>
+	<<if _args[0] is true>>
+		<<set _leftHand["Strike the"] to "lefthittentacle">>
+	<</if>>
+	<<set _leftHand["Milk it"] to "leftrub">>
+
+	<<set _rightHand to {
+		"Rest":"rest",
+		"Grab the":"rightgrab"
+	}>>
+	<<if $deviancy gte 75>>
+		<<set _rightHand["Guide to your penis"] to "showpenis">>
+		<<set _rightHand["Guide to your pussy"] to "showvagina">>
+		<<set _rightHand["Guide to your ass"] to "showbottom">>
+	<</if>>
+	<<if _args[0] is true>>
+		<<set _rightHand["Strike the"] to "righthittentacle">>
+	<</if>>
+	<<set _rightHand["Milk it"] to "rightrub">>
+
+	<<set _feet to {
+		"Rest":"rest",
+		"Grab the":"feetgrab"
+	}>>
+	<<if $deviancy gte 75>>
+		<<set _feet["Guide to your penis"] to "showpenis">>
+		<<set _feet["Guide to your pussy"] to "showvagina">>
+		<<set _feet["Guide to your ass"] to "showbottom">>
+	<</if>>
+	<<if _args[0] is true>>
+		<<set _feet["Kick the"] to "feethit">>
+	<</if>>
+	<<set _feet["Milk it"] to "feetrub">>
+
+	<<set _mouth to {
+		"Rest":"rest",
+		"Lick it":"mouthlick",
+		"Pull away":"mouthpullaway",
+		"Kiss it":"mouthkiss",
+		"Take it":"take",
+		"Cooperate":"mouthcooperate"
+	}>>
+	<<if _args[0] is true>>
+		<<set _mouth["Bite"] to "mouthbite">>
+	<</if>>
+
+	<<set _penis to {
+		"Rest":"rest",
+		"Rub":"penisrub",
+		"Pull away":"penispullaway",
+		"Take it":"take",
+		"Cooperate":"peniscooperate"
+	}>>
+
+	<<set _vagina to {
+		"Rest":"rest",
+		"Rub":"vaginarub",
+		"Pull away":"vaginapullaway",
+		"Take it":"take",
+		"Cooperate":"vaginacooperate"
+	}>>
+
+	<<set _anus to {
+		"Rest":"rest",
+		"Rub":"anusrub",
+		"Pull away":"anuspullaway",
+		"Take it":"take",
+		"Cooperate":"anuscooperate"
+	}>>
+<</widget>>
+
+<<widget "loveInterest">>
+	Who do you consider to be your primary love interest?
+	<br>
+	<<set _npc = ["None","Robin","Whitney","Kylar","Sydney","Eden","Avery","Black Wolf","Great Hawk","Alex"]>>
+	/* 北极星模组 */
+	<<set _npc = _npc.concat(["凯西"])>>
+	/* 北极星 */
+	<<set _potentialLoveInterests = ["None"]>>
+	<<if $robinromance is 1>>
+		<<run _potentialLoveInterests.push("Robin")>>
+	<</if>>
+	<<if $whitneyromance is 1 and $NPCName[$NPCNameList.indexOf("Whitney")].state isnot "dungeon">>
+		<<run _potentialLoveInterests.push("Whitney")>>
+	<</if>>
+	<<if $kylarenglish gte 1 and $NPCName[$NPCNameList.indexOf("Kylar")].state isnot "prison">>
+		<<run _potentialLoveInterests.push("Kylar")>>
+	<</if>>
+	<<if $sydneyromance is 1>>
+		<<run _potentialLoveInterests.push("Sydney")>>
+	<</if>>
+	/* 北极星模组 */
+	<<if $caseyromance is 1>>
+		<<run _potentialLoveInterests.push("凯西")>>
+	<</if>>
+	/* 北极星 */
+	<<if $syndromeeden is 1>>
+		<<run _potentialLoveInterests.push("Eden")>>
+	<</if>>
+	<<if $dateCount.Avery gte 3 and $NPCName[$NPCNameList.indexOf("Avery")].state isnot "dismissed">>
+		<<run _potentialLoveInterests.push("Avery")>>
+	<</if>>
+	<<if $syndromewolves is 1 and $deviancy gte 35>>
+		<<run _potentialLoveInterests.push("Black Wolf")>>
+	<</if>>
+	<<if $syndromebird is 1>>
+		<<run _potentialLoveInterests.push("Great Hawk")>>
+	<</if>>
+	<<if $farm_stage gte 7 and $alex_countdown is undefined>>
+		<<run _potentialLoveInterests.push("Alex")>>
+	<</if>>
+	<<if _potentialLoveInterests.length lte 1>>
+		<span class="black"><i>You haven't developed feelings for anyone yet.</i></span>
+	<<else>>
+		<<listbox "$loveInterest.primary" autoselect>>
+			<<optionsfrom _potentialLoveInterests>>
+		<</listbox>>
+		<<if $loveInterest.primary isnot "None">>
+			<<run _potentialLoveInterests.delete($loveInterest.primary)>>
+		<</if>>
+		<br>
+		<<if $awarelevel gte 2>>
+			<<if $loveInterest.primary is "None">>
+				<<set $loveInterest.secondary to "None">>
+				<span class="black">You need to choose primary love interest before you can choose a secondary.</span>
+			<<else>>
+			Who do you consider to be your secondary love interest?
+			<br>
+			<<listbox "$loveInterest.secondary" autoselect>>
+				<<optionsfrom _potentialLoveInterests>>
+			<</listbox>>
+			<</if>>
+		<<else>>
+			<span class="black">You don't consider it possible to have more than one love interest.</span>
+			<<set $loveInterest.secondary to "None">>
+		<</if>>
+	<</if>>
+	<<if $transformationParts.traits.mateForLife isnot "disabled" and (!isLoveInterest(_loveIntStart1) or (_loveIntStart2 isnot "None" and !isLoveInterest(_loveIntStart2)))>>
+		<<set $LIChanged to true>>
+		<br>
+		<span class="red">Changing your partners goes against your instincts to mate for life. It will take a toll on your mental state.</span>
+	<<else>>
+		<<unset $LIChanged>>
+	<</if>>
+<</widget>>
+
+<<widget "attitudesControlCheck">>
+	/* highlight the attitudes button when new attitude controls are available */
+	<<script>>
+		/* back up the old variable for later comparison */
+		T.oldControl = clone(V.attitudesControl);
+		/* update available controls */
+		V.attitudesControl.unlockExhibitionismUnderwear = V.exhibitionism >= 55;
+		V.attitudesControl.unlockExhibitionismNude = V.exhibitionism >= 95;
+		V.attitudesControl.unlockTransformation = V.specialTransform === 1 || V.physicalTransform === 1;
+		V.attitudesControl.unlockDemonFlaunt = V.demon >= 6 && V.exhibitionism >= 95;
+		V.attitudesControl.unlockProstitution = V.soldCount >= 1;
+		/* getting the first LI automatically assigns them as a primary one, indicating that now there's options */
+		V.attitudesControl.unlockLoveInterest1 = V.loveInterest.primary !== "None";
+		/* there's no point in highlighting that you can assign the second LI if you've not assigned the first one */
+		V.attitudesControl.unlockLoveInterest2 = V.awarelevel >= 2 && V.loveInterest.primary !== "None" && V.loveInterest.secondary === "None";
+		V.attitudesControl.unlockDefaultActions = V.moleststat > 0;
+		V.attitudesControl.unlockLewd = V.exhibitionism >= 35 || V.promiscuity >= 35 || V.deviancy >= 35;
+		V.attitudesControl.unlockHypnosis = Object.keys(V.hypnosis_traits).length >= 1;
+		/* set the highlight flag when one of the controls switches to true */
+		for (const c in V.attitudesControl) {
+			if (V.attitudesControl[c] && !T.oldControl[c]) { V.attitudesControl.showGoldLink = true; break }
+		}
+	<</script>>
+<</widget>>
