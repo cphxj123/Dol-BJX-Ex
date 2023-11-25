@@ -511,6 +511,13 @@ window.startingPlayerTransform = function(){
 			case "fallen": new Wikifier(null, '<<fallenstart>><<startingPlayerImageUpdate>>'); break;
 			default: new Wikifier(null, '<<clearDivineTransformations>><<startingPlayerImageUpdate>>'); break;
 		}
+		
+		switch(V.startingEventTF){
+			case "slime": new Wikifier(null, '<<slimetransform>><<startingPlayerImageUpdate>>'); break;
+			case "ghost": new Wikifier(null, '<<ghosttransform>><<startingPlayerImageUpdate>>'); break;
+            case "mushroom": new Wikifier(null, '<<mushroomtransform>><<startingPlayerImageUpdate>>'); break;
+			default: new Wikifier(null, '<<clearEventTransformations>><<startingPlayerImageUpdate>>'); break;
+		}
 	});
 }
 /* 北极星 */
