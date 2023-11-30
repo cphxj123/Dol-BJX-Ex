@@ -1783,6 +1783,9 @@ function dailyLakeHouseEvents() {
 		if (V.lakehouse.bills < 0){
 			V.lakehouse.billsphase++;
 			V.lakehouse.bills = 7;
+			if (V.lakehouse.billsphase >= 2){
+    			V.lakehouse_bills = true;
+    		}
 		}
 	}
 	if (V.lakehouse.owner) V.lakehouse.billsphase = 0;

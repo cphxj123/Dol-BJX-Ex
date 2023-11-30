@@ -97,11 +97,12 @@
 		<<domusicon>><<link [[进入屋内 (0:01)|Lake House]]>><<set $phase to 1>><<pass 1>><</link>>
 		<br>
 	<</if>>
-	<<link [[离开|Lake Shore]]>><</link>>
+	<<getouticon>><<link [[离开|Lake Shore]]>><</link>>
 	<br>
 <</if>>
 
 :: Lake House
+
 <<set $outside to 0>><<set $location to "lakehouse">><<effects>>
 <<lakehouseinit>>
 <<if ($lakehouse_countdown lte 0 or $lakehouse_countdown is undefined) and ($renttime lte -2 or ($renttime lte 0 and Time.hour gte 4 and Time.hour lte 21))>>
@@ -111,9 +112,10 @@
 
 	<<link [[应门|Lake House Bailey]]>><</link>>
 	<br>
-<!-- <<elseif $lakehouse_attack_timer lte 0 and Time.hour gte 21>> -->
+/* <<elseif $lakehouse_attack_timer lte 0 and Time.hour gte 21>> */
 <<elseif $lakehouse_bills>>
-	<spawn class="red">你听见门外有人。</span>
+    <<unset $lakehouse_bills>>
+	<spawn class="red">你听见门外有人敲门。</span>
 	<br><br>
 	
 	<<link [[应门|Lake House Bills]]>><</link>>
@@ -122,30 +124,31 @@
 	<<set $previousPassage to $passage>>
 	<<passoutlakehouse>>
 <<else>>
-	<<set _tv to Furniture.get('tv')>>
+	<<set _tv to Furniture.get('television')>>
 	<<set _gameconsole to Furniture.get('gameconsole')>>
 
 	你进入了起居室。 
+	<br>
 	<<if _tv>>
 		你看见你的电视摆在起居室的桌子上，
 		<<if _gameconsole>>
 			旁边放着你的游戏机，
 		<</if>>
+		<br>
 	<</if>>
 	
-	<<if $lakehouse.petBed isnot undefined and $lakehouse.pet isnot undefined>>
-		<<if $lakehouse.petBed gte 1>>
-			角落里放着$lakehouse.petBed张看起来很柔软的宠物床，
-			<<for _pet range $lakehouse.pet>>
-				<<if _pet.type is "cat">>
-					你的猫猫躺在里面睡觉，
-				<<elseif _pet.type is "dog">>
-					你的狗狗躺在里面睡觉，
-				<</if>>
-			<</for>>
+	<<if $lakehouse.petbed isnot undefined and $lakehouse.pet isnot undefined>>
+		<<if $lakehouse.petbed gte 1>>
+			角落里放着$lakehouse.petbed张看起来很柔软的宠物床，
+			<br>
+		<</if>>
+		<<if $lakehouse.pet.length gte 1>>
+			你的宠物们躺在里面睡觉，
+			<br>
 		<</if>>
 	<</if>>
-	<br><br>
+	
+	<br>
 
 	<<bedroomicon>><<link [[去卧室|Lake House Bedroom]]>><</link>>
 	<br>
@@ -172,24 +175,15 @@
 		<</if>>
 	<</if>>
 	<<if $lakehouse.pet isnot undefined>>
-		<<for _pet range $lakehouse.pet>>
-		    <<set $pet_now to _pet>>
-			<<if _pet.type is "cat">>
-        		<<link [[跟猫猫贴贴(0:30)|Lake House Snuggle Cat]]>><<pass 30>><<stress -10>><<trauma -10>><</link>><<llstress>><<lltrauma>>
-        		<br>
-        		<<link [[操猫猫|Lake House Fuck Cat]]>><<pass 30>><</link>><<deviant2>>
-		        <br>
-        	<<elseif _pet.type is "dog">>
-        		<<link [[跟狗狗玩抛接 (1:00)|Lake House Fetch Dog]]>><<pass 30>><<stress -10>><<trauma -10>><<physique 5>><<tiredness 5>><</link>><<llstress>><<lltrauma>><<gphysique>><<gtiredness>>
-        		<br>
-        		<<link [[操狗狗|Lake House Fuck Dog]]>><<pass 30>><</link>><<deviant2>>
-		        <br>
-        	<</if>>
+		<<for _i to 0; _i lt $lakehouse.pet.length; _i++>>
+		    <<lakehouse_pet_options _i>>
 		<</for>>
 	<</if>>
 	/* <<link [[Robin options|Lake House Robin Options]]>><</link>>
 	<br> */
-	<<link [[离开|Lake House Outdoor]]>><</link>>
+	<<link [[去地下室|Lake House Basement]]>><</link>>
+	<br>
+	<<getouticon>><<link [[离开|Lake House Outdoor]]>><</link>>
 	<br>
 <</if>>
 
@@ -332,8 +326,14 @@
 			<br><br>
 		<</if>> */
 		<<projectoptions>>
-		<br>
+		<br><br>
 		/* <<christmas_options>> */
+		<<if _deco>>
+			<<if _deco.name is "large bear plushie">>
+				<<furnitureicon _deco.iconFile>><<link [[抱着大熊毛绒玩具 (0:10)|Lake House Large Bear Plushie Cuddle]]>><<pass 10>><<trauma -1>><<stress -1>><</link>><<ltrauma>><<lstress>>
+				<br><br>
+			<</if>>
+		<</if>>
 		<<set _bed to Furniture.get('bed')>>
 
 		<<if _bed.type.includes('comfy')>>
@@ -341,7 +341,7 @@
 			<<if $nextPassageCheck is "Lake House Bed">>
 				<br>
 				<<listsleepoutfits "Lake House Bed">>
-			<<elseif $slimeEvent is undefined>>
+			<<elseif !($earSlime.event and $earSlime.noSleep)>>
 				<br>
 				<<furnitureicon _bed.iconFile>><<link [[脱光并爬到床上|Lake House Bed]]>><<undressSleep "Lake House Bed">><</link>>
 				<br>
@@ -356,7 +356,7 @@
 				<<if $possessed and $lakehouse.barrier is undefined>>
 					<span class="red">你脑袋里的史莱姆保持着沉默。</span>
 				<<else>>
-					<span class="red">史莱姆要求你在睡觉前<<print $slimeEvent>>。</span>
+					<span class="red">史莱姆要求你在睡觉前<<print $earSlime.event.replace("go commando","裸奔").replace("have sex with someone or something","与某人或者某物做爱").replace("only sleep naked from now on","现在开始裸睡").replace("have sex with someone","与某人做爱").replace("go running or swimming naked","裸跑或者裸泳").replace("steal something","偷东西").replace("go running or swimming","跑步或者游泳").replace("study at the school library while naked","在学校图书馆裸体学习").replace("for an hour","一个小时").replace("for two hours","两个小时").replace("only wear","穿一会").replace("feminine","女装").replace("masculine","男装").replace("clothes for a while","").replace("ejaculate into someones vagina","在某人小穴里射精").replace("masturbate and orgasm at least","自慰并且高潮至少").replace("ten times","十次").replace("five times","五次").replace("get sperm into your" ,"用精液填满你的").replace("vagina","小穴").replace("anus","菊穴").replace(" ","")>>。</span>
 				<</if>>
 				<br>
 			<</if>>
@@ -443,18 +443,18 @@
 			<<else>>
 				<<link [[玩电脑 (0:30)|Lake House Play Computer]]>><<pass 30>><<stress -3>><<trauma -3>><</link>><<lstress>><<ltrauma>>
 				<br>
+				<<link [[直播跳舞 (0:30)|Lake House Cam Show Dance]]>><<set $dancestart to 1>><</link>><<lstress>><<gtiredness>>
+				<br>
+			    /* <<link [[Search for job online (0:10)|Lake House Online Search]]>><<pass 10>><</link>>
+			    <br> */
 			<</if>>
-			/* <<link [[Search for job online (0:10)|Lake House Online Search]]>><<pass 10>><</link>>
-			<br> */
-			<<link [[直播跳舞 (0:30)|Lake House Cam Show Dance]]>><<danceinit>><<set $dancing to 1>><<set $venuemod to 1>><<stress -4>><<tiredness 4>><<set $dancelocation to "lakehouse">><<set $camshowrounds to 0>><</link>><<lstress>><<gtiredness>>
-			<br>
 		<</if>>
 
 		<<if _table or _pc>>
 			这里摆放着一张桌子，你可以着手安保项目。
 			<br>
 			<<link [[坐在桌前|Lake House Upgrades]]>><</link>>
-			<br><br>
+			<br>
 		<<else>>
 			你尚未拥有一张桌子或一台电脑。你需要拥有其中之一才能管理升级。
 			<br>
@@ -497,6 +497,7 @@
 <</if>>
 
 :: Lake House Passout
+
 <<pass 1 hour>>
 <<set $stress -= 2000>>
 <<set $trauma +=10>>
@@ -504,39 +505,29 @@
 你把自己逼得太紧了。
 <br><br>
 
-<<link [[醒来|$previousPassage]]>><</link>>
+<<if $location isnot "lakehouse basement">>
+	<<link [[醒来|$previousPassage]]>><</link>>
+<<else>>
+	<<link [[醒来|Lake House Basement]]>><</link>>
+<</if>>
 
 :: Lake House Bed
+
 <<effects>>
 <<wearoutfit>>
 
 你在被子下舒适地窝着。
-<<if $wraith.state and $wraithPrison and ($moonstate is "evening" or $moonstate is _nightstate)>>
+/* <<if $wraith.state and $wraithPrison and ($moonstate is "evening" or $moonstate is _nightstate)>>
 	你感到焦虑，眼睛瞟向镜子。
-<</if>>
+<</if>> */
 <br><br>
 
 <<lakehouse_sleep_options>>
 
 :: Lake House Sleep
+
 <<set _autosavehere to true>>
 <<sleep>><<effects>>
-<<if $wraith.nightmare is 2 and isBloodmoon() and $lakehouse.barrier is undefined>>
-	<<sleepeffects>>
-	你梦见一个身着白衣的美丽身影站在红月下。它向你张开双臂，做出欢迎的姿态。当你一步步走近时，你能感觉到它的目光正深深地刺入你的脑海。
-	<br><br>
-
-	四周都是向内弯曲的树木，漂浮在湖面上。周围的一切都在移动，你发现自己悬浮在一片巨大的废墟之上。你无法呼吸。
-	<br><br>
-
-	你慢慢睁开眼睛，呆呆地站到床边。你的耳边充斥着尖锐的鸣声。
-	<br><br>
-
-	<<wraithPossess "lakehouse">>
-	<<storeon "Lake House Bed" "wardrobe">>
-	<span class="nextLink"><<link [[行走|Lake House Bedroom]]>><<rainWraith>><</link>></span>
-	<br>
-<<else>>
 	<<wakingEffects $sleepHoursTotal>>
 	<<if $nightmares gte 1 and $controlled is 0>>
 		你梦到自己被<<if ["haunt", "despair"].includes($wraith.state) and $rng lte 25>>苍白<<else>>黑暗<</if>>且恐怖的存在追捕着。
@@ -557,7 +548,7 @@
 		<</if>>
 	<</if>>
 	<<sleepeffects>>
-	<!--
+	/*
 	    <<if $baileywake is 1 and $placeholder is 1>>
 		You startle awake hearing commotion outside. <span class="red"><<nnpc_Hes Bailey>> here</span>.
 		<br><br>
@@ -574,7 +565,7 @@
 		<</if>>
 		<<link [[Prepare|Lake House Assault Wardrobe]]>><<endevent>><<set $phase to 1>><<unset $baileywake>><</link>>
 		<br>
-	-->
+	*/
 	<<if $lakehouse.billsphase gte 4>>
 		你听到外面的动静惊醒了。<span class="red">他们是来收回房子的</span>。
 		<br><br>
@@ -652,6 +643,11 @@
 
 你洗得干干净净。<<wash>>
 <br><br>
+<<if $options.bjx_eventTF and $slime gt 0>>
+    <<violence 100>>
+    <span class='red'>你承受了巨大的痛苦。你是一只史莱姆，你干嘛这么干？</span>
+    <br><br>
+<</if>>
 
 <<link [[出去->Lake House Bath Finish]]>><</link>>
 <br>
@@ -702,17 +698,8 @@
 <</if>>
 <<masturbationeffects>>
 <<masturbationactions>>
-<div id="masturbationButtons">
-	<div><<link [[继续|Lake House Bath Masturbation]]>><</link>></div><<nexttext>>
-	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
-		<div><<link [[停止|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
-	<<elseif $corruptionMasturbation isnot true>>
-		<div><<link [[停止|Lake House Bath Masturbation Finish]]>><<set $finish to 1>><</link>></div>
-	<<else>>
-		<div class="red">你耳中的史莱姆不会允许你停下的。</div>
-	<</if>>
-</div>
-<br>
+
+<<masturbationControls>>
 
 :: Lake House Bath Masturbation Finish
 
@@ -730,6 +717,7 @@
 <br>
 
 :: Lake House Masturbation
+
 <<set $outside to 0>><<set $location to "lakehouse">><<effects>>
 
 <<if $masturbationstart is 1>>
@@ -743,18 +731,7 @@
 <<masturbationeffects>>
 <<masturbationactions>>
 
-<div id="masturbationButtons">
-	<div><<link [[继续|Lake House Masturbation]]>><</link>><<nexttext>></div>
-
-	<<if !$corruptionMasturbation and random(3) gt $orgasmcurrent and $corruption_slime gt ($willpower / 10)>>
-		<div><<link [[停止|$passage]]>><<set $corruptionMasturbation to true>><</link>></div>
-	<<elseif !$corruptionMasturbation>>
-		<div><<link [[停止|Lake House Masturbation Finish]]>><<set $finish to 1>><</link>></div>
-	<<else>>
-		<div class="red">你耳中的史莱姆不会允许你停下的。</div>
-	<</if>>
-</div>
-<br>
+<<masturbationControls>>
 
 :: Lake House Masturbation Finish
 
@@ -764,6 +741,7 @@
 
 <<endmasturbation>>
 <<endcombat>>
+<br>
 
 <<link [[继续|Lake House Bedroom]]>><<clotheson>><</link>>
 <br>
@@ -917,7 +895,7 @@
 	<<set _choice = _ownedColours[0].colour>>
 	<<for _i, _item range _ownedColours>>
 		<label><span class="grey-shadow"><span @class="'hair-' + _item.colour.replace(/ /g, '-')"><span class="colour-hair"><span style="color:#FD6064;"><<hairmapcolourtext _item.colour>></span></span></span></span>&nbsp;<<print '<<radiobutton "_choice" "'+_item.colour+'" ' + (_choice is _item.colour ? "checked" : "") + '>>'>></label>
-		x _item.count |
+		&nbsp;x&nbsp;_item.count |
 	<</for>>
 
 	<br><br>
@@ -1010,10 +988,10 @@
 	<<if $lakehouse.plots gte 1>>
 		<<display_plot lakehouse>>
 	<</if>>
-<</if>>.
-
+<</if>>
 
 :: Lake House Play Computer
+
 <<effects>>
 你坐在椅子上，开始美美地打上几把电脑游戏。你度过了一段欢乐时光，在回到现实生活之前暂时将一些压力抛诸脑后。
 <br><br>
@@ -1063,6 +1041,9 @@
 <br>
 
 :: Lake House TV
+
+你拿出遥控器，打开电视屏幕，各个频道都在播放着不同的内容。
+<br><br>
 <<link [[观看走近科学 (0:40)|$passage]]>><<pass 40>><<scienceskill>><<stress -3>><</link>><<gscience>><<lstress>>
 <br>
 <<link [[观看最强大脑 (0:40)|$passage]]>><<pass 40>><<mathsskill>><<stress -3>><</link>><<gmaths>><<lstress>>
@@ -1070,6 +1051,8 @@
 <<link [[观看百家讲坛 (0:40)|$passage]]>><<pass 40>><<historyskill>><<stress -3>><</link>><<genglish>><<lstress>>
 <br>
 <<link [[观看非诚勿扰 (0:40)|$passage]]>><<pass 40>><<englishskill>><<stress -3>><</link>><<ghistory>><<lstress>>
+<br>
+<<link [[关闭电视|Lake House]]>><</link>>
 <br>
 
 :: Lake House Console
@@ -1104,11 +1087,26 @@
 <</addinlineevent>>
 <<runeventpool>>
 
+:: Lake House Pet Rename
+
+<<effects>>
+<<set _ind to $phase>>
+<<set $pet_now to $lakehouse.pet[_ind]>>
+
+你决定给$pet_now.name重新取一个名字。
+<br><br>
+
+<<textbox "$pet_now.name" $pet_now.name>>
+<br>
+
+<<link [[确定|Lake House]]>><<set $pet_now.name to Util.escape($pet_now.name)>><<set $lakehouse.pet[_ind].name to $pet_now.name>><</link>>
+<br>
+
 :: Lake House Snuggle Cat
 
 <<effects>>
 <<beastNEWinit 1 cat $pet_now.gender>>
-你抱起你的$pet_now.name，将<<him>>拥入怀中暴风吸入。<<His>>软软的皮毛让你感到快乐，你感觉心情稍微好了一些。
+你抱起你的$pet_now.name，将它拥入怀中暴风吸入。它软软的皮毛让你感到快乐，你感觉心情稍微好了一些。
 <br><br>
 <<link [[继续|Lake House]]>><</link>>
 <br>
@@ -1251,6 +1249,23 @@
 	<br>
 <</if>>
 
+:: Lake House Bills
+
+<<effects>>
+你打开门。<span class="red">是房产部门人员。</span>
+<br><br>
+"您好，您的房屋账单已逾期，请您及时付款，以免影响您的使用。"对方说道。
+<br><br>
+<<set _moneyB to 2000 * $lakehouse.billsphase * $rentmod>>
+<<if $money gte (200000 * $lakehouse.billsphase * $rentmod)>>
+    <<link [["支付租金 (£" + _moneyB + ")"|Lake House]]>><<set $money -= (200000 * $lakehouse.billsphase * $rentmod)>><<set $lakehouse.billsphase to 0>><</link>>
+    <br>
+<<else>>
+    你没有 £_moneyB 用来支付租金。
+<</if>>
+<<link [[暂不支付|Lake House]]>><</link>>
+<br>
+
 :: Lake House Bailey
 
 <<effects>>
@@ -1262,11 +1277,11 @@
 <<set $rentday to Time.weekDay>>
 
 :: Lake House Bailey Refuse
-<<effects>>
 
-<<if $submissive gte 1150>>
-	"我不付钱，"你说道。你无法直视贝利的目光。"走开。"
-<<elseif $submissive lte 850>>
+<<effects>>
+<<if $speech_attitude is "meek">>
+	"我不会付钱的，"你说道。你无法直视贝利的目光。"请离开。"
+<<elseif $speech_attitude is "bratty">>
 	"你一个子儿都别想拿到，"你盯着贝利怒拒道，"你没有这个权力。"
 <<else>>
 	"我不会让你欺负我的，"你坚定地凝视着贝利的眼睛，"那钱不属于你。"
@@ -1280,8 +1295,8 @@
 <br>
 
 :: Lake House Repossession
-<<effects>>
 
+<<effects>>
 你听到有人敲门，打开门后，看到一个穿着西装、打着领带的年轻人。他一边咳嗽一边推开门，盯着你说：“对不起<<sir>>，由于您已经有几周没有付账单了，您的房子将会被收回。请立即离开这里。如果您被发现在这栋房屋内，却没有支付您应付的欠款，将会被视为非法入侵，列入警局的嫌犯名单中。祝您生活愉快。”这个男子向你致意后便离开了。
 <br><br>
 
@@ -1289,66 +1304,145 @@
 <br>
 
 :: Lake House Cam Show Dance
-<<location "lakehouse">><<effects>>
-<<danceeffects>>
-<<danceaudience>>
-<<if $camshowrounds lte 30>>
-	<<danceactions>>
+
+<<set $outside to 0>><<location "lakehouse">><<effects>>
+
+<<if $dancestart is 1>>
+	<<unset $dancestart>>
+	<<danceinit>>
+	<<set $dancing to 1>>
+	<<set $venuemod to 3>>
+	<<set $dancelocation to "lakehouse">>
+	"屏幕前的粉丝们，大家好呀！"你朝着摄像头挥挥手。"接下来咱要开始跳舞咯，喜欢的哥哥姐姐可以送礼支持一下。"
+    <br><br>
 <</if>>
 
-<<if $danceevent is 0 and $exhibitionism lte 34 and $exposed gte 2>>
-	你不可能在如此暴露的情况下继续跳舞！你脸涨得通红，中止了表演。
-	<br><br>
-<<elseif $danceevent is 0 and $exhibitionism lte 14 and $exposed gte 1 and !$worn.under_lower.type.includes("dance")>>
-	你不可能在如此暴露的情况下继续跳舞！你脸涨得通红，中止了表演。
-	<br><br>
-<</if>>
+<<online_danceeffects>>
+<<online_danceaudience>>
+<<online_danceactions>>
 
-<<if $danceevent is 0>>
-	<<if $exposed gte 2 and $exhibitionism lte 34>>
-		<<link [[关播|Lake House Bedroom]]>><<clotheson>><<endevent>><<set $dancelocation to 0>><</link>>
-	<<elseif $exposed gte 1 and $exhibitionism lte 14>>
-		<<link [[关播|Lake House Bedroom]]>><<clotheson>><<endevent>><<set $dancelocation to 0>><</link>>
-	<<else>>
-		<<if $exhibitionism gte 55>>
-			<<link [[自慰秀|Lake House Cam Show Masturbate]]>><<endevent>><</link>>
-			<br>
-		<</if>>
-		<<link [[停止|Lake House Bedroom]]>><<clotheson>><<endevent>><<set $dancelocation to 0>><</link>>
+<<if $exposed gte 2 and $exhibitionism lte 54 or $exposed gte 1 and $exhibitionism lte 34>>
+	<<link [[关播|Lake House Bedroom]]>><<clotheson>><<endevent>><</link>>
+	<br>
+<<else>>
+    <<link [[继续|$passage]]>><</link>>
+	<br>
+	<<if $exhibitionism gte 75>>
+		<<link [[自慰秀|Lake House Cam Show Masturbate]]>><<endevent>><<set $masturbationstart to 1>><</link>>
 		<br>
 	<</if>>
+	<<link [[下播|Lake House Bedroom]]>><<clotheson>><<endevent>><</link>>
+	<br>
 <</if>>
 
 :: Lake House Cam Show Masturbate
-<<effects>><<set _enableSexToys to true>>
+
+<<set $outside to 0>><<set $location to "lakehouse">><<effects>>
+
 <<if $masturbationstart is 1>>
 	<<set $masturbationstart to 0>>
 	<<set $masturbationstat += 1>>
 	<<masturbationstart>>
-<</if>>
-<<rng>>
-<<if $speechcum is 1 and $rng gte 61 and $speechorgasmrepeat lte 1 and $speechorgasmcount lte 6>>
-	<<cumspeech>>
-<<elseif $rng gte 91>>
-	<<basespeech>>
-<<elseif $rng gte 61>>
-	<<dancespeech>>
-<<elseif $rng gte 41>>
-	<<clothesspeech>>
+	<<set _enableSexToys to true>>
+	"嘻嘻，接下来给大家表演一些有趣的哦～"你朝着摄像头眨了眨眼，躺坐在垫子上。"哥哥姐姐们可以和我一起来哦～"
+    <br><br>
 <</if>>
 
 <<masturbationeffects>>
 <<masturbationactions>>
+<<online_masturbationaudience>>
+<<masturbationControls>>
 
-<div id="masturbationButtons">
-	<div><<link [[继续|$passage]]>><</link>><<nexttext>></div>
+:: Lake House Cam Show Masturbate Finish
 
-	<<if $corruptionMasturbation isnot true and random(0,3) gt $orgasmcurrent and $corruption_slime gt (currentSkillValue('willpower') / 10)>>
-		<div><<link [[停止|$passage]]>><<set $corruptionMasturbation to true>><<set $dancelocation to 0>><</link>></div>
-	<<elseif $corruptionMasturbation isnot true>>
-		<div><<link [[停止|Lake House Bedroom]]>><<set $finish to 1>><<set $dancelocation to 0>><</link>></div>
+你面带红晕，气喘吁吁地说道: "今天，就到这里吧，主播很累了。喜欢的哥哥姐姐点点关注，下次再见哦～"
+<br><br>
+
+<<link [[下播|Lake House Bedroom]]>><<clotheson>><<endevent>><</link>>
+
+:: Lake House Large Bear Plushie Cuddle
+
+<<effects>>
+<<if $trauma gte ($traumamax / 7) * 3 or $stress gte ($stressmax / 7) * 5>>
+	你用你的整个身体狠狠抱住这个超大熊玩偶，对着它嚎啕大哭、放声哭泣。
+<<elseif $trauma gte ($traumamax / 7) * 2 or $stress gte ($stressmax / 7) * 3>>
+	你紧紧抱住那只超大熊玩偶，把脸埋在它的背上，对着它默默哭泣。
+<<elseif $trauma gte ($traumamax / 7) * 1 or $stress gte ($stressmax / 7) * 1>>
+	你用双臂从背后抱住超大熊玩偶，把头靠在它的肩膀上，静静地拥抱它。
+<<else>>
+	你开心地把超大熊玩偶抱在怀里，露出满足与安心的表情。
+<</if>>
+<br><br>
+
+<<link [[继续|Lake House Bedroom]]>><</link>>
+
+:: Lake House Basement
+
+<<set $outside to 0>><<set $location to "lakehouse basement">><<effects>>
+
+<<if $lakehouse.woodenHorse isnot undefined>>
+	地下室的角落放着一匹木马。
+	<br><br>
+
+	<<link [[使用木马 (1:00)|Lake House Wooden Horse]]>><<pass 60>><<set $phase to 0>><</link>><<gpain>>
+	<br>
+<<else>>
+	地下室里空空荡荡的。
+	<br>
+<</if>>
+
+<<link [[离开|Lake House]]>><</link>>
+
+:: Lake House Wooden Horse
+
+<<effects>>
+
+<<if $stress gte $stressmax and !$possessed>>
+	<<set $previousPassage to "Lake House Basement">>
+	<<passoutlakehouse>>
+<<else>>
+	<<if $phase is 0>>
+		<<set $phase to 1>>
+		你在腿上绑上金属重物，然后慢慢爬上木马，你感觉到它在挤压你的胯部。
+		<<masopain 25>><<arousal 1200 "genitals">>
+		<br><br>
 	<<else>>
-		<div class="red">你耳中的史莱姆不会允许你停下的。</div>
+		木马的尖菱深入你的胯部，在重力的作用下狠狠压迫着你的<<print ($player.ballsExist ? "睾丸" : "阴唇")>>。
+		<<masopain 20>><<arousal 1000 "genitals">>
+		<br><br>
 	<</if>>
-</div>
-<br>
+
+	<<if (currentSkillValue('willpower') / 10) gte (($pain - 100) + random(1, 100))>>
+		<span class="green">你咬紧牙关忍受着痛苦。</span>
+		<<gwillpower>><<willpower 3>>
+		<br><br>
+
+		<<link [[忍受|$passage]]>><</link>>
+		<br>
+		<<link [[停止|Lake House Basement]]>><<set $phase to 0>><</link>>
+		<br>
+	<<elseif ((currentSkillValue('physique') / 160) + (currentSkillValue('willpower') / 10)) gte (($pain - 100) + random(1, 100))>>
+		太疼了，你实在忍受不住了，连忙从木马上起身，爬了下来。
+		<<ggwillpower>><<willpower 10>>
+		<br><br>
+
+		尽管十分疼痛，但你感觉自己得到了充足的宣泄。<<trauma -12>>
+		<br><br>
+
+		<<link [[继续|Lake House Basement]]>><<set $phase to 0>><</link>>
+		<br>
+	<<else>>
+		太疼了，你实在忍受不住了，<span class="red">你想从木马上起身，但胳膊却使不上力气。</span>
+		<<ggwillpower>><<willpower 10>><<masopain 25>>
+		
+		<<if $pain gte 200>>
+			<br><br>
+			<span class="red">强烈的疼痛几乎压垮了你。</span>
+			<<gggstress>><<stress 50>>
+		<</if>>
+
+		<br><br>
+
+		<<link [[继续|$passage]]>><</link>>
+	<</if>>
+<</if>>

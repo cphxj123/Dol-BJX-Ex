@@ -1,0 +1,501 @@
+:: Adult Shop
+
+/* TEMPORARY fix to clean up NPC overflow issues */
+<<if $enemyno gte 1 or $phase gte 1>>
+	<<endevent>>
+<</if>>
+
+/* Variables */
+<<set $outside to 0>><<set $location to "adult_shop">><<effects>><<run statusCheck("Sydney")>>
+
+<<set $adultshopstate to "closed">>
+<<getadultshopstate>>
+<<if $adultshopintro is undefined>>
+	<<set $adultshopintro to 0>>
+<</if>>
+<<rng>>
+<<if $rng is 100>>
+	<<set _shopnameshort to "Aubergine's">>
+<<else>>
+	<<set _shopnameshort to "the shop">>
+<</if>>
+<<set _shopnamelong to "Erotic Adult Toys: Aubergine's Sensual Secrets">>
+<<set _shopgreeting to [
+	"don't hit each other with dildos,",
+	"keep your hands off your crotch,",
+	"keep your pants on at all times,",
+	"we don't sell used panties,",
+	"used items are non-returnable,"
+	]>>
+<<set _shopmusic to ["Smooth jazz","Salsa","Tango","Reggae","R&B","Romantic lounge","Classic rock","Classic pop"]>>
+
+<<set _binds to ($leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound")>>
+<<set _gag to ($worn.face.type.includes("gag") and $worn.face.cursed is 1)>>
+<<set _both to (_binds and _gag)>>
+<<set _gagname to $worn.face.name>>
+<<set _predicament to ( (_binds ? "bindings" : "") + (_both ? " and " : "") + (_gag ? _gagname : "") )>>
+
+/* Shop text */
+<<if $adultshopintro is 0 and $rng is 100>>
+	You are in an adult shop, bemusingly titled "_shopnamelong". A wide array of strap-ons, lingerie, fetish wear, and all manner of sex toys line the shelves.
+<<else>>
+	You are in an adult shop. A wide array of strap-ons, lingerie, fetish wear, and all manner of sex toys line the shelves.
+<</if>>
+<br>
+<<if !$brothelVending and $brotheljob and $fame.business gte 100>>
+	<<set $brothelVending to {status: "idea", products: 0, condoms: 0, lube: 0, condomsSold: 0, lubeSold: 0, condomsToRefill: 0, lubeToRefill: 0, weeksRent: 0, weeksEmpty: 0}>>
+	/* $brothelVending.status
+	idea - PC has had the idea but not talked to Briar
+	asked - Talked with Briar But not bought the machine
+	bought Bought the vending machine but not installed it
+	sold - Briar sold the machine since it was empty for so long
+	set Installed the vending machine
+	BITS of $brothelVending.products
+	bit 0 - 1 Talked to the pharmacy nurse about reselling condoms
+	bit 1 - 2 Talked to Sirris about selling lube */
+	<br>
+	Seeing the products on sale at the adult shop, <span class="pink">an idea strikes you</span>. You think it might be a good idea to set up a vending machine in the brothel's dressing room, so the staff can buy lube or other useful items for their work. <span class="gold">You decide you'll talk to Briar about it.</span>
+	<br><br>
+<</if>>
+
+<<if $adultshopstate isnot "closed">>
+	<<print _shopmusic[random(0,_shopmusic.length-1)]>> music plays softly in the background.
+	<br><br>
+<</if>>
+
+<<if $stress gte $stressmax>>
+	You've pushed yourself too far.
+	<br><br>
+	<<passoutadultshop>>
+	<<pass 1 hour>>
+	<<trauma 6>><<set $stress -= 2000>>
+<<elseif Time.hour is 21>>
+	It's closing time. Sirris is herding everyone outside.
+	<<if $exposed gte 1>>
+		Panic swells within you as you realise how exposed you'll be should Sirris find you in this state of dress.
+	<</if>>
+	<br><br>
+
+	<<set $adultshopstate to "closed">>
+	<<if $exposed lte 0>>
+		<<elkicon>><<link [[Go outside|Elk Street]]>><<adultShopClear>><</link>>
+		<br>
+	<<else>>
+		<<link [["Hide until it's over (1:00)"|Adult Shop]]>><<pass 1 hour>><</link>>
+	<</if>>
+<<else>>
+	/* States */
+	<<switch $adultshopstate>>
+		<<case "sirris">>
+			<<npc "Sirris">>
+			<<if $adultshopintro is 0>>
+				<<set _shopgreeting.push(
+					"discount on jumbo buttplugs,",
+					"we're always happy to help,",
+					"try our flavoured condoms,",
+					"number one adult shop in town,",
+					"number one adult shop in town,",
+					"here for our customers,",
+					"always nice to see you,",
+					"always nice to see you,",
+					"20% discount on gallon drums of lube,")
+				>>
+				/* Shop intro text*/
+				"Welcome to _shopnameshort, <<print _shopgreeting[random(0,_shopgreeting.length-1)]>>" Sirris <<print either("beams","greets warmly","welcomes","waves and smiles","smiles and winks","winks and thumbs up","intones")>>.
+				<<He>> <<print either("resumes discussing the merits of strap-ons","returns to completing a sale","returns to showing customers various dildos","resumes discussing lubes","returns to showing off fetish wear")>>.
+				<br><br>
+				<<set $adultshopintro to 1>>
+			<</if>>
+			<<if _binds or _gag>> <!-- Remove bindings and forced gags, dynamically -->
+				<<set _oblige to ( (_gag ? "looking at him quizzically" : "but ask Sirris to elaborate") + (_binds ? " as <<he>> helps you up on the counter" : " as you hop up on the counter") )>>
+				Sirris sniggers, taking notice of your _predicament. You <<if _gag>>wheeze through your gag,<<else>>open your mouth to say something,<</if>> but <<he>> raises <<his>> hand. "Happens about as much as you'd expect here. Up on the counter, please."
+				<br><br>
+				You oblige, _oblige. <<He>> ducks down, searching for something. "Customers trying out the equipment, mostly. Without permission. There were times I didn't let them out as a punishment, but I realised most of them probably wanted that to begin with."
+				<<He>> stands back up, holding a pair of snips. "Hold still."
+				<br><br>
+				<<He>> uses the snips to cut through your
+				<<if _binds>>bindings<</if>>
+				<<if _both>>and your<</if>>
+				<<if _gag>>_gagname<</if>>
+				with professional precision.
+				<<if _binds>>They clatter<<else>>It clatters<</if>> to the ground in an instant. <<He>> helps you down, and continues <<his>> work.
+				<br><br>
+				<<if _binds>><<unbind>><</if>>
+				<<if _gag>><<set $worn.face.type.push("broken")>><<faceruined>><</if>>
+			<</if>>
+			<<adultShopEvents>>
+			<br><br>
+
+		<<case "sydney">>
+			<<npc "Sydney">><<run statusCheck("Sydney")>>
+			<<if $adultshopintro is 0>>
+				<<set _sydneysays to ["greets warmly","welcomes","waves and smiles"]>>
+				<<set _sydneyactivity to [
+					", looking up from stocking shelves",
+					" from behind the counter",
+					", coming out of the stock room, pushing a dolly of stock",
+					", looking up returning a sale",
+					", looking up from a clipboard",
+					", feather duster in hand",
+					", dodging a handsy customer"
+				]>>
+				/* Switch tone between corrupt and noncorrupt */
+				<<if !_sydneyStatus.includes("corrupt")>>
+					<<set _shopgreeting to [
+						"don't hit each other with props,",
+						"we're always happy to help,",
+						"please respect the other patrons,",
+						"number one adult shop in town,",
+						"here for our customers,",
+						"always nice to see you,"]>>
+						<<set _sydneysays.push("recites","says flatly","intones")>>
+				<<else>>
+					<<set _shopgreeting to [
+						"don't hit each other with dildos,",
+						"keep your hands off your crotch,",
+						"keep your pants on at all times,",
+						"we don't sell used panties,",
+						"we're always happy to help",
+						"used items are non-returnable,",
+						"this is not a brothel,",
+						"number one adult shop in town,",
+						"here for our customers,",
+						"always nice to see you,",
+						"don't creep on other patrons,",
+						"I don't want to see your pictures,",
+						"we do not recycle lubricant,"]>>
+						<<set _sydneysays.push("beams","winks","sings","waves with a dildo")>>
+				<</if>>
+				<<if $sydneyromance is 1>>
+					<<set _shopgreeting to ["Hey you,","Heya,", "Always nice to see you!"]>>
+					<<set _sydneysays to ["beams","blows a kiss","finger guns","blushes and waves"]>>
+
+					/* Shop intro text */
+					"<<print _shopgreeting[random(0,_shopgreeting.length-1)]>>" Sydney <<print _sydneysays[random(0,_sydneysays.length-1)]>><<print _sydneyactivity[random(0,_sydneyactivity.length-1)]>>.
+				<<else>>
+					/* Shop intro text */
+					"Welcome to _shopnameshort, <<print _shopgreeting[random(0,_shopgreeting.length-1)]>>"
+					Sydney <<print _sydneysays[random(0,_sydneysays.length-1)]>><<print _sydneyactivity[random(0,_sydneyactivity.length-1)]>>.
+				<</if>>
+				<br><br>
+				<<set $adultshopintro to 1>>
+			<</if>>
+
+			<<if _binds or _gag>> <!-- Remove bindings and forced gags, dynamically -->
+				Sydney's eyes widen as <<he>> notices your _predicament.
+				<<if _sydneyStatus.includes("corrupt")>>
+					"You could just... ask, you know." Your face flushes<<if !_gag>>, and you try to explain yourself<</if>>. Sydney giggles<<if !_gag>>, waving away your explanation<</if>> as <<he>> searches for something under the counter.
+				<<else>>
+					"Are you alright? Who did that to you? Or did you just... have an accident while trying out the props?" Sydney disappears under the counter as you explain.
+				<</if>>
+				<br><br>
+				<<He>> emerges with a pair of snips, and motions for you to come behind the counter. <<He>> snips off your
+				<<if _binds>>bindings<</if>>
+				<<if _both>>and your<</if>>
+				<<if _gag>>_gagname<</if>>
+				with precision, and
+				<<if _binds>>they clatter<<else>>it clatters<</if>>
+				to the ground quickly enough.
+				<<if $sydneyromance gte 1>>
+					Before you can thank <<him>>, <<he>> kisses you on the cheek. "Be more careful, please."
+				<</if>>
+				<<He>> returns to work after making sure that you're alright.
+				<br><br>
+				<<if _binds>><<unbind>><</if>>
+				<<if _gag>><<set $worn.face.type.push("broken")>><<faceruined>><</if>>
+			<</if>>
+			<<adultShopEvents>>
+			<br><br>
+
+		<<default>> /* I.E. closed */
+			The shop is closed. You stand alone in the near darkness, lit only by a dim glow emanating from a novelty penis lamp.
+			<<if (Time.hour lt 16 or Time.hour gt $closinghour) and !$weekly.theft.adultShop>>
+					<br><br>
+					/* */
+					<<icon "clothes/traits/sticky_fingers.png">><<link [[Examine the cash register|Adult Shop Register]]>><</link>>
+				<</if>>
+			<br><br>
+
+	<</switch>>
+
+	/* Links */
+	<<if $adultshopclerk and $adultshopstate isnot "closed">>
+		/* work in this shop */
+		<<ind>><<link [[Work (1:00)|Adult Shop Clerk Job]]>><<endevent>><<pass 60>><</link>>
+		<br>
+	<</if>>
+	<<if !$adultshopclerk and $debug is 1>>
+		<<link [[Debug unlock clerk job|$passage]]>><<set $adultshopclerk to true>><</link>>
+		<br>
+	<</if>>
+	<<if $adultshopstate isnot "closed">>
+		<<ind>><<link [[Approach Sirris (0:01)|Adult Shop Approach Sirris]]>><<pass 1>><<endevent>><</link>>
+		<br>
+	<</if>>
+	<<if $adultshopstate is "sydney" and $debug is 1>>
+		<<ind>><<link [[Approach Sydney (0:01)|Adult Shop Approach Sydney]]>><<pass 1>><<endevent>><</link>>
+		<br>
+	<</if>>
+	<<icon "adultclothing.png">><<link [[Browse clothing (0:01)|Adult Shop Store]]>><<pass 1>><</link>>
+	/* 北极星模组 */
+	<br>
+	<<if $adultshopstate isnot "closed" or $debug is 1>>
+		<<sextoysicon "strap-on">><<link [[浏览性玩具 (0:01)|Adult Shop Menu]]>><<pass 1>><</link>>
+		<br>
+	<</if>>
+	<<if $lakehouseinit is undefined>>
+		你看到一匹木马正在出售，却你没有地方放它。
+		<br>
+	<<elseif $lakehouse.woodenHorse isnot undefined>>
+	<<elseif $money gte 50000>>
+		<<link [[买一匹木马|$passage]]>><<set $money -= 50000>><<set $lakehouse.woodenHorse to 1>><</link>>
+		<br>
+	<<else>>
+		你没有足够的钱购买木马。
+		<br>
+	<</if>>
+	/* 北极星 */
+	<br><br>
+	<<exiticon>><<link [[Exit (0:01)|Elk Street]]>><<pass 1>><<adultShopClear>><</link>>
+
+<</if>>
+
+:: Adult Shop Store
+/*<<exiticon>><<link [[Exit (0:01)|Adult Shop]]>><<pass 1>><</link>>*/
+<br><br>
+<div id="clothingShop-div" class="main-shop-div">
+	<<adultShop-main>>
+</div>
+
+:: Adult Shop Approach Sirris
+/*<<npc "Sirris">> clothes bug */
+/*Unfinished content. Removes binds etc but demonstrates this to the customers.*/
+<<effects>>
+Sirris smiles as you approach.
+<<if $adultshopclerk and $NPCName[$NPCNameList.indexOf("Sirris")].love gt 50>>
+	"You're doing a good job." <<nnpc_He Sirris>> says.
+<</if>>
+"Is there anything you need?"
+<br><br>
+<<if !$adultshopclerk>>
+	<<link [[Ask for work|Adult Shop Approach Sirris Ask]]>><</link>>
+	<br>
+<</if>>
+<<if $brothelVending and $brothelVending.status is "set" and $brothelVending.weeksEmpty lt 4>>
+	<<if $brothelVending.products gte 2 and !$weekly.brothelVMLube and $brothelVending.lubeToRefill gte 10>>
+		<<link [[Buy lube for the brothel (0:10)|Adult Shop Buy Lube in Bulk]]>><<pass 10>><</link>>
+		<br>
+	<<elseif $brothelVending.products lt 2>>
+		<<link [[Ask about buying lube in bulk (0:15)|Adult Shop Buy Lube in Bulk]]>><<pass 15>><</link>>
+		<br>
+	<</if>>
+<</if>>
+<<link [[Back|Adult Shop]]>><</link>>
+
+
+:: Adult Shop Approach Sirris Ask
+<<effects>>
+
+"We could use the help!" Sirris says. "Shelves need stocking, and customers needs servicing." <<nnpc_He Sirris>> pauses. "At the counter, that is."
+<br><br>
+
+"You can work whenever we're open, and I'll pay you <span class="gold">£15</span> per hour," <<nnpc_he Sirris>> adds. "Sydney helps out a lot too."
+<br><br>
+
+<<link [[Accept|Adult Shop Approach Sirris Accept]]>><<set $adultshopclerk to 1>><</link>>
+<br>
+<<link [[Back|Adult Shop]]>><</link>>
+<br>
+
+:: Adult Shop Approach Sirris Accept
+<<effects>>
+
+Sirris claps <<nnpc_his Sirris>> hands together. "Wonderful," <<nnpc_he Sirris>> says. "You can start whenever you like."
+<br><br>
+
+<<link [[Next|Adult Shop]]>><</link>>
+<br>
+
+:: Adult Shop Approach Sydney
+<<npc "Sydney">>
+<<run statusCheck("Sydney")>>
+You approach Sydney.
+<<sydneyGreeting>>
+<br>
+"Was there something you needed?"
+<br><br>
+<<sydneyOptions>>
+<<link [[Back|Adult Shop]]>><</link>>
+
+:: Adult Shop Approach Sydney Ask
+<<effects>>
+<<run statusCheck("Sydney")>>
+
+<<if _sydneyStatus.includes("corrupt") or _sydneyStatus.includes("corruptLust")>>
+	Sydney grins. "Can't stay away?" <<he>> asks. "I know the feeling. The patrons are a handful. I could use the company, and the help. The work is mostly stacking shelves and servicing customers behind the counter." <<He>> pauses. "But not like that."
+<<elseif _sydneyStatus.includes("pure") or _sydneyStatus.includes("pureLust")>>
+	Sydney's expression doesn't change. "We're looking for help. Stacking shelves, servicing customers behind the counter, that sort of thing. Be careful though. The customers are of the lascivious sort."
+<<else>>
+	Sydney smiles. "I was hoping you'd ask," <<he>> says. "The patrons are a handful. I could use the company, and the help. The work is mostly stacking shelves and servicing customers behind the counter."
+<</if>>
+<br><br>
+
+"I'm paid <span class="gold">£15</span> per hour, and I expect you'd get the same."
+<br><br>
+
+<<link [[Accept|Adult Shop Approach Sydney Accept]]>><</link>>
+<br>
+<<link [[Back|Adult Shop]]>><</link>>
+<br>
+
+
+:: Adult Shop Approach Sydney Accept
+<<effects>>
+<<run statusCheck("Sydney")>>
+
+<<if _sydneyStatus.includes("corrupt") or _sydneyStatus.includes("corruptLust")>>
+	"Wonderful!" Sydney says, clapping <<his>> hands together. "You can start whenever you like."
+<<elseif _sydneyStatus.includes("pure") or _sydneyStatus.includes("pureLust")>>
+	Sydney nods. "You can start whenever you like."
+<<else>>
+	Sydney nods. "It'll be nice working with you," <<he>> says. "You can start whenever you like."
+<</if>>
+<br><br>
+<<link [[Next|Adult Shop]]>><</link>>
+<br>
+
+
+:: Adult Shop Clerk Job
+<br>
+You work behind the counter, selling adult products and stocking shelves.
+<br><br>
+<<adultshopclerkevents>>
+<<if $debug is 1>>
+<br><br><br>
+	<<link [[Debug return|Adult Shop]]>><</link>>
+<</if>>
+
+:: Adult Shop Buy Lube in Bulk
+<<effects>>
+<<if $brothelVending.products gte 2>>
+	<<if $weekly.brothelVMLube>>
+		You already have refilled the vending machine with lube this week.
+		<br><br>
+		<<link [[Return|Adult Shop Approach Sirris]]>><</link>>
+	<<elseif $brothelVending.lubeToRefill lt 10>>
+		You don't need to refill the vending machine with lube.
+		<br><br>
+		<<link [[Return|Adult Shop Approach Sirris]]>><</link>>
+	<<elseif $money lt 20000>>
+		You can't afford lube to refill the vending machine.
+		<br><br>
+		<<link [[Return|Adult Shop Approach Sirris]]>><</link>>
+	<<else>>
+		You ask Sirris for the quantity of lube you need:
+		<br><br>
+		<<lubePrice 10>>
+		<<link [[Buy 10 bottles (£200)|Adult Shop Bought Lube in Bulk]]>><<set $lubeBought to 10>><</link>>
+		<br>
+		<<if $brothelVending.lubeToRefill gte 25>>
+			<<lubePrice 25>>
+			<<if $money gte _price>>
+			<<formatmoney _price>>
+				<<link [[`Buy 25 bottles (${_printmoney})`|Adult Shop Bought Lube in Bulk]]>><<set $lubeBought to 25>><</link>>
+				<br>
+			<<else>>
+				You can't afford 25 bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.lubeToRefill gte 50>>
+			<<lubePrice 50>>
+			<<if $money gte _price>>
+			<<formatmoney _price>>
+				<<link [[`Buy 50 bottles (${_printmoney})`|Adult Shop Bought Lube in Bulk]]>><<set $lubeBought to 50>><</link>>
+				<br>
+			<<else>>
+				You can't afford 50 bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.lubeToRefill gte 100>>
+			<<lubePrice 100>>
+			<<formatmoney _price>>
+			<<if $money gte _price>>
+				<<link [[`Buy 100 bottles (${_printmoney})`|Adult Shop Bought Lube in Bulk]]>><<set $lubeBought to 100>><</link>>
+				<br>
+			<<else>>
+				You can't afford 100 bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.lubeToRefill gte 150>>
+			<<lubePrice 150>>
+			<<formatmoney _price>>
+			<<if $money gte _price>>
+				<<link [[`Buy 150 bottles (${_printmoney})`|Adult Shop Bought Lube in Bulk]]>><<set $lubeBought to 150>><</link>>
+				<br>
+			<<else>>
+				You can't afford 150 bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<if $brothelVending.lubeToRefill gte 11>>
+			<<lubePrice $brothelVending.lubeToRefill>>
+			<<formatmoney _price>>
+			<<if $money gte _price>>
+				<<link [[`Buy ${$brothelVending.lubeToRefill} bottles (${_printmoney})`|Adult Shop Bought Lube in Bulk]]>><<set $lubeBought to $brothelVending.lubeToRefill>><</link>>
+				<br>
+			<<else>>
+				You can't afford $brothelVending.lubeToRefill bottles.
+				<br>
+			<</if>>
+		<</if>>
+		<<link [["Don't buy"|Adult Shop Approach Sirris]]>><</link>>
+	<</if>>
+<<else>>
+	You explain to Sirris that you have managed to install a vending machine in the brothel and that you plan to keep it filled with bottles of lube. "It's a business opportunity for both of us. You will increase your sales, and I will be able to make a profit." You ask <<nnpc_him Sirris>> if <<nnpc_he Sirris>> can give you a discount if you buy a few bottles of lube.
+	<br><br>
+	"The brothel?" <<nnpc_he Sirris>> answers, shocked. "The brothel isn't a safe place for students. I'm sure you know what you're doing, but please be careful. If you already have the machine there, we can talk about a bulk discount. Let me see..." Sirris rummages through <<nnpc_his Sirris>> papers until <<nnpc_he Sirris>> finds one that looks like a bill.
+	<br><br>
+	"All right, here. I can cut the price by 2%, but only if you buy more than 10 units. If you buy more than 50, I can apply a discount of 5% for those bottles. I'll also give you an 8% discount for any additional units purchased over 150 bottles. Does that sound fair to you?" Sirris thinks for a bit with an absent look on <<nnpc_his Sirris>> face, and, without waiting for your answer, <<nnpc_he Sirris>> tells you that <<nnpc_he Sirris>> will take care of delivering the products to the brothel so you don't have to go there yourself.
+	<br><br>
+	<<set $brothelVending.products += 2>>
+	<<set $brothelVending.lubeToRefill to 200>>
+	<<link [[Buy lube for the brothel (0:10)|Adult Shop Buy Lube in Bulk]]>><<pass 10>><</link>>
+	<br>
+	<<link [["Don't buy"|Adult Shop Approach Sirris]]>><</link>>
+<</if>>
+
+:: Adult Shop Bought Lube in Bulk
+<<effects>>
+<<set _partial to Math.min($lubeBought, 50)>>
+<<lubePrice _partial>>
+<<formatmoney _price>>
+"Well, <<girl>>, let's count. There are $lubeBought bottles of lube," <<nnpc_he Sirris>> tells you while putting the products carefully in a cardboard box. "There are _partial units at £20 with a 2% discount, _printmoney.
+<<lubePrice $lubeBought>>
+<<if $lubeBought gt 50>>
+	<<set _partial to Math.min($lubeBought - 50, 100)>>
+	<<set _price2 to _partial * 2000 * .95>>
+	<<formatmoney _price2>>
+	Plus _partial units, £20 each, with a 5% cut, _printmoney.
+	<<if $lubeBought gt 150>>
+		<<set _partial to $lubeBought - 150>>
+		<<set _price2 to _partial * 2000 * .92>>
+		<<formatmoney _price2>>
+		And _partial units, £20 each, reduced by 8%, _printmoney.
+	<</if>>
+	Yes, a total of <<printmoney _price>>.
+<</if>>
+I will see that it is delivered to the brothel immediately. Thank you for helping in my business."
+<br><br>
+You count the money and give it to <<nnpc_him Sirris>>.
+<br><br>
+<<set $money -= _price>>
+<<set $brothelVending.lube += $lubeBought>>
+<<set $brothelVending.lubeToRefill -= $lubeBought>>
+<<set $brothelVending.weeksEmpty to 0>>
+<<set $weekly.brothelVMLube to true>>
+<<unset $lubeBought>>
+<<earnFeat "Brothel Provider">>
+<<link [[Next|Adult Shop]]>><</link>>

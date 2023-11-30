@@ -57,31 +57,8 @@
 
 <<widget "lakehouse_sleep_options">>
 	<<nightmareCheck "Lake House Sleep">>
-
-	<<if $sleeptrouble is 1 and $controlled is 0>>
-		<<link [[睡10个小时|Lake House Sleep]]>><<set $sleephour to 10>><<incrementautosave>><</link>> (<<timeAfterXHours 10>>)<<ltiredness>>
-		<br>
-		<<link [[睡9个小时|Lake House Sleep]]>><<set $sleephour to 9>><<incrementautosave>><</link>> (<<timeAfterXHours 9>>)<<ltiredness>>
-		<br>
-	<</if>>
-	<<link [[睡8个小时|Lake House Sleep]]>><<set $sleephour to 8>><<incrementautosave>><</link>> (<<timeAfterXHours 8>>)<<ltiredness>>
-	<br>
-	<<link [[睡7个小时|Lake House Sleep]]>><<set $sleephour to 7>><<incrementautosave>><</link>> (<<timeAfterXHours 7>>)<<ltiredness>>
-	<br>
-	<<link [[睡6个小时|Lake House Sleep]]>><<set $sleephour to 6>><<incrementautosave>><</link>> (<<timeAfterXHours 6>>)<<ltiredness>>
-	<br>
-	<<link [[睡5个小时|Lake House Sleep]]>><<set $sleephour to 5>><<incrementautosave>><</link>> (<<timeAfterXHours 5>>)<<ltiredness>>
-	<br>
-	<<link [[睡4个小时|Lake House Sleep]]>><<set $sleephour to 4>><<incrementautosave>><</link>> (<<timeAfterXHours 4>>)<<ltiredness>>
-	<br>
-	<<link [[睡3个小时|Lake House Sleep]]>><<set $sleephour to 3>><<incrementautosave>><</link>> (<<timeAfterXHours 3>>)<<ltiredness>>
-	<br>
-	<<link [[睡2个小时|Lake House Sleep]]>><<set $sleephour to 2>><<incrementautosave>><</link>> (<<timeAfterXHours 2>>)<<ltiredness>>
-	<br>
-	<<link [[睡1个小时|Lake House Sleep]]>><<set $sleephour to 1>><<incrementautosave>><</link>>  (<<timeAfterXHours 1>>)<<ltiredness>>
-	<br>
-	<<link [[只管去睡|Lake House Sleep]]>><<set $sleephour to -1>><<incrementautosave>><</link>> (??:??)<<ltiredness>>
-	<br><br>
+	
+	<<generateSleepLinks "Lake House Sleep">>
 	<<link [[爬下床|Lake House Bedroom]]>><<storeon "Lake House Bed">><<set $wardrobe_location to "lakehouse">><<loadTempHairStyle>><<wardrobeSelection>><<loadTempHairStyle>><</link>>
 	<br><br>
 <</widget>>
@@ -213,15 +190,15 @@
 <<widget "lakehouse_bailey_options">>
 	<<babyRent>>
 	<<if $money gte $rentmoney + ($babyRent or 0)>>
-		<<link [[付款|rentpay]]>><<set $renttime to 7>><</link>>
+		<<link [[付款|rentpay]]>><</link>>
 		<br>
-		<<link [[拒绝|Lake House Bailey Refuse]]>><<set $renttime to 14>><<set $lakehouse_attack_timer to 7>><<def 1>><</link>>
+		<<link [[拒绝|Lake House Bailey Refuse]]>><<set $lakehouse_attack_timer to 7>><<def 1>><</link>>
 		<br>
 	<<else>>
 		<<set $baileypaychain to 0>>
-		<<if $submissive gte 1150>>
+		<<if $speech_attitude is "meek">>
 			"我-我没有钱，"你告诉贝利。
-		<<elseif $submissive lte 850>>
+		<<elseif $speech_attitude is "bratty">>
 			"我没钱，"你告诉贝利，"就算我有钱我也不会付给你的。"
 		<<else>>
 			"我没钱，"你告诉贝利，"你在浪费时间。"
@@ -231,14 +208,15 @@
 		"行吧，"贝利说道，"我的朋友们会很高兴的。"<<nnpc_He Bailey>>转身离开。
 		<br><br>
 
-		<<link [[继续|Lake House]]>><<set $renttime to 14>><</link>>
+		<<link [[继续|Lake House]]>><<set $lakehouse_attack_timer to 7>><</link>>
 		<br>
 	<</if>>
+	<<set $renttime to 7>><<set $rentday to Time.weekDay>>
 <</widget>>
 
 <<widget "lakehouse_assault_init">>
 	<<set $lakehouse_assault to {}>>
-	<<set $lakehouse_assault.no to [0]>>
+	<<set $lakehouse_assault.no to [0, 1, 2, 3]>>
 	<<if $lakehouse_stage gte 8>>
 		<<set $lakehouse_assault.no.push(4)>>
 	<</if>>
@@ -320,6 +298,504 @@
 		<<set $lakehouse_assault.tower to "empty">>
 	<</if>>
 	<<set $lakehouse_assault.alex to "patrol">>
+<</widget>>
+
+<<widget "lakehouse_pet_options">>
+    <<set _ind to _args[0]>>
+    <<set _pet to $lakehouse.pet[_ind]>>
+    <<set _choice to "<<set $pet_now to $lakehouse.pet[" + _ind + "]>>">>
+    <<print "<<link [[给" + _pet.name + "改名|Lake House Pet Rename]]>><<set $phase to "+_ind+">><</link>>">>
+	<br>
+	<<if _pet.type is "cat">>
+		<<print "<<link [[跟" + _pet.name + "贴贴(0:30)|Lake House Snuggle Cat]]>><<pass 30>>"+_choice+"<<stress -10>><<trauma -10>><</link>><<llstress>><<lltrauma>>">>
+		<br>
+		<<print "<<link [[操" + _pet.name + "|Lake House Fuck Cat]]>><<pass 30>>"+_choice+"<</link>><<deviant2>>">>
+        <br>
+	<<elseif _pet.type is "dog">>
+		<<print "<<link [[跟" + _pet.name + "玩抛接 (0:30)|Lake House Fetch Dog]]>><<pass 30>>"+_choice+"<<stress -10>><<trauma -10>><<physique 5>><<tiredness 5>><</link>><<llstress>><<lltrauma>><<gphysique>><<gtiredness>>">>
+		<br>
+		<<print "<<link [[操" + _pet.name + "|Lake House Fuck Dog]]>><<pass 30>>"+_choice+"<</link>><<deviant2>>">>
+        <br>
+	<</if>>
+<</widget>>
+
+<<widget "cam1payout">>
+	/* Dance Exhibitionism */
+	<<exposure>>
+	<<set _payoutStatMod to $exposed>>
+
+	<<if _args[1] is undefined>>
+		<<set _payoutDuoMod to 1>>
+	<<else>>
+		<<set _payoutDuoMod to _args[1]>>
+	<</if>>
+
+	/* Total Fame */
+	<<set _fame to ($fame.sex + $fame.prostitution + $fame.rape + $fame.bestiality + $fame.exhibitionism + $fame.pregnancy + $fame.impreg + $fame.scrap + $fame.good + $fame.business + $fame.social + $fame.model)>>
+	
+	/* Base */
+	<<set _payout to 3000>>
+	/* Dance Exhibitionism */
+	<<set _payout += (3000 * Math.clamp(_payoutStatMod / 2, 0, 1))>>
+	/* Dance Skill */
+	<<set _payout += (3000 * Math.clamp(currentSkillValue('danceskill') / 1000, 0, 1))>>
+	/* Allure */
+	<<set _payout += (3000 * Math.clamp($allure / (6000 * $alluremod), 0, 1))>>
+	/* Fame */
+	<<set _payout += (3000 * Math.clamp(_fame / 4000, 0, 1))>>
+	
+	<<set $campayout to (_payout * _payoutDuoMod)>>
+<</widget>>
+
+<<widget "cam2payout">>
+	<<if _args[0] is undefined>>
+		<<set _payoutDuoMod to 1>>
+	<<else>>
+		<<set _payoutDuoMod to _args[0]>>
+	<</if>>
+
+	/* Total Fame */
+	<<set _fame to ($fame.sex + $fame.prostitution + $fame.rape + $fame.bestiality + $fame.exhibitionism + $fame.pregnancy + $fame.impreg + $fame.scrap + $fame.good + $fame.business + $fame.social + $fame.model)>>
+	
+	/* Base */
+	<<set _payout to 3000>>
+	/* Awareness */
+	<<set _payout += (3000 * ($awareness / 1000))>>
+	/* Innocence */
+	<<set _payout += ($innocencestate is 1 ? 3000 : 0)>>
+	/* Seduction Skill */
+	<<set _payout += (3000 * Math.clamp($seductionskill / 1000, 0, 1))>>
+	/* Allure */
+	<<set _payout += (3000 * Math.clamp($allure / (6000 * $alluremod), 0, 1))>>
+	/* Fame */
+	<<set _payout += (3000 * Math.clamp(_fame / 4000, 0, 1))>>
+	
+	<<set $campayout to (_payout * _payoutDuoMod)>>
+<</widget>>
+
+<<widget "camdanmu">>
+    <<set _speechList to []>>
+    
+    <<exposure>>
+    <<if $exposed gte 2>>
+        <<set _speech to "我的天，赤身裸体的" + ($player.gender_appearance is "m"? "小正太" : "小萝莉") + "！不行了，我要去拿纸巾了，兄弟们再见。">>
+        <<run _speechList.push(_speech)>>
+    <<elseif $exposed gte 1>>
+        <<set _speech to ($player.gender_appearance is "m"? "小弟弟" : "小妹妹") + "你走光...算了，我还是闭嘴享受吧。">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+	<<set _fame to ($fame.sex + $fame.prostitution + $fame.rape + $fame.bestiality + $fame.exhibitionism + $fame.pregnancy + $fame.impreg + $fame.scrap + $fame.good + $fame.business + $fame.social + $fame.model)>>
+	<<if _fame gte 2000>>
+        <<set _speech to "我去，这不是那谁吗，没想到在这里直播这个，咱们有眼福了。">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+	<<if $awareness gte 500>>
+        <<set _speech to "天呐" + ($player.gender_appearance is "m"? "他" : "她") + "好会哦，我都不知道还有这么多花样。">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+	<<if $innocencestate is 1>>
+        <<set _speech to "不行了，" + ($player.gender_appearance is "m"? "他" : "她") + "好天真好纯真，让我好有罪恶感啊怎么办。">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+	<<if $seductionskill gte 500>>
+        <<set _speech to "我感觉我要沉迷了，" + ($player.gender_appearance is "m"? "他" : "她") + "简直把我的魂勾走了，实在太撩人了">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+	<<if $allure gte 3000 * $alluremod>>
+        <<set _speech to "哦哦哦，不行了，" + ($player.gender_appearance is "m"? "他" : "她") + "实在是太色了，我感觉再看下去我的那里要爆炸了。">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+    <<if $beauty gte ($beautymax / 7) * 4>>
+        <<set _speech to "主播，你好可爱，好" + ($player.gender_appearance is "m"? "帅" : "美") + "哦，求求你嫁给我吧，我要和你生猴子！">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+    <<if _speechList.length lte 3>>
+        <<set _speech to "什么嘛，不过就是个" + ($player.gender_appearance is "m"? "小屁孩" : "小丫头") + "搁这乱扭，真不知道有什么好看的。">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+    <<if _speechList.length lte 3>>
+        <<set _speech to "就我一个人觉得很无聊吗？">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+    <<if _speechList.length lte 3>>
+        <<set _speech to "主播，你还是洗洗睡吧，根本没人看你。">>
+        <<run _speechList.push(_speech)>>
+    <</if>>
+    
+    <<set _speech to "主播你终于又开播了，看不到你的直播，我都吃不下饭了。">>
+    <<run _speechList.push(_speech)>>
+    
+    <<set _speech to "初见，可爱，单推。">>
+    <<run _speechList.push(_speech)>>
+    
+    <<set _speech to "主播主播，能念一下我的弹幕吗？">>
+    <<run _speechList.push(_speech)>>
+    
+    <<set _speech to "组团抱走主播，当前(61/100)">>
+    <<run _speechList.push(_speech)>>
+    
+    <<set _speech to "好喜欢你，主播加油，关注了～">>
+    <<run _speechList.push(_speech)>>
+    
+    <<print _speechList.pluck()>>
+<</widget>>
+
+<<widget "online_dance_crossdress_reveal">>
+    <<rng>>
+    <<if $crossdressing is 2>>
+		<<if $rng gte 80>>
+			<span class="red">"卧槽，这TM是个人妖，能别恶心人吗，老子要吐了。"</span>你看到一个弹幕说。
+			<<stress 6>><<trauma 6>>
+		<<elseif $rng gte 60>>
+			<span class="red">"看了半天结果是个扶她，白浪费我感情，取关了取关了。"</span>你看到一个弹幕说。
+			<<stress 3>><<trauma 3>>
+		<<elseif $rng gte 40>>
+			<span class="blue">"呜呜，为什么主播是个扶她，感觉心碎了。"</span>你看到一个弹幕说。
+		<<elseif $rng gte 20>>
+			<span class="green">"居然还是个扶她，瞬间更喜欢了，血赚好吧。"</span>你看到一个弹幕说。
+			<<stress -3>><<trauma -3>>
+		<<else>>
+			<span class="green">"哇塞，扶她小萝太，都别跟我抢，主播是我的。"</span>你看到一个弹幕说。
+			<<stress -6>><<trauma -6>>
+		<</if>>
+	<<elseif $crossdressing is 1>>
+		<<if $rng gte 80>>
+			<span class="red">"草，老娘扣了半天，你告诉我结果是个" + ($player.gender is "m"? "男的" : "女的") + "？晦气。"</span>你看到一个弹幕说。
+			<<stress 6>><<trauma 6>>
+		<<elseif $rng gte 60>>
+			<span class="red">"卧槽，这么可爱，居然是个" + ($player.gender is "m"? "男的" : "女的") + "！差点给爷吓痿了。"</span>你看到一个弹幕说。
+			<<stress 3>><<trauma 3>>
+		<<elseif $rng gte 40>>
+			<span class="blue">"呜呜呜，为什么是个" + ($player.gender is "m"? "男生" : "女生") + "，我刚刚到来的爱情啊。"</span>你看到一个弹幕说。
+		<<elseif $rng gte 20>>
+			<span class="green">"什么？主播原来是个" + ($player.gender is "m"? "男孩" : "女孩") + "，那岂不是更好了，妙啊。"</span>你看到一个弹幕说。
+			<<stress -3>><<trauma -3>>
+		<<else>>
+			<span class="green">"我看到了什么，一只可爱的" + ($player.gender is "m"? "小伪娘" : "假小子") + "！我爱死主播了。"</span>你看到一个弹幕说。
+			<<stress -6>><<trauma -6>>
+		<</if>>
+	<<else>>
+		"我居然看到主播<<genitals>>了，感谢老天。不行，我要赶紧录下来。"你看到一个弹幕说。
+	<</if>>
+<</widget>>
+
+<<widget "online_danceeffects">>
+    <<pass 15>>
+    <<if $arousal gte $arousalmax>>
+        <<set $danceaction to "orgasm">>
+    <</if>>
+    <<switch $danceaction>>
+        <<case "orgasm">>
+            <<orgasmstage>>
+            你在镜头前高潮了，双腿一软瘫倒在地，弹幕顿时一片问号。
+            "卧槽，这<<print ($player.gender_appearance is "m"? "小正太" : "小萝莉")>>居然高潮了，好色哦，我要给<<pshe>>刷火箭。"弹幕说着送出了火箭。
+            <<set $money += 20000>>
+        <<case "clotheson">>
+        	<<clotheson>>
+        	你拿起衣服穿了起来，重新把自己包裹严实，弹幕刷起了一片："RNM，退钱！"。
+        	<<set $danceaction to 0>>
+		<<case "stripOverOutfit">>
+			<<if $worn.upper.name isnot "naked" and $worn.lower.name isnot "naked">>
+				你优雅地褪去身上的$worn.over_upper.cn_name_cap，露出了里面的<<outfit>>，你小心地调整着姿势，尽可能不要露得太多，但如此淫荡的样子还是让你性奋不已。
+				<<arousal 100>><<overupperstrip>><<exhibitionism1>>
+			<<elseif $worn.upper.name isnot "naked">>
+				<<if !$worn.under_lower.type.includes("naked")>>
+					你优雅地褪去身上的$worn.over_upper.cn_name_cap，露出里面的$worn.under_lower.cn_name_cap。一想到内衣被别人看光了你就兴奋不已。
+					<<arousal 300>><<overupperstrip>><<exhibitionism3>>
+				<<else>>
+					你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的<<genitals 1>>。
+					<<if $worn.upper.type.includes("naked")>>
+						你光洁的胴体完全暴露在了空气中，你兴奋着、颤抖着。
+					<<else>>
+						你的<<allTops>>让你光着的下半身格外显眼。
+					<</if>>
+					<<arousal 300>><<overupperstrip>><<exhibitionism5>>
+					<<online_dance_crossdress_reveal>>
+				<</if>>
+			<<elseif $worn.lower.name isnot "naked">>
+				<<if !$worn.under_upper.type.includes("naked")>>
+					你优雅地褪去身上的$worn.over_upper.cn_name_cap，露出里面的$worn.under_upper.cn_name_cap。一想到内衣被别人看光了，你就兴奋不已。
+					<<arousal 300>><<overupperstrip>><<exhibitionism3>>
+				<<else>>
+					<<if $player.breastsize gte 3>>
+						你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.lower.cn_name_cap和<<breasts>>。如此"袒胸露乳"令你的乳头变得十分敏感。
+						<<arousal 300>><<overupperstrip>><<exhibitionism4>>
+					<<elseif $player.gender_appearance isnot "m" and $worn.lower.gender isnot "m">>
+						<<if $player.gender is "m">>
+							你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.lower.cn_name_cap和<<breasts>>。你摆出娇柔的姿态，露出欲求不满的表情——你顿时发觉自己实在是太淫荡了。
+						<<else>>
+							你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.lower.cn_name_cap和<<breasts>>。你感觉自己的乳头坚挺了起来。
+						<</if>>
+						<<arousal 300>><<overupperstrip>><<exhibitionism4>>
+					<<else>>
+						你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.lower.cn_name_cap和<<breasts>>。你感觉自己的乳头坚挺了起来。
+						<<arousal 300>><<overupperstrip>><<exhibitionism3>>
+					<</if>>
+				<</if>>
+			<<else>>
+				<<if !$worn.under_upper.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>
+					你优雅地褪去身上的$worn.over_upper.cn_name_cap，露出里面的$worn.under_upper.cn_name_cap和$worn.under_lower.cn_name_cap。一想到内衣被别人看光了你就兴奋不已。
+			        <<arousal 300>><<overupperstrip>><<exhibitionism3>>
+				<<elseif !$worn.under_lower.type.includes("naked")>>
+					<<if $player.breastsize gte 3>>
+						你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.under_lower.cn_name_cap和<<breasts>>。如此"袒胸露乳"令你的乳头变得十分敏感。
+						<<arousal 300>><<overupperstrip>><<exhibitionism4>>
+					<<elseif $player.gender_appearance isnot "m" and $worn.lower.gender isnot "m">>
+						<<if $player.gender is "m">>
+							你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.under_lower.cn_name_cap和<<breasts>>。你摆出娇柔的姿态，露出欲求不满的表情——你顿时发觉自己实在是太淫荡了。
+						<<else>>
+							你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.under_lower.cn_name_cap和<<breasts>>。你感觉自己的乳头坚挺了起来。
+						<</if>>
+					    <<arousal 300>><<overupperstrip>><<exhibitionism4>>
+					<<else>>
+						你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.under_lower.cn_name_cap和<<breasts>>。你感觉自己的乳头坚挺了起来。
+						<<arousal 300>><<overupperstrip>><<exhibitionism3>>
+					<</if>>
+				<<elseif !$worn.under_upper.type.includes("naked")>>
+					你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的<<genitals 1>>。
+					<<arousal 300>><<overupperstrip>><<exhibitionism5>>
+					<<online_dance_crossdress_reveal>>
+				<<else>>
+					你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的<<genitals 1>>。你光洁的胴体就这样完全暴露在了空气中，你兴奋着、颤抖着。
+					<<arousal 300>><<overupperstrip>><<exhibitionism5>>
+					<<online_dance_crossdress_reveal>>
+				<</if>>
+			<</if>>
+			<<set $danceaction to 0>>
+		<<case "stripOverUpper">>
+			<<if $worn.upper.name isnot "naked">>
+				你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.upper.cn_name_cap，你小心地调整着姿势，尽可能不要露得太多，但如此淫荡的样子还是让你性奋不已。
+				<<arousal 100>><<overupperstrip>><<exhibitionism1>>
+			<<elseif !$worn.under_upper.type.includes("naked")>>
+				你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的$worn.under_upper.cn_name_cap。现在就只剩一块布料保护着你的胸部不被那些饥渴的观众看光了。
+				<<arousal 100>><<overupperstrip>><<exhibitionism1>>
+			<<else>>
+				<<if $player.breastsize gte 3>>
+					你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的<<breasts>>。如此"袒胸露乳"令你的乳头变得十分敏感。
+					<<arousal 300>><<overupperstrip>><<exhibitionism4>>
+				<<elseif $player.gender_appearance isnot "m" and $worn.lower.gender isnot "m">>
+					<<if $player.gender is "m">>
+						你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的<<breasts>>。你摆出娇柔的姿态，露出欲求不满的表情——你顿时发觉自己实在是太淫荡了。
+					<<else>>
+						你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的<<breasts>>。你感觉自己的乳头坚挺了起来。
+					<</if>>
+					<<arousal 300>><<overupperstrip>><<exhibitionism4>>
+				<<else>>
+					你优雅地褪去了身上的$worn.over_upper.cn_name_cap，露出里面的<<breasts>>。你感觉自己的乳头坚挺了起来。
+					<<arousal 300>><<overupperstrip>><<exhibitionism1>>
+				<</if>>
+			<</if>>
+			<<set $danceaction to 0>>
+		<<case "stripOverLower">>
+			<<if $worn.lower.name isnot "naked">>
+				你优雅地褪去了身上的$worn.over_lower.cn_name_cap，露出里面的$worn.lower.cn_name_cap，你小心地调整着姿势，尽可能不要露得太多，但如此淫荡的样子还是让你性奋不已。
+				<<arousal 100>><<overlowerstrip>><<exhibitionism1>>
+			<<elseif !$worn.under_lower.type.includes("naked")>>
+				你优雅地褪去身上的$worn.over_lower.cn_name_cap，露出里面的$worn.under_lower.cn_name_cap。一想到内衣被别人看光了你就兴奋不已。
+				<<arousal 300>><<overlowerstrip>><<exhibitionism3>>
+			<<else>>
+				你优雅地褪去了身上的$worn.over_lower.cn_name_cap，露出里面的<<genitals 1>>。
+				<<if $worn.upper.type.includes("naked") or $worn.over_upper.type.includes("naked")>>
+					你光洁的胴体完全暴露在了空气中，你兴奋着、颤抖着。
+				<<else>>
+					你的<<allTops>>让你光着的下半身格外显眼。
+				<</if>>
+				<<arousal 300>><<overlowerstrip>><<exhibitionism5>>
+				<<online_dance_crossdress_reveal>>
+			<</if>>
+			<<set $danceaction to 0>>
+		<<case "stripOutfit">>
+			<<if !$worn.under_upper.type.includes("naked") and !$worn.under_lower.type.includes("naked")>>
+				<<if $player.breastsize gte 3 or $player.gender_appearance isnot "m">>
+					你优雅地褪去你的$worn.upper.cn_name_cap，露出里面的<<upperstrip>><<lowerstrip>><<underoutfit>>。一想到内衣被别人看光了你就很兴奋。
+					<<arousal 500>><<exhibitionism4>>
+				<<else>>
+					你优雅地褪去你的$worn.upper.cn_name_cap，露出里面的<<upperstrip>><<lowerstrip>><<underoutfit>>。一想到内衣被别人看光了你就很兴奋。
+					<<arousal 300>><<exhibitionism3>>
+				<</if>>
+			<<elseif !$worn.under_lower.type.includes("naked")>>
+				<<if $player.breastsize gte 3>>
+					你优雅地褪去了身上的$worn.upper.cn_name_cap，露出里面的<<upperstrip>><<lowerstrip>><<underoutfit>>。如此"袒胸露乳"令你的乳头变得十分敏感。
+					<<arousal 300>><<exhibitionism4>>
+				<<elseif $player.gender_appearance isnot "m" and $worn.lower.gender isnot "m">>
+					<<if $player.gender is "m">>
+						你优雅地褪去了身上的$worn.upper.cn_name_cap，露出里面的<<upperstrip>><<lowerstrip>><<underoutfit>>。你摆出娇柔的姿态，露出欲求不满的表情——你顿时发觉自己实在是太淫荡了。
+					<<else>>
+						你优雅地褪去了身上的$worn.upper.cn_name_cap，露出里面的<<upperstrip>><<lowerstrip>><<underoutfit>>。你感觉自己的<<nipples>>硬了。
+					<</if>>
+					<<arousal 300>><<exhibitionism4>>
+				<<else>>
+					你优雅地褪去你的$worn.upper.cn_name_cap，露出里面的<<upperstrip>><<lowerstrip>><<underoutfit>>。一想到内衣被别人看光了你就很兴奋。
+					<<arousal 300>><<exhibitionism3>>
+				<</if>>
+			<<else>>
+				你优雅地褪去你的$worn.upper.cn_name_cap，你光洁的胴体就这样完全暴露在了空气中，你兴奋着、颤抖着，你的<<genitals 1>>完全暴露在外。
+				<<arousal 300>><<upperstrip>><<lowerstrip>><<exhibitionism5>>
+				<<online_dance_crossdress_reveal>>
+			<</if>>
+			<<set $danceaction to 0>>
+		<<case "stripUpper">>
+			<<if !$worn.under_upper.type.includes("naked")>>
+				<<if $player.breastsize gte 3 or $player.gender_appearance isnot "m">>
+					你优雅地褪去你的$worn.upper.cn_name_cap，露出你的$worn.under_upper.cn_name_cap。只剩一块布料保护着你的胸部不被那饥渴的观众看光了。
+					<<arousal 200>><<upperstrip>><<exhibitionism3>>
+				<<else>>
+					你优雅地褪去你的$worn.upper.cn_name_cap，露出你的$worn.under_upper.cn_name_cap。只剩一块布料保护着你的胸部不被那饥渴的观众看光了。
+					<<arousal 100>><<upperstrip>><<exhibitionism1>>
+				<</if>>
+			<<else>>
+				<<if $player.breastsize gte 3>>
+					你优雅地褪去身上的$worn.upper.cn_name_cap，露出里面的<<breasts>>。如此"袒胸露乳"令你的乳头变得十分敏感。
+					<<arousal 300>><<upperstrip>><<exhibitionism4>>
+				<<elseif $player.gender_appearance isnot "m" and $worn.lower.gender isnot "m">>
+					<<if $player.gender is "m">>
+						你优雅地褪去了身上的$worn.upper.cn_name_cap，露出里面的<<breasts>>。你摆出娇柔的姿态，露出欲求不满的表情——你顿时发觉自己实在是太淫荡了。
+					<<else>>
+						你优雅地褪去你的$worn.upper.cn_name_cap，露出你的<<breasts>>，你感觉自己的乳头硬了。
+					<</if>>
+					<<arousal 300>><<upperstrip>><<exhibitionism4>>
+				<<else>>
+					你优雅地褪去你的$worn.upper.cn_name_cap，露出你的<<breasts>>，你感觉自己的乳头硬了。
+					<<arousal 300>><<upperstrip>><<exhibitionism1>>
+				<</if>>
+			<</if>>
+			<<set $danceaction to 0>>
+		<<case "stripLower">>
+			<<if $worn.over_lower.name isnot "naked">>
+				你优雅地从你的$worn.lower.cn_name_cap下面将$worn.over_lower.cn_name_cap褪去。你小心地调整着姿势，尽可能不要露得太多，但如此淫荡的样子还是让你性奋不已。
+				<<arousal 100>><<lowerstrip>><<exhibitionism1>>
+			<<elseif !$worn.under_lower.type.includes("naked")>>
+				你优雅地褪去身上的$worn.lower.cn_name_cap，露出里面的$worn.under_lower.cn_name_cap。一想到内衣被别人看光了你就兴奋不已。
+				<<arousal 300>><<lowerstrip>><<exhibitionism3>>
+			<<else>>
+				你优雅地褪去身上的$worn.lower.cn_name_cap，露出你的<<genitals 1>>。
+				<<if $worn.upper.type.includes("naked") or $worn.over_upper.type.includes("naked")>>
+					你光洁的胴体完全暴露在了空气中，你兴奋着、颤抖着。
+				<<else>>
+					你的<<allTops>>让你光着的下半身格外显眼。
+				<</if>>
+				<<arousal 300>><<lowerstrip>><<exhibitionism5>>
+				<<online_dance_crossdress_reveal>>
+			<</if>>
+			<<set $danceaction to 0>>
+		<<case "stripUnderOutfit">>
+			你优雅地褪去你的$worn.under_upper.cn_name_cap，露出里面的<<genitals 1>>。你光洁的胴体就这样完全暴露在了空气中，你兴奋着、颤抖着。
+			<<arousal 300>><<underupperstrip>><<exhibitionism5>>
+			<<online_dance_crossdress_reveal>>
+			<<set $danceaction to 0>>
+		<<case "stripUnderUpper">>
+			<<if (!$worn.upper.type.includes("naked") and $worn.upper.open is 1) and $worn.over_upper.type.includes("naked")>>
+				你优雅地把你的$worn.under_upper.cn_name_cap从$worn.upper.cn_name_cap下面脱下。你小心地调整着姿势，尽可能不要露得太多，但如此淫荡的样子还是让你性奋不已。
+				<<arousal 100>><<underupperstrip>><<exhibitionism1>>
+			<<elseif $player.breastsize gte 3>>
+				你优雅地褪去你的$worn.under_upper.cn_name_cap，<<if $worn.under_upper.type.includes("naked")>>尽管它们完全遮不住你的<<breasts>>。<<else>>露出你的<<breasts>>。如此“袒胸露乳”令你的乳头变得十分敏感。<</if>>
+				<<arousal 300>><<underupperstrip>><<exhibitionism4>>
+			<<elseif $player.gender_appearance isnot "m" and $worn.under_lower.gender isnot "m">>
+				<<set $danceaction to 0>>
+				<<if $player.gender is "m">>
+					你优雅地褪去了身上的$worn.under_upper.cn_name_cap，<<if $worn.under_upper.type.includes("naked")>>尽管它们完全遮不住你的<<breasts>>，你感觉自己更加暴露了。<<else>>露出了你的<<breasts>>。你摆出娇柔的姿态，露出欲求不满的表情——你顿时发觉自己实在是太淫荡了。<</if>>
+				<<else>>
+					你优雅地褪去你的$worn.under_upper.cn_name_cap，<<if $worn.under_upper.type.includes("naked")>>尽管它们完全遮不住你的<<breasts>>，你感觉更加暴露了。<<else>>露出你的<<breasts>>，你感觉自己的乳头硬了。<</if>>
+				<</if>>
+				<<arousal 300>><<underupperstrip>><<exhibitionism4>>
+			<<else>>
+				你优雅地褪去你的$worn.under_upper.cn_name_cap，<<if $worn.under_upper.type.includes("naked")>>尽管它们完全遮不住你的<<breasts>>，你感觉更加暴露了。<<else>>露出你的<<breasts>>，你感觉自己的乳头硬了。<</if>>
+				<<arousal 300>><<underupperstrip>><<exhibitionism1>>
+			<</if>>
+			<<set $danceaction to 0>>
+		<<case "stripUnderLower">>
+			<<if $worn.under_lower.type.includes("naked")>>
+				<<if (!$worn.lower.type.includes("naked") or !$worn.over_lower.type.includes("naked"))>>
+					你优雅地褪去你<<allBottoms>>下的$worn.under_lower.cn_name_cap。你小心地调整着姿势，尽可能不要露得太多，但如此淫荡的样子还是让你性奋不已。
+				<<else>>
+					你优雅地褪去你的$worn.under_lower.cn_name_cap，尽管你的<<genitals 1>>早就被看光了。
+				<</if>>
+				<<arousal 300>><<underlowerstrip>><<exhibitionism3>>
+			<<elseif !$worn.lower.type.includes("naked") or !$worn.over_lower.type.includes("naked")>>
+				你优雅地褪去你<<allBottoms>>下的$worn.under_lower.cn_name_cap。你小心地调整着姿势，尽可能不要露得太多，但如此淫荡的样子还是让你性奋不已。
+				<<arousal 300>><<underlowerstrip>><<exhibitionism3>>
+			<<else>>
+				你优雅地褪去了身上的$worn.under_lower.cn_name_cap露出里面的<<genitals 1>>。你光洁的胴体就这样完全暴露在了空气中，你兴奋着、颤抖着。
+				<<arousal 300>><<underlowerstrip>><<exhibitionism5>>
+				<<online_dance_crossdress_reveal>>
+			<</if>>
+			<<set $danceaction to 0>>
+		<<case "dance">>
+		    <<stress -30>><<tiredness 15>><<dancestat>>
+            <<if currentSkillValue('danceskill') lte 200>>
+            	你试着挑逗性地跳舞，但由于你缺乏技巧，这只不过是晃动你的屁股。
+            <<elseif currentSkillValue('danceskill') lte 400>>
+            	你摇晃着你的身体，展示给给任何想看的人看。
+            <<elseif currentSkillValue('danceskill') lte 600>>
+            	你轻浮地起舞，动作中凸显着你的淫荡部位。
+            <<elseif currentSkillValue('danceskill') lte 800>>
+            	你的舞技娴熟，动作撩人，彰显着你的淫荡部位。
+            <<elseif currentSkillValue('danceskill') lte 999>>
+            	你挑逗性的舞姿，足以让任何观众血脉喷张。
+            <<else>>
+            	你的舞姿充满了迷人的原始诱惑，无论谁看了都要把持不住。
+            <</if>>
+            <<danceskilluse>>
+            <<set $dancephysique += 1>>
+            <<if $dancephysique gte 10>>
+            	<<set $dancephysique -= 10>>
+            	<<physique>>
+            <</if>>
+            <<set $danceaction to 0>>
+	<</switch>>
+    <br><br>
+<</widget>>
+
+<<widget "online_danceaudience">>
+    你看到一条弹幕飘过："<<camdanmu>>"
+    <br>
+    <<cam1payout>>
+    <<if $campayout gte 12000>>
+    	屏幕上礼物疯狂刷屏，观众们简直爱死你了！他们打赏了<<printmoney $campayout>>！
+    <<else>>
+    	屏幕上不时地响起礼物音效，观众们向你打赏了<<printmoney $campayout>>。
+    <</if>>
+    <<set $money += $campayout>>
+    <br><br>
+<</widget>>
+
+<<widget "online_masturbationaudience">>
+    你看到一条弹幕飘过："<<camdanmu>>"
+    <br>
+    <<if $orgasmdown is 3>>
+        <<cam2payout>>
+        <<if $campayout gte 12000>>
+        	随着你的高潮，观众们疯狂起来，礼物疯狂刷屏，他们简直爱死你了！你获得了打赏<<printmoney $campayout>>！
+        <<else>>
+        	看到你高潮了，观众们性奋地刷起了礼物，一个个特效闪过，你得到了打赏<<printmoney $campayout>>。
+        <</if>>
+        <<set $money += $campayout>>
+    <</if>>
+    <br><br>
+<</widget>>
+
+<<widget "online_danceactions">>
+    <<exposure>>
+    <<if $exposed gte 2 and $exhibitionism lte 54 or $exposed gte 1 and $exhibitionism lte 34>>
+        你对如此暴露的情况下跳舞感到羞耻！你脸涨得通红，最终选择了关播。
+    <<else>>
+    	<label><span class="sub">跳舞</span> <<radiobutton "$danceaction" "dance" checked>></label> |
+    	<<if $exposed gte 1>>
+    	    <br>
+    	    <label><span class="brat">穿上衣服</span> <<radiobutton "$danceaction" "clotheson">></label> |
+    	<</if>>
+    	<<dancestripactions>>
+    <</if>>
+    <br><br>
 <</widget>>
 
 <<widget "lakehouseinit">>
