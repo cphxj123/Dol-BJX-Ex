@@ -1,0 +1,266 @@
+:: Forest Shop [exitCheckBypass]
+<div id="clothingShop-div" class="main-shop-div">
+	<<forestShop-main>>
+</div>
+
+:: Forest Shop Widgets [widget]
+
+<<widget "forestShop-intro">>
+	<<npc Gwylan>><<person1>>
+	You enter the strange building. The interior is dark and crowded by tall shelves, holding all manner of items.
+	<br><br>
+
+	The quiet is broken by a scraping, then a thud. A mousy <<personsimple>> holding a stepladder appears at the end of the closest aisle.
+	<<if $gwylan_rescue is 1>>
+		It's Gwylan.
+		<br><br>
+		"You came!"
+	<<else>>
+		<br><br>
+		"A customer!"
+	<</if>>
+	<<he>> says, dropping the ladder and walking over. <<He>> wipes <<his>> hands on <<his>> apron. "Welcome to my shop."
+
+	<<if $gwylan_rescue is 1 and $gwylan_aborted gte 1>>
+		<br><br>
+		<<gwylanRescueApologyShop "Intro">>
+		<<set $gwylan_aborted to 0>>
+	<<elseif $gwylan_rescue isnot 1>>
+		<br><br>
+
+		<<He>> looks about your age, with mousy hair and a hint of freckles. "I'm older than I look," <<he>> says, as if reading your mind. "I'm Gwylan." <<He>> reaches forward, lifts your hand, and shakes it in both <<his>> own. "Pleased to meet you. I sell-" <<he>> pauses. "My grand<<father>> sells-" another pause. "I sell knick-knacks here. Things you won't find in normal shops. Even I don't know what I have in stock!" <<He>> sounds proud.
+		<br><br>
+
+		"I hope you find something you like," <<he>> says, picking the ladder back up. "But don't worry if you don't. My grand<<father>> would say the objects here hide from people they don't want to be bought by." <<He>> laughs. "I could believe it."
+	<</if>>
+	<br><br>
+	<<link [[Next|Forest Shop]]>><<endevent>><</link>>
+	<br>
+<</widget>>
+
+<<widget "forestShop-text">>
+	You are in the forest shop. The interior is dark and crowded by tall shelves, holding all manner of items. Most are useless knick-knacks, but some interest you.
+	<br><br>
+	<<if $gwylan_aborted gte 1>>
+		<<gwylanRescueApologyShop>>
+		<<set $gwylan_aborted to 0>>
+	<<else>>
+		You hear Gwylan shuffling somewhere in the gloom.
+	<</if>>
+	<<if $robin_in_forest_shop>>
+		Robin is busy admiring the costumes.
+		<<if !$halloween_robin_costume or $halloween_robin_costume is "ghost">>
+			<br><br>
+
+			<<link [[Talk to Robin|Robin Forest Costume Intro]]>><<forestShop-leave>><<clothingReset>><</link>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "forestShop-leave">>
+	<<shopClothingFilterReset>><<unset $clothes_choice>><<ShowUnderEquip "normal">><<ShowUnderEquip "over">>
+	<<set $tryOn.autoReset to true>><<set $eventskip to 1>><<unset $tempDisable>>
+<</widget>>
+
+<<widget "forestShop-main">>
+	<<set $outside to 0>><<set $location to "forest_shop">><<effects>>
+	<<set $shopName = "forest">>
+	<<if $tryOn.autoReset isnot false>><<tryOnReset>><</if>>
+	<<specialClothesUpdate>>
+	<<if $forest_shop_intro isnot 1>>
+		<<set $forest_shop_intro to 1>>
+		<<forestShop-intro>>
+	<<else>>
+		<<forestShop-text>>
+		<br><br>
+
+		<div id="tryonstats-div"><<tryOnStats>></div>
+		<<unset $shopListStartCount>>
+		<<unset $clothes_choice>>
+		<<set $shopPage = 0>>
+
+		<span>Warmth:</span>
+		<<warmthscale>>
+		<div id="warmth-description">
+			<<warmth_description>>
+		</div>
+		<br><br>
+
+		<<if $christmas_gift_robin is undefined and $christmas is 1 and $NPCName[$NPCNameList.indexOf("Robin")].init is 1>>
+			<<checkforloveinterests>>
+			<<if isLoveInterest("Robin")>><<gifticon "love">><<else>><<gifticon "christmas">><</if>><<link [[Find a gift for Robin (0:10)|Forest Christmas Robin]]>><<pass 10>><</link>>
+			<br>
+		<</if>>
+		<<if isPubfameTaskAccepted("gwylan")>>
+			<<if $pubfame.gwylan.snowglobe isnot 1>>
+				<<ind>><<link [[Look for the snow globe (0:20)|Forest Snowglobe]]>><<pass 20>><</link>>
+			<<elseif $money gte 2000>>
+				<<ind>><<link [[Purchase the snow globe (£20)|Forest Snowglobe Buy]]>><<set $money -= 2000>><</link>>
+			<</if>>
+			<br>
+		<</if>>
+		<<clothingcategoryicon "all">>
+		<<link "View All">><<replace "#clothingShop-div">><<AllShop>><</replace>><</link>>
+		<br><br>
+		/* 北极星模组 */
+		<<if $options.bjx_clothes>>
+    		<<clothingcategoryicon "overoutfit">>
+    		<<link "走近磨毛屏风后">><<replace "#clothingShop-div">><<OverOutfitShop>><</replace>><</link>>
+    		<br>
+    		<<clothingcategoryicon "overupper">>
+    		<<link "走近阔叶门帘后">><<replace "#clothingShop-div">><<OverUpperShop>><</replace>><</link>>
+    		<br>
+    		<<clothingcategoryicon "overlower">>
+    		<<link "浏览藤蔓木箱里">><<replace "#clothingShop-div">><<OverLowerShop>><</replace>><</link>>
+    		<br>
+    		<<clothingcategoryicon "overhead">>
+    		<<link "浏览黄铜质排钩">><<replace "#clothingShop-div">><<OverHeadShop>><</replace>><</link>>
+    		<br>
+    	<</if>>
+		/* 北极星 */
+		<<clothingcategoryicon "outfit">>
+		<<link "Look behind the dark screen">><<replace "#clothingShop-div">><<OutfitShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "upper">>
+		<<link "Look in the antique wardrobe">><<replace "#clothingShop-div">><<TopShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "lower">>
+		<<link "Look on the strange ironing board">><<replace "#clothingShop-div">><<BottomShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "underoutfit">>
+		<<link "Look in the moldering hutch">><<replace "#clothingShop-div">><<UnderOutfitShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "underupper">>
+		<<link "Look on the rusted hangers">><<replace "#clothingShop-div">><<UnderTopShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "underlower">>
+		<<link "Look in the dusky drawer">><<replace "#clothingShop-div">><<UnderBottomShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "head">>
+		<<link "Look on the spindly hat stand">><<replace "#clothingShop-div">><<HeadShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "face">>
+		<<link "Look on the gnarled wall">><<replace "#clothingShop-div">><<FaceShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "neck">>
+		<<link "Look in the glowing box">><<replace "#clothingShop-div">><<NeckShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "hand">>
+		<<link "Look in the tilted vanity">><<replace "#clothingShop-div">><<HandsShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "legs">>
+		<<link "Look in the worn stocking">><<replace "#clothingShop-div">><<LegsShop>><</replace>><</link>>
+		<br>
+		<<clothingcategoryicon "feet">>
+		<<link "Look beneath the decaying rack">><<replace "#clothingShop-div">><<FeetShop>><</replace>><</link>>
+		<br><br>
+		<<run linkifyDivs('.button-back-to-shop')>>
+
+		<<if $tryOn.value gt 0 and $tryOn.value lt $money>>
+			<<sendItemsToDropdown>>
+			<<link "Buy clothes">><<buyTryOnClothes "wear">><<updateclothingshop>><</link>>
+			<br>
+			<<link "Buy clothes and send to wardrobe">>
+				<<buyTryOnClothes "wardrobe">>
+				<<updatesidebarmoney>>
+				<<updatesidebarimg>>
+				<<updatesidebardescription>>
+				<<updateallure>>
+				<<updatewarmthscale>>
+				<<updatewarmthdescription>>
+				<<updateclothingshop>>
+			<</link>>
+			<br>
+		<<elseif $tryOn.value is 0>>
+			<<if $robin_in_forest_shop>>
+				<<getouticon>><<link [[Leave with Robin (0:10)|Robin Forest Shop Home]]>><<endnpc "Gwylan">><<forestShop-leave>><<pass 10>><</link>>
+			<<else>>
+				<<getouticon>><<link [[Leave|Forest]]>><<endnpc "Gwylan">><<forestShop-leave>><</link>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+
+:: Forest Christmas Robin
+<<effects>>
+
+You search through an assortment of strange clothes, before finding a Christmas-themed outfit in Robin's size. There's a price tag: "£80".
+<br><br>
+
+<<if $money gte 8000>>
+	<<gifticon "christmas hat">><<link [[Buy it|Forest Christmas Robin Buy]]>><<set $christmas_gift_robin to "christmas_unwrapped">><</link>>
+	<br>
+<</if>>
+<<getouticon>><<link [[Leave|Forest Shop]]>><</link>>
+<br>
+
+
+:: Forest Christmas Robin Buy
+<<effects>>
+
+You hand Gwylan the cash.
+<<if $christmas_wrap is undefined>>Now you just need wrapping paper. <span class="gold">You can buy some at the shopping centre.</span><<else>>You can wrap it in your room.<</if>>
+<br><br>
+
+<<link [[Next|Forest Shop]]>><</link>>
+<br>
+
+:: Forest Snowglobe
+<<effects>><<npc Gwylan>>
+
+You prowl around the shop, looking under cloaks, on top of shelves and behind dressing racks. There's a vague sense of organisation, but things are scattered around anyway, so it could be anywhere. You find a few snow globes, but none with anything written on the bottom.
+<br><br>
+
+"Are you looking for something in particular?" Gwylan says from beside you, startling you. <<He>> hadn't made a sound in <<his>> approach. "I know that look in your eye. You have something in mind."
+<br>
+
+<<if $speech_attitude is "meek">>
+	"I'm trying to find a snow globe," you say.
+<<elseif $speech_attitude is "bratty">>
+	"Yeah, there's a snow globe I'm looking for," you say.
+<<else>>
+	"I'm looking for a specific snow globe," you say.
+<</if>>
+<br>
+
+<<He>> grins. "There's plenty of snow globe around, if that's the case."
+<br>
+
+You shake your head. "I need a specific one. It has something written on the bottom."
+<br><br>
+
+Gwylan thinks for a second. "I think I know which one you're talking about. Hold on."
+<<switch random(1,5)>>
+	<<case 1>>
+		<<He>> flips up a trapdoor in the floor a few feet away and pulls a snow globe out of a hidden compartment. You stare in bemusement.
+	<<case 2>>
+		<<He>> beelines for the shoe section, rummages through the sandals and pulls a snowgsnow globelobe out from the pile. You stare in bemusement.
+	<<case 3>>
+		<<He>> pushes a witch dress out of the way and enters what appears to be a hidden maintenance room. <<He>> emerges holding a snow globe. You stare in bemusement.
+	<<case 4>>
+		<<He>> quickly exits the shop. You see <<him>> reaching into a nearby bush before the door fully closes. <<He>> quickly enters again, holding a snow globe. You stare, bewildered.
+	<<case 5>>
+		<<He>> walks over to a shelf full of snow globes and plucks one out of the bunch. You resist the urge to groan. How did you miss that shelf?
+<</switch>>
+<br><br>
+
+<<He>> walks back to you and shows you the bottom. There's a string of random letters and numbers you can't understand. "This the one?" You nod. "Good! That'll be £20."
+<br><br>
+
+<<if $money gte 2000>>
+	<<link [[Purchase the snow globe (£20)|Forest Snowglobe Buy]]>><<set $money -= 2000>><</link>>
+<<else>>
+	You can't afford it.
+<</if>>
+<br>
+<<link [[Back|Forest Shop]]>><<set $pubfame.gwylan.snowglobe to 1>><<endevent>><</link>>
+
+:: Forest Snowglobe Buy
+<<effects>><<npc Gwylan>>
+
+You hand over the money to Gwylan, and <<he>> hands you the snow globe. "Don't know how you knew there'd be something on the bottom," <<he>> says. "I bet it was looking for you, just as much as you were looking for it!"
+<br><br>
+
+<<pubfameComplete "gwylan">>
+<<link [[Next|Forest Shop]]>><<endevent>><</link>>

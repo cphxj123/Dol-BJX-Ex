@@ -201,7 +201,9 @@
 		<<if $struggle.enemy[_i].location is "fleeing" or $struggle.enemy[_i].location is "lurking">>
 			The <<struggle_name _i>> keeps at a distance.
 			<br>
-			<<if $farm_stage gte 10 and $lurkers_held lt 1>>
+			/* 北极星模组 */
+			<<if $farm_stage gte 10>>
+			/* 北极星 */
 				<<set _lurker_net_possible to true>>
 			<</if>>
 		<</if>>
@@ -967,7 +969,9 @@
 				<<struggle_name _dlurkers[_i]>><<if _i gte 2>>, the<<elseif _i is 1>> and the<</if>>
 			<</for>>
 			keep<<if _dlurkers.length is 1>>s<</if>> at a distance.
-			<<if $farm_stage gte 10 and $lurkers_held lt 1>>
+			/* 北极星模组 */
+			<<if $farm_stage gte 10>>
+			/* 北极星 */
 				<<if $leftarm isnot "grappled" and $leftarm isnot "bound">>
 					<br>
 					Left arm: <label><span class="def">Hurl net</span> <<radiobutton "$leftaction" "capture" autocheck>></label>
@@ -1417,8 +1421,17 @@
 		<<else>>
 			You prepare to cast your net at a <<print $struggle.creature>>, <span class="pink">but they're too close.</span> You'll have to drive one back first.
 		<</if>>
+		/* 北极星模组 */
+        <<if $lurkers_held gte 1>>
+            <span class="red">由于你的捕网满了，之前的潜伏者跑掉了。</span>
+            <<set $lurkers_held -= 1>>
+        <</if>>
+        /* 北极星 */
 		<<if _succ>>
 			<span class="green">The net lands true.</span> You pull the creature into your possession.
+			/* 北极星模组 */
+			<<gnet>><<prof net 1>>
+			/* 北极星 */
 			<<if $struggle.enemy[_capture_creature].name is "lurker">>
 				<<set $lurkers_held += 1>>
 				<<set $stat_lurkers_captured += 1>>

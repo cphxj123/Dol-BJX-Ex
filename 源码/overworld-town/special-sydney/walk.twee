@@ -1,0 +1,2206 @@
+:: Sydney Walk
+<<set $outside to 0>><<if $location is "school">><<schooleffects>><</if>><<effects>><<set _sydneyPray to true>>
+<<endevent>><<npc "Sydney">><<person1>>
+<<if $sydney.glasses.includes("broken")>>
+	"You need new glasses. Come on." <<if $sydneyromance is 1>>You take <<him>> by the arm and help <<him>> stand.<<else>>You motion for Sydney to stand.<</if>>
+	<br><br>
+	<<if $location is "school">>
+		<<set $exit to "library">>
+		<<switch $schoolstate>>
+			<<case "early" "morning" "first">>
+				"Now? I still have one good lens.<<if $sydneyScience>> I hope <<sydneymum>> understands if we're late.<</if>>"
+			<<case "second" "third" "fourth" "fifth">>
+				"Now? Aren't you supposed to be in a class? I don't want you to get in trouble, but..."
+			<<default>>
+				"I'd really appreciate that, my depth perception is non-existent right now."
+		<</switch>>
+		<<if $sydney.glasses is "playerbroken">>You feel a twinge of guilt as <<he>> almost trips trying to find the "away" sign.<<else>>After a moment, <<he>> manages to find the "away" sign and place it on the rental counter.<</if>>
+		<br><br>
+		<<if $weather is "rain" or $weather is "snow">>
+			<<He>> stops by <<his>> locker on the way out to grab an umbrella.
+		<</if>>
+		You cut across the park and reach the shopping centre.
+	<<elseif $location is "temple">>
+		<<set $exit to "temple">>
+		<<if Time.weekDay is 1 and Time.hour gte 10 and Time.hour lte 12 and $daily.massAttended isnot 1>>
+			"I'd appreciate that, although I'd hate to miss mass. I guess this is more important."
+		<<else>>
+			"I'd really appreciate that, my depth perception is non-existent right now."
+		<</if>>
+		Sydney waves off a group of <<monks>>, and the two of you leave.
+		<br><br>
+		<<if $weather is "rain" or $weather is "snow">>
+			<<He>> grabs an umbrella on the way out.
+		<</if>>
+		You reach the High Street quickly. It's a short walk.
+	<</if>>
+	<<set $location to "town">>
+	<<He>> gently holds your arm.
+	<br><br>
+	<<link [[Next|Sydney Shopping Glasses]]>><<set $phase to 1>><<set $daily.sydney.walk to true>><<set $daily.school.scienceExcused to true>><<pass 15>><</link>>
+<<else>>
+	<<if $speech_attitude is "meek">>
+		"Would you like to go somewhere?" you ask.
+	<<elseif $speech_attitude is "bratty">>
+		"Let's ditch this place for a while," you say.
+	<<else>>
+		"You look like you could use a break and some fresh air," you say.
+	<</if>>
+	<br><br>
+	<<if $location is "school" and $detention gte 1 and $daily.school.detentionAttended isnot 1 and $headnodetention isnot 1 and $pillory_tenant.special.name isnot "Leighton">>
+		<<He>> perks up for a moment, but <<he>> frowns at you. "The <<nnpc_title "Leighton">> said you're not allowed to leave the premises until you serve your detention at the end of the day. Sorry."
+		<br>
+	<<else>>
+		<<He>> perks up. "What did you have in mind?"
+		<br><br>
+		<<highicon>><<link [[Shopping centre (0:15+)|Sydney Walk Shopping]]>><</link>>
+		<br>
+		<<if $NPCName[$NPCNameList.indexOf("Sydney")].love gte 50>>
+			<<starfishicon>><<link [[Beach (0:50+)|Sydney Walk Beach]]>><</link>>
+			<br>
+		<</if>>
+		<<if $sydneyromance is 1 and $sydneySeen.includes("corruptroom")>>
+			<<link [[Temple prayer room|Sydney Walk Prayer Room]]>><</link>>
+			<br>
+		<</if>>
+	<</if>>
+	<br>
+	<<sydneyOptions>>
+<</if>>
+
+:: Sydney Walk Shopping
+<<set $outside to 0>><<if $location is "school">><<schooleffects>><</if>><<effects>><<run statusCheck("Sydney")>><<set _sydneyPray to true>>
+<<if $speech_attitude is "meek">>
+	"How about the shopping centre?" you ask.
+<<elseif $speech_attitude is "bratty">>
+	"Let's hit the shopping centre, maybe spruce up your look a bit," you say.
+<<else>>
+	"We could go shopping," you say.
+<</if>>
+<br><br>
+<<if $location is "school">>
+	<<switch $schoolstate>>
+		<<case "early" "morning" "first" "second" "third">>
+			<<if $sydneyScience and Time.hour is 8 and Time.minute gte 30>>
+				"I'd love to, but I wouldn't dare risk missing science class. We'd probably need at least... thirty minutes, right? Maybe next time, if we can leave earlier."
+				<<set _walk to false>>
+			<<else>>
+				"It's still early, there won't be too many students coming by... sure!"
+				<<set _walk to true>>
+			<</if>>
+		<<case "fourth" "fifth">>
+			"You're supposed to be in a class right now, aren't you?" <<He>> pauses to think for a moment.
+			<<if _sydneyStatus.includes("corrupt")>>
+				"Screw it, I'll take any time I can get with you."
+				<<set _walk to true>>
+			<<elseif $sydneyromance is 1>>
+				"If you're sure you don't mind getting in trouble. I like spending time with you."
+				<<set _walk to true>>
+			<<else>>
+				"I really don't want you to get in trouble. Can we wait until after school?"
+				<<set _walk to false>>
+			<</if>>
+		<<case "lunch">>
+			"That'll be cutting it close to your next class, won't it?" <<He>> pauses to think for a moment.
+			<<if Time.minute gte 30>>
+				<<if _sydneyStatus.includes("corrupt")>>
+					"Screw it, I'll take any time I can get with you."
+					<<set _walk to true>>
+				<<elseif $sydneyromance is 1>>
+					"If you're sure you don't mind getting in trouble. I like spending time with you."
+					<<set _walk to true>>
+				<<else>>
+					"We'd need at least thirty minutes, right? I really don't want you to get in trouble. Can we wait until after school?"
+					<<set _walk to false>>
+				<</if>>
+			<<else>>
+				"We should have enough time, actually. This'll be fun!"
+				<<set _walk to true>>
+			<</if>>
+		<<default>>
+			<<He>> puts <<his>> book down. "Sure thing, I could stretch my legs."
+			<<set _walk to true>>
+	<</switch>>
+<<elseif $location is "temple">>
+	<<if Time.weekDay is 1 and Time.hour gte 10 and Time.hour lte 12 and $daily.massAttended isnot 1>>
+		"I'd love to, but can it wait until after mass?"<<set _walk to false>>
+	<<elseif Time.schoolDay and Time.hour is 6>>
+		"It's a bit early for that, isn't it?"<<set _walk to false>>
+	<<elseif Time.hour gte 18 or Time.hour lte 5>>
+		"It's a bit late for that, isn't it?"<<set _walk to false>>
+	<<elseif _sydneyStatus.includes("corrupt")>>
+		"Sure, I could use some time away."<<set _walk to true>>
+	<<elseif $temple_rank is undefined or $temple_rank is "prospective">>
+		Sydney looks excited. "Sure! Just let me inform <<nnpc_brother "Jordan">> Jordan that I'm leaving." <<He>> jogs off, and returns a few minutes later. "Ready."<<set _walk to true>><<pass 2>>
+	<<elseif $temple_garden gte 100 and $temple_quarters gte 100>>
+		"The temple's in perfect condition right now, so I don't think anyone will miss me. Let's go!"<<set _walk to true>>
+	<<elseif $temple_garden gte 100>>
+		"The garden's perfect, so I think they'll let me take a break."<<set _walk to true>>
+	<<elseif $temple_quarters gte 100>>
+		"The quarters are perfect, so I think they'll let me take a break."<<set _walk to true>>
+	<<elseif $temple_garden gte 50 or $temple_quarters gte 50>>
+		<<He>> seems hesitant. "There's still lots of work to do around here, but... a break shouldn't hurt."<<set _walk to true>>
+	<<else>>
+		<<He>> shakes <<his>> head sadly. "There's far too much to do around here, sorry."<<set _walk to false>>
+	<</if>>
+<</if>>
+<<if _walk is true>>
+	<<if $location is "school">>
+		<<set $exit to "library">><<set $location to "park">>
+		Sydney leaves an "away" sign on the rental counter, and<<if $sydneyromance is 1>> takes your arm as<</if>> the two of you leave.
+		<br><br>
+		<<if $weather is "rain" or $weather is "snow">>
+			<<He>> stops by <<his>> locker on the way out to grab an umbrella.
+		<</if>>
+		You cut across the park and reach the shopping centre.
+	<<elseif $location is "temple">>
+		<<set $exit to "temple">><<set $location to "town">>
+		Sydney waves off a group of <<monks>>, and<<if $sydneyromance is 1>> takes your arm as<</if>> the two of you leave.
+		<br><br>
+		<<if $weather is "rain" or $weather is "snow">>
+			<<He>> grabs an umbrella on the way out.
+		<</if>>
+		You reach High Street quickly. It's a short walk.
+	<</if>>
+	<br><br>
+	<<link [[Next|Sydney Shopping Centre]]>><<set $daily.sydney.walk to true>><<pass 15>><</link>>
+<<else>>
+	<br><br>
+	<<sydneyOptions>>
+<</if>>
+
+:: Sydney Walk Beach
+<<set $outside to 0>><<if $location is "school">><<schooleffects>><</if>><<effects>><<run statusCheck("Sydney")>><<set _sydneyPray to true>>
+<<if $speech_attitude is "meek">>
+	"How about the beach?" you ask.
+<<elseif $speech_attitude is "bratty">>
+	"I'm thinking we could use a beach day," you say.
+<<else>>
+	"We could go have some fun at the beach," you say.
+<</if>>
+<br><br>
+<<if $location is "school">>
+	<<if Time.weekDay is 6>>
+		<<He>> looks excited for a moment, but frowns. "I have to help my <<sydneymum>> on Fridays, so I don't think we'd have enough time. Sorry."
+		<<set _walk to false>>
+	<<else>>
+		<<if $schoolstate is "afternoon">>
+			<<His>> face lights up. "That sounds great!"
+			<<set _walk to true>>
+		<<else>>
+			<<His>> face lights up. "That sounds great! Although, we can't just leave the school for hours like that. Maybe after school, today?"
+			<<set _walk to false>>
+		<</if>>
+	<</if>>
+<<elseif $location is "temple">>
+	<<if Time.weekDay is 1 and Time.hour lte 12 and $daily.massAttended isnot 1>>
+		"I'd love to, but can it wait until after mass?"
+		<<set _walk to false>>
+	<<elseif Time.hour lte 8>>
+		"It's... a little early for the beach, isn't it?" <<He>> yawns.
+	<<elseif Time.hour gte 17>>
+		"It's a bit late for the beach, isn't it?"<<set _walk to false>>
+	<<elseif _sydneyStatus.includes("corrupt")>>
+		"Hell yes, do I get to see you in a skimpy swimsuit?"<<set _walk to true>>
+	<<elseif $temple_rank is undefined or $temple_rank is "prospective">>
+		Sydney looks excited. "Sure! Just let me inform <<nnpc_brother "Jordan">> Jordan that I'm leaving." <<He>> jogs off, and returns a few minutes later. "Ready."<<set _walk to true>>
+	<<elseif $temple_garden gte 100 and $temple_quarters gte 100>>
+		"The temple's in perfect condition right now, so maybe I've earned a little sloth. Let's go!"<<set _walk to true>>
+	<<elseif $temple_garden gte 100>>
+		"The garden's perfect, so I think they'll let me take a break."<<set _walk to true>>
+	<<elseif $temple_quarters gte 100>>
+		"The quarters are perfect, so I think they'll let me take a break."<<set _walk to true>>
+	<<elseif $temple_garden gte 50 or $temple_quarters gte 50>>
+		<<He>> seems hesitant. "There's still lots of work to do around here, but... a day off shouldn't hurt."<<set _walk to true>>
+	<<else>>
+		<<He>> shakes <<his>> head sadly. "There's far too much to do around here, sorry."<<set _walk to false>>
+	<</if>>
+<</if>>
+<<if _walk is true>>
+	<<if $location is "school">>
+		<<set $exit to "library">><<set $location to "town">>
+		Sydney packs up <<his>> things and tells the librarian that <<hes>> leaving early. <<He>> smiles at you, and<<if $sydneyromance is 1>> takes your arm as<</if>> the two of you leave.
+		<br><br>
+		<<if $weather is "rain" or $weather is "snow">>
+			<<He>> stops by <<his>> locker on the way out to grab a large umbrella.
+		<</if>>
+		You cut through the park and reach Starfish Street.
+	<<elseif $location is "temple">>
+		<<set $exit to "temple">><<set $location to "town">>
+		Sydney waves off a group of <<monks>>, and<<if $sydneyromance is 1>> takes your arm as<</if>> the two of you leave.
+		<br><br>
+		<<if $weather is "rain" or $weather is "snow">>
+			<<He>> grabs a large umbrella on the way out.
+		<</if>>
+		The walk to Starfish Street doesn't take long.
+	<</if>>
+	<br><br>
+	<<link [[Next|Sydney Beach Start]]>><<set $daily.sydney.walk to true>><<pass 25>><</link>>
+<<else>>
+	<br><br>
+	<<sydneyOptions>>
+<</if>>
+
+:: Sydney Walk Prayer Room
+<<set $outside to 0>><<if $location is "school">><<schooleffects>><</if>><<effects>><<run statusCheck("Sydney")>><<set _sydneyPray to true>>
+<<if $speech_attitude is "meek">>
+	"We could... go to the prayer room again," you say, blushing.
+<<elseif $speech_attitude is "bratty">>
+	"Let's defile the prayer room again," you say with a wink.
+<<else>>
+	"We could mess around in the prayer room again," you say.
+<</if>>
+<br><br>
+<<if _sydneyStatus.includes("corrupt")>>
+	<<if $location is "school">>
+		<<if Time.weekDay is 6>>
+			<<He>> looks excited for a moment, but frowns. "I'd say yes on any other day, but I have to help my <<sydneymum>> on Fridays, so I don't think we'd have enough time. Sorry."
+			<<set _walk to false>>
+		<<else>>
+			<<He>> looks to you with a wide grin. "Hell yes. Let's meet up at the temple tonight after school."
+			<<set _walk to false>>
+		<</if>>
+	<<elseif $location is "temple">>
+		<<if Time.weekDay is 1 and Time.hour gte 10 and Time.hour lte 12 and $daily.massAttended isnot 1>>
+			<<He>> shoots a wicked grin. "Screwing during mass? So sinful, I love it."
+		<<else>>
+			<<His>> face turns a little red, and <<he>> smiles. "Yes. I want to sin with you again."
+		<</if>>
+		<<set _walk to true>>
+	<</if>>
+<<else>>
+    /* 北极星模组 */
+    <<if $templePromised is "Sydney">>
+    	悉尼害羞地低下头。"好...好吧，既然你执意要求的话。毕竟...我们许下了承诺，这是我作为...你的伴侣，应尽的责任。"
+    	<<npcincr Sydney purity -5>>
+    	<<set _walk to true>>
+	<<else>>
+    	悉尼羞愧地低下头。"现在……我……我的状态不是很好——我的整个世界观都被颠覆了……我对这些事情感到很矛盾……我很抱歉。"
+    	<<set _walk to false>>
+    <</if>>
+	/* 北极星 */
+<</if>>
+<<if _walk is true>>
+	<<He>> takes you by the hand, and you sneak off through the halls of the temple towards the prayer room's hidden entrance. <<takeHandholdingVirginity "Sydney" "romantic">>
+	<br><br>
+	<<link [[Next|Sydney Temple Prayer Room]]>><<set $daily.sydney.walk to true>><<pass 5>><</link>>
+<<else>>
+	<br><br>
+	<<sydneyOptions>>
+<</if>>
+
+:: Sydney Shopping Centre
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>><<sydneySchedule>>
+You are on the main floor of the shopping centre with Sydney. It's crowded with shoppers<<if $sydneyromance is 1>>, so you lock arms with <<him>> as to not get separated<</if>>.
+<br><br>
+<<if Time.schoolDay and $sydneyScience and ((Time.hour is 8 and Time.minute gte 44) or Time.hour is 9)>>
+	<<He>> sees a large electronic display that shows the time. "We should leave, we're going to be late for science class!"
+	<br><br>
+	<<link [[Leave (0:15)|Sydney Shopping Leave]]>><<pass 15>><</link>>
+<<elseif _sydney_location is "shop" and Time.hour gte 17>>
+	<<He>> sees a large electronic display that shows the time. "I'm already a bit late. I need to go help my <<sydneymum>> do something. Thanks for taking me, though! I had fun."
+	<<if $sydneyromance is 1>><<He>> kisses you on the cheek before waving you off as <<he>> leaves the shopping centre.<<else>><<He>> waves you off as <<he>> leaves the shopping centre.<</if>>
+	<br><br>
+	<<link [[Next|Shopping Centre]]>><<unset $exit>><<endevent>><<set $eventskip to 1>><</link>>
+<<elseif Time.hour gte 21>>
+	<<He>> sees a large electronic display that shows the time. "It's almost closing time, I should really head home. Thanks for taking me! I had fun."
+	<<if $sydneyromance is 1>><<He>> kisses you on the cheek before waving you off as <<he>> leaves the shopping centre.<<else>><<He>> waves you off as <<he>> leaves the shopping centre.<</if>>
+	<br><br>
+	<<link [[Next|Shopping Centre]]>><<unset $exit>><<endevent>><<set $eventskip to 1>><</link>>
+<<elseif $phase is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].love lt 30>>
+	"We should... probably head back, now."
+	<br><br>
+	<<link [[Leave the shopping centre (0:15)|Sydney Shopping Leave]]>><<pass 15>><</link>>
+	<br>
+<<else>>
+	<<if $phase is 1>>
+		<<set $phase to 0>>
+		<<He>> checks the time. "I suppose... we're already here, we don't have to leave yet if you don't want to."
+	<<else>>
+		"<<print either("It's always so busy here.", "So, what are we looking for?", "Even if we don't buy anything, it's nice to spend time with you.", "Crowds make me a little anxious.")>>"
+	<</if>>
+	<br><br>
+	<<if !$daily.sydney.shopGlasses>>
+		<<clothingcategoryicon "face">> <<link [[Optometrist (0:01)|Sydney Shopping Glasses]]>><<pass 1>><</link>>
+		<br>
+	<</if>>
+	<<if !$daily.sydney.shopHair>>
+		<<hairdressericon>><<link [[Hairdressers (0:01)|Sydney Shopping Hairdressers]]>><<pass 1>><</link>>
+		<br>
+	<</if>>
+	<<if !$daily.sydney.shopSwim and $NPCName[$NPCNameList.indexOf("Sydney")].love gte 50>>
+		<<clothingcategoryicon "underoutfit">><<link [[Swimwear shop (0:01)|Sydney Shopping Swim]]>><<pass 1>><</link>>
+		<br>
+	<</if>>
+	<br>
+	<<link [[Leave the shopping centre (0:15)|Sydney Shopping Leave]]>><<pass 15>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Shopping Glasses
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+<<set $daily.sydney.shopGlasses to true>>
+You reach the upper floor of the shopping centre with Sydney in tow.
+<<if $sydneySeen.includes("glasses")>>
+	You find the optometrist much quicker, now that you know what to look for.
+<<else>>
+	<<set $sydneySeen.pushUnique("glasses")>>
+	It takes you a few minutes to find the optometrist's area. <<pass 3>>
+<</if>>
+<br><br>
+Sydney seems to recognise the person working the counter<<if $phase is 1>>, and begins giving the details of <<his>> prescription as <<he>> sets <<his>> <<sydneyGlasses>> aside<</if>>. You look around to the rotary stands filled with glasses, as well as a cabinet full of various contact lenses.
+<br><br>
+<<if $phase is 1>>
+	<<link [[Buy Sydney glasses (£15)|Sydney Shopping Buy Glasses]]>><<set $money -= 1500>><</link>>
+	<br>
+	<<if $money gte 5000>>
+		<<link [[Buy Sydney contacts (£50)|Sydney Shopping Buy Contacts]]>><<set $money -= 5000>><</link>>
+		<br>
+	<<else>>
+		<span class="purple">You can't afford to buy Sydney contacts.</span>
+	<</if>>
+<<elseif $money gte 1500>>
+	<<link [[Buy Sydney new glasses (£15 0:10)|Sydney Shopping Buy Glasses]]>><<pass 10>><<set $money -= 1500>><<npcincr Sydney love 1>><</link>><<glove>>
+	<br>
+	<<if $money gte 5000>>
+		<<link [[Buy Sydney contacts (£50 0:10)|Sydney Shopping Buy Contacts]]>><<pass 10>><<set $money -= 5000>><<npcincr Sydney love 1>><</link>><<glove>>
+		<br>
+	<<else>>
+		<span class="purple">You can't afford to buy Sydney contacts.</span>
+	<</if>>
+	<br>
+	<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<pass 1>><</link>>
+	<br>
+<<else>>
+	<span class="purple">You can't afford to buy Sydney anything here.</span>
+	<br>
+	<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<pass 1>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Shopping Buy Glasses
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+You buy Sydney a new pair of glasses.
+<<switch $sydney.glasses>>
+	<<case "broken">>
+		<<He>> pushes <<his>> <<sydneyGlasses>> to the person working the counter. "I'll miss these old things." <<He>> looks to you with a smile.
+		<<if $sydneyromance is 1>>"At least these new ones will remind me of you now."<<else>>"Thank you. You didn't have to do this for me."<</if>>
+	<<case "playerbroken">>
+		<<He>> pushes <<his>> <<sydneyGlasses>> to the person working the counter. "I'll miss these old things." <<He>> looks to you with a smile.
+		"Try not to break these on my face, please?" You look down guiltily, but <<he>> gives you a playful nudge.
+	<<case "glasses">>
+		"Are you sure? The ones I have now are fine."
+		<br><br>
+		<<if $sydneyromance is 1>>
+			"I think these ones will look cute on you," you say. <<He>> blushes.
+			<br><br>
+			"In that case, I accept."
+		<<else>>
+			"I think these ones fit you better," you say. <<He>> tilts <<his>> head.
+			<br><br>
+			"Well... alright. Thank you."
+		<</if>>
+	<<case "playerbought">>
+		"Are you sure? You're the one that bought these ones for me, and I've really started to like them."
+		<br><br>
+		<<if $sydneyromance is 1>>
+			"I changed my mind, these ones are even cuter," you say. <<He>> blushes.
+			<br><br>
+			"In that case, I accept."
+		<<else>>
+			"A little variety doesn't hurt," you say. <<He>> tilts <<his>> head.
+			<br><br>
+			"Well... alright. Thank you."
+		<</if>>
+	<<case "contacts">>
+		"I guess I did miss wearing glasses. Thank you!" <<He>> pushes <<his>> old glasses to the person working the counter.
+<</switch>>
+The optometrist gives Sydney a quick vision test with <<his>> new glasses. It goes well, and the two of you exit back into the shopping centre. <<trauma -3>><<ltrauma>><<npcincr Sydney love 1>><<glove>>
+<br><br>
+<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<pass 1>><<set $sydney.glasses to "playerbought">><</link>>
+<br>
+
+:: Sydney Shopping Buy Contacts
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+You buy Sydney a case of contact lenses, and everything needed to take care of them properly.
+<br><br>
+<<switch $sydney.glasses>>
+	<<case "broken">>
+		<<He>> pushes <<his>> <<sydneyGlasses>> to the person working the counter. "I'll miss these old things." <<He>> looks to you with a smile.
+		"At least I don't have to worry about these breaking on me. Thank you. You didn't have to do this for me."
+	<<case "playerbroken">>
+		<<He>> pushes <<his>> <<sydneyGlasses>> to the person working the counter. "I'll miss these old things." <<He>> looks to you with a smile.
+		"At least I don't have to worry about you being rough with me, now." <<npcincr Sydney lust 1>><<glust>>
+	<<case "glasses">>
+		"Well, glasses are pretty cumbersome... and <<sydneymum>> has said I look cuter without them..."
+		<br><br>
+		<<if $sydneyromance is 1>>
+			"<<nnpc_Hes "Sirris">> right," you say. <<He>> blushes.
+			<br><br>
+			"In that case, I accept."
+		<<else>>
+			"There's nothing wrong with just trying," you say. <<He>> tilts <<his>> head.
+			<br><br>
+			"Well... alright. Thank you."
+		<</if>>
+	<<case "playerbought">>
+		"Are you sure? You bought these glasses for me, and I've really started to like them."
+		<br><br>
+		<<if $sydneyromance is 1>>
+			"I changed my mind, I think you'll look cute without glasses," you say. <<He>> blushes.
+			<br><br>
+			"In that case, I accept."
+		<<else>>
+			"A little variety doesn't hurt," you say. <<He>> tilts <<his>> head.
+			<br><br>
+			"Well... alright. Thank you."
+		<</if>>
+	<<case "contacts">>
+		<<He>> looks at you, confused. "I already have... I'm already wearing..." You refuse to elaborate, and purchase them anyways.
+<</switch>>
+The optometrist gives Sydney a quick vision test with <<his>> new contacts. It goes well, and the two of you exit back into the shopping centre. <<trauma -3>><<ltrauma>><<npcincr Sydney love 1>><<glove>>
+<br><br>
+<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<pass 1>><<set $sydney.glasses to "contacts">><</link>>
+<br>
+
+:: Sydney Shopping Hairdressers
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>><<run statusCheck("Sydney")>>
+<<set $daily.sydney.shopHair to true>>
+You and Sydney enter the hairdressers. Here you can have your hair cut or dyed. There are a pair of seats available.
+<br><br>
+<<if !$sydneySeen.includes("hairchange")>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		<<Hes>> almost jumping with excitement. "I've thought about getting my hair dyed or styled a few times. Are we actually doing this?"
+	<<else>>
+		<<He>> looks apprehensive. "<<nnpc_Brother "Jordan">> Jordan always praised my hair. It's why I've never gotten it dyed or cut. But, if you want me to..."
+	<</if>>
+<<elseif $NPCName[$NPCNameList.indexOf("Sydney")].hairColour isnot "strawberryblond">>
+	<<He>> pauses. "Are we getting my dye removed?"
+<<else>>
+	<<He>> smiles. "It's oddly soothing to get my hair done by a professional. I like it here."
+<</if>>
+<br><br>
+<<if $money gte 3000>>
+	<<link [[Take seats|Sydney Hairdressers Sit]]>><</link>>
+	<br>
+<<else>>
+	<span class="purple">You don't have enough money.</span>
+<</if>>
+<br>
+<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<pass 1>><</link>>
+<br>
+
+:: Sydney Hairdressers Sit
+<<run statusCheck("Sydney")>>
+<<effects>>
+You bring Sydney to one of the vacant seats, and take the seat next to <<him>>.
+<<generate2>><<person2>>The hairdresser, a <<person>>, soon appears behind the two of you.<<person1>> "Alright, what'll it be for
+<<if $sydneyromance is 1>>
+	this cute couple?" <<if _sydneyStatus.includes("corrupt")>>Sydney proudly smiles.<<else>>Sydney blushes lightly.<</if>>
+<<else>>
+	<<if $player.gender_appearance is "m" and $pronoun is "m">>
+		you two handsome gentlemen?"
+	<<elseif $player.gender_appearance is "f" and $pronoun is "f">>
+		you two lovely ladies?"
+	<<else>>
+		you two?"
+	<</if>>
+<</if>>
+<br><br>
+<<if !$sydneySeen.includes("hairchange")>>
+	<<person2>><<He>> shows Sydney a few example hair designs and colours.<<person1>>
+	You notice <<his>> eyes catch on a picture of a <<personsimple>> with a black ponytail. <<He>> also eyes a <<personsimple>> with loose hair covering one eye.
+	<br><br>
+<</if>>
+<<hairdressersPricelist>>
+<<set $sydneyHairOption to $sydney.hair>>
+<<set $dyeOption to "noChange">>
+<div id="currentCost" class="gold">
+	To pay: £0
+</div>
+<div id="hairDressersSydney">
+	<<hairDressersOptionsSydney>>
+</div>
+<<hairdressersResetAlt>>
+<<if $money gte _currentCost>>
+	<<link [[Continue|Sydney Hairdressers Sit 2]]>><<set $money -= _currentCost>><</link>>
+<<elseif $money lt _currentCost>>
+	You don't have enough money to pay the hairdresser.
+<</if>>
+<br><br>
+<<link [[Leave|Sydney Hairdressers Cancel]]>><<endevent>><</link>>
+
+:: Sydney Hairdressers Sit 2
+<<effects>>
+<<set _sydneyPresent to true>><<set _pass to 0>>
+<<if $sydneyHairOption is $sydney.hair and $dyeOption is "noChange">>
+	<<set _cancel to true>>
+	You and Sydney decide against having <<his>> hair treated. <<person2>><<He>> steps behind you. "Alright. What about you?"
+<<else>>
+	<<set $sydneyHairDone to true>>
+	You hand over the money, and <<person2>><<he>> gets to work on Sydney.
+	<<if !$sydneySeen.includes("hairchange")>>
+		<<person1>><<His>> eyes widen. "Hey, are you sure? I could have paid for it."
+	<</if>>
+	<<if $sydneyHairOption isnot $sydney.hair>>
+		<<set $sydneyStyle to true>>
+		The hairdresser<<if $sydney.hair is "ponytail">> gently undoes Sydney's ponytail<<else>> begins to treat Sydney's hair<</if>> and starts combing.
+		<<set $sydney.hair to clone($sydneyHairOption)>>
+		<<set _pass += 5>>
+		<<unset $sydneyHairOption>>
+	<</if>>
+	<<if $dyeOption is "removeDye">>
+		<<set $sydneyDyeRemove to true>>
+		<<if _pass gt 0>>
+			<<He>> then begins the process of washing out Sydney's colour.
+		<<else>>
+			The hairdresser asks Sydney to tilt <<nnpc_his "Sydney">> head back, and starts washing out <<nnpc_his "Sydney">> colour.
+		<</if>>
+		<<set $NPCName[$NPCNameList.indexOf("Sydney")].hairColour to "strawberryblond">>
+		<<set _pass += 15>>
+		<<unset $dyeOption>>
+	<<elseif $dyeOption isnot "noChange">>
+		<<set $sydneyDye to true>>
+		<<set $NPCName[$NPCNameList.indexOf("Sydney")].hairColour to clone($dyeOption)>>
+		<<if _pass gt 0>>
+			<<He>> then starts applying colour.
+		<<else>>
+			The hairdresser begins carefully applying Sydney's chosen colour.
+		<</if>>
+		<<set _pass += 15>>
+		<<unset $dyeOption>>
+	<</if>>
+<</if>>
+<<pass _pass>>
+<br><br>
+Another hairdresser approaches you as Sydney is worked on. "And what about you?" <<hairdressersPricelist>>
+
+<<set $hairOption to $hairlength>>
+<<set $fringeOption to $fringelength>>
+<<set $dyeOption to "noChange">>
+<<set $browsDyeOption to "noChange">>
+<<set $twoToneDyeOption1 to "noChange">>
+<<set $twoToneDyeOption2 to "noChange">>
+<<set $twoToneHairDye to false>>
+<<set $twoToneStyle to $hairColourGradient.style>>
+<div id="currentCost" class="gold">
+	To pay: £0
+</div>
+<div id="hairDressers">
+	<<hairDressersOptions>>
+</div>
+<<hairdressersReset>>
+
+:: Sydney Hairdressers Session
+<<effects>>
+<<if $hairOption is $hairlength and $fringeOption is $fringelength and $browsDyeOption is "noChange" and $dyeOption is "noChange" and $twoToneDyeOption1 is "noChange" and $twoToneDyeOption2 is "noChange">>
+	You shake your head, content to watch Sydney get <<person1>><<his>> hair get treated.
+	<br><br>
+<<else>>
+	<<set $playerHairDone to true>>
+	<<hairdressersSession>>
+<</if>>
+<<link [[Next|Sydney Hairdressers End]]>><<endevent>><</link>>
+
+:: Sydney Hairdressers End
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+<<npc "Sydney">><<person1>>
+<<if $sydneyHairDone>>
+	<<set $sydneyHairChangedComment to true>>
+	You leap from your seat to get a better look at Sydney as <<his>> hair is finished. The hairdresser hands <<him>> a mirror.
+	<<if !$sydneySeen.includes("hairchange")>>
+		<<set $sydneySeen.pushUnique("hairchange")>>
+		<<His>> eyes widen. "It looks..." <<he>> pauses, examining <<his>><<if $sydneyDye>> <<npcHairColour "Sydney">><</if>> hair from every angle.
+		<br><br>
+		"I love it. I love it!" <<He>> suddenly stands and hugs you. <<npcincr Sydney love 5>><<gglove>>
+	<<else>>
+		<<He>> smiles as <<he>> examines <<his>> <<npcHairColour "Sydney">> hair<<if $sydneyDye and _text_output is "strawberry blond">> returned to its natural colour<</if>>.
+		"Thanks for taking me here. I'm never disappointed." <<npcincr Sydney love 1>><<glove>>
+	<</if>>
+	<br><br>
+	<<if $sydneyStyle>><<if $sydney.hair is "ponytail">><<He>> fluffs <<his>> freshly trimmed and straightened ponytail.<<else>><<He>> brushes <<his>> hair over <<his>> left eye.<</if>><</if>>
+	<<if $playerHairDone>>
+		"Yours looks really good too! You have good taste."
+	<</if>>
+<<else>>
+	Sydney smiles as you stand from your seat. "That looks great! Maybe we should get mine done next time after all."
+<</if>>
+<<unset $sydneyDye>><<unset $sydneyDyeRemove>><<unset $sydneyHairDone>><<unset $sydneyStyle>><<unset $playerHairDone>>
+The two of you exit back into the shopping centre.
+<br><br>
+<<link [[Next (0:01)|Sydney Shopping Centre]]>><</link>>
+<br>
+
+:: Sydney Hairdressers Cancel
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+<<npc "Sydney">><<person1>>
+You exit the hairdressers with Sydney. "It's alright, it was nice to have a look at least."
+<<unset $dyeOption>><<unset $sydneyHairOption>><<unset $browsDyeOption>><<unset $fringeOption>><<unset $hairOption>>
+<br><br>
+<<link [[Next (0:01)|Sydney Shopping Centre]]>><</link>>
+<br>
+
+:: Sydney Shopping Swim
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
+<<set $daily.sydney.shopSwim to true>>
+You enter the swimwear shop with Sydney. "This almost feels like shopping in a competitor's store."
+<br><br>
+You approach the shelves of folded up swimwear. You can't help but think that some of these would look good on <<him>>.
+<br><br>
+<<if $money gte 2500>>
+	Buy Sydney a new set of swimwear?
+	<br>
+<<else>>
+	You can't afford to buy Sydney anything here.
+<</if>>
+<<if $NPCName[$NPCNameList.indexOf("Sydney")].pronoun is "m">>
+	<<if $sydney.swim isnot "school" and $money gte 8000>>
+		<<link [[Buy school swim shorts and swim shirt (£80)|Sydney Buy Swim]]>><<set $select to "school">><</link>><<gspurity>>
+		<br>
+	<</if>>
+	<<if $sydney.swim isnot "normal" and $money gte 3500>>
+		<<link [[Buy board shorts (£35)|Sydney Buy Swim]]>><<set $select to "normal">><</link>>
+		<br>
+	<</if>>
+	<<if $sydney.swim isnot "lewd" and $money gte 2500>>
+		<<link [[Buy speedo (£25)|Sydney Buy Swim]]>><<set $select to "lewd">><</link>><<lspurity>>
+		<br>
+	<</if>>
+	<<if $sydney.swim isnot "crossdress" and $money gte 4000>>
+		<<link [[Buy bikini (£40)|Sydney Buy Swim]]>><<set $select to "crossdress">><</link>><<llspurity>> <<note "Sydney might need some convincing to wear this." "italic">>
+		<br>
+	<</if>>
+<<else>>
+	<<if $sydney.swim isnot "school" and $money gte 2500>>
+		<<link [[Buy school swimsuit (£25)|Sydney Buy Swim]]>><<set $select to "school">><</link>><<gspurity>>
+		<br>
+	<</if>>
+	<<if $sydney.swim isnot "normal" and $money gte 4000>>
+		<<link [[Buy bikini (£40)|Sydney Buy Swim]]>><<set $select to "normal">><</link>>
+		<br>
+	<</if>>
+	<<if $sydney.swim isnot "lewd" and $money gte 4800>>
+		<<link [[Buy microkini (£48)|Sydney Buy Swim]]>><<set $select to "lewd">><</link>><<lspurity>>
+		<br>
+	<</if>>
+	<<if $sydney.swim isnot "crossdress" and $money gte 3500>>
+		<<link [[Buy board shorts (£35)|Sydney Buy Swim]]>><<set $select to "crossdress">><</link>><<llspurity>> <<note "Sydney might need some convincing to wear this." "italic">>
+		<br>
+	<</if>>
+<</if>>
+<br><br>
+<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<unset $select>><</link>>
+<br>
+
+:: Sydney Buy Swim
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>><<run statusCheck("Sydney")>>
+<<switch $select>>
+	<<case "school">>
+		You pick out the school-appropriate swimwear for Sydney.
+		<<if _sydneyStatus.includes("corrupt")>>
+			<<if $sydneyromance is 1>>
+				"That's a bit boring for my tastes, but... alright, sure. I guess it'd be better if you're the only one that can get an eyeful."
+				<<set _accept to true>>
+			<<else>>
+				Sydney frowns. "That's a bit boring, isn't it? I appreciate the offer, but I'll respectfully decline."
+				<br><br>
+			<</if>>
+		<<else>>
+			Sydney smiles. "I was a bit anxious about showing so much skin. I appreciate the change."
+			<<set _accept to true>>
+		<</if>>
+	<<case "normal">>
+		You pick out<<if $pronoun is "m">> the board shorts<<else>> the normal bikini<</if>> for Sydney.
+		<<if _sydneyStatus.includes("corrupt")>>
+			Sydney smirks.
+			<<if $sydney.swim is "lewd">>
+				"I'll miss showing so much skin. Oh well."
+			<<else>>
+				"I finally get to let loose. Nice."
+			<</if>>
+		<<else>>
+			Sydney nervously smiles. "That's not school appropriate, but... I suppose it wouldn't hurt to let loose a little."
+		<</if>>
+		<<set _accept to true>>
+	<<case "lewd">>
+		You pick out<<if $pronoun is "m">> the speedo<<else>> the microkini<</if>> for Sydney.
+		<<if _sydneyStatus.includes("corrupt")>>
+			<<He>> gives you a smug look. "I bet you've been waiting to see me wear something like this for a long time. Sure, I'll indulge your sinful mind, why not?"
+			<<set _accept to true>>
+		<<else>>
+			<<if $sydneyromance is 1 or _sydneyStatus.includes("Lust")>>
+				<<His>> face turns bright red. "Th-this is... there's so... it's so small, and revealing, and..." <<He>> gulps. "Is it... is it really okay to wear this?" You spend some time reassuring Sydney.
+				<<set _accept to true>>
+			<<else>>
+				<<His>> face turns bright red. "Th-there's no way I can wear this! It's too revealing! I'm sorry, but I'll have to decline."
+			<</if>>
+		<</if>>
+	<<case "crossdress">>
+		You pick out<<if $pronoun is "m">> the normal bikini<<else>> the board shorts<</if>> for Sydney.
+		<<if $daily.sydney.convince>>
+			"The answer is still no!" Sydney pouts at you as <<he>> raises <<his>> voice.
+		<<elseif $pronoun is "m">>
+			<<if $NPCName[$NPCNameList.indexOf("Sydney")].penissize gte 3>>
+				<<if _sydneyStatus.includes("corrupt")>>
+					<<He>> looks at it incredulously. "Sorry, but, uh... I'm a bit too... well-endowed down there for this to work." <<He>> pushes <<his>> pants against <<his>> groin. "It's a fun idea, though."
+				<<else>>
+					<<His>> face turns bright red. "Th-that's for girls! Everyone would see my... it's too... I'm sorry, I can't."
+				<</if>>
+			<<else>>
+				<<if $sydneySeen.includes("swimcross")>>
+					<<His>> face turns red briefly, but <<he>> nods.
+					<<set _accept to true>>
+				<<elseif _sydneyStatus.includes("corrupt")>>
+					<<His>> eyes widen as you hold the bikini in front of <<him>>. "You're shitting me, right? Oh, god, you're serious."
+					<br><br>
+					<<if $sydneyromance is 1 or _sydneyStatus.includes("Lust")>>
+						<<He>> seems to actually think about it for a moment. "You know what? I think it'll be fun. But it's only fair if you do it, too."
+						<<set _accept to true>>
+					<<else>>
+						<<He>> seems to actually think about it for a moment. "It sounds fun, but... I don't know, I'm not really comfortable doing that."
+						<<set _convince to true>>
+					<</if>>
+				<<else>>
+					<<He>> gulps as you hold the bikini in front of <<him>>. "B-but, that's for girls! I can't... I can't wear that. C...can I...?"
+					<<if $sydneyromance is 1 or _sydneyStatus.includes("Lust")>>
+						<<He>> thinks about it for a moment. "If... if that's what you want me to wear, I'll wear it." <<He>> hides <<his>> face.
+						<<set _accept to true>>
+					<<else>>
+						<<He>> thinks about it for a moment. "N...no. No no no, I just can't."
+						<<set _convince to true>>
+					<</if>>
+				<</if>>
+			<</if>>
+		<<else>>
+			<<if $NPCName[$NPCNameList.indexOf("Sydney")].breastsize gte 4>>
+				<<if _sydneyStatus.includes("corrupt")>>
+					<<He>> looks at it incredulously. "Sorry, but, uh... I'm a bit too... well-endowed up here for this to work." <<He>> pushes <<his>> <<print $NPCName[$NPCNameList.indexOf("Sydney")].breastsdesc>> up and lets them drop again. "It's a fun idea, though."
+				<<else>>
+					<<His>> face turns bright red. "I can't go topless! Everyone would see my... they're too... I'm sorry, we can't."
+				<</if>>
+			<<else>>
+				<<if $sydneySeen.includes("swimcross")>>
+					<<His>> face turns red briefly, but <<he>> nods.
+					<<set _accept to true>>
+				<<elseif _sydneyStatus.includes("corrupt")>>
+					<<His>> eyes widen as you hold the board shorts up in front of <<him>>. "You're shitting me, right? Oh, god, you're serious."
+					<br><br>
+					<<if $sydneyromance is 1 or _sydneyStatus.includes("Lust")>>
+						<<He>> seems to actually think about it for a moment. "You know what? I think it'll be fun. But it's only fair if you do it, too."
+						<<set _accept to true>>
+					<<else>>
+						<<He>> seems to actually think about it for a moment. "It sounds fun, but... I don't know, I'm not really comfortable going topless."
+						<<set _convince to true>>
+					<</if>>
+				<<else>>
+					<<He>> gulps as you hold the board shorts in front of <<him>>. "B-but, that's for boys! I'd be exposed, everyone would see my... I can't... I can't wear that. C...can I...?"
+					<<if $sydneyromance is 1 or _sydneyStatus.includes("Lust")>>
+						<<He>> seems to actually think about it for a moment. "If... if that's what you want me to wear, I'll wear it." <<He>> hides <<his>> face.
+						<<set _accept to true>>
+					<<else>>
+						<<He>> seems to actually think about it for a moment. "N...no. No no no, I just can't."
+						<<set _convince to true>>
+					<</if>>
+				<</if>>
+			<</if>>
+		<</if>>
+<</switch>>
+<<if _accept>>
+	<<trauma -3>><<npcincr Sydney love 1>><<ltrauma>><<glove>>
+	<<switch $select>>
+		<<case "school">>
+			<<if $pronoun is "m">>
+				<<set $money -= 8000>>
+			<<else>>
+				<<set $money -= 2500>>
+			<</if>>
+			<<npcincr Sydney purity 2>><<gspurity>>
+		<<case "normal">>
+			<<if $pronoun is "m">>
+				<<set $money -= 3500>>
+			<<else>>
+				<<set $money -= 4000>>
+			<</if>>
+		<<case "lewd">>
+			<<if $pronoun is "m">>
+				<<set $money -= 2500>>
+			<<else>>
+				<<set $money -= 4800>>
+			<</if>>
+			<<npcincr Sydney lust 1>><<gslust>><<npcincr Sydney purity -2>><<lspurity>>
+		<<case "crossdress">>
+			<<if $pronoun is "m">>
+				<<set $money -= 4000>>
+			<<else>>
+				<<set $money -= 3500>>
+			<</if>>
+			<<npcincr Sydney lust 3>><<ggslust>><<npcincr Sydney purity -5>><<llspurity>>
+	<</switch>>
+	<<set $sydney.swim to $select>>
+<</if>>
+<br><br>
+<<if _accept>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		<<He>> takes it from you,
+	<<else>>
+		You hand it to <<him>>. <<He>> gingerly takes it,
+	<</if>>
+	and heads off towards the changing room.
+	<br><br>
+	<<link [[Wait (0:05)|Sydney Shopping Swim Wait]]>><<pass 5>><</link>>
+	<br>
+	<<link [[Peek in on Sydney (0:05)|Sydney Shopping Swim Peek]]>><<npcincr Sydney lust 1>><<pass 5>><</link>><<glust>><<promiscuous1>>
+	<br>
+	<<if $promiscuity gte 35>>
+		<<link [[Walk in on Sydney|Sydney Shopping Swim Enter]]>><<npcincr Sydney lust 1>><</link>><<glust>><<promiscuous3>><<sydneyWarning corrupt>>
+		<br>
+	<</if>>
+<<else>>
+	<<if _convince and !$daily.sydney.convince>>
+		<<link [[Convince Sydney|Sydney Shopping Swim Convince]]>><</link>><<promiscuous1>>
+		<br>
+	<</if>>
+	<<link [[Next|Sydney Shopping Swim]]>><<unset $select>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Shopping Swim Convince
+<<effects>>
+<<set $daily.sydney.convince to true>>
+<<set $seductiondifficulty to 6000>>
+<<seductioncheck>>
+<br><br>
+<<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><</if>><<seductionskilluse>>
+<br><br>
+
+You cross your arms. "I'd really like to see you wear this. You'd look really cute as a <<if $pronoun is "m">>girl<<else>>boy<</if>>!" You place a hand on Sydney's shoulder.
+<<promiscuity1>>
+
+<<if $seductionrating gte $seductionrequired>>
+	<span class="green"><<He>> blushes and hesitates, but nods.</span> "Okay... okay fine! I'll try it..." <<he>> manages. <<He>> takes the clothes from you with a pout, and storms off towards the changing room.
+	<br><br>
+	<<link [[Wait (0:05)|Sydney Shopping Swim Wait]]>><<pass 5>><</link>>
+	<br>
+	<<link [[Peek in on Sydney (0:05)|Sydney Shopping Swim Peek]]>><<npcincr Sydney lust 1>><<pass 5>><</link>><<glust>><<promiscuous1>>
+	<br>
+	<<if $promiscuity gte 35>>
+		<<link [[Walk in on Sydney|Sydney Shopping Swim Enter]]>><</link>><<glust>><<promiscuous3>><<sydneyWarning corrupt>>
+		<br>
+	<</if>>
+<<else>>
+	<span class="red">Sydney frowns at you, almost betraying a hint of anger.</span> "No. I'm sorry, but no."
+	<br><br>
+	<<link [[Next|Sydney Shopping Swim]]>><<unset $select>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Shopping Swim Wait
+<<effects>><<run statusCheck("Sydney")>>
+You wait for Sydney. After a few minutes,
+<<if _sydneyStatus.includes("corrupt")>>
+	<<he>> emerges wearing <<his>> new <<sydneySwimwear>>.
+	<<if $select is "lewd">>
+		<<His>> confident expression falters for a brief moment, as your eyes trail up <<his>> body. "Oh, like what you see?"
+	<<elseif $select is "crossdress" and !$sydneySeen.includes("swimcross")>>
+		<<set $sydneySeen.pushUnique("swimcross")>>
+		<<His>> confident expression falters for a brief moment, as you<<if $pronoun is "m">> stare at <<his>> groin. The bikini barely hides <<him>>, but <<he>> could easily pass as a girl like this.<<else>> stare at <<his>> bare chest, <<his>> holy pendant still hanging there. <<He>> could easily pass as a boy like this.<</if>> "This isn't so bad. I... I think I like how you're looking at me."
+	<<elseif $select is "crossdress">>
+		<<He>> flaunts in front of you, seemingly revelling in the exposure. "I was wondering if we'd try this again."
+	<</if>>
+	<br><br>
+	<<if $sydneyromance is 1 and _sydneyStatus.includes("Lust")>>
+		<<He>> bends forward, and <<his>> hands touch your shoulders as <<he>> does a few exaggerated stretches. "I seem to be sore for some reason. I don't suppose you could come help me get back into my <<if $exit is "library">>school clothes<<else>>robes<</if>>?" <<He>> winks. <<arousal 50>><<garousal>>
+		<br><br>
+		<<link [[Accept|Sydney Shopping Sex]]>><<npcincr Sydney purity -2>><<set $sexstart to 1>><<set $phase2 to 1>><</link>><<lspurity>><<sydneyWarning corrupt>>
+		<br>
+		<<link [[Refuse|Sydney Shopping Sex Refuse]]>><<npcincr Sydney purity 2>><</link>><<gspurity>>
+		<br>
+	<<else>>
+		<<He>> turns on the spot and gives <<his>> bottom a brief shake. "Gonna get back into my people clothes. Thanks again for the wardrobe change, hope you enjoyed the view." After a few more minutes, Sydney comes back out wearing <<his>> <<if $exit is "library">>school clothes<<else>>temple robes<</if>> again.
+		<br><br>
+		<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<unset $select>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<<he>> emerges, wearing <<his>> <<if $exit is "library">>school clothes<<else>>temple robes<</if>> again. "It fits. Thanks for getting it for me<<if $select is "lewd" or $select is "crossdress">>, even if it's... not my usual..." <<He>> looks down, blushing.<<else>>!"<</if>>
+	<br><br>
+	<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<unset $select>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Shopping Swim Peek
+<<effects>><<run statusCheck("Sydney")>>
+You quietly approach the changing booth. You look around to make sure no one sees you, before grabbing a nearby step stool to peer over the door. Sydney is facing away from it, slowly removing <<his>> <<if $exit is "library">>school clothes<<else>>temple robes<</if>>.
+<<if _sydneyStatus.includes("corrupt")>>
+	<<He>> isn't wearing anything underneath them.<<if _sydneyChastity and !$sydneyChastityKnown>> You think you catch a glint of something near <<his>> <<sydneyGenitals "short">>, but you're forced to duck back down before you can get a better look.<<else>> You get an unrestricted view of <<his>> <<sydneyGenitals>>. You duck back down before <<he>> can turn around.<</if>>
+<<else>>
+	<<He>> hangs them up neat, and begins to remove <<his>> underwear. <<He>> turns, prompting you to duck out of view.
+<</if>>
+You feel your heart racing, but you don't think <<he>> saw you.
+<<promiscuity1>>
+
+After a few minutes,
+<<if _sydneyStatus.includes("corrupt")>>
+	<<he>> emerges wearing <<his>> new <<sydneySwimwear>>.
+	<<if $select is "lewd">>
+		<<His>> confident expression falters for a moment, as your eyes trail up <<his>> body. "Oh, like what you see?"
+	<<elseif $select is "crossdress" and !$sydneySeen.includes("swimcross")>>
+		<<set $sydneySeen.pushUnique("swimcross")>>
+		<<His>> confident expression falters for a moment, as you<<if $pronoun is "m">> stare at <<his>> groin. The bikini barely hides <<him>>, but <<he>> could easily pass as a girl like this.<<else>> stare at <<his>> bare chest, <<his>> holy pendant still hanging there. <<He>> could easily pass as a boy like this.<</if>> "This isn't so bad. I... I think I like how you're looking at me."
+	<<elseif $select is "crossdress">>
+		<<He>> flaunts in front of you, seemingly revelling in the exposure. "I was wondering if we'd try this again."
+	<</if>>
+	<br><br>
+	<<if $sydneyromance is 1 and _sydneyStatus.includes("Lust")>>
+		<<He>> bends forward, and <<his>> hands touch your shoulders as <<he>> does a few exaggerated stretches. "I seem to be sore for some reason. I don't suppose you could come help me get back into my <<if $exit is "library">>school clothes<<else>>robes<</if>>?" <<He>> winks. <<arousal 50>><<garousal>>
+		<br><br>
+		<<link [[Accept|Sydney Shopping Sex]]>><<npcincr Sydney purity -2>><<set $sexstart to 1>><<set $phase2 to 1>><</link>><<lspurity>>
+		<br>
+		<<link [[Refuse|Sydney Shopping Sex Refuse]]>><<npcincr Sydney purity 2>><</link>><<gspurity>>
+		<br>
+	<<else>>
+		<<He>> turns on the spot and gives <<his>> bottom a brief shake. "Gonna get back into my people clothes. Thanks again for the wardrobe change, hope you enjoyed the view." After a few more minutes, Sydney comes back out wearing <<his>> <<if $exit is "library">>school clothes<<else>>temple robes<</if>> again.
+		<br><br>
+		<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<unset $select>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	<<he>> emerges, wearing <<his>> <<if $exit is "library">>school clothes<<else>>temple robes<</if>> again. "It fits. Thanks for getting it for me<<if $select is "lewd" or $select is "crossdress">>, even if it's... not my usual..." <<He>> looks down, blushing.<<else>>!"<</if>>
+	<br><br>
+	<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<unset $select>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Shopping Swim Enter
+<<effects>><<run statusCheck("Sydney")>>
+<<if $open>>
+	<<unset $open>>
+	You pick the lock, and throw the door open. <<set _continue to true>><<npcincr Sydney lust 1>><<promiscuity3>>
+<<else>>
+	You stride up to the door of the changing booth, and tug on the handle.
+	<<if _sydneyStatus.includes("corrupt")>>
+		<span class="green">It isn't locked.</span> You throw the door open. <<set _continue to true>><<npcincr Sydney lust 1>><<promiscuity3>>
+	<<else>>
+		It's locked. You can almost hear Sydney jump on the other side. "Occupied!"
+		<br><br>
+		<<set $lock to 400>>
+		<<if currentSkillValue('skulduggery') gte $lock>>
+			<span class="green">The lock looks easy to pick.</span>
+			<br><br>
+			<<link [[Pick it (0:01)|Sydney Shopping Swim Enter]]>><<set $open to true>><</link>>
+			<br>
+		<<else>>
+			<span class="red">The lock looks beyond your ability to pick.</span> <<skulduggeryrequired>>
+			<br><br>
+		<</if>>
+		<<link [[Wait (0:05)|Sydney Shopping Swim Wait]]>><<pass 5>><</link>>
+		<br>
+		<<link [[Peek in on Sydney (0:05)|Sydney Shopping Swim Peek]]>><<npcincr Sydney lust 1>><<pass 5>><</link>><<glust>><<promiscuous1>>
+		<br>
+	<</if>>
+<</if>>
+<<if _continue>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		<<if $sydneyromance is 1>>
+			Sydney is facing away from you, and <<he>> calmly turns towards you. "At least close it behind you." <<Hes>> nude, and makes no attempt to cover <<himself>>. <<if _sydneyChastity and !$sydneyChastityKnown>><<set $sydneyChastityKnown to 1>><span class="lewd">You see a chastity belt wrapped around <<his>> waist.</span> "Well, now you know my dirty little secret."<<elseif _sydneyChastity>><<His>> chastity belt is the only thing covering <<him>>.<</if>>
+			<br><br>
+			Sydney sits on the bench, and spreads <<his>> legs. "I assume you came in to get frisky. About damn time, too. What are you waiting for?"
+			<br><br>
+			<<link [[Lock the door behind you|Sydney Shopping Lock]]>><</link>>
+			<br>
+		<<else>>
+			You catch a glimpse of Sydney's bare chest before <<he>> covers <<himself>>. "Oh, I could have sworn I locked that!" <<He>> smiles, and does an exaggerated facepalm. "I'm just soooooo forgetful. Oh well, I hope you like what you see. If you'd be so kind as to let me finish changing, that'd be nice."
+			<br><br>
+		<</if>>
+	<<else>>
+		<<if $sydneyromance is 1>>
+			You get a glimpse of Sydney's underwear. <<He>> flinches and nearly screams, but calms <<himself>> when <<he>> realises it's you. "You scared me!" <<He>> throws <<his>> clothes at you, pouting. <<He>> quickly realises <<his>> mistake, as <<hes>> left with nothing to shield <<his>> exposure.
+			<br><br>
+			<<He>> lowers <<his>> hands, once again allowing you to see <<his>> underwear. "There. That's what you wanted to see, right?" <<His>> face turns even more red. "If... if you're going to stare, or do something else, at least close the door behind you..."
+			<br><br>
+			<<link [[Lock the door behind you|Sydney Shopping Lock]]>><</link>>
+			<br>
+		<<else>>
+			You catch a glimpse of Sydney in <<his>> underwear, before <<he>> covers <<himself>> and screams. "No! No no no! Out!" <<He>> pushes you out the door with one hand, covering <<himself>> with a bundle of clothes.
+			<br><br>
+		<</if>>
+	<</if>>
+	<<link [[Leave|Sydney Shopping Swim Enter Leave]]>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Shopping Lock
+<<effects>><<run statusCheck("Sydney")>>
+You lock the door behind you, and approach Sydney.
+<<if _sydneyStatus.includes("corrupt")>>
+	<<He>> quickly grabs you and pulls you close.
+	<<sydneyLewd>>
+	<br><br>
+	<<link [[Next|Sydney Shopping Sex]]>><<set $sexstart to 1>><</link>>
+<<elseif _sydneyStatus.includes("Lust")>>
+	You place a hand on <<his>> chest, and gently push <<him>> into a lying position on the bench. <<He>> lets out a held breath, and embraces you.
+	<<sydneyLewd>>
+	<br><br>
+	<<link [[Next|Sydney Shopping Sex]]>><<set $sexstart to 1>><</link>>
+<<else>>
+	<br><br>
+	<<set $seductiondifficulty to 8000 - (($NPCName[$NPCNameList.indexOf("Sydney")].love + $NPCName[$NPCNameList.indexOf("Sydney")].lust) * 15) - $NPCName[$NPCNameList.indexOf("Sydney")].purity>>
+	<<seductioncheck>>
+	<br><br>
+	<<if $seductionskill lt 1000>><span class="gold">You feel more confident in your powers of seduction.</span><</if>><<seductionskilluse>>
+	<br><br>
+	You place a hand on <<his>> chest, and ease <<him>> into a lying position on the bench.
+	<<if $seductionrating gte $seductionrequired>>
+		<span class="green"><<He>> lets out a held breath, and embraces you.</span>
+		<<sydneyLewd>>
+		<br><br>
+		<<link [[Next|Sydney Shopping Sex]]>><<set $sexstart to 1>><</link>>
+	<<else>>
+		"W-wait! I... I really don't know about this... I've..." <<He>> lightly trembles.
+		<<sydneySexFail>>
+		<br>
+		You decide to take it slow, in light of <<his>> hesitation.
+		You begin to <<handtext>> fondle <<his>> <<sydneyGenitals>> through <<his>> underwear<<if !$sydneyChastityKnown and _sydneyChastity>>, <span class="lewd">but you feel something obstructing you</span><</if>>. <<He>> looks nervous, but doesn't stop you. <<He>> gingerly spreads <<his>> legs to give you easier access. You remove <<his>> underwear.
+		<br><br>
+		<<sydneyExpose>> You waste no time pleasuring <<him>><<if _sydneyChastity>> through <<his>> belt<</if>>. <<He>> blushes and looks away as <<he>> gradually gets <<if $NPCList[0].penis isnot "none">>erect<<else>>wet<</if>> from your touch. You keep it up for a while, eventually leaning forward and kissing <<his>> neck, which elicits a moan.
+		<<if _sydneyChastity>>
+			However, with the belt in the way, there's no way you can bring <<him>> to orgasm. You settle for teasing <<him>>.
+		<<else>>
+			With nothing obstructing you, you
+			<<if $NPCList[0].penis isnot "none">>
+				take hold of <<his>> penis and begin rubbing the tip with your thumb.
+			<<else>>
+				slowly insert a finger. <<Hes>> surprisingly wet, and it goes in easily.
+			<</if>>
+			It doesn't take long. <<He>> grips you hard with one hand, using the other to cover <<his>> mouth and suppress <<his>> moans as you bring <<him>> to orgasm.
+		<</if>>
+		<br><br>
+		<<link [[Next|Sydney Shopping Lock End]]>><<set $phase2 to 2>><</link>>
+	<</if>>
+<</if>>
+
+:: Sydney Shopping Sex
+<<run statusCheck("Sydney")>><<set $corruptionEvent to 1>>
+<<if $sexstart is 1>>
+	<<if $phase2 is 1>>
+		You nod, and follow Sydney into the changing booth. <<He>> locks the door behind you, and embraces you.
+	<</if>>
+	<<set $corruptionEvent to 1>>
+	<<set $daily.sydney.sex = ($daily.sydney.sex || 0) + 1>><<set $sydney.sexTotal += 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<maninit>>
+	<<set $enemytrust += 500>>
+	<<set $enemyarousalmax to 600>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		<<set $enemyarousalmax += 100>>
+	<<elseif _sydneyStatus.includes("pure")>>
+		<<set $enemyarousalmax -= 100>>
+	<</if>>
+	<<if _sydneyChastity and $NPCName[$NPCNameList.indexOf("Sydney")].chastity.anus.includes("shield")>>
+		<<set $enemyarousalmax -= 100>>
+	<</if>>
+<</if>>
+
+<<set $enemyanger to -10>>
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Sydney Shopping Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Sydney Shopping Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Sydney Shopping Sex Finish
+<<effects>><<run statusCheck("Sydney")>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	<<if $corruptionRollover is 1>>
+		<<unset $corruptionRollover>>
+		"Th-that was incredible," <<he>> murmurs. "I want... I want to do it again. And... again." <<He>> gazes into your eyes. "<span class="lewd">I feel like a whole world just opened up.</span>"
+	<<else>>
+		<<switch _sydneyStatus>>
+			<<case "pure" "pureLust">>
+				"Th-that was... incredible," <<he>> murmurs. "And sinful..."
+			<<case "corrupt" "corruptLust">>
+				"I'm glad my love for you is being rewarded," <<he>> proclaims with a smug smile.
+			<<default>>
+				"That was great, but someone could've heard us," <<he>> giggles.
+		<</switch>>
+	<</if>>
+	<<if _sydneyChastity and $sydneyChastityKnown>>
+		<<sydneyChastityMessage>><<npcincr Sydney lust 3>><<ggslust>>
+	<<else>>
+		<<npcincr Sydney lust -20>><<lllslust>>
+	<</if>>
+	<<npcincr Sydney purity -2>><<lspurity>>
+	<br>
+	<<sydneyFinish>>
+	<<tearful>> you stand up. Though reluctant, Sydney separates from you.
+<<elseif $enemyhealth lte 0>>
+	<<if $corruptionRollover is 1>>
+		<<unset $corruptionRollover>>
+		Sydney lets out a pained moan, and quickly covers <<his>> mouth to stifle it. "Th-that was..." <<He>> gazes into your eyes. "I think I like it when you're rough with me. <span class="lewd">I feel like a whole world just opened up.</span>"
+	<<else>>
+		<<switch _sydneyStatus>>
+			<<case "pure" "pureLust">>
+				<<if $enemyarousal gte ($enemyarousalmax / 5) * 2>>
+					Sydney lets out a pained moan, and quickly covers <<his>> mouth to stifle it. <<He>> looks down in shame. "I... I think I've had enough..."
+				<<else>>
+					"H-hey! Stop! Please!" Sydney quickly separates from you. "Th-that really hurt... I mean, I still kind of liked it, but..." <<his>> face flushes, and <<he>> looks away. "M...maybe we can finish this some other time..."
+				<</if>>
+			<<case "corrupt" "corruptLust">>
+				Sydney backs away from you, breathing heavily. "I love it when you're rough with me," <<he>> says, "but we should save the rest for later."
+			<<default>>
+				"Ouch! Okay, not so rough!" <<He>> quickly backs away from you. "I think we need to set some guidelines on how much I can take..."
+		<</switch>>
+	<</if>>
+	<<npcincr Sydney lust 5>><<gglust>>
+	<br><br>
+	<<tearful>> you stand up. Sydney does the same.
+<<else>>
+	<<if $corruptionRollover is 1>>
+		<<unset $corruptionRollover>>
+		"S...stop? But we..." <<he>> pouts, disappointed. "Can we... finish this later? Please? I... <span class="lewd">I feel like a whole world just opened up.</span> I want to finish this."
+	<<else>>
+		<<switch _sydneyStatus>>
+			<<case "pure" "pureLust">>
+				<<if $enemyarousal gte ($enemyarousalmax / 5) * 2>>
+					"S...stop? But I... I'm..." <<he>> stammers off while still clinging on to you. "O-okay..."
+				<<else>>
+					Sydney looks at you nervously. "I didn't... do anything wrong, did I?"
+				<</if>>
+			<<case "corrupt">>
+				Sydney pouts, but steps away from you. "We need to finish this later," <<he>> says. "Please?"
+			<<case "corruptLust">>
+				Sydney groans and pouts. "You're so mean! But fine. We're finishing this later, though."
+			<<default>>
+				"Oh. Okay, we can stop." <<He>> looks disappointed for a brief moment, but still smiles at you.
+		<</switch>>
+	<</if>>
+	<<npcincr Sydney lust 5>><<npcincr Sydney purity 2>><<gglust>><<gspurity>>
+	<br><br>
+	<<tearful>> you stand up. Sydney does the same.
+<</if>>
+<br><br>
+<<clotheson>>
+<<endcombat>>
+<<npc "Sydney">><<person1>>
+
+<<link [[Next|Sydney Shopping Lock End]]>><</link>>
+<br>
+
+:: Sydney Shopping Lock End
+<<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>><<run statusCheck("Sydney")>>
+<<if $phase2 is 2>>
+	<<switch _sydneyStatus>>
+		<<case "pure">>
+			<<if !_sydneyChastity>>
+				<<pass 2>><<He>> pants, clinging to you with every ounce of strength <<he>> has. "W...wow..." <<he>> whispers. You hold <<him>> until <<hes>> ready to move. <<npcincr Sydney lust 3>><<npcincr Sydney purity -2>><<ggslust>><<lspurity>>
+			<<else>>
+				<<Hes>> left panting by the time you're done. "That felt... I don't know. I... I think I liked it?" You help <<him>> to <<his>> feet, and <<he>> clings to you for a moment. <<sydneyChastityMessage>><<npcincr Sydney lust 3>><<npcincr Sydney purity -2>><<ggslust>><<lspurity>>
+			<</if>>
+		<<default>>
+			<<if !_sydneyChastity>>
+				<<pass 2>><<He>> moans out loud, working with your movements as you bring <<him>> to climax. You hold each other for a few moments. <<npcincr Sydney lust 3>><<npcincr Sydney purity -2>><<ggslust>><<lspurity>>
+			<<else>>
+				<<Hes>> left panting by the time you're done. "I don't think I finished, but... it was still good." You help <<him>> to <<his>> feet, and <<he>> clings to you for a moment. <<sydneyChastityMessage>><<npcincr Sydney lust 3>><<npcincr Sydney purity -2>><<ggslust>><<lspurity>>
+			<</if>>
+	<</switch>>
+	<br><br>
+<</if>>
+Sydney finishes dressing in front of you. You exit the changing booth, and Sydney waits a few minutes before following to avoid drawing suspicion. You both exit back into the main area of the shopping centre.
+<br><br>
+<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<unset $select>><</link>>
+<br>
+
+:: Sydney Shopping Swim Enter Leave
+<<effects>><<run statusCheck("Sydney")>>
+You exit the changing booth.
+<<if _sydneyStatus.includes("corrupt")>>
+	<<if $sydneyromance is 1>>
+		"And then <<pshe>> just leaves! Unbelievable!" Sydney says as <<he>> shuts and locks the door.
+	<<else>>
+		"Perv. You're lucky you're cute," Sydney says as <<he>> locks the door.
+	<</if>>
+<<else>>
+	<<if $sydneyromance is 1>>
+		"Wh- you're leaving? I... okay?" Sydney closes the door behind you.
+	<<else>>
+		"Lust is a dangerous sin!" Sydney yells as <<he>> slams the door behind you.
+	<</if>>
+<</if>>
+You wait for <<him>> to come out.
+<br><br>
+<<link [[Next (0:05)|Sydney Shopping Swim Wait]]>><<pass 5>><</link>>
+<br>
+
+:: Sydney Shopping Sex Refuse
+<<effects>>
+You shake your head, and Sydney frowns. "Suit yourself, I guess." <<He>> turns on the spot and gives <<his>> bottom a brief shake. "Gonna get back into my people clothes. Thanks again for the wardrobe change, hope you enjoyed the view." After a few more minutes, Sydney comes back out wearing <<his>> <<if $exit is "library">>school clothes<<else>>temple robes<</if>> again.
+<br><br>
+<<link [[Leave (0:01)|Sydney Shopping Centre]]>><<unset $select>><</link>>
+<br>
+
+:: Sydney Shopping Leave
+<<set $outside to 1>><<set $location to "town">><<effects>><<run statusCheck("Sydney")>><<sydneySchedule>>
+<<if _sydney_location is "science">>
+	<<set $location to "park">>
+	You and Sydney cut across the park again. <<He>> bursts through the front doors of the school, and heads straight for Sirris' classroom with you in tow.
+	<br><br>
+	<<link [[Next|Science Classroom]]>><<endevent>><<set $daily.sydney.scienceWalk to 1>><</link>>
+	<br>
+<<elseif Time.schoolDay and $sydneyScience and ((Time.hour is 8 and Time.minute gte 44) or Time.hour is 9)>>
+	<<set $location to "park">>
+	You and Sydney cut across the park again. You think you'll make it in time. You hurry through the front gate, through the halls, and towards Sirris' classroom.
+	<br><br>
+	<<link [[Next|Science Classroom]]>><<endevent>><<set $daily.sydney.scienceWalk to 1>><</link>>
+	<br>
+<<elseif _sydney_location is "shop" or _sydney_location is "home">>
+	You exit the shopping centre with Sydney. <<if $sydneyromance is 1>><<if _sydneyStatus.includes("corrupt")>><<He>> takes your hands in <<hers>><<else>>You take <<his>> hands in yours<</if>>. <<takeHandholdingVirginity "Sydney" "romantic">><</if>>
+	<br><br>
+	"I've got to get going now. Thanks for taking me there!" <<He>> <<if $sydneyromance is 1>>kisses you on the cheek, and <</if>>waves you off as <<he>> walks towards Elk Street.
+	<br><br>
+	<<link [[Next|High Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $exit is "library">>
+	<<set $location to "school">><<set $bus to "schoollibrary">><<schooleffects>>
+	You exit the shopping centre with Sydney, and walk back towards Oxford Street. <<He>> settles back into <<his>> seat once you reach the library. "Thanks for taking me there! That was fun."
+	<br><br>
+	<<sydneyOptions>>
+<<elseif $exit is "temple">>
+	<<set $location to "temple">><<set $bus to "wolf">>
+	You exit the shopping centre with Sydney, and walk back towards Wolf Street. You reach the temple without incident. "Thanks for taking me there! That was fun."
+	<br><br>
+	<<sydneyOptions>>
+<<else>>
+	You exit the shopping centre with Sydney. "Thanks for taking me! I have to go off to the temple now. <<if $sydneyromance is 1>> Would you... mind walking me there?<<else>> There's plenty to be done, would you like to come with me?<</if>>"
+	<br><br>
+	<<link [[Walk Sydney to the temple (0:25)|Sydney Leave Temple]]>><<pass 25>><<npcincr Sydney love 1>><<stress -3>><</link>><<glove>><<lstress>>
+	<br>
+	<<link [[Leave|Sydney Shopping Leave 2]]>><</link>>
+	<br>
+<</if>>
+<<unset $exit>>
+
+:: Sydney Shopping Leave 2
+<<set $outside to 1>><<set $location to "town">><<effects>>
+<<He>> <<if $sydneyromance is 1>>kisses you on the cheek, and <</if>>waves you off as <<he>> walks towards Wolf Street.
+<br><br>
+<<link [[Next|High Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Sydney Walk School
+<<set $outside to 1>><<set $location to "town">><<effects>><<run statusCheck("Sydney")>>
+<<if $phase is 2>>
+	The two of you make record time on the sprint from Wolf Street to Oxford Street, cutting through the park. <<physique 3>>
+	<br><br>
+	Sydney bursts through the front doors of the school, and heads straight for Sirris' classroom with you in tow.
+	<br><br>
+	<<link [[Next|Science Classroom]]>><<endevent>><<set $daily.sydney.scienceWalk to 1>><</link>>
+	<br>
+<<else>>
+	Sydney walks up to <<if $NPCName[$NPCNameList.indexOf("Jordan")].init is 1>>Jordan<<else>>the figure<</if>>, and they talk for a brief moment. <<nnpc_He "Jordan">> smiles at you as Sydney runs back to your side, and you both leave the temple.
+	<br><br>
+	<<if $daily.sydney.wake is true>>
+		Sleepy, Sydney clings to your arm as you walk, almost nodding off a few times on the way. <<trauma -4>><<stress -6>><<ltrauma>><<lstress>>
+	<<else>>
+		<<if $sydneyromance is 1>>
+			<<if _sydneyStatus.includes("corrupt")>>
+				Sydney takes your hand as you walk.
+			<<else>>
+				Sydney gives your hand a nervous brush with <<hers>> as you walk. You take it in yours.
+			<</if>>
+			<<takeHandholdingVirginity "Sydney" "romantic">>
+			<br><br>
+		<</if>>
+		You chat with <<him>> on the way.
+		<<switch random(1, 3)>>
+			<<case 1>>
+				"<<nnpc_Brother "Jordan">> Jordan is amazing. I just wish <<nnpc_he "Jordan">> would wake me up when I fall asleep during prayer."
+			<<case 2>>
+				"Thank you for walking with me. I can get lonely on the way to school."
+			<<case 3>>
+				"I always pray before school. It helps keep my mind clear."
+		<</switch>>
+		<<ltrauma>><<lstress>><<trauma -2>><<stress -4>>
+	<</if>>
+	<br><br>
+	You arrive at the school, and Sydney waves goodbye as <<he>> walks towards the library.
+	<br><br>
+	<<link [[Next|School Front Courtyard]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Beach Start
+<<location "promenade">><<effects>>
+<<set $dateCount.Total++>><<set $dateCount.Sydney++>>
+You arrive at the beach with Sydney.
+<<if $weather is "rain" or $weather is "snow">>
+	The beach itself is mostly deserted due to the $weather, but the violent waves have attracted surfers. You decide to stick to the promenade overlooking the ocean.
+	<br><br>
+	Sydney makes sure to keep you under <<his>> umbrella as you watch the waves roll in. The sound of the<<if $weather is "rain">> rain and<</if>> waves is relaxing. <<stress -12>><<llstress>>
+	<br><br>
+	You spot a large wave coming in. It will likely splash over the edge of the promenade and soak both of you if you don't move.
+	<br><br>
+	<<link [[Move with Sydney|Sydney Beach Promenade Move]]>><<npcincr Sydney love 1>><</link>><<glove>>
+	<br>
+	<<link [[Move and let it soak Sydney|Sydney Beach Promenade Soak]]>><<npcincr Sydney lust 1>><</link>><<glust>>
+	<br>
+	<<if $exhibitionism gte 35 and ((!$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked") and !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked")) or (!$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked")))>>
+		<<link [[Let it soak both of you|Sydney Beach Promenade Soak Both]]>><<npcincr Sydney lust 3>><<npcincr Sydney purity -2>><</link>><<ggslust>><<lspurity>><<exhibitionist3>>
+		<br>
+	<</if>>
+<<else>>
+	<<if $weather is "overcast">>
+		The clouds have driven away most would-be visitors, but there are still people strolling along the water's edge.
+	<<else>>
+		It is awash with visitors, children build sandcastles and play in the water while their parents bask in the sun. A group of students are playing volleyball.
+	<</if>>
+	Sydney takes a deep breath, seeming to enjoy the salty sea air. You both head towards the changing rooms.
+	<br><br>
+	<<link [[Next (0:05)|Sydney Beach Changing Room]]>><<pass 5>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Beach Promenade Move
+<<effects>><<run statusCheck("Sydney")>><<pass 10>>
+You pull Sydney away from the edge of the promenade just as the massive wave makes contact. You both remain relatively dry.
+<br><br>
+<<His>> face is close to yours.
+<<if _sydneyStatus.includes("corrupt") and $sydneyromance is 1>>
+	Before you can react, <<he>> kisses you. Another wave crashes into the promenade, sending a light mist of water over the two of you. <<takeKissVirginity "Sydney" `($sydneyromance is 1?"loveInterest":"romantic")`>><<npcincr Sydney lust 1>><<glust>>
+	<br><br>
+	<<if _npcKissVirginTemp>><<He>> smugly smiles. "That was my first kiss. I think you earned it."<</if>>
+	You separate after some time. "Thanks, that would have soaked my<<if $exit is "library">> uniform<<else>> robes<</if>> right through. Maybe we should stick to some shelter."
+	<br><br>
+	<<link [[Stick to shelter (0:10)|Sydney Beach Promenade Bench]]>><<pass 10>><</link>>
+	<br>
+	<<link [[Leave early (0:25)|Sydney Beach Leave]]>><<pass 25>><</link>>
+	<br>
+<<elseif $sydneyromance is 1>>
+	<<He>> looks you in the eye and blushes.
+	<br><br>
+	<<link [[Kiss|Sydney Beach Promenade Move Kiss]]>><<npcincr Sydney lust 1>><</link>><<glust>><<kissvirginitywarning>>
+	<br>
+	<<link [[Let go|Sydney Beach Promenade Move Continue]]>><</link>>
+	<br>
+<<else>>
+	<<He>> quickly lets go of you and brushes <<himself>> off. "Thanks, that would have soaked my<<if $exit is "library">> uniform<<else>> robes<</if>> right through. Maybe we should stick to some shelter."
+	<br><br>
+	<<link [[Stick to shelter (0:10)|Sydney Beach Promenade Bench]]>><<pass 10>><</link>>
+	<br>
+	<<link [[Leave early (0:25)|Sydney Beach Leave]]>><<pass 25>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Beach Promenade Move Kiss
+<<effects>>
+You lean in and kiss Sydney right on the lips. <<He>> gasps, but melts in your arms. Another wave crashes into the promenade, sending a light mist of water over the two of you. <<takeKissVirginity "Sydney" `($sydneyromance is 1?"loveInterest":"romantic")`>><<npcincr Sydney lust 1>><<glust>>
+<br><br>
+<<if _npcKissVirginTemp>><<He>> giggles. "That was my first kiss. I'm so happy that it was you."<</if>>
+You separate after some time. "Thank you, that would have soaked my<<if $exit is "library">> uniform<<else>> robes<</if>> right through. Maybe we should stick to some shelter."
+<br><br>
+<<link [[Stick to shelter (0:10)|Sydney Beach Promenade Bench]]>><<pass 10>><</link>>
+<br>
+<<link [[Leave early (0:25)|Sydney Beach Leave]]>><<pass 25>><</link>>
+<br>
+
+:: Sydney Beach Promenade Move Continue
+<<effects>>
+You let go of Sydney and let <<him>> separate from you. <<He>> brushes <<himself>> off. "Thank you, that would have soaked my<<if $exit is "library">> uniform<<else>> robes<</if>> right through. Maybe we should stick to some shelter."
+<br><br>
+<<link [[Stick to shelter (0:10)|Sydney Beach Promenade Bench]]>><<pass 10>><</link>>
+<br>
+<<link [[Leave early (0:25)|Sydney Beach Leave]]>><<pass 25>><</link>>
+<br>
+
+:: Sydney Beach Promenade Soak
+<<effects>><<run statusCheck("Sydney")>>
+You step away from the edge. Sydney looks over, before getting drenched as the wave crashes into the promenade.
+<<His>> umbrella offers no protection from the deluge, and <<his>><<if $exit is "library">> school clothes<<else>> temple robes<</if>> get soaked through.
+<<if _sydneyStatus.includes("corrupt")>>
+	You can see <<his>> <<sydneyGenitals "short">> pressed against the wet fabric, <<if _sydneyChastity and !$sydneyChastityKnown>>along with something else,<<elseif _sydneyChastity>>along with <<his>> chastity belt,<</if>> revealing that <<hes>> wearing no underwear. <<He>> looks down in annoyance, but doesn't attempt to cover <<himself>>. <<arousal 200>><<garousal>>
+	<br><br>
+	"That's a bit infuriating. A warning would have been nice, you know. You're lucky there's no one else around to see me like this." <<He>> glances around. "There's a changing room at the other end, but I can see a few people near it."
+<<else>>
+	You can see <<his>> underwear through the fabric. <<He>> hastily tries to cover <<himself>> with the umbrella. <<arousal 50>><<garousal>>
+	<br><br>
+	"Shoot, shoot, shoot! They're completely see-through! I... I need a changing room..." <<His>> neck swivels until <<he>> spots one at the other end of the promenade. However, there are a few people near it.
+<</if>>
+<br><br>
+<<link [[Accompany Sydney (0:10)|Sydney Beach Promenade Soak Accompany]]>><<pass 10>><</link>>
+<br>
+<<link [[Let Sydney go alone (0:10)|Sydney Beach Promenade Soak Ignore]]>><<pass 10>><<npcincr Sydney love -1>><</link>><<llove>>
+<br>
+
+:: Sydney Beach Promenade Soak Both
+<<effects>><<run statusCheck("Sydney")>>
+You brace yourself for the wave's impact. Sydney looks over to you, and you're both drenched as it crashes into the promenade.
+<<His>> umbrella offers no protection from the deluge, and <<his>><<if $exit is "library">> school clothes<<else>> temple robes<</if>> get soaked through.
+<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
+	<<set $upperwet to 200>>
+<</if>>
+<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
+	<<set $lowerwet to 200>>
+<</if>>
+<<effectswater>> <<exhibitionism3>>
+<<if _sydneyStatus.includes("corrupt")>>
+	You can see <<his>> <<sydneyGenitals "short">> pressed against the wet fabric, <<if _sydneyChastity and !$sydneyChastityKnown>>along with something else,<<elseif _sydneyChastity>>along with <<his>> chastity belt,<</if>> revealing that <<hes>> wearing no underwear. <<He>> looks down in annoyance, but doesn't attempt to cover <<himself>>. <<He>> uses the umbrella to shield you from view. <<arousal 400>><<garousal>>
+	<br><br>
+	"I'd be upset, but getting to see you all exposed like that is pretty nice." <<He>> glances around. "There's a changing room at the other end, but I can see a few people near it."
+<<else>>
+	You can see <<his>> underwear through the fabric. <<He>> hastily tries to cover both of you with the umbrella. <<arousal 400>><<garousal>>
+	<br><br>
+	"Shoot, shoot, shoot! They're completely see-through! We... we need a changing room..." <<His>> neck swivels until <<he>> spots one at the other end of the promenade. However, there are a few people near it.
+<</if>>
+<br><br>
+<<link [[Accompany Sydney (0:10)|Sydney Beach Promenade Soak Accompany]]>><<pass 10>><</link>>
+<br>
+
+:: Sydney Beach Promenade Soak Ignore
+<<effects>><<run statusCheck("Sydney")>>
+<<if _sydneyStatus.includes("corrupt")>>
+	Sydney hands you <<his>> umbrella, and begins to saunter over to the changing rooms. You hear a few hoots and whistles get directed at <<him>> as <<he>> passes by the group of people.
+	<span class="red">One makes a grab for <<him>>.</span> Sydney turns on a dime and delivers a kick right to their groin. They crumble. The rest of the crowd goes silent, and Sydney enters the changing room.
+	<br><br>
+	<<He>> exits after some time, fully covered and wringing the water from <<his>> hair<<if $sydney.hair is "ponytail">>, which has been let loose<</if>>. The crowd pays <<him>> no mind this time.
+	<br><br>
+	"Would have been nice if you came with me too, there were a lot of them. They could have overpowered me." <<He>> gives you a stern look. <<stress 3>><<gstress>>
+	<br><br>
+	<<His>> expression turns to a smile. "Oh, lighten up, it's fine. We should stick to shelter for now, I've had enough water for the day."
+<<else>>
+	Sydney shuffles over to the changing room, doing <<his>> best to cover <<himself>> with the umbrella. You hear a few hoots and whistles get directed at <<him>> as <<he>> passes by the group of people.
+	<span class="red">One makes a grab for <<him>>.</span> Sydney spins and slaps them across the face, seemingly by reflex. The rest of the crowd falls silent as Sydney runs to changing room.
+	<br><br>
+	<<He>> exits after some time, fully covered and wringing the water from <<his>> hair<<if $sydney.hair is "ponytail">>, which has been let loose<</if>>. The crowd pays <<him>> no mind this time, but <<he>> hurries back to you as if they'll attack any moment.
+	<br><br>
+	<<He>> gets very close to you, and puts <<his>> head on your shoulder. "One of them tried to grab me. I got really scared. Please come with me if something like that happens again." <<He>> gives you a pleading look.
+	<br><br>
+	You manage to calm <<him>> down. "Maybe we should stick to shelter for now."
+<</if>>
+<br><br>
+<<link [[Stick to shelter (0:10)|Sydney Beach Promenade Bench]]>><<pass 10>><</link>>
+<br>
+<<link [[Leave early (0:25)|Sydney Beach Leave]]>><<pass 25>><</link>>
+<br>
+
+:: Sydney Beach Promenade Soak Accompany
+<<effects>><<run statusCheck("Sydney")>>
+You and Sydney walk over to the changing rooms,<<if $exposed gte 1>> using the umbrella to hide your exposure<<else>> and you do your best to shield Sydney from view<</if>>. You hear some lewd remarks from the crowd as they notice your approach.
+<br><br>
+<<generate2>><<person2>>
+<<if $exposed gte 1>>
+	One of them, a <<person>>, makes a grab for you.
+	<<if $sydneyromance is 1>>
+		"Hey, <<girl>>, why don't you take those soaked clothes off and-"
+		<br><br>
+		<<if _sydneyStatus.includes("corrupt")>>
+			<<Hes>> cut off as Sydney grabs <<his>> arm. <<Hes>> pulled in, coming face to face inches from Sydney. "Mine. No filthy sinner touches <<phim>> except me." Sydney stares at <<him>> for what feels like minutes, before releasing <<him>>. The crowd backs away.
+		<<else>>
+			<<He>> stops <<himself>> as <<he>> realises Sydney is staring right at <<him>>. You can't quite describe the look <<person1>><<hes>> giving the <<person2>><<person>>, but it's made <<him>> freeze in place. The noise of the crowd quickly dies out.
+			Sydney approaches, removing the <<person>>'s hand from your shoulder and tossing it aside like a soiled rag. "Disgusting. Perhaps you should try washing your sins away in the ocean, you might make good food for a passing whale at the very least. Make yourself scarce, lustful cretin."
+		<</if>>
+		<br><br>
+		Sydney takes your arm and keeps walking.
+	<<else>>
+		"Hey, <<girl>>, why don't you take those soaked clothes off and let us warm you up?"
+		Sydney grabs your arm and pulls you away from <<him>>. You both break away from the crowd, but they cheer and holler after you, enjoying the view. <<stress 3>><<gstress>><<trauma 3>><<gtrauma>>
+	<</if>>
+<<else>>
+	One of them, a <<person>>, makes a grab for Sydney. "Hey, <<person1>><<personsimple>>, why don't you take those soaked clothes off and let us warm you up?"
+	Sydney shakes free and pulls away from <<person2>><<him>>. You both break away from the crowd, but they cheer and holler after you, enjoying the view. <<stress 3>><<gstress>><<trauma 3>><<gtrauma>>
+<</if>>
+<br><br>
+You enter the changing rooms without further incident.
+<br><br>
+<<endevent>><<npc "Sydney">><<person1>>
+<<link [[Next|Sydney Beach Promenade Changing Rooms]]>><</link>>
+<br>
+
+:: Sydney Beach Promenade Changing Rooms
+<<effects>><<run statusCheck("Sydney")>>
+<<if $exposed gte 1>>
+	You and Sydney begin the process of drying out your clothing.
+<<else>>
+	Sydney begins the process of drying out <<his>> clothing.
+<</if>>
+<<if _sydneyStatus.includes("corrupt")>>
+	<<if $sydneyromance is 1>>
+		<<He>> strips naked in front of you, and wrings out <<his>> shirt. "Sure hope no one walks in right now." <<arousal 50>><<garousal>>
+	<<else>>
+		<<He>> starts to strip in front of you, before stopping <<himself>> and entering one of the booths.
+	<</if>>
+<<else>>
+	<<He>> enters one of the changing booths to wring out <<his>> clothes. "That was a little scary," <<he>> says.
+<</if>>
+<br><br>
+<<if $exposed gte 1>>
+	<<set $upperwet to 0>><<set $lowerwet to 0>><<set $underlowerwet to 0>><<set $underupperwet to 0>>
+	You squeeze the water from your clothes.
+	<<effectswater>>
+	<br><br>
+<</if>>
+You stick close to Sydney as you leave the changing rooms. The crowd has since dispersed. "I think we should stick to shelter, I really don't want that to happen again."
+<br><br>
+<<link [[Stick to shelter (0:10)|Sydney Beach Promenade Bench]]>><<pass 10>><</link>>
+<br>
+<<link [[Leave early (0:25)|Sydney Beach Leave]]>><<pass 25>><</link>>
+<br>
+
+:: Sydney Beach Promenade Bench
+<<effects>><<pass 20>>
+You find a covered bench to take shelter from the $weather. <<if $sydneyromance is 1>>Sydney rests <<his>> arm on your shoulder.<</if>>
+<br><br>
+You chat with <<him>> as the two of you watch the waves. <<stress -6>><<trauma -3>><<lstress>><<ltrauma>><<npcincr Sydney love 1>><<glove>>
+<br><br>
+The wind begins to pick up as the weather worsens. You both decide that it's time to leave.
+<br><br>
+<<link [[Next|Sydney Beach Leave]]>><<pass 25>><</link>>
+<br>
+
+:: Sydney Beach Changing Room [exitCheckBypass]
+<<location "changingroom">><<effects>>
+<<set $wardrobe_location to "changingRoom">>
+<<wardrobeSelection>>
+You are in a small wooden changing room. You can hear Sydney in the adjacent room. If you plan on swimming or tanning, you should be sure to dress appropriately.
+<br><br>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+<<wardrobe>>
+
+:: Sydney Beach Swimsuit
+<<effects>><<run statusCheck("Sydney")>><<set $outside to 1>>
+You emerge from the changing room and wait for Sydney.
+<<switch $sydney.swim>>
+	<<case "school" "normal">>
+		<<He>> exits <<his>> booth shortly after, wearing <<his>> <<sydneySwimwear>>.
+	<<case "lewd">>
+		<<He>> exits <<his>> booth after some time, wearing <<his>> <<sydneySwimwear>>.
+		<<if _sydneyStatus.includes("corrupt")>>
+			<<He>> seems to revel in the exposure granted by it.
+		<<else>>
+			<<He>> gingerly covers <<himself>>, but slowly becomes less cagey.
+		<</if>>
+		<<npcincr Sydney purity -2>><<lspurity>>
+	<<case "crossdress">>
+		<<if ($pronoun is "m" and $NPCName[$NPCNameList.indexOf("Sydney")].penissize gte 3) or ($pronoun is "f" and $NPCName[$NPCNameList.indexOf("Sydney")].breastsize gte 4)>>
+			Much time passes, and <<he>> still doesn't come out. You knock on the door. It opens slightly, and you see Sydney peek out.
+			<br><br>
+			"Sorry. I can't wear what you bought me, it doesn't fit right. I..." <<he>> pauses. "I'm too big for it." You nod in understanding. <<set $sydney.swim to "school">><<set $swimChange to 1>>
+			After a few more minutes, <<he>> leaves the changing room, instead wearing <<his>> <<sydneySwimwear>>.
+		<<else>>
+			<<if !$sydneySeen.includes("swimcross")>>
+				<<set $sydneySeen.pushUnique("swimcross")>>
+				You begin counting the seconds out of boredom. At last, the door to Sydney's booth slowly opens. <<Hes>> wearing the <<sydneySwimwear>>.
+				<<Hes>> covering <<his>><<if $pronoun is "f">> bare<<else>> microkini-clad<</if>> chest with one arm, <<his>> holy pendant still hanging there. <<He>> refuses to make eye contact with you. "I can't believe I'm actually doing this..." <<He>> lightly trembles.
+				<br><br>
+				You can't help but giggle. "You look cute. I think everyone will be fooled." <<He>> fails to conceal a smile at your words.
+			<<else>>
+				Eventually, <<he>> comes out wearing <<his>> <<sydneySwimwear>>.
+				<<if _sydneyStatus.includes("corrupt")>>
+					<<He>> seems to revel in the exposure, <<if $pronoun is "f">>baring <<his>> <<print $NPCName[$NPCNameList.indexOf("Sydney")].breastsdesc>> confidently<<else>>confident that <<he>> looks like a girl<</if>>.
+				<<else>>
+					<<He>> shyly covers <<his>><<if $pronoun is "f">> bare<<else>> microkini-clad<</if>> chest.
+				<</if>>
+			<</if>>
+			<<if $NPCName[$NPCNameList.indexOf("Sydney")].crossdress is undefined>>
+				<<set $NPCName[$NPCNameList.indexOf("Sydney")].crossdress to 1>>
+			<<else>>
+				<<set $NPCName[$NPCNameList.indexOf("Sydney")].crossdress += 1>>
+			<</if>>
+			<<npcincr Sydney purity -2>><<lspurity>>
+		<</if>>
+<</switch>>
+<br><br>
+<<if $worn.under_lower.type.includes("swim") and ($worn.under_upper.type.includes("swim") or $worn.under_upper.type.includes("naked")) and ($worn.upper.type.includes("swim") or $worn.upper.type.includes("naked")) and ($worn.lower.type.includes("swim") or $worn.lower.type.includes("naked"))>>
+	/* Say Nothing */
+	<<if $sydney.swim is "crossdress" and $genderknown.includes("Sydney") and $player.gender isnot $player.gender_appearance>>
+		<<He>> notices your own choice of clothes. "At least I'm not doing it alone." <<npcincr Sydney love 1>><<glove>>
+	<</if>>
+<<else>>
+	<<He>> looks down at your clothes and appears confused. "Not planning on swimming?"
+<</if>>
+The two of you begin to walk the beach.
+<br><br>
+<<link [[Next|Sydney Beach]]>><</link>>
+
+:: Sydney Beach
+<<location "beach">><<effects>>
+You are on the beach with Sydney.
+<<if Time.hour gte 20>>
+	The sun is beginning to set. Sydney stretches and yawns. "That was a lot of fun. We should probably head out soon." You both head back to the changing booths.
+	<br><br>
+	<<link [[Next|Sydney Beach Changing Room Leave]]>><<pass 25>><</link>>
+<<else>>
+	<<if $weather is "clear">>
+		It is awash with visitors, children build sandcastles and play in the water while their parents bask in the sun. A group of students are playing volleyball.
+	<<else>>
+		The clouds have driven away most would-be visitors, but there are still people strolling along the water's edge.
+	<</if>>
+	<br><br>
+	<<if $worn.under_lower.type.includes("swim") and ($worn.under_upper.type.includes("swim") or $worn.under_upper.type.includes("naked")) or ($worn.upper.type.includes("swim") or $worn.upper.type.includes("naked")) and ($worn.lower.type.includes("swim") or $worn.lower.type.includes("naked"))>>
+		<<link [[Go for a swim (0:02)|Sydney Beach Swim]]>><<pass 2>><</link>>
+		<br>
+		<<link [[Tan on the beach (1:00)|Sydney Beach Tanning]]>><<pass 60>><<npcincr Sydney love 1>><</link>><<llstress>><<glove>>
+		<br>
+	<<else>>
+		<span class="pink">You aren't wearing the proper attire to swim or tan.</span>
+		<br>
+	<</if>>
+	<<link [[Take a walk on the beach (0:30)|Sydney Beach Walk]]>><<pass 30>><<athletics 1>><<stress -6>><<npcincr Sydney love 1>><</link>><<gtiredness>><<gathletics>><<lstress>><<glove>>
+	<br>
+	<<if $weather is "clear" and Time.dayState isnot "night" and $exposed lte 0>>
+		<<link [[Volleyball|Sydney Beach Volleyball]]>><</link>>
+		<br>
+	<</if>>
+	<br>
+	<<link [[Change clothes and leave the beach|Sydney Beach Changing Room Leave]]>><<pass 25>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Beach Swim
+<<location "seabeach">><<water>><<effects>><<run statusCheck("Sydney")>>
+<<if $phase is 1>>
+	You are swimming with Sydney along the beach.
+<<else>>
+	<<set $phase to 1>>
+	You enter the water with Sydney.
+<</if>>
+<<if Time.hour gte 20>>
+	The sun is beginning to set. Sydney stretches and yawns. "We should probably dry up and leave soon." You both leave the water, and head for the changing booths.
+	<br><br>
+	<<link [[Next|Sydney Beach Changing Room Leave]]>><<pass 25>><</link>>
+<<else>>
+	<br><br>
+	<<if $seaswim is 1>>
+		<<set $seaswim to 0>>
+		You spend some time swimming with Sydney.
+		<<physique 3>><<swimmingskilluse>>
+		<br><br>
+	<</if>>
+	<<switch random(1, 15)>>
+		<<case 1 2 3>>
+			Sydney splashes you. You splash back, and get into an intense splash fight.
+			Suddenly, Sydney tackles you into the water, giggling. "Got you!" You both wash up on the sand, with Sydney on top of you.
+			<<if _sydneyStatus.includes("corrupt")>>
+				<<if $sydneyromance is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].virginity.kiss isnot true>>
+					<<He>> sits up and straddles you. "I love seeing you under me like this." <<He>> leans down and kisses you. <<arousal 200>><<garousal>><<takeKissVirginity "Sydney" `($sydneyromance is 1?"loveInterest":"romantic")`>><<npcincr Sydney lust 1>><<glust>>
+				<<else>>
+					<<He>> sits up and straddles you. "Huh. I could get used to being on top of you like this." <<arousal 100>><<garousal>><<npcincr Sydney lust 1>><<glust>>
+				<</if>>
+			<<else>>
+				<<if $sydneyromance is 1>>
+					<<He>> seems to get comfortable on top of you. "I could stay like this for a while." <<He>> kisses you on the cheek. <<npcincr Sydney lust 1>><<glust>>
+				<<else>>
+					<<He>> rolls off of you, blushing furiously. "Sorry! Sorry." <<npcincr Sydney lust 1>><<glust>>
+				<</if>>
+			<</if>>
+			<br><br>
+			The waves carry you both back into deeper water.
+		<<case 4 5>>
+			A large wave rolls towards you. You're both pulled into the wave and sucked upwards, before floating back down on the other side. That was fun!<<lstress>><<stress -6>>
+		<<case 6 7>>
+			Your waist becomes tangled in seaweed. Sydney quickly comes to your side and begins to free you. <<He>> gets very close, pressing against you as <<he>> tears the seaweed away. <<npcincr Sydney lust 1>><<glust>>
+		<<case 8>>
+			<<generate2>><<person2>>
+			Something grabs you firm by the ankle, and drags you beneath the water. A <<person>> rises from the murk, wearing a diving mask. <<His>> mask flies from <<his>> head as Sydney tackles <<him>>. Realising you're not alone, <<he>> flees in search of easier prey.
+			<br><br>
+			<<endevent>><<npc "Sydney">><<person1>><<set $phase to 1>>
+			"Are you okay? That absolute lunatic, I thought someone was trying to drown you!" Sydney spends some time fussing over you. You manage to convince <<him>> that you're fine after some time.
+		<<default>>
+			<<if currentSkillValue('swimmingskill') lte 100>>
+				<<He>> can tell that you're struggling, and stays by your side to make sure you stay above the water.
+			<<elseif currentSkillValue('swimmingskill') lte 300>>
+				<<He>> does laps around you, but encourages you to take breaks as you need them.
+			<<elseif currentSkillValue('swimmingskill') lte 500>>
+				You manage to keep pace with <<him>>, and you have a good time.
+			<<elseif currentSkillValue('swimmingskill') lte 900>>
+				<<Hes>> a good swimmer, but you keep up with <<him>>.
+			<<else>>
+				<<He>> seems impressed by your swimming skill. You have a great time.
+			<</if>>
+	<</switch>>
+	<br><br>
+	<<swimicon>><<link [[Swim with Sydney (0:30)|Sydney Beach Swim]]>><<pass 30>><<stress -6>><<tiredness 6>><<set $seaswim to 1>><<npcincr Sydney love 1>><</link>><<gswimming>><<lstress>><<gtiredness>><<glove>>
+	<br>
+	<<beachicon>><<link [[Leave the water (0:01)|Sydney Beach]]>><<pass 1>><<endevent>><<npc "Sydney">><<person1>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Beach Tanning
+<<location "beach">><<effects>>
+<<if Time.season is "summer">>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		You lie on the beach beneath the blazing sun. Sydney lies next to you, and removes <<his>> holy pendant. "I got a cross tanned into my chest one time when I forgot to take this off. <<nnpc_Brother "Jordan">> Jordan thought it was funny, at least."
+	<<case 2>>
+		You lie out on the beach. The sound of the waves washes over you as the sun heats your skin. "I could fall asleep like this," Sydney says.
+	<<case 3>>
+		You lie down on the sand. You hear the sounds of the ocean, children playing and beach music as you relax. Sydney stays under <<his>> umbrella, but still sits next to you.
+	<</switch>>
+	<br><br>
+	You feel warm.
+	<<stress -12>><<llstress>><<gggtanned>><<tanned 120 "tanLines">>
+	<br><br>
+<<elseif Time.season is "winter">>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		You lie on the beach beneath the sun. A chill breeze caresses you. Sydney lies down close by<<if $sydneyromance is 1>>, huddling against you for warmth<</if>>.
+	<<case 2>>
+		You lie out on the beach. You can barely feel the sun through the cold wind.
+	<<case 3>>
+		You lie down on the sand. The sound of crashing waves washes over you. It's chilly.
+	<</switch>>
+	<br><br>
+	Sydney helps keep the chill away.
+	<<stress 3>><<gstress>><<gtanned>><<tanned 20 "tanLines">>
+	<br><br>
+<<else>>
+	<<switch random(1, 3)>>
+	<<case 1>>
+		You lie on the beach beneath the warm sun. Your mind drifts as the sun's rays caress your skin. Sydney lies next to you, and removes <<his>> holy pendant. "I got a cross tanned into my chest one time when I forgot to take this off. <<nnpc_Brother "Jordan">> Jordan thought it was funny, at least."
+	<<case 2>>
+		You lie out on the beach. The sound of the waves washes over you as the sun warms your skin. "I could fall asleep like this," Sydney says.
+	<<case 3>>
+		You lie down on the sand. You hear the sounds of the ocean, children playing and beach music as you relax. Sydney stays under <<his>> umbrella, but still sits next to you.
+	<</switch>>
+	<br><br>
+	You feel refreshed.
+	<<stress -12>><<llstress>><<ggtanned>><<tanned 60 "tanLines">>
+	<br><br>
+<</if>>
+You have a <<skincolourtext>>
+<br><br>
+
+<<endevent>><<npc "Sydney">><<person1>>
+<<link [[Next|Sydney Beach]]>><</link>>
+
+:: Sydney Robin's Lemonade
+<<location "beach">><<effects>>
+<<run statusCheck("Sydney")>>
+<<set _robin to statusCheck("Robin")>>
+This passage should be unreachable. If you're seeing this, you've found a bug. Please report it to Vrelnir, and take this convenient portal to Starfish Street to escape.
+<<link [[Next|Starfish Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+<<npc "Robin" 2>><<person2>>
+<<if $robinlemonadeintro isnot 1>>
+	<<set $robinlemonadeintro to 1>>
+	You see Robin standing behind <<his>> lemonade stand. <<He>> waves when <<he>> sees the two of you.
+	<br><br>
+	"Hey," <<he>> says as you draw close. <<He>> beams. "It's nice to see you both. I want you to try my lemonade." <<He>> mixes together water, lemon juice, and sugar and hands you a glass, before preparing one for Sydney too. "On the house." It's very sweet.
+	<br><br>
+	Sydney beams. "This tastes fantastic, Robin."
+	<br><br>
+<<elseif $sydney.swim is "crossdress" and !$sydneySeen.includes("lemonadecross")>>
+	<<set $sydneySeen.pushUnique("lemonadecross")>>
+	You see Robin standing behind <<his>> lemonade stand. <<Hes>> sipping a glass of lemonade, which <<he>> promptly spits out upon seeing Sydney.
+	"Ah, S-Sydney! You're... wearing, uh..."
+	<br>
+	<<if _sydneyStatus.includes("corrupt")>>
+		"I know." Sydney stares at <<him>> deadpan.
+	<<else>>
+		Sydney blushes and looks away from Robin.
+	<</if>>
+	<br><br>
+	<<if _robin.crossdress isnot undefined and _robin.cdquest is 0>>
+		"Let me guess. Did <<pshe>>..." Robin points at you.
+		<br>"Yes." Sydney <<if _sydneyStatus.includes("corrupt")>>says plainly<<else>>squeaks out<</if>>.
+		<br>"Ah." There's a moment of pause. "See, <<pshe>> also got me to..." Robin looks down. "A-anyways! What can I do for you two today?"
+	<<elseif _robin.crossdressing is 2>>
+		<br>Robin smiles warmly at Sydney. "You get used to it after a while," <<person2>><<he>> says gesturing to <<his>> own outfit.
+		<<if _sydneyStatus.includes("corrupt")>>
+			<br>"Cool."
+			<<if _robin.dom gte 40>>
+				<br>Robin pours a glass of lemonade. "Anyways, do you want a glass?"
+			<<else>>
+				<br>Robin flusters, stumbling over <<his>> words. "A-anyways do you want some lemonade?"
+			<</if>>
+		<<else>>
+			Sydney seems to perk up at Robin's words.
+			<br><br>
+			"Anyways, what can I do for you two?"
+		<</if>>
+	<<else>>
+		"Well. I can at least say that you... look good? You shouldn't be ashamed."
+		<<if _sydneyStatus.includes("corrupt")>>
+			<br>"I'm not."
+			<br>"Ah. Good. Good! Anyways, what can I do for you two?" Robin is visibly sweating.
+		<<else>>
+			Sydney seems to perk up at Robin's words.
+			<br><br>
+			"Anyways, what can I do for you two?"
+		<</if>>
+	<</if>>
+<<else>>
+	You see Robin standing behind <<his>> lemonade stand. <<He>> waves when <<he>> sees you and Sydney.
+	<br><br>
+<</if>>
+<<link [[Offer help (0:30)|Sydney Robin's Lemonade Help]]>><<npcincr Robin love 1>><<pass 30>><</link>><<glove>>
+<br>
+<<link [[Leave|Sydney Beach]]>><<endevent>><<npc "Sydney">><<person1>><</link>>
+<br>
+
+:: Sydney Robin's Lemonade Help
+<<location "beach">><<effects>><<run statusCheck("Sydney")>>
+This passage should be unreachable. If you're seeing this, you've found a bug. Please report it to Vrelnir, and take this convenient portal to Starfish Street to escape.
+<<link [[Next|Starfish Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+<<if Time.hour gte 17>>
+	"I'd ask for help carrying my things home, but I don't want to interrupt your day here. Can you just help me pack up?" Robin asks. "People don't buy much lemonade this late."
+	<br><br>
+	You, Robin and Sydney pack up <<his>> things. <<He>> waves you both off.
+	<br><br>
+	"Robin is pure of heart," Sydney suddenly says. "I wish there were more like <<him>> in this town."
+	<<endevent>><<npc "Sydney">><<person1>>
+	<<link [[Next|Sydney Beach]]>><</link>>
+	<br>
+<</if>>
+
+:: Sydney Beach Walk
+<<location "beach">><<effects>><<run statusCheck("Sydney")>>
+You walk along the shore with Sydney.
+<<if $weather is "clear">>
+	The sun's intensity wears on both of you, but you keep your minds off the heat with idle chatter.
+	<<tiredness 3>><<gtiredness>>
+<<else>>
+	The cool weather makes for a pleasant walk. You chat with <<him>> on the way.
+<</if>>
+<<physique 3>><<tiredness 3>>
+<br><br>
+<<if random(1, 2) is 1>>
+	<<if $sydney.swim is "lewd">>
+		You catch a few people staring at Sydney's skimpy outfit as you walk by. <<if _sydneyStatus.includes("corrupt")>><<He>> flaunts and twirls.<<else>><<He>> shyly covers <<himself>>.<</if>> <<npcincr Sydney purity -1>><<lspurity>>
+		<br><br>
+	<<elseif $sydney.swim is "crossdress">>
+		<<if $pronoun is "m">>
+			A few people take glances at Sydney's groin as you pass them. <<if _sydneyStatus.includes("corrupt")>><<He>> shakes <<his>> rear at them once you're both some distance ahead.<<else>><<He>> shyly covers <<himself>>.<</if>> <<npcincr Sydney purity -1>><<lspurity>>
+		<<else>>
+			A few people take second glances at Sydney's bare chest as you pass them. <<if _sydneyStatus.includes("corrupt")>><<He>> shakes <<his>> <<print $NPCName[$NPCNameList.indexOf("Sydney")].breastsdesc>> at them.<<else>><<He>> shyly covers <<himself>>, until <<he>> realises that will likely draw more attention.<</if>> <<npcincr Sydney purity -1>><<lspurity>>
+		<</if>>
+		<br><br>
+	<</if>>
+<</if>>
+<<switch random(1, 7)>>
+	<<case 1>>
+		<<if $weather is "clear">>
+			"What a day. Maybe I'll be a little less pale after this."
+		<<else>>
+			"I prefer cloudy days like this. I have a history of bad sunburns."
+		<</if>>
+	<<case 2>>
+		"My <<sydneyOtherParent>> used to bring me to the beach when I was a lot younger. This is nice."
+	<<case 3>>
+		"The sea life around here is... weird. <<sydneyMum>> says they have <<if _sydneyStatus.includes("corrupt")>>increased sex drives<<else>>more intense breeding cycles<</if>>."
+	<<case 4>>
+		"The sea is so beautiful. I used to fantasise about just drifting away in it forever."
+	<<case 5>>
+		"Saltwater is bad for treated metals. Remind me to take off my <<if $templePromised is "Sydney">>ring and <</if>>pendant if we go swimming, please."
+	<<case 6>>
+		<<if $sydneyromance is 1 and $NPCName[$NPCNameList.indexOf("Sydney")].virginity.kiss isnot true>>
+			Sydney holds your arm with both of <<hers>>. <<He>> places a kiss on your lips without warning. <<takeKissVirginity "Sydney" `($sydneyromance is 1?"loveInterest":"romantic")`>><<npcincr Sydney lust 1>><<glust>>
+			<br><br>
+			"I just felt like I needed to remind you that I love you." <<He>> giggles.
+		<<else>>
+			Sydney takes your arm as you walk. "Let me know if that ever bothers you. I... I kind of just grab onto people that I like."
+		<</if>>
+	<<case 7>>
+		<<He>> tugs at <<his>> <<sydneySwimwear>>.
+		<<switch $sydney.swim>>
+			<<case "school">>
+				<<if _sydneyStatus.includes("corrupt")>>
+					"The school swimwear is surprisingly robust. I just wish it wasn't so plain."
+				<<else>>
+					"I feel out of place wearing school swimwear. I suppose there's nothing wrong with being modest, though."
+				<</if>>
+			<<case "normal">>
+				<<if $pronoun is "m">>
+					"I'm not used to going shirtless. My pendant heats up really fast, I usually can't feel it."
+				<<else>>
+					"I'm not used to showing so much skin. My pendant heats up really fast, I usually can't feel it."
+				<</if>>
+			<<case "lewd">>
+				<<if _sydneyStatus.includes("corrupt")>>
+					"It feels good being this exposed. Now I just need someone to help me take the rest of this off." <<He>> winks at you. <<garousal>><<arousal 50>>
+				<<else>>
+					"I can't believe I'm actually wearing something this revealing. People are staring..." <<he>> shifts to walk behind you, attempting to hide.
+				<</if>>
+			<<case "crossdress">>
+				<<if _sydneyStatus.includes("corrupt")>>
+					<<if random(1, 5) is 1>>
+						"I'm... <i>cross</i> dressing!" <<He>> looks at you with a wide smile, holding up <<his>> holy pendant.
+					<<else>>
+						"I'm almost annoyed at how easy this works. Should I be insecure? I feel like I should be insecure."
+					<</if>>
+				<<else>>
+					"This is so wrong, my heart is pounding..."
+				<</if>>
+		<</switch>>
+<</switch>>
+<br><br>
+<<link [[Next|Sydney Beach]]>><</link>>
+
+:: Sydney Beach Volleyball
+<<location "beach">><<effects>>
+<<generatey2>><<generatey3>><<generatey4>><<generatey5>>
+You approach a group of four playing volleyball. Sydney watches them. One, a <<person2>><<person>>, seems to be waving you over.
+<br><br>
+<<link [[Join in (0:30)|Sydney Beach Volleyball Play]]>><<pass 30>><<stress -12>><<tiredness 6>><<status 1>><<athletics 3>><<npcincr Sydney love 1>><</link>><<gcool>><<gathletics>><<llstress>><<gtiredness>><<glove>>
+<br>
+<<link [[Leave|Sydney Beach]]>><<endevent>><<npc Sydney>><<person1>><</link>>
+
+:: Sydney Beach Volleyball Play
+<<location "beach">><<effects>><<run statusCheck("Sydney")>>
+The students are happy to have two more players, particularly the <<person2>><<person>>.
+<br><br>
+<<physique 3>>
+<<set $eventcheck to random(1, 10000)>>
+<<if $eventcheck gte (9900 - ($allure))>>
+	<<if $rng gte 51>>
+		<<if $worn.lower.type.includes("naked")>>
+			You are so focused on the opposing team you do not notice one of your own sneak up on you. A pair of hands grasp the rim of your $worn.under_lower.name.
+		<<else>>
+			You are so focused on the opposing team you do not notice one of your own sneak up on you. A pair of hands grasp the rim of your $worn.lower.name.
+		<</if>>
+		<<if $sydneyromance is 1 and ((($worn.under_lower.name is "naked" or $worn.lower.name is "naked") and $uncomfortable.nude is true) or $uncomfortable.underwear is true)>>
+			However, <<his>> arms are caught in a vice grip by Sydney. <<person1>><<He>> manages to pull the <<person2>><<person>>'s hands away despite the clear gap in physique between the two of them.
+			<br><br>
+			<<if _sydneyStatus.includes("corrupt")>>
+				"Only I can do that. No touch."
+			<<else>>
+				"Lust is the most dangerous sin. Behave yourself or you can count us both out."
+			<</if>>
+			<<person1>><<He>> releases the <<person2>><<person>>, who backs off.
+			<br><br>
+			"Sorry, didn't know this was your <<girlfriend>>, <<sydneyBeachGender>>."
+			<<if $sydney.swim is "crossdress">>
+				Sydney seems to be taken aback at being called a <<sydneyBeachGender>>, but shakes it off.
+			<</if>>
+		<<else>>
+			<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 0 and $worn.lower.set isnot $worn.upper.set>>
+				Before you can react, the <<person2>><<person>> has pulled them all the way to your knees,
+			<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 0 and $worn.lower.set is $worn.upper.set>>
+				Before you can react, the <<person2>><<person>> has pulled it aside,
+			<<else>>
+				Before you can react, the <<person2>><<person>> has lifted it,
+			<</if>>
+			<<if $worn.under_lower.name is "naked" or $worn.lower.name is "naked">>
+				<<if $uncomfortable.nude is false>>
+					exposing your <<genitals>> for all to see. Laughter and lewd gestures erupt from both teams, yet you feel a thrill.
+					<br><br>
+					You fix your clothes, taking a bit longer than you need to. <<if _sydneyStatus.includes("corrupt")>>Sydney whistles and cheers.<<else>>Sydney shields <<person1>><<his>> eyes.<</if>>
+					<<garousal>><<arousal 300>><<npcincr Sydney lust 1>><<gslust>><<npcincr Sydney purity -2>><<lspurity>>
+				<<else>>
+					exposing your <<genitals>> for all to see. Laughter and lewd gestures erupt from both teams as your face turns red and you hasten to protect your dignity. Sydney helps you cover yourself, shooting glares at the other students.
+					<<garousal>><<gstress>><<gtrauma>><<arousal 300>><<stress 3>><<trauma 3>><<npcincr Sydney lust 1>><<gslust>><<npcincr Sydney purity -2>><<lspurity>>
+				<</if>>
+			<<else>>
+				<<if $uncomfortable.underwear is false>>
+					exposing your $worn.under_lower.name. Laughter erupts from both teams, <<if _sydneyStatus.includes("corrupt")>>including you and Sydney<<else>>including you. Sydney covers <<person1>><<his>> eyes at first, but uncovers them as <<he>> realises that everyone else seems fine with it<</if>>. It's just a $worn.under_lower.name, you're not embarrassed.
+					<<gcool>><<status 5>><<garousal>><<gstress>><<npcincr Sydney lust 1>><<glust>>
+				<<else>>
+					exposing your $worn.under_lower.name. Laughter erupts from both teams and you hasten to protect your dignity. Sydney helps you cover yourself, shooting glares all around.
+					<<lcool>><<status -10>><<garousal>><<gstress>><<gtrauma>><<arousal 100>><<stress 1>><<trauma 1>><<npcincr Sydney lust 1>><<glust>>
+				<</if>>
+			<</if>>
+		<</if>>
+		<br><br>
+	<<else>>
+		<<if $topless is 1 and $rng gte 15>>
+			Part-way through the match the ball collides with your bare chest, sending you sprawling.
+			<<if $player.breastsize gte 2>>
+				<br>
+				Your <<breasts>> hurt a little from the bare skin impact.
+				<<pain 1>><<gpain>>
+				<br><br>
+			<</if>>
+			Sydney rushes to your side and helps you up. It's embarrassing, but you soon dust yourself off.
+			<br><br>
+		<<else>>
+			Part-way through the match the ball collides with Sydney's <<person1>><<if ($pronoun is "m" and ["normal", "lewd"].includes($sydney.swim)) or ($pronoun is "f" and $sydney.swim is "crossdress")>>bare <</if>>chest, sending <<him>> sprawling and knocking <<his>> holy pendant off. <<He>> scrambles to pick it up from the sand.
+			<<if _sydneyStatus.includes("corrupt")>>
+				<<if ["glasses", "playerbought"].includes($sydney.glasses)>>"You're lucky that didn't break my glasses!" <</if>><<He>> jumps back to a standing position, and quickly grabs the ball before spiking it back at the perpetrator, a <<person3>><<person>>. <<person1>><<He>> aimed for the face, and it struck true. The group laughs at the <<person3>><<person>> as <<he>> clutches <<his>> face.
+			<<else>>
+				You rush to <<his>> side and help <<him>> stand. You brush <<him>> off, and <<if $sydneyromance is 1>><<he>> kisses you on the cheek. You hear the other students make various "aww"s at the display. <<stress -3>><<lstress>><<trauma -3>><<ltrauma>><<status 5>><<gcool>><<else>><<he>> smiles at you.<</if>>
+			<</if>>
+			<br><br>
+		<</if>>
+	<</if>>
+<<else>>
+	<<switch random(1, 5)>>
+		<<case 1>>
+			You both have a good time.
+		<<case 2>>
+			You and Sydney dominate the game with teamwork.
+		<<case 3>>
+			Sydney is a lot faster than expected. <<person1>><<He>> hits the ball to you, and you spike it over the net for an easy point.
+		<<case 4>>
+			Sydney switches teams for a few rounds. The competition between the two of you is intense.
+		<<case 5>>
+			Sydney's holy pendant whips <<person1>><<him>> in the face during a particularly intense round. <<He>> takes a short break.
+	<</switch>>
+	<br><br>
+<</if>>
+<<if Time.hour gte 20>>
+	Sydney tugs on your arm. "It's getting late. We should get going." The other students seem disappointed, but wave their goodbyes to you.
+	<br><br>
+	<<link [[Next|Sydney Beach Changing Room Leave]]>><<pass 25>><<endevent>><<npc "Sydney">><<person1>><</link>>
+<<else>>
+	<<link [[Play more (0:30)|Sydney Beach Volleyball Play]]>><<pass 30>><<stress -12>><<tiredness 6>><<status 1>><<athletics 3>><<npcincr Sydney love 1>><</link>><<gcool>><<gathletics>><<llstress>><<gtiredness>><<glove>>
+	<br>
+	<<link [[Stop|Sydney Beach]]>><<endevent>><<npc "Sydney">><<person1>><</link>>
+	<br><br>
+<</if>>
+
+:: Sydney Beach Changing Room Leave [exitCheckBypass]
+<<location "changingroom">><<effects>>
+<<set $wardrobe_location to "changingRoom">>
+<<wardrobeSelection>>
+You are in a small wooden changing room. You can hear Sydney in the adjacent room. If you plan on swimming or tanning, you should be sure to dress appropriately.
+<br><br>
+<div id="wardrobewear"><<wardrobewear>></div>
+<div id="wardrobeExits"><<wardrobeExits>></div>
+<<wardrobe>>
+
+:: Sydney Beach Leave
+<<set $outside to 1>><<set $location to "town">><<effects>><<run statusCheck("Sydney")>><<sydneySchedule>>
+<<if $swimChange>>
+	<<unset $swimChange>><<set $sydney.swim to "crossdress">>
+<</if>>
+<<if $weather is "clear" or $weather is "overcast">>
+	Sydney exits the changing booth, wearing <<his>> <<if $exit is "library">>school uniform<<else>>temple robes<</if>>.
+<</if>>
+<<if ["shop", "home"].includes(_sydney_location)>>
+	You emerge back onto Starfish Street with <<him>>. <<if $sydneyromance is 1>><<if _sydneyStatus.includes("corrupt")>><<He>> takes your hands in <<hers>><<else>>You take <<his>> hands in yours<</if>>. <<takeHandholdingVirginity "Sydney" "romantic">><</if>>
+	<br><br>
+	"I've got to get going now. Thanks for taking me!" <<He>> <<if $sydneyromance is 1>>kisses you on the cheek, and <</if>>waves you off as <<he>> walks towards Elk Street.
+	<br><br>
+	<<link [[Next|Starfish Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $exit is "temple">>
+	<<set $location to "temple">><<set $bus to "wolf">>
+	You emerge back onto Starfish Street with <<him>> and walk back towards Wolf Street. You reach the temple without incident. "Thanks for taking me to the beach! It's nice to take a break from the responsibilities of the temple every now and then."
+	<br><br>
+	<<sydneyOptions>>
+<<else>>
+	You emerge back onto Starfish Street with <<him>>. "Thanks for taking me! It's nice to be able to take a break from the responsibilities of the temple. Speaking of which, that's where I'm headed.<<if $sydneyromance is 1>> Would you... mind walking me there?<<else>> There's plenty to be done, would you like to come with me?<</if>>"
+	<br><br>
+	<<link [[Walk Sydney to the temple|Sydney Leave Temple]]>><<npcincr Sydney love 1>><<stress -3>><</link>><<glove>><<lstress>>
+	<br>
+	<<link [[Leave|Sydney Beach Leave 2]]>><</link>>
+	<br>
+<</if>>
+<<unset $exit>>
+
+:: Sydney Leave Temple
+<<set $outside to 0>><<set $location to "temple">><<set $bus to "wolf">><<effects>><<run statusCheck("Sydney")>>
+<<set $daily.sydney.templeSkip to true>>
+You nod, and Sydney smiles at you. You and <<him>> walk towards Wolf Street.
+<<if $sydneyromance is 1>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		<<He>> takes your hand as you walk.
+	<<else>>
+		<<He>> gives your hand a nervous brush with <<hers>> as you walk. You take it in yours.
+	<</if>>
+	<<takeHandholdingVirginity "Sydney" "romantic">>
+	<br><br>
+<</if>>
+You chat with <<him>> on the way.
+<<switch random(1, 3)>>
+	<<case 1>>
+		"I try to go to the temple after school every day. I can't do it on Fridays, though."
+	<<case 2>>
+		"Thank you for walking with me. The walks are usually lonely."
+	<<case 3>>
+		"I lose track of time easily. <<sydneyMum>> always fusses over how long I stay at the temple on weekdays."
+<</switch>>
+<br><br>
+You reach the temple without incident.
+<br><br>
+<<sydneyOptions>>
+
+:: Sydney Beach Leave 2
+<<set $outside to 1>><<set $location to "town">><<effects>><<sydneySchedule>>
+<<He>> <<if $sydneyromance is 1>>kisses you on the cheek, and <</if>>waves you off as <<he>> walks towards Wolf Street.
+<br><br>
+<<link [[Next|Starfish Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+<br>
+
+:: Temple Sydney Walk
+<<set $outside to 1>><<set $location to "temple">><<effects>><<run statusCheck("Sydney")>><<sydneySchedule>>
+<<set $daily.sydney.templeSkip to true>>
+You nod, and Sydney smiles at you.
+<<if $bus isnot "rehearsal">>
+	<<He>> finishes cleaning up, and you walk to Wolf Street with <<him>>.
+<<else>>
+	You walk to Wolf Street with <<him>>.
+<</if>>
+<<set $bus to "wolf">>
+<<if $sydneyromance is 1>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		<<He>> takes your hand as you walk.
+	<<else>>
+		<<He>> nervously touches your hand with <<hers>> as you walk. You take it in yours.
+	<</if>>
+	<<takeHandholdingVirginity "Sydney" "romantic">>
+	<br><br>
+<</if>>
+You chat with <<him>> on the way.
+<<switch random(1, 3)>>
+	<<case 1>>
+		"I try to go to the temple after school every day. I can't do it on Fridays, though."
+	<<case 2>>
+		"Thank you for walking with me. I can get lonely walking alone."
+	<<case 3>>
+		"I lose track of time easily. <<sydneyMum>> always fusses over how long I stay at the temple on weekdays."
+<</switch>>
+<br><br>
+You reach the temple without incident.
+<br><br>
+<<sydneyOptions>>
+
+:: Elk Sydney Walk
+<<set $outside to 1>><<set $location to "adult_shop">><<effects>><<run statusCheck("Sydney")>><<sydneySchedule>>
+You nod, and Sydney smiles at you.
+<<if $bus isnot "rehearsal">>
+	<<He>> finishes cleaning up, and you walk to Elk Street with <<him>>.
+<<else>>
+	You walk to Elk Street with <<him>>.
+<</if>>
+<<set $bus to "elk">>
+<<if $sydneyromance is 1>>
+	<<if _sydneyStatus.includes("corrupt")>>
+		<<He>> takes your hand as you walk.
+	<<else>>
+		<<He>> nervously touches your hand with <<hers>> as you walk. You take it in yours.
+	<</if>>
+	<<takeHandholdingVirginity "Sydney" "romantic">>
+	<br><br>
+<</if>>
+You chat with <<him>> on the way.
+<<if $adultshopunlocked is undefined>>
+	<<print either(
+		`"Thank you for walking with me. It can be lonely walking alone."`,
+		`"People are already talking about the shop. It's a little embarrassing."`,
+		`Sydney rubs <<his>> holy pendant every now and then.`
+	)>>
+<<else>>
+	<<print either(
+		`"Thank you for walking with me. It can be lonely walking alone."`,
+		`"Our shop has a lot of customers. I guess I shouldn't be surprised."`,
+		`Sydney rubs <<his>> holy pendant every now and then.`
+	)>>
+<</if>>
+<br><br>
+You reach Elk Street without incident. Sydney waves you goodbye as <<he>> enters Sirris's shop.
+<br><br>
+<<link [[Next|Elk Street]]>><<endevent>><<set $eventskip to 1>><</link>>

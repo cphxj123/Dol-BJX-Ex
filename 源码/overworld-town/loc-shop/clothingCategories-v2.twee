@@ -42,7 +42,43 @@
 <</widget>>
 
 /* 北极星模组 */
-<<widget "OverTopShop">>
+<<widget "OverUpperShop">>
+	<<set $outside to 0>><<effects>>
+
+	<<if $clothes_choice and $clothes_choice_previous>>
+		<<if $clothes_choice is $clothes_choice_previous>>
+			<<shopbuyv2 "over_upper">>
+		<<else>>
+			<<shopbuyv2 "over_upper" "reset">>
+		<</if>>
+	<<else>>
+		<<shopbuyv2 "over_upper" "reset">>
+	<</if>>
+
+	<div id="clothes-list" class="clothes-list">
+		<<clothingShopv2 $shopName "over_upper" "non-outfits">>
+	</div>
+<</widget>>
+
+<<widget "OverLowerShop">>
+	<<set $outside to 0>><<effects>>
+
+	<<if $clothes_choice and $clothes_choice_previous>>
+		<<if $clothes_choice is $clothes_choice_previous>>
+			<<shopbuyv2 "over_lower">>
+		<<else>>
+			<<shopbuyv2 "over_lower" "reset">>
+		<</if>>
+	<<else>>
+		<<shopbuyv2 "over_lower" "reset">>
+	<</if>>
+
+	<div id="clothes-list" class="clothes-list">
+		<<clothingShopv2 $shopName "over_lower">>
+	</div>
+<</widget>>
+
+<<widget "OverHeadShop">>
 	<<set $outside to 0>><<effects>>
 
 	<<if $clothes_choice and $clothes_choice_previous>>
@@ -311,8 +347,9 @@
 		</div>
 		/* 北极星模组 */
 		<<if $options.bjx_clothes>>
-    		<div class="category-group">
-    			<<set _active = _args[0] == "overoutfit" ? "active" : "">>
+		    <div class="category-group">
+			
+				<<set _active = _args[0] == "overoutfit" ? "active" : "">>
     			<div @class="'div-link category-tab ' + _active">
     				<<if $options.images is 1>>
     					<<clothingcategoryicon "overoutfit">>
@@ -321,18 +358,38 @@
     				<</if>>
     				<<link "">><<set $shopPage = 0>><<unset $clothes_choice>><<set _shopNameFilter to ''>><<replace "#clothingShop-div">><<OverOutfitShop>><</replace>><</link>>
     			</div>
-    		</div>
-    		<div class="category-group">
-    			<<set _active = _args[0] == "overhead" ? "active" : "">>
+
+				<<set _active = _args[0] == "overupper" ? "active" : "">>
+				<div @class="'div-link category-tab ' + _active">
+					<<if $options.images is 1>>
+						<<clothingcategoryicon "overupper">>
+					<<else>>
+						<div class="category-icon-alt">𧘕</div>
+					<</if>>
+					<<link "">><<set $shopPage = 0>><<unset $clothes_choice>><<set _shopNameFilter to ''>><<replace "#clothingShop-div">><<OverUpperShop>><</replace>><</link>>
+				</div>
+
+				<<set _active = _args[0] == "overlower" ? "active" : "">>
+				<div @class="'div-link category-tab ' + _active">
+					<<if $options.images is 1>>
+						<<clothingcategoryicon "overlower">>
+					<<else>>
+						<div class="category-icon-alt">𧘔</div>
+					<</if>>
+					<<link "">><<set $shopPage = 0>><<unset $clothes_choice>><<set _shopNameFilter to ''>><<replace "#clothingShop-div">><<OverLowerShop>><</replace>><</link>>
+				</div>
+
+				<<set _active = _args[0] == "overhead" ? "active" : "">>
     			<div @class="'div-link category-tab ' + _active">
     				<<if $options.images is 1>>
-    					<<clothingcategoryicon "head">>
+    					<<clothingcategoryicon "overhead">>
     				<<else>>
     					<div class="category-icon-alt">帽</div>
     				<</if>>
-    				<<link "">><<set $shopPage = 0>><<unset $clothes_choice>><<set _shopNameFilter to ''>><<replace "#clothingShop-div">><<OverTopShop>><</replace>><</link>>
+    				<<link "">><<set $shopPage = 0>><<unset $clothes_choice>><<set _shopNameFilter to ''>><<replace "#clothingShop-div">><<OverHeadShop>><</replace>><</link>>
     			</div>
-    		</div>
+
+			</div>
 		<</if>>
 		/* 北极星 */
 		<div class="category-group">
@@ -474,7 +531,9 @@
 		<<case "all">><<replace "#clothingShop-div">><<AllShop>><</replace>>
 		<<case "overoutfit">><<replace "#clothingShop-div">><<OverOutfitShop>><</replace>>
 		/* 北极星模组 */
-		<<case "overhead">><<replace "#clothingShop-div">><<OverTopShop>><</replace>>
+		<<case "overupper">><<replace "#clothingShop-div">><<OverUpperShop>><</replace>>
+		<<case "overlower">><<replace "#clothingShop-div">><<OverLowerShop>><</replace>>
+		<<case "overhead">><<replace "#clothingShop-div">><<OverHeadShop>><</replace>>
 		/* 北极星 */
 		<<case "outfit">><<replace "#clothingShop-div">><<OutfitShop>><</replace>>
 		<<case "upper">><<replace "#clothingShop-div">><<TopShop>><</replace>>
