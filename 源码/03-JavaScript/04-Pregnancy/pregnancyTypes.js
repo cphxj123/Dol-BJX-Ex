@@ -53,6 +53,19 @@ function npcPregObject(person, mother) {
 				hairColour: V.naturalhaircolour,
 				eyeColour: V.eyeselect,
 			};
+			/* 北极星模组 */
+			if (V.options.bjx_eventTF) {
+    			if (V.slime >= 1) {
+    				result.type = "slime";
+    			} else if (V.ghost >= 1) {
+    				result.type = "ghost";
+    			} else if (V.mushroom >= 1) {
+    				result.type = "mushroom";
+    			} else {
+    				result.type = "human";
+    			}
+    		}
+			/* 北极星 */
 		} else if (C.npc[person]) {
 			result = {
 				name: C.npc[person].nam,
@@ -258,6 +271,22 @@ function beastTransform(mother, father) {
 		if (V.wolfgirl >= 6) return "wolf";
 		if (V.harpy >= 6) return "bird";
 		if (V.fox >= 6) return "fox";
+		/* 北极星模组 */
+		if (V.bee >= 6 && options.bjx_animal) return "bee";
+		if (V.sheep >= 6 && options.bjx_animal) return "sheep";
+		if (V.deer >= 6 && options.bjx_animal) return "deer";
+		if (V.bear >= 6 && options.bjx_animal) return "bear";
+		if (V.dragon >= 6 && options.bjx_animal) return "dragon";
+		if (V.lizard >= 6 && options.bjx_animal) return "lizard";
+		if (V.dolphin >= 6 && options.bjx_animal) return "dolphin";
+		if (V.dog >= 6 && options.bjx_animal) return "dog";
+		if (V.raccoon >= 6 && options.bjx_animal) return "raccoon";
+		if (V.fish >= 6 && options.bjx_animal) return "fish";
+		if (V.horse >= 6 && options.bjx_animal) return "horse";
+		if (V.spider >= 6 && options.bjx_animal) return "spider";
+		if (V.frog >= 6 && options.bjx_animal) return "frog";
+		if (V.pig >= 6 && options.bjx_animal) return "pig";
+		/* 北极星 */
 	}
 	return null;
 }
@@ -267,7 +296,7 @@ function divineTransform(mother, father) {
 		if (V.angel >= 6) return "angel";
 		if (V.fallenangel >= 4) return "fallen";
 		/* 北极星模组 */
-		if (V.hunter >= 4) return "hunter";
+		if (V.hunter >= 4 && options.bjx_divine) return "hunter";
 		/* 北极星 */
 		if (V.demon >= 6) return "demon";
 	}
