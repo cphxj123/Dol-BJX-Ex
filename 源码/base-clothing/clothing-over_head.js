@@ -83,7 +83,7 @@ function initOverHead() {
 			colour: 0,
 			colour_options: [],
 			colour_sidebar: 1,
-			type: ["rainproof"],
+			type: ["rainproof", "shade"],
 			set: "mushroom",
 			gender: "n",
 			femininity: 0,

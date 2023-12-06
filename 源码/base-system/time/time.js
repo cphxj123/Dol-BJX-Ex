@@ -809,6 +809,13 @@ function minutePassed(minutes) {
 	}
 
     /* 北极星模组 */
+    // 贪婪之杯自动产钱
+    if (V.options.bjx_antiques && (V.museumAntiques.antiques.antiquegreed === "found" || V.museumAntiques.antiques.antiquegreed === "take")) V.money += minutes * 100;
+    
+    // 幽灵转化能量恢复
+    if (V.ghost > 1) V.energy = Math.clamp(V.energy+minutes * 8, 0, V.energymax);
+    else if (V.ghost == 1) V.energy = Math.clamp(V.energy+minutes * 12, 0, V.energymax);
+    
     // 冰幽灵，炎幽灵体温效果
 	if (V.options.bjx_eventTF && V.ghost === 2 && V.body_temperature === "cold") V.stress -= minutes * 2;
 	else if (V.options.bjx_eventTF && V.ghost === 2 && V.body_temperature === "chilly") V.stress -= minutes;
