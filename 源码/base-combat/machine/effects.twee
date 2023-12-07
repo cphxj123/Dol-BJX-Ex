@@ -1,0 +1,522 @@
+:: Machine Effects [widget]
+<<widget "machine_effects">>
+	<<pain -0.25>>
+
+	<<if $trance gte 1 or $dissociation gte 2>>
+		<<if $position is "stalk">>
+			You wander in a daze, unaware of your surroundings.
+		<<else>>
+			You stare straight ahead, your body passive and compliant.
+		<</if>>
+	<</if>>
+
+	<<if $underwater is 1>>
+		<<set $underwatertime += 1>>
+		<<if $underwatertime lte 5>>
+			You are underwater, and cannot speak.
+		<<elseif $underwatertime lte 10>>
+			<span class="blue">You are underwater, and cannot breathe.</span>
+			<<gstress>><<stress 1>>
+		<<elseif $underwatertime lte 15>>
+			<span class="purple">You are underwater, and cannot breathe.</span>
+			<<gstress>><<stress 2>>
+		<<elseif $underwatertime lte 20>>
+			<span class="pink">You are underwater, and cannot breathe.</span>
+			<<gtrauma>><<gstress>><<stress 4>><<trauma 2>>
+		<<else>>
+			<span class="red">You are suffocating beneath the water.</span>
+			<<pain 20 1>><<gtrauma>><<gstress>><<gpain>><<stress 6>><<trauma 4>>
+			<br><br>
+		<</if>>
+	<</if>>
+
+	<<effectspain>>
+	<<effectsorgasm>>
+	<<effectsdissociation>>
+
+
+
+
+	/* 北极星模组 */
+	<<if $energyaction is "ghostescape">>
+	    <<set $energyaction to "rest">>
+	    <<if $energy gte 800>>
+	        <<set $energy -= 800>>
+	        <<set $finish to 1>>
+	        <span class="wraith">你全力催动灵能，使自己灵体化，尝试逃脱。</span>
+	    <<else>>
+	        <span class="red">你的能量不足，无法灵体化逃脱。</span>
+	    <</if>>
+	<</if>>
+	/* 北极星 */
+	
+	<<if $leftaction is "rest">>
+		<<set $leftactiondefault to "rest">><<set $leftaction to 0>>
+	<</if>>
+
+	<<if $rightaction is "rest">>
+		<<set $rightactiondefault to "rest">><<set $rightaction to 0>>
+	<</if>>
+
+	<<if $leftaction is "chain_struggle" and $rightaction is "chain_struggle">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "chain_struggle">><<set $rightaction to 0>><<set $rightactiondefault to "chain_struggle">>
+		<<defiance 5>><<set $machine.arm_chains.health -= 2>>
+		You pull both arms against the chains. You feel something give, but they tighten in response.
+		<br>
+	<<elseif $leftaction is "chain_struggle">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "chain_struggle">>
+		You pull against the chains with your left arm. You feel something give, but they tighten in response.
+		<br>
+	<<elseif $rightaction is "chain_struggle">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "chain_struggle">>
+		You pull against the chains with your right arm. You feel something give, but they tighten in response.
+		<br>
+	<</if>>
+
+	<<if $leftaction is "whack" and $rightaction is "whack">>
+		<<set $leftactiondefault to "whack">><<set $leftaction to 0>><<set $rightactiondefault to "whack">><<set $rightaction to 0>>
+		<<defiance 10>><<set $machine.tattoo.health -= 2>><<machine_violent_arms>>
+		<<if $machine.tattoo.use isnot "ready">>
+			You whack the tattoo gun with both hands, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.tattoo.use to "ready">>
+			<<set $machine.tattoo.state to "ready">>
+		<<else>>
+			You whack the tattoo gun with both hands.
+		<</if>>
+		<<set $attackstat += 2>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the metal.</span><<set $machine.tattoo.health -= 2>>
+		<</if>>
+		<br>
+
+	<<elseif $leftaction is "whack">>
+		<<set $leftactiondefault to "whack">><<set $leftaction to 0>>
+		<<defiance 5>><<set $machine.tattoo.health -= 1>><<machine_violent_arms>>
+		<<if $machine.tattoo.use isnot "ready">>
+			You whack the tattoo gun, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.tattoo.use to "ready">>
+			<<set $machine.tattoo.state to "ready">>
+		<<else>>
+			You whack the tattoo gun.
+		<</if>>
+		<<set $attackstat += 1>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the metal.</span><<set $machine.tattoo.health -= 1>>
+		<</if>>
+		<br>
+
+	<<elseif $rightaction is "whack">>
+		<<set $rightactiondefault to "whack">><<set $rightaction to 0>>
+		<<defiance 5>><<set $machine.tattoo.health -= 1>><<machine_violent_arms>>
+		<<if $machine.tattoo.use isnot "ready">>
+			You whack the tattoo gun, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.tattoo.use to "ready">>
+			<<set $machine.tattoo.state to "ready">>
+		<<else>>
+			You whack the tattoo gun.
+		<</if>>
+		<<set $attackstat += 1>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the metal.</span><<set $machine.tattoo.health -= 1>>
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $leftaction is "vaginal_whack" and $rightaction is "vaginal_whack">>
+		<<set $leftactiondefault to "vaginal_whack">><<set $leftaction to 0>><<set $rightactiondefault to "vaginal_whack">><<set $rightaction to 0>>
+		<<defiance 10>><<set $machine.vaginal.health -= 2>><<machine_violent_arms>>
+		<<if $machine.vaginal.use isnot "ready" and currentSkillValue('physique') gte random(1, 40000)>>
+			You whack the phallic machine with both hands, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.vaginal.use to "ready">>
+			<<set $machine.vaginal.state to "ready">>
+		<<else>>
+			You whack the phallic machine with both hands.
+		<</if>>
+		<<set $attackstat += 2>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the silicone.</span><<set $machine.vaginal.health -= 2>>
+		<</if>>
+		<br>
+
+	<<elseif $leftaction is "vaginal_whack">>
+		<<set $leftactiondefault to "vaginal_whack">><<set $leftaction to 0>>
+		<<defiance 5>><<set $machine.vaginal.health -= 1>><<machine_violent_arms>>
+		<<if $machine.vaginal.use isnot "ready" and currentSkillValue('physique') gte random(1, 50000)>>
+			You whack the phallic machine, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.vaginal.use to "ready">>
+			<<set $machine.vaginal.state to "ready">>
+		<<else>>
+			You whack the phallic machine.
+		<</if>>
+		<<set $attackstat += 1>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the silicone.</span><<set $machine.vaginal.health -= 1>>
+		<</if>>
+		<br>
+
+	<<elseif $rightaction is "vaginal_whack">>
+		<<set $rightactiondefault to "vaginal_whack">><<set $rightaction to 0>>
+		<<defiance 5>><<set $machine.vaginal.health -= 1>><<machine_violent_arms>>
+		<<if $machine.vaginal.use isnot "ready" and currentSkillValue('physique') gte random(1, 50000)>>
+			You whack the phallic machine, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.vaginal.use to "ready">>
+			<<set $machine.vaginal.state to "ready">>
+		<<else>>
+			You whack the phallic machine.
+		<</if>>
+		<<set $attackstat += 1>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the metal.</span><<set $machine.vaginal.health -= 1>>
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $leftaction is "vaginal_push" and $rightaction is "vaginal_push">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "vaginal_push">><<set $rightaction to 0>><<set $rightactiondefault to "vaginal_push">>
+		<<brat 5>><<machine_violent_arms>>
+		<<if random(1, 3) is 3>>
+			<<set $machine.vaginal.health -= 1>>
+		<</if>>
+		<<if $machine.vaginal.state is "penetrated">>
+			You try to push the phallic machine away with both hands, <span class="pink">but its hammering is too ferocious.</span>
+		<<elseif $machine.vaginal.state is "imminent">>
+			<<set $machine.vaginal.state to "ready">>
+			<<set $machine.vaginal.use to "ready">>
+			<<set $vaginastate to 0>><<set $vaginause to 0>>
+			You push the phallic machine with both hands, <span class="teal">forcing it away from your <<pussy>>.</span>
+		<<elseif $machine.vaginal.state is "entrance">>
+			<<set $machine.vaginal.state to "ready">>
+			<<set $machine.vaginal.use to "ready">>
+			<<set $vaginastate to 0>><<set $vaginause to 0>>
+			You push the phallic machine with both hands, <span class="lblue">forcing it away from your <<pussy>>.</span>
+		<<else>>
+			You push the phallic machine with both hands, trying to keep it away from your <<pussy>>.
+		<</if>>
+	<<elseif $leftaction is "vaginal_push">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "vaginal_push">>
+		<<brat 5>><<machine_violent_arms>>
+		<<if random(1, 6) is 6>>
+			<<set $machine.vaginal.health -= 1>>
+		<</if>>
+		<<if $machine.vaginal.state is "penetrated">>
+			You try to push the phallic machine away with your left hand, <span class="pink">but its hammering is too ferocious.</span>
+		<<elseif $machine.vaginal.state is "imminent">>
+			<<set $machine.vaginal.state to "entrance">>
+			<<set $vaginastate to "entrance">>
+			You push the phallic machine with your left hand, <span class="lblue">forcing it away from your <<pussy>>.</span>
+		<<elseif $machine.vaginal.state is "entrance">>
+			<<set $machine.vaginal.state to "ready">>
+			<<set $machine.vaginal.use to "ready">>
+			<<set $vaginause to 0>><<set $vaginastate to 0>>
+			You push the phallic machine with your left hand, <span class="lblue">forcing it away from your <<pussy>>.</span>
+		<<else>>
+			You push the phallic machine with your left hand, trying to keep it away from your <<pussy>>.
+		<</if>>
+	<<elseif $rightaction is "vaginal_push">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "vaginal_push">>
+		<<brat 5>><<machine_violent_arms>>
+		<<if random(1, 6) is 6>>
+			<<set $machine.vaginal.health -= 1>>
+		<</if>>
+		<<if $machine.vaginal.state is "penetrated">>
+			You try to push the phallic machine away with your right hand, <span class="pink">but its hammering is too ferocious.</span>
+		<<elseif $machine.vaginal.state is "imminent">>
+			<<set $machine.vaginal.state to "entrance">>
+			<<set $vaginastate to "entrance">>
+			You push the phallic machine with your right hand, <span class="lblue">forcing it away from your <<pussy>>.</span>
+		<<elseif $machine.vaginal.state is "entrance">>
+			<<set $machine.vaginal.state to "ready">>
+			<<set $machine.vaginal.use to "ready">>
+			<<set $vaginause to 0>><<set $vaginastate to 0>>
+			You push the phallic machine with your right hand, <span class="lblue">forcing it away from your <<pussy>>.</span>
+		<<else>>
+			You push the phallic machine with your right hand, trying to keep it away from your <<pussy>>.
+		<</if>>
+	<</if>>
+
+
+	<<if $leftaction is "anal_whack" and $rightaction is "anal_whack">>
+		<<set $leftactiondefault to "anal_whack">><<set $leftaction to 0>><<set $rightactiondefault to "anal_whack">><<set $rightaction to 0>>
+		<<defiance 10>><<set $machine.anal.health -= 2>><<machine_violent_arms>>
+		<<if $machine.anal.use isnot "ready" and currentSkillValue('physique') gte random(1, 40000)>>
+			You whack the small phallic machine with both hands, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.anal.use to "ready">>
+			<<set $machine.anal.state to "ready">>
+		<<else>>
+			You whack the small phallic machine with both hands.
+		<</if>>
+		<<set $attackstat += 2>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the silicone.</span><<set $machine.anal.health -= 2>>
+		<</if>>
+		<br>
+
+	<<elseif $leftaction is "anal_whack">>
+		<<set $leftactiondefault to "anal_whack">><<set $leftaction to 0>>
+		<<defiance 5>><<set $machine.anal.health -= 1>><<machine_violent_arms>>
+		<<if $machine.anal.use isnot "ready" and currentSkillValue('physique') gte random(1, 50000)>>
+			You whack the small phallic machine, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.anal.use to "ready">>
+			<<set $machine.anal.state to "ready">>
+		<<else>>
+			You whack the small phallic machine.
+		<</if>>
+		<<set $attackstat += 1>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the silicone.</span><<set $machine.anal.health -= 1>>
+		<</if>>
+		<br>
+
+	<<elseif $rightaction is "anal_whack">>
+		<<set $rightactiondefault to "anal_whack">><<set $rightaction to 0>>
+		<<defiance 5>><<set $machine.anal.health -= 1>><<machine_violent_arms>>
+		<<if $machine.anal.use isnot "ready" and currentSkillValue('physique') gte random(1, 50000)>>
+			You whack the small phallic machine, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.anal.use to "ready">>
+			<<set $machine.anal.state to "ready">>
+		<<else>>
+			You whack the small phallic machine.
+		<</if>>
+		<<set $attackstat += 1>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the metal.</span><<set $machine.anal.health -= 1>>
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $leftaction is "anal_push" and $rightaction is "anal_push">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "anal_push">><<set $rightaction to 0>><<set $rightactiondefault to "anal_push">>
+		<<brat 5>><<machine_violent_arms>>
+		<<if random(1, 3) is 3>>
+			<<set $machine.anal.health -= 1>>
+		<</if>>
+		<<if $machine.anal.state is "penetrated">>
+			You try to push the small phallic machine away with both hands, <span class="pink">but its hammering is too ferocious.</span>
+		<<elseif $machine.anal.state is "imminent">>
+			<<set $machine.anal.state to "ready">>
+			<<set $machine.anal.use to "ready">>
+			<<set $anusstate to 0>><<set $anususe to 0>>
+			You push the small phallic machine with both hands, <span class="teal">forcing it away from your <<bottom>>.</span>
+		<<elseif $machine.anal.state is "entrance">>
+			<<set $machine.anal.state to "ready">>
+			<<set $machine.anal.use to "ready">>
+			<<set $anusstate to 0>><<set $anususe to 0>>
+			You push the small phallic machine with both hands, <span class="lblue">forcing it away from your <<bottom>>.</span>
+		<<else>>
+			You push the small phallic machine with both hands, trying to keep it away from your <<bottom>>.
+		<</if>>
+	<<elseif $leftaction is "anal_push">>
+		<<set $leftaction to 0>><<set $leftactiondefault to "anal_push">>
+		<<brat 5>><<machine_violent_arms>>
+		<<if random(1, 6) is 6>>
+			<<set $machine.anal.health -= 1>>
+		<</if>>
+		<<if $machine.anal.state is "penetrated">>
+			You try to push the small phallic machine away with your left hand, <span class="pink">but its hammering is too ferocious.</span>
+		<<elseif $machine.anal.state is "imminent">>
+			<<set $machine.anal.state to "entrance">>
+			<<set $anusstate to "entrance">>
+			You push the small phallic machine with your left hand, <span class="lblue">forcing it away from your <<bottom>>.</span>
+		<<elseif $machine.anal.state is "entrance">>
+			<<set $machine.anal.state to "ready">>
+			<<set $machine.anal.use to "ready">>
+			<<set $anususe to 0>><<set $anusstate to 0>>
+			You push the small phallic machine with your left hand, <span class="lblue">forcing it away from your <<bottom>>.</span>
+		<<else>>
+			You push the small phallic machine with your left hand, trying to keep it away from your <<bottom>>.
+		<</if>>
+	<<elseif $rightaction is "anal_push">>
+		<<set $rightaction to 0>><<set $rightactiondefault to "anal_push">>
+		<<brat 5>><<machine_violent_arms>>
+		<<if random(1, 6) is 6>>
+			<<set $machine.anal.health -= 1>>
+		<</if>>
+		<<if $machine.anal.state is "penetrated">>
+			You try to push the small phallic machine away with your right hand, <span class="pink">but its hammering is too ferocious.</span>
+		<<elseif $machine.anal.state is "imminent">>
+			<<set $machine.anal.state to "entrance">>
+			<<set $anusstate to "entrance">>
+			You push the small phallic machine with your right hand, <span class="lblue">forcing it away from your <<bottom>>.</span>
+		<<elseif $machine.anal.state is "entrance">>
+			<<set $machine.anal.state to "ready">>
+			<<set $machine.anal.use to "ready">>
+			<<set $anususe to 0>><<set $anusstate to 0>>
+			You push the small phallic machine with your right hand, <span class="lblue">forcing it away from your <<bottom>>.</span>
+		<<else>>
+			You push the small phallic machine with your right hand, trying to keep it away from your <<bottom>>.
+		<</if>>
+	<</if>>
+
+	<<if $feetaction is "rest">>
+		<<set $feetaction to "rest">><<set $feetactiondefault to "rest">>
+	<</if>>
+
+	<<if $feetaction is "chain_struggle">>
+		<<set $feetaction to 0>><<set $feetactiondefault to "chain_struggle">>
+		<<defiance 5>><<set $machine.leg_chains.health -= 1>>
+		You pull against the chains holding your legs. You feel something give, but they tighten in response.
+		<br>
+	<</if>>
+
+	<<if $feetaction is "whack">>
+		<<set $feetactiondefault to "whack">><<set $feetaction to 0>>
+		<<defiance 5>><<set $machine.tattoo.health -= 1>><<machine_violent_legs>>
+		<<if $machine.tattoo.use isnot "ready">>
+			You kick the tattoo gun, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.tattoo.use to "ready">>
+			<<set $machine.tattoo.state to "ready">>
+		<<else>>
+			You kick the tattoo gun.
+		<</if>>
+		<<set $attackstat += 1>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the metal.</span><<set $machine.tattoo.health -= 1>>
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $feetaction is "vaginal_whack">>
+		<<set $feetactiondefault to "vaginal_whack">><<set $feetaction to 0>>
+		<<defiance 5>><<set $machine.vaginal.health -= 1>><<machine_violent_legs>>
+		<<if random(1, 6) is 6>>
+			<<set $machine.vaginal.health -= 1>>
+		<</if>>
+		<<if $machine.vaginal.use isnot "ready" and currentSkillValue('physique') gte random(1, 50000)>>
+			You kick the phallic machine, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.vaginal.use to "ready">>
+			<<set $machine.vaginal.state to "ready">>
+		<<else>>
+			You kick the phallic machine.
+		<</if>>
+		<<set $attackstat += 1>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the silicone.</span><<set $machine.vaginal.health -= 1>>
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $feetaction is "vaginal_push">>
+		<<set $feetaction to 0>><<set $feetactiondefault to "vaginal_push">>
+		<<brat 5>><<machine_violent_legs>>
+		<<if $machine.vaginal.state is "penetrated">>
+			You try to push the phallic machine away with your feet, <span class="pink">but it doesn't relent.</span>
+		<<elseif $machine.vaginal.state is "imminent">>
+			<<set $machine.vaginal.state to "entrance">>
+			<<set $vaginastate to "entrance">>
+			You push the phallic machine with your feet, <span class="lblue">forcing it away from your <<pussy>>.</span>
+		<<elseif $machine.vaginal.state is "entrance">>
+			<<set $machine.vaginal.state to "ready">>
+			<<set $machine.vaginal.use to "ready">>
+			<<set $vaginause to 0>><<set $vaginastate to 0>>
+			You push the phallic machine with your feet, <span class="lblue">forcing it away from your <<pussy>>.</span>
+		<<else>>
+			You push the phallic machine with your feet, trying to keep it away from your <<pussy>>.
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $feetaction is "anal_whack">>
+		<<set $feetactiondefault to "anal_whack">><<set $feetaction to 0>>
+		<<defiance 5>><<set $machine.anal.health -= 1>><<machine_violent_legs>>
+		<<if random(1, 6) is 6>>
+			<<set $machine.anal.health -= 1>>
+		<</if>>
+		<<if $machine.anal.use isnot "ready" and currentSkillValue('physique') gte random(1, 50000)>>
+			You kick the small phallic machine, <span class="lblue">knocking it away from you.</span>
+			<<set $machine.anal.use to "ready">>
+			<<set $machine.anal.state to "ready">>
+		<<else>>
+			You kick the small phallic machine.
+		<</if>>
+		<<set $attackstat += 1>>
+		<<if currentSkillValue('physique') gte random(1, $physiquemax)>>
+			<span class="teal">You feel something snap behind the silicone.</span><<set $machine.anal.health -= 1>>
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $feetaction is "anal_push">>
+		<<set $feetaction to 0>><<set $feetactiondefault to "anal_push">>
+		<<brat 5>><<machine_violent_legs>>
+		<<if $machine.anal.state is "penetrated">>
+			You try to push the small phallic machine away with your feet, <span class="pink">but it continues to hammer your <<bottom>>.</span>
+		<<elseif $machine.anal.state is "imminent">>
+			<<set $machine.anal.state to "entrance">>
+			<<set $anusstate to "entrance">>
+			You push the small phallic machine with your feet, <span class="lblue">forcing it away from your <<bottom>>.</span>
+		<<elseif $machine.anal.state is "entrance">>
+			<<set $machine.anal.state to "ready">>
+			<<set $machine.anal.use to "ready">>
+			<<set $anususe to 0>><<set $anusstate to 0>>
+			You push the small phallic machine with your feet, <span class="lblue">forcing it away from your <<bottom>>.</span>
+		<<else>>
+			You push the small phallic machine with your feet, trying to keep it away from your <<bottom>>.
+		<</if>>
+		<br>
+	<</if>>
+
+	<<if $machine.tattoo>>
+		<<if $machine.tattoo.health lte 0 and $machine.tattoo.use isnot "destroyed">>
+			<<set $machine.number -= 1>>
+			<<set $machine_stat += 1>>
+			<<set $machine.tattoo.use to "destroyed">>
+			<<set $machine.tattoo.state to "destroyed">>
+			Sparks fly, and the tattoo gun <span class="green">shudders to a halt.</span>
+			<br>
+		<</if>>
+	<</if>>
+
+	<<if $machine.vaginal>>
+		<<if $machine.vaginal.health lte 0 and $machine.vaginal.use isnot "destroyed">>
+			<<set $machine.number -= 1>>
+			<<set $machine_stat += 1>>
+			<<set $machine.vaginal.use to "destroyed">>
+			<<set $machine.vaginal.state to "destroyed">>
+			Sparks fly, and the phallic machine <span class="green">shudders to a halt.</span>
+			<br>
+			<<machine_vaginal_disable>>
+		<</if>>
+	<</if>>
+
+	<<if $machine.anal>>
+		<<if $machine.anal.health lte 0 and $machine.anal.use isnot "destroyed">>
+			<<set $machine.number -= 1>>
+			<<set $machine_stat += 1>>
+			<<set $machine.anal.use to "destroyed">>
+			<<set $machine.anal.state to "destroyed">>
+			Sparks fly, and the small phallic machine <span class="green">shudders to a halt.</span>
+			<br>
+			<<machine_anal_disable>>
+		<</if>>
+	<</if>>
+
+	<<if $machine.arm_chains>>
+		<<if $machine.arm_chains.health lte 0 and $machine.arm_chains.use isnot "destroyed">>
+			<<set $machine_stat += 1>>
+			<<set $machine.arm_chains.use to "destroyed">>
+			<<set $machine.arm_chains.state to "destroyed">>
+			Sparks fly from the rails above, <span class="green">and the chains holding your arms slacken.</span>
+			<br>
+			<<machine_arm_chains_disable>>
+		<</if>>
+	<</if>>
+
+	<<if $machine.leg_chains>>
+		<<if $machine.leg_chains.health lte 0 and $machine.leg_chains.use isnot "destroyed">>
+			<<set $machine_stat += 1>>
+			<<set $machine.leg_chains.use to "destroyed">>
+			<<set $machine.leg_chains.state to "destroyed">>
+			Sparks fly from the rails above, <span class="green">and the chains holding your legs slacken.</span>
+			<br>
+			<<machine_leg_chains_disable>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "machine_violent_arms">>
+	<<set _machine_arms to 1>>
+<</widget>>
+
+<<widget "machine_violent_legs">>
+	<<set _machine_legs to 1>>
+<</widget>>

@@ -57,7 +57,19 @@
 			<<getTargetList>>
 		<</if>>
 	<</if>>
-	<<if !$stalk_end>>
+	/* 北极星模组 */
+	<<if $options.bjx_eventTF and $ghost gte 1>>
+		<div id="energyaction" @class="$options.combatControls + 'Control'">
+			<<energyActionInit>>
+		</div>
+	<</if>>
+	<<if $stalk_end>>
+	<<elseif $options.bjx_eventTF and $ghost gte 1 and $energyaction is "ghost">>
+	    <div id="speakaction" @class="$options.combatControls + 'Control'">
+			<<speakActionInit>>
+		</div>
+	<<else>>
+	/* 北极星 */
 		<div id="listContainer">
 			<div id="leftaction" @class="$options.combatControls + 'Control'">
 				<<leftActionInit>>
@@ -202,6 +214,12 @@
 	<<safereplace #rightaction>><<rightActionInit true>><</safereplace>>
 	<<safereplace #feetaction>><<feetActionInit true>><</safereplace>>
 	/* 北极星模组 */
+	<<if $options.bjx_eventTF and $ghost gte 1>>
+	    <<safereplace #energyaction>><<energyActionInit true>><</safereplace>>
+	<</if>>
+	<<if $options.bjx_eventTF and $ghost gte 1 and $energyaction is "ghost">>
+		<<safereplace #speakaction>><<speakActionInit true>><</safereplace>>
+	<</if>>
 	<<if $options.bjx_animal>>
 	    <<safereplace #tailaction>><<tailActionInit true>><</safereplace>>
 	<</if>>
@@ -1236,6 +1254,211 @@
 <</widget>>
 
 /* 北极星模组 */
+<<widget "energyactionDifficulty">>
+	<<if _args[0] is undefined>>
+		<<set _diffAction to $energyaction>>
+	<<else>>
+		<<set _diffAction to _args[0]>>
+	<</if>>
+<</widget>>
+
+<<widget "energyActions">>
+	/*Generate Actions*/
+	<<set _energyaction to {}>>
+	<<set _energyaction["无"] to "rest">>
+	<<set _energyaction["灵体化"] to "ghost">>
+	<<if $ghost is 2>>
+	    <<set _energyaction["死域霜寒"] to "freeze">>
+	<</if>>
+	<<if $ghost is 3>>
+	    <<set _energyaction["烈焰缠身"] to "burn">>
+	<</if>>
+	<<if $ghost is 4>>
+	    <<set _energyaction["海洋葬歌"] to "seasing">>
+	<</if>>
+<</widget>>
+
+<<widget "energyActionInit">>
+    <<if $options.bjx_eventTF and $ghost gte 1>>
+        <<if $energyaction is undefined>>
+            <<set $energyaction to "rest">>
+        <</if>>
+        <<if $energyaction is "rest">>
+    	    <span>你没有释放任何灵能。</span>
+    	<<elseif $energyaction is "ghost">>
+    	    <span class="wraith">你的身躯处于灵体化。</span>
+    	<<elseif $energyaction is "freeze">>
+    	    <span class="lblue">你的身躯散发着寒气。</span>
+    	<<elseif $energyaction is "burn">>
+    	    <span class="orange">你的身躯缠绕着烈焰。</span>
+    	<<elseif $energyaction is "seasing">>
+    	    <span class="blue">你吟唱着海洋的葬歌。</span>
+    	<</if>>
+    	<<if $_changetype isnot true>>
+    		<<energyActions>>
+    		<<set _textColor to combatListColor('energyaction', $energyaction, "")>>
+    		<<generateCombatAction _energyaction "energyaction" _textColor $energyaction>>
+    	<<else>>
+    		<<timed 100ms>>
+    			<<run jQuery("#energyaction").remove();>>
+    		<</timed>>
+    	<</if>>
+    <</if>>
+<</widget>>
+
+<<widget "energyActionEscape">>
+    <<if $options.bjx_eventTF and $ghost gte 1>>
+        <<if $energyaction is undefined>>
+            <<set $energyaction to "rest">>
+        <</if>>
+		<<set _energyaction to {}>>
+    	<<set _energyaction["无"] to "rest">>
+    	<<set _energyaction["灵体化逃脱"] to "ghostescape">>
+		<<set _textColor to combatListColor('energyaction', $energyaction, "")>>
+		<<generateCombatAction _energyaction "energyaction" _textColor $energyaction>>
+    <</if>>
+<</widget>>
+
+<<widget "speakActionInit">>
+	<<if $robinRentEvent is 1 and ["pay","still"].includes($combatPhase)>>
+		<<set _mouthGold to true>>
+	<</if>>
+	<<if $orgasmdown gte 1 and $demonhunter lte 5>>
+		<<if $mouthuse is 0>>
+			<<set _mouthOptions to "orgasm">>
+			<span class="lewd">你的嘴自由了，但不由自主的呻吟和哭泣抑制了言语。</span>
+		<<else>>
+			<<timed 100ms>>
+				<<run jQuery("#mouthaction").remove();>>
+			<</timed>>
+		<</if>>
+	<<elseif $pain gte 100 and $willpowerpain is 0 and !$possessed>>
+		<<if $mouthuse is 0>>
+			<<set _mouthOptions to "pain">>
+			<span class="red">你的嘴自由了，但不由自主的哭泣和呜咽阻碍了说话。</span>
+		<<else>>
+			<<timed 100ms>>
+				<<run jQuery("#mouthaction").remove();>>
+			<</timed>>
+		<</if>>
+	<<elseif $dissociation gte 2 and !$possessed>>
+		<<if $mouthuse is 0>>
+			<<set _mouthOptions to "unreal">>
+			<span class="pink">你的嘴自由了，但对原因一头雾水。</span>
+		<<else>>
+			<<timed 100ms>>
+				<<run jQuery("#mouthaction").remove();>>
+			<</timed>>
+		<</if>>
+	<<elseif $possessed>>
+		<<if $mouthuse is 0>>
+			<<set _mouthOptions to "possessed">>
+			你的嘴是自由的，<span class="pink">但是陌生的语言从你的口中脱口而出。</span>
+		<<elseif $mouthuse is "lefthand" or $mouthuse is "righthand">>
+			<<set _mouthOptions to "possessedBound">>
+			你的嘴被捂住，压制住了内心涌动而出的外语。
+		<<else>>
+			<<timed 100ms>>
+				<<run jQuery("#mouthaction").remove();>>
+			<</timed>>
+		<</if>>
+	<<else>>
+		<<switch $mouthuse>>
+			<<case 0>>
+				<<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<<targetListBox "mouth" _targetlist>>
+				<</if>>
+				<<set _mouthOptions to "free">>
+				<span @class="($lastOptions.mouth isnot _mouthOptions or _mouthGold is true ?'gold':'')">你的嘴是自由的。</span>
+				<<if $options.combatControls.includes("adio") and _targetnumber gt 1>>
+					<br>
+					<<targetListBox "mouth" _targetlist>>
+				<</if>>
+				<<if _targetnumber is 1>>
+					<<set $mouthtarget to _firsttarget>>
+				<</if>>
+			<<case "tentacle">>
+				<<set $_changetype to true>>
+			<<case "struggle">>
+				<<set $_changetype to true>>
+			<<case "frog">>
+				<<set $_changetype to true>>
+		<</switch>>
+	<</if>>
+	<<if $lastOptions.mouth isnot _mouthOptions>>
+		<<set _mouthGold to true>>
+	<</if>>
+	<<if $_changetype isnot true>>
+		<<speakActions>>
+		<<if Object.keys(_mouthaction).length gt 0>>
+			<<if Object.values(_mouthaction).includes($mouthactiondefault) is false or _args[0] is true or $mouthactiondefault is "rest">>
+				<<set _defaultsCombatAction to "mouthaction">>
+				<<set _actionsSet = DefaultActions.get($defaultsCombatType, $defaultsType, _defaultsCombatAction)>>
+				<<set _pass to false>>
+				<<for _set to 0; _set lt $maxDefaultActionSets; _set++>>
+					<<if Object.values(_mouthaction).includes(_actionsSet[_set])>>
+						<<set $mouthactiondefault to clone(_actionsSet[_set])>>
+						<<set _pass to true>>
+						<<break>>
+					<</if>>
+				<</for>>
+				<<if _pass is false>>
+					<<set $mouthactiondefault to Object.values(_mouthaction)[0]>>
+				<</if>>
+			<</if>>
+
+			<<set $mouthaction to $mouthactiondefault>>
+			<<set _textColor to combatListColor('mouthaction', (Object.values(_mouthaction).includes($mouthaction) ? $mouthaction : Object.values(_mouthaction)[0]), "")>>
+			<<generateCombatAction _mouthaction "mouthaction" _textColor $mouthaction>>
+
+			/*Checks/Difficulty*/
+			<<if $options.combatControls.includes("ists")>>
+				<div id="mouthactionDifficulty">
+					<<mouthactionDifficulty>>
+				</div>
+			<</if>>
+		<</if>>
+		<<set $lastOptions.mouth to clone(_mouthOptions)>>
+	<</if>>
+<</widget>>
+
+<<widget "speakActions">>
+	/*Generate Actions*/
+	<<set _mouthaction to {}>>
+	<<if !(["orgasm", "pain", "unreal", "possessed"].includes(_mouthOptions))>>
+		<<set _mouthaction["休息"] to "rest">>
+	<</if>>
+	<<if $position is "stalk">>
+		<<head_turn>>
+		<<head_down>>
+		<<head_up>>
+	<<else>>
+		<<switch _mouthOptions>>
+			<<case "free">>
+				<<speak>>
+				<<combatApologise>>
+				<<if $options.bjx_animal and $dragon gte 6 and $consensual isnot 1 and ($dragonbreathuse lte 5 or $dragonbreathuse is undefined)>>
+					<<set _mouthaction["龙息"] to "dragonBreath">>
+				<</if>>
+			<<case "orgasm">>
+				<<set _mouthaction["强忍住"] to "stifleorgasm">>
+				<<set _mouthaction["放声呻吟"] to "letoutorgasm">>
+			<<case "pain">>
+				<<set _mouthaction["强忍住"] to "stifle">>
+				<<set _mouthaction["放声呻吟"] to "letout">>
+			<<case "unreal">>
+				<<set _mouthaction["试着对话"] to "speak">>
+				<<set _mouthaction["发出柔软声音"] to "noises">>
+			<<case "possessed">>
+				<<set _mouthaction["接受"] to "mouthacceptW">>
+				<<set _mouthaction["紧闭你的嘴"] to "mouthresistW">>
+			<<case "possessedBound">>
+				<<set _mouthaction["咬"] to "handbiteW">>
+				<<set _mouthaction["紧闭你的嘴"] to "handcloseW">>
+		<</switch>>
+	<</if>>
+<</widget>>
+
 <<widget "tailActionInit">>
     <<if $hastail is "true">>
         <<if not $options.combatControls.includes("adio") and _targetnumber gt 1>>
@@ -3258,24 +3481,7 @@
 					<</switch>>
 				</div>
 			<</if>>
-            
-            /* 北极星模组 */
-            <<if $options.bjx_animal and Object.values(_targetlistall).length gte 1>>
-				<div id="tailaction" @class="$options.combatControls + 'Control'">
-					<<switch $tailtarget>>
-						<<case "swarm">>
-							<<tailActionInitSwarm>>
-						<<default>>
-							<<if Object.values(_targetlistall)[0] is "swarm">>
-								<<tailActionInitSwarm>>
-							<<else>>
-								<<tailActionInit>>
-							<</if>>
-					<</switch>>
-				</div>
-			<</if>>
-			/* 北极星 */
-			
+
 			<<if Object.values(_targetlist).length gte 1>>
 				<<switch $mouthtarget>>
 					<<case "tentacles">>
@@ -3287,9 +3493,7 @@
 							<<mouthActionInitStruggle>>
 						</div>
 					<<default>>
-						/* 北极星模组 */
-						<<if !($dissociation lte 1 and ($orgasmdown lte 0 or $demonhunter gte 6) and ($pain lt 100 or $willpowerpain is undefined))>>
-						/* 北极星 */
+						<<if !($dissociation lte 1 and $orgasmdown lte 0 and ($pain lt 100 or $willpowerpain is undefined))>>
 							<div id="mouthaction" @class="$options.combatControls + 'Control'">
 								<<mouthActionInit>>
 							</div>

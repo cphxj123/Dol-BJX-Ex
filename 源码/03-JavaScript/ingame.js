@@ -152,7 +152,7 @@ const combatActionColours = {
 			/* mouthaction */
 			"mouthacceptW", "handbiteW",
 			/* 北极星模组 */
-			"soulsucc",
+			"ghost", "soulsucc",
 			/* 北极星 */
 		],
 		/* 北极星模组 */
@@ -162,19 +162,19 @@ const combatActionColours = {
 		],
 		lblue: [
 			/* 冰幽灵 */
-			"deathlychill",
+			"freeze",
 		],
 		orange: [
 			/* 炎幽灵 */
 			"burn",
 		],
-		black: [
-			/* 暗幽灵 */
-			"whisper", "rend",
-		],
 		blue: [
 			/* 水幽灵 */
 			"seasing",
+		],
+		black: [
+			/* 暗幽灵 */
+			"whisper", "rend",
 		],
 		lustful: [
 			/* 恶魔猎手 */

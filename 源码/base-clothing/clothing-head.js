@@ -1933,7 +1933,7 @@ function initHead() {
 			colour_options: [],
 			colour_sidebar: 1,
 			type: ["eerie"],
-			eerie: ["bee", "bear"],
+			eerie: ["bee"],
 			gender: "n",
 			femininity: 0,
 			warmth: 0,
