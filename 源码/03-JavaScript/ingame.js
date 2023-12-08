@@ -152,7 +152,7 @@ const combatActionColours = {
 			/* mouthaction */
 			"mouthacceptW", "handbiteW",
 			/* 北极星模组 */
-			"ghost", "soulsucc",
+			"ghost", "ghostescape",
 			/* 北极星 */
 		],
 		/* 北极星模组 */
@@ -173,7 +173,7 @@ const combatActionColours = {
 			"seasing",
 		],
 		black: [
-			/* 暗幽灵 */
+			/* 触手怪 */
 			"whisper", "rend",
 		],
 		lustful: [
@@ -182,7 +182,7 @@ const combatActionColours = {
 		],
 		gold: [
 			/* 古董神器 */
-			"antiquebell",
+			"antiquebell", "antiquemushroom", "antiqueivorynecklace"
 		],
 		/* 北极星 */
 	},

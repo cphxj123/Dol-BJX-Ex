@@ -1033,7 +1033,29 @@
             /* 北极星 */
 			<<for _mancombatcontrol = 0; _mancombatcontrol lt $enemynomax; _mancombatcontrol++>>
 				<<if $NPCList[_mancombatcontrol].active is "active" and $NPCList[_mancombatcontrol].stance isnot "defeated">>
-					<<man-combat _mancombatcontrol>>
+				    /* 北极星模组 */
+        			<<if $NPCList[_mancombatcontrol].freeze>>
+				        <<set $NPCList[_mancombatcontrol].freeze to false>>
+                    	<<if ["m", "f", "i", "n", "t"].includes($NPCList[_mancombatcontrol].pronoun)>>
+                    		<<set $pronoun to $NPCList[_mancombatcontrol].pronoun>>
+                    	<<elseif $options.debugdisable is "f">>
+                    		<span class="red">ERROR: Unexpected $$NPCList[_mancombatcontrol].pronoun: [$NPCList[_mancombatcontrol].pronoun]</span>
+                    	<</if>>
+                    	<<personselect _mancombatcontrol>>
+                    	<<switch _mancombatcontrol>>
+                    		<<case 0>>
+                    			<<manspeech _mancombatcontrol>>
+                    			<<if $NPCList[0].intro isnot -1>>
+                    				<<set $NPCList[0].intro to 1>>
+                    			<</if>>
+                    		<<case 1 2 3 4 5>>
+                    			<<manspeech _mancombatcontrol>><<if $NPCList[_mancombatcontrol].intro isnot -1>><<set $NPCList[_mancombatcontrol].intro to 1>><</if>>
+                    	<</switch>>
+                    	<span class="lblue"><<He>>被你的寒气冰冻了，无法做出任何行动。</span>
+				    <<else>>
+					    <<man-combat _mancombatcontrol>>
+					<</if>>
+        			/* 北极星 */
 					<<if $position isnot "stalk" and !$breakIgnore>>
 						<br><br>
 					<</if>>

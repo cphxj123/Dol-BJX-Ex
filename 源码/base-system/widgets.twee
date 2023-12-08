@@ -404,6 +404,33 @@
 			<</if>>
 			<<set $enemyarousal += 1>>
 			<<painclamp>>
+			/* 北极星模组 */
+			<<if $options.bjx_eventTF and $ghost gte 1 and $energyaction is "burn">>
+    		    <<set _thedamage to (_violence * _painMod * 2)>>
+    		    <<set $enemyhealth -= _thedamage>>
+    			<<set _npctodefeat to []>>
+    			<<for _npctodamage to 0; _npctodamage lt $enemynomax; _npctodamage++>>
+        			<<if $NPCList[_npctodamage].active is "active" and $NPCList[_npctodamage].stance isnot "defeated" and (!$fightTargets or $fightTargets.includes(_npctodamage))>>
+        				<<set _enemydivide to $fightTargets ? $enemyno-$fightTargets.length : $enemyno>>
+        				<<set $NPCList[_npctodamage].health -= (_thedamage/_enemydivide)>>
+        				<<if $enemyno gte 2 and $NPCList[_npctodamage].health lte 0>>
+        					<<set _npctodefeat.push(_npctodamage)>>
+        				<</if>>
+        			<</if>>
+        		<</for>>
+        		<<for $_defeatcontroller to 0; $_defeatcontroller lt _npctodefeat.length; $_defeatcontroller++>>
+        			<<if $enemyno gte 2>>
+        			    <<defeatnpc _npctodefeat[$_defeatcontroller]>>
+        			<</if>>
+        		<</for>>
+    			<span class='orange'>你身上的烈焰爆发开来，灼烧着袭击者作为回礼。
+    			<<set _showpoint to Math.floor(_thedamage)>>
+    			<<if $options.bjx_health>>
+        		    (敌血量 - _showpoint)
+        		<</if>>
+        		</span>
+    		<</if>>
+    		/* 北极星 */
 		<</if>>
 	<</if>>
 <</widget>>
@@ -511,6 +538,10 @@
 		<<set $enemyarousal += 3 * _args[0]>>
 		/* 北极星模组 */
 		<<enemytrustgain 2>>
+		<<set _showpoint to Math.floor(3 * _args[0])>>
+		<<if $options.bjx_health>>
+		    (敌性奋 + _showpoint)
+		<</if>>
 		/* 北极星 */
 	<</if>>
 <</widget>>
@@ -543,14 +574,38 @@
             <<set _painMod *= 2>>
 		<</if>>
 		<<set _thedamage to (2 * _painMod * _defiance * ($physique / 4000))>>
-		<<if $options.bjx_divine and $angel gte 5>>
-            <<set $enemyarousal -= 6 * _args[0]>>
-		<</if>>
 		/* 北极星 */
 		<<if $enemyno gte 2>>
 			<<npcdamage _args[1]>>
 		<</if>>
 		<<set $enemyhealth -= _thedamage>>
+		/* 北极星模组 */
+		<<if $options.bjx_divine and $angel gte 5>>
+            <<set $enemyarousal -= 6 * _args[0]>>
+            <<set _showpoint to Math.floor(6 * _args[0])>>
+            <<if $options.bjx_health>>
+    		    <span class="gold">(敌性奋 - _showpoint)</span>
+    		<</if>>
+		<</if>>
+		<<set _showpoint to Math.floor(_thedamage)>>
+		<<if $options.bjx_health>>
+		    (敌血量 - _showpoint)
+		<</if>>
+		<<if $options.bjx_eventTF and $ghost gte 1 and $energyaction is "freeze">>
+		    <<if random(1, 5) is 5>>
+		        <span class="lblue">你的寒气冰冻住了对方身体。</span>
+		        <<if _args[1]>>
+		            <<set $NPCList[_args[1]].freeze to true>>
+		        <<else>>
+                    <<set $NPCList[0].freeze to true>>
+		        <</if>>
+		    <</if>>
+		<</if>>
+		<<if $options.bjx_eventTF and $ghost gte 1 and $energyaction is "seasing">>
+		    <span class="blue">海洋的力量卷走了对方的生命力。</span>
+		    <<lpain>><<set $pain -= _args[0]>>
+		<</if>>
+		/* 北极星 */
 	<</if>>
 <</widget>>
 
@@ -592,6 +647,10 @@
 		/* 北极星模组 */
 		<<enemytrustgain 1>>
 		<<enemyangerloss _args[0]>>
+		<<set _showpoint to Math.floor(_args[0])>>
+		<<if $options.bjx_health>>
+		    (敌性奋 + _showpoint)
+		<</if>>
 		/* 北极星 */
 	<</if>>
 <</widget>>

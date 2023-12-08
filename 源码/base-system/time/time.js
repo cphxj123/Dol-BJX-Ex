@@ -705,7 +705,6 @@ function dayPassed() {
 	
 	/* 北极星模组 */
 	V.dragonbreathuse = 0;
-	V.seasong = 3;
     V.pigshit = 3;
     V.cobwebuse = 0;
     V.lizardrecover = 0;
